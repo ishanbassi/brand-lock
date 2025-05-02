@@ -1,0 +1,32 @@
+<div class="stepper-container">
+    <div class="stepper-wrapper">
+      <div class="stepper-timeline">
+        <div class="stepper-line"></div>
+        <div 
+          *ngFor="let step of registrationSteps; let i = index" 
+          class="stepper-point" 
+          [class.active]="i <= activeStep"
+          #stepPoints>
+          <div class="point">{{ i + 1 }}</div>
+          <div class="step-content-wrapper"
+          [@fadeInOut]="i <= activeStep ? 'visible' : 'hidden'"
+          >
+            <div class="step-img-wrapper">
+              <img class="step-img" [src]="'/assets/images/'+step.imgSrc" [alt]="step.heading">
+            </div>
+            <div class="content-wrapper">
+              <div class="step-title">{{ step.heading }}</div>
+              <div class="step-content">
+                <div *ngFor="let line of step.lines"
+                #stepContents>
+                    <p>{{ line }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,311 @@
+<app-navbar></app-navbar>
+<mat-toolbar color="primary" class="form-toolbar" 
+[@toolbarAnimation]="toolbarState" 
+[class.fixed-toolbar]="toolbarState === 'visible'">
+    <div class="container-xxl">
+        <form (ngSubmit)="navFormsubmit()" [formGroup]="ctaNavForm" class="nav-form" id="#navForm"
+                [ngClass]="{'submitted': onClickValidation}"
+                >
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Full Name" name="fullName" #fullName
+                                formControlName="fullName">
+                                <mat-icon matPrefix>person</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Email" name="email" #email
+                                formControlName="email">
+                                <mat-icon matPrefix>email</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
+                                formControlName="phoneNumber">
+                                <mat-icon matPrefix>phone</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="City" name="city" #city
+                                formControlName="city">
+                                <mat-icon matPrefix> location_on</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <button mat-raised-button type="submit" color="primary" class="cta-submit-btn">Get Started</button>
+
+                </form>
+    </div>
+    
+  </mat-toolbar>
+  
+<div class="home-page" [@fadeInOut]="animationState">
+    <div class="top-section" [@fadeInOut]="animationState">
+        <div class="cta-section-wrapper">
+            <div class="container-xxl">
+                <div class="cta-section row gx-0 justify-content-center">
+                    <!-- <img src="/assets/images/brand creation-rafiki.svg" alt="" class="landing-bg-img"> -->
+                    <section class="col-lg-5 d-flex">
+                        <div class="cta-text-section">
+                            <div class="headings">
+                                <h1 class="main-heading">Protect Your Brand Starting at ₹899 - Register Your Trademark Today!</h1>
+                            </div>
+                            <div class="features">
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Instant Filing</span>
+                                </div>
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Free Consultation</span>
+                                </div>
+                                
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Free Trademark Search Report</span>
+                                </div>
+                                
+                            </div>
+                            <section class="trust-section">
+                                <div class="stars">
+                                    <img src="/assets/images/star-icon.png" class="star-icons" alt="star" *ngFor="let _ of [].constructor(5)">
+                                </div>
+                                <div class="content">Trusted by 3,000+ Startups & Entrepreneurs</div>
+                            </section>
+                        </div>
+                        
+                        
+                    </section>
+                    
+                    <section class="cta-form-section col-lg-7 animate__animated animate__fadeIn">
+                        
+                        <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
+                        [ngClass]="{'submitted': onClickValidation}" id="#ctaForm"
+                        >
+                            <div class="form-heading-section">
+                                <h1 class="form-heading">
+                                    Register Your Trademark!
+                                </h1>
+                            </div>
+                            <div class=" form-input-container">
+        
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <mat-label>Full Name</mat-label>
+                                    <input matInput placeholder="Full Name" name="fullName" #fullName
+                                        formControlName="fullName">
+                                        <mat-icon matPrefix>person</mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="ctaForm.get('fullName')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
+                            </div>
+                            <div class=" form-input-container">
+        
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput placeholder="Email" name="email" #email
+                                        formControlName="email">
+                                        <mat-icon matPrefix>email</mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="ctaForm.get('email')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
+                            </div>
+                            <div class=" form-input-container">
+        
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <mat-label>Phone Number</mat-label>
+                                    <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
+                                        formControlName="phoneNumber">
+                                        <mat-icon matPrefix>phone</mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="ctaForm.get('phoneNumber')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
+                            </div>
+                            <div class=" form-input-container">
+        
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <mat-label>City</mat-label>
+                                    <input matInput placeholder="City" name="city" #city
+                                        formControlName="city">
+                                        <mat-icon matPrefix> location_on</mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="ctaForm.get('city')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
+                            </div>
+                            <button mat-raised-button type="submit" color="primary" class="cta-submit-btn">Get Started</button>
+        
+                        </form>
+                    </section>
+                
+                </div>
+            </div>
+            
+        </div>
+        <div class="benefits-section-wrapper">
+            <div class="container-xxl">
+                <div class="row">
+                    <section class="benefits-section col-lg-5" [@fadeInOut]="animationState">
+                    
+                        <div class="benefit">
+                            <mat-icon>lock</mat-icon>
+                            <div class="content">
+                                <span>
+                                    100%
+                                </span>
+                                <span>Secure</span>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <mat-icon>verified_user</mat-icon>
+                            <div class="content">
+                                <span>
+                                    Government
+                                </span>
+                                <span>Certified Agent</span>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <mat-icon>access_time</mat-icon>
+                            <div class="content">
+                                <span>
+                                    10-minutes
+                                </span>
+                                <span>Response Time</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        <div class="testimonial-section" [@fadeInOut]="animationState">
+            <div class="container-xxl">
+                <div class="testimonial-top-section">
+                    <div class="testimonial-heading">
+                        TESTIMONIALS
+                    </div>
+                    <div class="testimonial-sub-heading">
+                        Take their word for it
+                    </div>
+                </div>
+                <div class="content">
+                    <ngx-slick-carousel class="carousel" 
+                    #slickModal="slick-carousel" 
+                    [config]="slideConfig" 
+                    >
+                    <div ngxSlickItem *ngFor="let testimonial of testimonials">
+                        <div  class="testimonial" >
+                            <blockquote>
+                                {{testimonial.quote}}
+                            </blockquote>
+                            <div></div>
+                            <p>
+                                {{testimonial.author}} &mdash; {{testimonial.location}}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    </ngx-slick-carousel>
+                </div>
+            </div>
+          
+            
+            
+        </div>
+        <div class="stats-banner" [@fadeInOut]="animationState">
+            <div class="container-xxl">
+                <div class="row content">
+                    <div class="stat col-xs-12 col-sm-4">
+                        <div class="stat-content">
+                            <div class="title">10000+</div>
+                            <div class="description">Registrations</div>
+                        </div>
+                    </div>
+                    <div class="stat col-xs-12 col-sm-4">
+                        <div class="stat-content">
+                            <div class="title">30+</div>
+                            <div class="description">Years Of Experience</div>
+                        </div>
+                    </div>
+                    <div class="stat col-xs-12 col-sm-4">
+                            <div class="stat-content">
+                                <div class="title">100%</div>
+                                <div class="description">Customer Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+           
+        </div>
+        <div class="hiw-section" [@fadeInOut]="animationState">
+            <div class="hiw-heading">Registration Process</div>
+                    <app-vertical-stepper></app-vertical-stepper>
+            
+        </div>
+        <div class="required-documents-section" [@fadeInOut]="animationState">
+            <div class="container-xxl">
+                <h1>📄 Documents Required for Trademark Registration in India</h1>
+                <div class="document-cards">
+                    <div class="document-card-grid">
+                        <div class="row gy-4">
+                            <div class="col-12 col-sm-12 col-md-5 col-xl-4" *ngFor="let doc of documents">
+                                <mat-card class="document-card"  appearance="outlined">
+                                    <mat-card-header>
+                                      <mat-card-title-group>
+              
+                                          <div mat-card-avatar class="doc-icon">
+                                          <mat-icon>{{ doc.icon }}</mat-icon>
+                                          </div>
+                                          <mat-card-title>{{ doc.title }}</mat-card-title>
+                                      </mat-card-title-group>
+                                    </mat-card-header>
+                                    <mat-card-content>
+                                      <ul *ngIf="doc.points?.length">
+                                        <li *ngFor="let point of doc.points">{{ point }}</li>
+                                      </ul>
+                                      <p *ngIf="doc.note"><strong>Note:</strong> {{ doc.note }}</p>
+                                    </mat-card-content>
+                                  </mat-card>
+                            </div>
+                         
+                        </div>
+                        
+                      </div>
+                      
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="pricing-section">
+            <h1 class="heading">
+                Professional Fees
+            </h1>
+            <app-pricing-section (planTypeEmitter)="onPlanTypeChange($event)"></app-pricing-section>
+        </div>
+        <section class="call-us-section">
+            <div class="content">
+                <h1>Let's talk</h1>
+                <p>Whenever you're ready, a HomeLight Home Consultant is available to walk you through your options, answer your questions, and help you make more informed decisions about your home.</p>
+                <a type="button" class="btn btn-outline-primary call-us-btn" href="tel:+919814133010"  target="_blank">Call 9814133010</a>
+
+            </div>
+        </section>
+    </div>
+<a href="https://api.whatsapp.com/send?phone=9814133010&text=I%20want%20a%20trademark%20registration" class="whatsapp-button" target="_blank">
+    <img src="/assets/images/whatsapp-icon.png" alt="whatsapp icon">
+  </a>
+  <a href="tel:+919814133010" class="call-button" target="_blank"
+   >
+  <img src="/assets/images/call-now-icon.png" alt="Call Button">
+</a>
+  
+</div>
+

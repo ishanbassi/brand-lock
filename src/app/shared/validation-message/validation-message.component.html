@@ -1,0 +1,53 @@
+<div class="error-message" *ngIf="field && field.invalid && onClickValidation && !customErrorMessage">
+  <div *ngIf="field?.errors?.required">
+    <div [ngClass]="customClass">
+      {{fieldErrorMessage !=null ? fieldErrorMessage : 'Please provide a valid value.'}}
+    </div>
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.email">
+    Please provide a valid email address.
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.pattern">
+    <span *ngIf="customPatternMessage">{{customPatternMessage}}</span>
+    <span *ngIf="!customPatternMessage">
+      {{fieldErrorMessage !=null ? fieldErrorMessage : 'Please provide a valid value.'}}
+    </span>
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.mobile">
+    Please provide a valid mobile.
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.mask">
+    <span *ngIf="customMaskMessage">{{customMaskMessage}}</span>
+    <span *ngIf="!customMaskMessage">Please provide a valid value. Value will be like:
+      {{field?.errors?.mask.requiredMask}}</span>
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.incorrect">
+    Please provide a valid value.
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.year">
+    Please provide a valid year value.
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.month">
+    Please provide a valid month value.
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.['minlength'] || field?.errors?.customMin">
+    Please provide a valid value. Min allowed value: {{field?.errors?.min?.min}}
+  </div>
+  <div [ngClass]="customClass" *ngIf="field?.errors?.['maxlength'] || field?.errors?.customMax">
+    Please provide a valid value. Max allowed value: {{field?.errors?.max?.max}}
+  </div>
+  <div [ngClass]="customClass"  *ngIf=" !field?.errors?.required && field?.errors?.whitespace">
+    Please provide a valid value.
+  </div>
+  <div [ngClass]="customClass"  *ngIf=" field?.errors?.mismatch">
+    Passwords do not match
+  </div>
+</div>
+<div class="error-message"
+  *ngIf="field && field.valid && comparableField && onClickValidation && field.value !== comparableField.value">
+  Password does not match
+</div>
+<div class="error-message" *ngIf="customErrorMessage !=null && onClickValidation">
+  {{customErrorMessage}}
+</div>
+

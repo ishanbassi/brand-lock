@@ -1,0 +1,128 @@
+.stepper-container {
+  padding: 20px;
+  color: #273653;
+}
+
+.stepper-wrapper {
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stepper-timeline {
+  position: relative;
+  padding-right: 40px;
+  min-width: 150px;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  left: 15px;
+  width: 1px;
+  background-color: #e0e0e0;
+  z-index: 1;
+  max-height: 82%;
+}
+
+.stepper-point {
+  position: relative;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  z-index: 2;
+  display: flex;
+  align-items: center
+}
+
+.point {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+  border: 2px solid #e0e0e0;
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.step-title {
+  font-weight: 700;
+  transition: all 0.4s ease;
+  font-size:20px;
+  padding-bottom: 20px;
+  
+}
+
+.stepper-point.active .point {
+  background-color: #359ffa;
+  box-shadow: 0 0 10px rgba(63, 81, 181, 0.2);
+  transform: scale(1.1);
+  color: #fff;
+  font-weight: 700;
+}
+
+
+.content-wrapper {
+  flex: 1;
+  padding: 20px 0;
+}
+.step-content-wrapper {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  align-items: center;
+  gap:20px;
+  .step-content {
+    font-size: 15px;
+    p{
+      margin-bottom: 0;
+      line-height: 170%;
+    }
+  }
+}
+.step-img-wrapper{
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color:#e8f5fd ;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .step-img:not(img[alt='Trademark Filing'],img[alt='Trademark Registration']){
+    width: 50%;
+  }
+}
+
+@media screen and (max-width:576px) {
+  .stepper-container {
+    padding:0 !important;
+    .stepper-timeline{
+      padding-right:0px !important;
+      .stepper-point{
+        .point{
+          min-width: 32px;
+          min-height: 32px;
+        }
+        .step-content-wrapper{
+          flex-direction: column;
+          padding:0 10px 10px 10px;
+          .content-wrapper{
+            text-align: center;
+          }
+          .step-content{
+            display: flex;
+            flex-direction: column;
+            gap:15px;
+          }
+        }
+      }
+      .stepper-line{
+        top:160px;
+      }
+    }
+  }
+}
+
