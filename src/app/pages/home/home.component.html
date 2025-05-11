@@ -3,7 +3,7 @@
 [@toolbarAnimation]="toolbarState" 
 [class.fixed-toolbar]="toolbarState === 'visible'">
     <div class="container-xxl">
-        <form (ngSubmit)="navFormsubmit()" [formGroup]="ctaNavForm" class="nav-form" id="#navForm"
+        <form (ngSubmit)="navFormsubmit()" [formGroup]="ctaNavForm" class="nav-form" id="navForm"
                 [ngClass]="{'submitted': onClickValidation}"
                 >
                     <div class=" form-input-container">
@@ -26,9 +26,8 @@
 
                         <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
                             <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
-                                formControlName="phoneNumber">
-                                <mat-icon matPrefix>phone</mat-icon>
-                        </mat-form-field>
+                            mask="00000-00000" formControlName="phoneNumber">
+`                        </mat-form-field>
                     </div>
                     <div class=" form-input-container">
 
@@ -38,7 +37,10 @@
                                 <mat-icon matPrefix> location_on</mat-icon>
                         </mat-form-field>
                     </div>
-                    <button mat-raised-button type="submit" color="primary" class="cta-submit-btn">Get Started</button>
+                    <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isNavSubmitting">
+                        <mat-spinner diameter="20" *ngIf="isNavSubmitting"></mat-spinner>
+                        <span *ngIf="!isNavSubmitting">Get Started</span>
+                    </button>
 
                 </form>
     </div>
@@ -86,7 +88,7 @@
                     <section class="cta-form-section col-lg-7 animate__animated animate__fadeIn">
                         
                         <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
-                        [ngClass]="{'submitted': onClickValidation}" id="#ctaForm"
+                        [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement
                         >
                             <div class="form-heading-section">
                                 <h1 class="form-heading">
@@ -120,7 +122,7 @@
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
                                     <mat-label>Phone Number</mat-label>
                                     <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
-                                        formControlName="phoneNumber">
+                                        formControlName="phoneNumber" mask="00000-00000">
                                         <mat-icon matPrefix>phone</mat-icon>
                                 </mat-form-field>
                                 <app-validation-message [field]="ctaForm.get('phoneNumber')"
@@ -137,7 +139,10 @@
                                 <app-validation-message [field]="ctaForm.get('city')"
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
-                            <button mat-raised-button type="submit" color="primary" class="cta-submit-btn">Get Started</button>
+                            <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
+                                <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+                                <span>Get Started</span>
+                            </button>
         
                         </form>
                     </section>
@@ -192,7 +197,7 @@
                         TESTIMONIALS
                     </div>
                     <div class="testimonial-sub-heading">
-                        Take their word for it
+                        What Our Clients Say? 
                     </div>
                 </div>
                 <div class="content">
@@ -224,19 +229,19 @@
                 <div class="row content">
                     <div class="stat col-xs-12 col-sm-4">
                         <div class="stat-content">
-                            <div class="title">10000+</div>
+                            <div class="title" appCountUp [endValue]="1000" [suffix]="'+'">0+</div>
                             <div class="description">Registrations</div>
                         </div>
                     </div>
                     <div class="stat col-xs-12 col-sm-4">
                         <div class="stat-content">
-                            <div class="title">30+</div>
+                            <div class="title" appCountUp [endValue]="30" [suffix]="'+'">0+</div>
                             <div class="description">Years Of Experience</div>
                         </div>
                     </div>
                     <div class="stat col-xs-12 col-sm-4">
                             <div class="stat-content">
-                                <div class="title">100%</div>
+                                <div class="title" appCountUp [endValue]="100" [suffix]="'%'">0%</div>
                                 <div class="description">Customer Satisfaction</div>
                             </div>
                         </div>
@@ -285,15 +290,13 @@
         </div>
 
         <div class="pricing-section">
-            <h1 class="heading">
-                Professional Fees
-            </h1>
+            
             <app-pricing-section (planTypeEmitter)="onPlanTypeChange($event)"></app-pricing-section>
         </div>
         <section class="call-us-section">
             <div class="content">
                 <h1>Let's talk</h1>
-                <p>Whenever you're ready, a HomeLight Home Consultant is available to walk you through your options, answer your questions, and help you make more informed decisions about your home.</p>
+                <p>Have questions about trademark registration, protecting your brand, or just not sure where to start?  Whether you're a startup, a growing business, or just exploring ideas, we'd love to hear from you. Let's build something that protects and elevates your brand.</p>
                 <a type="button" class="btn btn-outline-primary call-us-btn" href="tel:+919814133010"  target="_blank">Call 9814133010</a>
 
             </div>
@@ -302,10 +305,11 @@
 <a href="https://api.whatsapp.com/send?phone=9814133010&text=I%20want%20a%20trademark%20registration" class="whatsapp-button" target="_blank">
     <img src="/assets/images/whatsapp-icon.png" alt="whatsapp icon">
   </a>
-  <a href="tel:+919814133010" class="call-button" target="_blank"
+  <a href="tel:+919814133010" class="call-button"
    >
   <img src="/assets/images/call-now-icon.png" alt="Call Button">
 </a>
   
 </div>
+<app-footer></app-footer>
 

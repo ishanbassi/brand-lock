@@ -1,53 +1,53 @@
 export const TestimonialsList = [
     {
-        quote: "Exceptional service and support! The team went above and beyond to help me.",
-        author: "Alice Johnson",
-        location: "New York, USA"
+        quote: "This is the ideal destination for unbeatable prices and exceptional service.",
+        author: "Rhythm kumar",
+        location: "Mullanpur, Punjab"
     },
     {
-        quote: "I am incredibly satisfied with the quality of work. Highly recommended!",
-        author: "David Smith",
-        location: "Toronto, Canada"
+        quote: "Best service providers & help for Good suggestions regarding to the customers requirement with Reasonable price.",
+        author: "Harbhajan Singh",
+        location: "Punjab,India"
     },
     {
-        quote: "Absolutely fantastic! The experience exceeded my expectations.",
-        author: "Maria Gonzalez",
-        location: "Madrid, Spain"
+        quote: "They are very transparent, clear cut and very corporates associates.",
+        author: "Ashok Kumar",
+        location: "Jalandhar, Punjab"
     },
     {
-        quote: "Great attention to detail and professionalism throughout.",
-        author: "James Brown",
-        location: "London, UK"
+        quote: "Very good services . all staff very helpful",
+        author: "Pardeep Kumar",
+        location: "Ludhiana, Punjab"
     },
     {
-        quote: "Their team is knowledgeable, responsive, and efficient. Will use again!",
-        author: "Emily Davis",
-        location: "Sydney, Australia"
+        quote: "Professional and Excellent Services. Quick turnaround with a lot of experience in the field. Best in Business.",
+        author: "Viplov Raina",
+        location: "New Delhi,India"
     },
     {
-        quote: "A wonderful experience from start to finish. Thank you!",
-        author: "Michael Lee",
-        location: "San Francisco, USA"
+        quote: "Very very good nyc person good knowledge great experience humble personally very good experience great job ❤️❤️😊",
+        author: "White Hawk Music",
+        location: "Ludhiana, Punjab"
     },
     {
-        quote: "Reliable and trustworthy. The best decision I made!",
-        author: "Sophia White",
-        location: "Berlin, Germany"
+        quote: "Very professional and Honest ... Must visit for any kind of query",
+        author: "Vinay Rajput",
+        location: "Ludhiana, India"
     },
     {
-        quote: "Excellent value for money. I am beyond happy with the results.",
-        author: "Robert Wilson",
-        location: "Paris, France"
+        quote: "Very Good service",
+        author: "Jyoti Batra",
+        location: "Jalandhar, Punjab"
     },
     {
-        quote: "They understand exactly what the customer needs and deliver perfectly.",
-        author: "Isabella Martinez",
-        location: "Mexico City, Mexico"
+        quote: "Excellent service . Guiding as well as I  need.",
+        author: "Rohit Baweja",
+        location: "New Delhi,India"
     },
     {
-        quote: "Quick turnaround and amazing quality. Couldn’t ask for more!",
-        author: "William Taylor",
-        location: "Dubai, UAE"
+        quote: "Best service ever.",
+        author: "Nitin Bhatnagar",
+        location: "Ludhiana,Punjab"
     },
     // Add 40 more testimonial objects following the same structure
 ];

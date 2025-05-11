@@ -26,6 +26,7 @@
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.13",
     "jquery": "^3.7.1",
+    "ngx-mask": "^19.0.6",
     "ngx-slick-carousel": "^19.0.0",
     "rxjs": "~7.8.0",
     "slick-carousel": "^1.8.1",
