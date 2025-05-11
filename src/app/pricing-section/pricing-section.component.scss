@@ -6,17 +6,6 @@
 	height: 21.875rem;
 }
 
-.background::after {
-	content: '';
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#338bdf', endColorstr='#4394f4',GradientType=0 );
-	background-color: transparent;
-	height: 350px;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
-	z-index: 1;
-}
 
 @media (min-width: 56.25rem) {
 	.background {

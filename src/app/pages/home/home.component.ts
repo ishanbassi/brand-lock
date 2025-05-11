@@ -185,12 +185,10 @@ export class HomeComponent implements OnInit{
     this.homeService.saveLead(lead)
     .subscribe({
       next:() => {
-        this.loadingService.hide();
         this.isSubmitting = false;
         this.isNavSubmitting = false;
       },
       error:() => {
-        this.loadingService.hide();
         // this.isSubmitting = false;
         // this.isNavSubmitting = false;
       }
