@@ -1,9 +1,10 @@
     .top-section {
-        padding-top: 240px;
-        padding-bottom: 120px;
+        padding-top: 18rem  ;
+        padding-bottom: 9rem;
         color: #fff;
-        background-image: url("/assets/images/ip-banner-img.png");
+        background-image: url("/assets/images/banner-img.jpg");
         position: relative;
+        background-size: cover;
 
         &::before {
             position: absolute;
@@ -24,14 +25,14 @@
             z-index: 3;
 
             .heading {
-                font-size: 80px;
+                font-size: 5rem;
                 font-weight: 800;
 
 
             }
 
             .sub-heading {
-                font-size: 20px;
+                font-size: 1rem;
             }
         }
 

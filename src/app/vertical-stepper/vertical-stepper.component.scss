@@ -1,26 +1,26 @@
 .stepper-container {
-  padding: 20px;
+  padding: 1.25rem;
   color: #273653;
 }
 
 .stepper-wrapper {
   display: flex;
-  max-width: 1000px;
+  max-width: 62.5rem;
   margin: 0 auto;
 }
 
 .stepper-timeline {
   position: relative;
-  padding-right: 40px;
-  min-width: 150px;
+  padding-right: 2.5rem;
+  min-width: 9.375rem;
 }
 
 .stepper-line {
   position: absolute;
-  top: 60px;
+  top: 3.75rem;
   bottom: 0;
-  left: 15px;
-  width: 1px;
+  left: 0.9375rem;
+  width: 0.0625rem;
   background-color: #e0e0e0;
   z-index: 1;
   max-height: 82%;
@@ -28,23 +28,23 @@
 
 .stepper-point {
   position: relative;
-  padding: 20px 0;
-  margin-bottom: 30px;
+  padding: 1.25rem 0;
+  margin-bottom: 1.875rem;
   z-index: 2;
   display: flex;
   align-items: center
 }
 
 .point {
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.4s ease;
-  border: 2px solid #e0e0e0;
+  border: 0.125rem solid #e0e0e0;
   color: #e0e0e0;
   font-weight: 600;
 }
@@ -52,14 +52,14 @@
 .step-title {
   font-weight: 700;
   transition: all 0.4s ease;
-  font-size:20px;
-  padding-bottom: 20px;
+  font-size: 1.25rem;
+  padding-bottom: 1.25rem;
   
 }
 
 .stepper-point.active .point {
   background-color: #359ffa;
-  box-shadow: 0 0 10px rgba(63, 81, 181, 0.2);
+  box-shadow: 0 0 0.625rem rgba(63, 81, 181, 0.2);
   transform: scale(1.1);
   color: #fff;
   font-weight: 700;
@@ -71,12 +71,12 @@
   padding: 20px 0;
 }
 .step-content-wrapper {
-  padding: 0 20px 20px 20px;
+  padding: 0 1.25rem 1.25rem 1.25rem;
   display: flex;
   align-items: center;
-  gap:20px;
+  gap: 1.25rem;
   .step-content {
-    font-size: 15px;
+    font-size: 0.9375rem;
     p{
       margin-bottom: 0;
       line-height: 170%;
@@ -84,8 +84,8 @@
   }
 }
 .step-img-wrapper{
-  width: 96px;
-  height: 96px;
+  width: 6rem;
+  height: 6rem;
   border-radius: 50%;
   background-color:#e8f5fd ;
   display: flex;
@@ -96,31 +96,31 @@
   }
 }
 
-@media screen and (max-width:576px) {
+@media screen and (max-width: 36rem) {
   .stepper-container {
     padding:0 !important;
     .stepper-timeline{
-      padding-right:0px !important;
+      padding-right:0 !important;
       .stepper-point{
         .point{
-          min-width: 32px;
-          min-height: 32px;
+          min-width: 2rem;
+          min-height: 2rem;
         }
         .step-content-wrapper{
           flex-direction: column;
-          padding:0 10px 10px 10px;
+          padding:0 0.625rem 0.625rem 0.625rem;
           .content-wrapper{
             text-align: center;
           }
           .step-content{
             display: flex;
             flex-direction: column;
-            gap:15px;
+            gap:0.9375rem;
           }
         }
       }
       .stepper-line{
-        top:160px;
+        top:10rem;
       }
     }
   }

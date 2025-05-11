@@ -9,9 +9,9 @@ import { Component, Input } from '@angular/core';
 export class DefaultTopSectionComponent {
 
   @Input()
-  heading = 'Privacy Policy';
+  heading = '';
   @Input()
-  subHeading = 'KNOW MORE ABOUT POLICY';
+  subHeading = '';
   
 
 }
