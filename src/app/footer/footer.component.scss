@@ -33,7 +33,7 @@ footer {
   .get-in-touch-section{
     .social-links-section{
         display: flex;
-        justify-content: space-between;
+        gap: 10px;
         span{
           width: 40px;
           height: 40px;

@@ -1,14 +1,14 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
-import {MatInputModule} from '@angular/material/input';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { TestimonialsList } from '../../enums/TestimonialsList';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { RequiredDocumentsList } from '../../enums/RequiredDocumentsList';
 import { PricingSectionComponent } from '../../pricing-section/pricing-section.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -25,11 +25,11 @@ import { CountUpDirective } from '../../shared/directives/count-up.directive';
 
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule,  MatInputModule,SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
-    VerticalStepperComponent,MatCardModule,PricingSectionComponent,MatToolbarModule, MatButtonModule, MatIconModule, NavbarComponent,FooterComponent,
+  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
+    VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, NavbarComponent, FooterComponent,
     NgxMaskDirective, NgxMaskPipe, MatProgressSpinnerModule, CountUpDirective
   ],
-  standalone:true,
+  standalone: true,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   animations: [
@@ -53,7 +53,7 @@ import { CountUpDirective } from '../../shared/directives/count-up.directive';
   ],
   providers: [provideNgxMask()]
 })
-export class HomeComponent implements OnInit{
+export class HomeComponent implements OnInit {
 
   testimonials = TestimonialsList;
   documents = RequiredDocumentsList;
@@ -68,22 +68,22 @@ export class HomeComponent implements OnInit{
   @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
 
   constructor(
-    private readonly homeService:HomeService,
-    private readonly leadFormService:LeadFormService,
-    private readonly loadingService:LoadingService
-  ){
+    private readonly homeService: HomeService,
+    private readonly leadFormService: LeadFormService,
+    private readonly loadingService: LoadingService
+  ) {
   }
 
   ctaForm = new FormGroup({
-    fullName: new FormControl('', ),
-    city: new FormControl('', ),
+    fullName: new FormControl('',),
+    city: new FormControl('',),
     email: new FormControl('',),
     phoneNumber: new FormControl(''),
     selectedPackage: new FormControl()
   })
   ctaNavForm = new FormGroup({
-    fullName: new FormControl('', ),
-    city: new FormControl('', ),
+    fullName: new FormControl('',),
+    city: new FormControl('',),
     email: new FormControl(''),
     phoneNumber: new FormControl(''),
     selectedPackage: new FormControl()
@@ -93,10 +93,10 @@ export class HomeComponent implements OnInit{
     setTimeout(() => {
       this.animationState = 'visible';
     }, 100);
-    
+
     // Get the cta-section element
     this.ctaSection = document.querySelector('.cta-section');
-    
+
     // Check initial scroll position
     this.checkScrollPosition();
   }
@@ -122,13 +122,15 @@ export class HomeComponent implements OnInit{
   submit() {
     this.onClickValidation = true;
     this.isSubmitting = true;
-    this.saveLead(this.ctaForm);
+    // this.saveLead(this.ctaForm);
+    this.submitNetlifyForm(this.ctaForm);
   }
 
   navFormsubmit() {
     this.onClickValidation = true;
     this.isNavSubmitting = true;
-    this.saveLead(this.ctaNavForm);
+    // this.saveLead(this.ctaNavForm);
+    this.submitNetlifyForm(this.ctaNavForm)
   }
 
   slideConfig = {
@@ -160,22 +162,10 @@ export class HomeComponent implements OnInit{
       }
     ]
   };
-  
-  saveLead(form: FormGroup){
-    form.get('fullName')?.setValidators([Validators.required]);
-    form.get('email')?.setValidators([Validators.required, Validators.pattern("[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$")]);
-    form.get('city')?.setValidators([Validators.required]);
-    form.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern("[0-9]{10}")]);
 
-    // Recalculate validity with new validators
-    form.get('fullName')?.updateValueAndValidity();
-    form.get('email')?.updateValueAndValidity();
-    form.get('city')?.updateValueAndValidity();
-    form.get('phoneNumber')?.updateValueAndValidity();
-
-    form.markAllAsTouched();
-
-    if(!form.valid){
+  saveLead(form: FormGroup) {
+    this.addValidationsToFormAndValidate(form);
+    if (!form.valid) {
       this.isSubmitting = false;
       this.isNavSubmitting = false;
       return;
@@ -183,17 +173,18 @@ export class HomeComponent implements OnInit{
     this.loadingService.show();
     const lead = this.leadFormService.getLead(form) as NewLead;
     this.homeService.saveLead(lead)
-    .subscribe({
-      next:() => {
-        this.isSubmitting = false;
-        this.isNavSubmitting = false;
-      },
-      error:() => {
-        // this.isSubmitting = false;
-        // this.isNavSubmitting = false;
-      }
-    })
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.isNavSubmitting = false;
+        },
+        error: () => {
+          this.isSubmitting = false;
+          this.isNavSubmitting = false;
+        }
+      })
   }
+  
   onPlanTypeChange(planType: string) {
     this.ctaForm.get('selectedPackage')?.setValue(planType);
     this.ctaNavForm.get('selectedPackage')?.setValue(planType);
@@ -208,4 +199,46 @@ export class HomeComponent implements OnInit{
       }
     }
   }
+  submitNetlifyForm(formGroup: FormGroup) {
+    this.addValidationsToFormAndValidate(formGroup);
+    if (!formGroup.valid) {
+      this.isSubmitting = false;
+      this.isNavSubmitting = false;
+      return;
+    }
+    const form = formGroup.value;
+
+    const formData = new FormData();
+    formData.append('form-name', 'leads');
+    Object.keys(form).forEach(key => {
+      formData.append(key, form[key]);
+    });
+
+    fetch("/", {
+      method: "POST",
+      body: formData
+    })
+      .then(() => console.log("Form successfully submitted"))
+      .catch(error => alert(error))
+      .finally(() => {
+        this.isSubmitting = false;
+        this.isNavSubmitting = false;
+      })
+      ;
+  }
+  addValidationsToFormAndValidate(form: FormGroup<any>) {
+    form.get('fullName')?.setValidators([Validators.required]);
+    form.get('email')?.setValidators([Validators.required, Validators.pattern("[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$")]);
+    form.get('city')?.setValidators([Validators.required]);
+    form.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern("[0-9]{10}")]);
+
+    // Recalculate validity with new validators
+    form.get('fullName')?.updateValueAndValidity();
+    form.get('email')?.updateValueAndValidity();
+    form.get('city')?.updateValueAndValidity();
+    form.get('phoneNumber')?.updateValueAndValidity();
+    form.markAllAsTouched();
+
+  }
+
 }
