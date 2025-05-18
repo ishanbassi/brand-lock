@@ -110,6 +110,7 @@ footer {
                 }
               }
       }
+      
        
 
     hr {
@@ -127,8 +128,7 @@ footer {
 
       a {
         color: #1e88e5;
-        margin-left: 1rem;
-        text-decoration: none;
+text-decoration: none;
 
         &:hover {
           text-decoration: underline;
@@ -151,5 +151,12 @@ footer {
       align-items: flex-start;
       gap: 0.5rem;
     }
+    .footer-bottom-section{
+        .footer-bottom{
+          width: 100%;
+          display: flex;
+          justify-content: spacae-between;
+        }
+      }
   }
 }

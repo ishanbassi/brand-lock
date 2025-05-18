@@ -18,7 +18,7 @@ export const RegistrationProcessList = [
         lines: [
           'If your trademark includes a logo, the registry uses something called Vienna Codification to classify it.'
         ],
-        imgSrc:"search.png"
+        imgSrc:"brand.png"
       },
       {
         heading: 'Trademark Examination',

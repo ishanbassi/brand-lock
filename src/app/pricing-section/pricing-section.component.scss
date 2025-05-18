@@ -61,6 +61,7 @@
 	box-shadow: rgba(99, 99, 99, 0.2) 0 0.125rem 0.5rem 0;
 	border-radius: 1.25rem;
 	.popular-plan-container{
+		margin-bottom: 1rem;
 		height: 1.875rem;
 	}
 	&.popular-plan{
@@ -124,7 +125,7 @@
 
 .pricing-features-item {
 	border-top: 0.0625rem solid #e1f1ff;
-	font-size: 14px;
+	font-size: .875rem;
 	line-height: 1.5;
 	padding: 0.625rem 0;
 	color:#273653;

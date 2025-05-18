@@ -22,6 +22,8 @@ import { FooterComponent } from '../../footer/footer.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
+import { ToastService } from '../../shared/toast.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-home',
@@ -70,7 +72,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private readonly homeService: HomeService,
     private readonly leadFormService: LeadFormService,
-    private readonly loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly toastService:ToastrService
   ) {
   }
 
@@ -218,7 +221,15 @@ export class HomeComponent implements OnInit {
       method: "POST",
       body: formData
     })
-      .then(() => console.log("Form successfully submitted"))
+      .then((res) => {
+        if(!res.ok){
+          this.toastService.error("There were some issues while submitting the detils. Please try later.");
+          return;
+        }
+        this.toastService.success("Thank you for your submission! One of our team members will contact you soon.");
+        console.log("Form successfully submitted")
+
+      })
       .catch(error => alert(error))
       .finally(() => {
         this.isSubmitting = false;

@@ -54,7 +54,7 @@
             <div class="container-xxl">
                 <div class="cta-section row gx-0 justify-content-center">
                     <!-- <img src="/assets/images/brand creation-rafiki.svg" alt="" class="landing-bg-img"> -->
-                    <section class="col-lg-5 d-flex">
+                    <section class="col-12 col-sm-12 col-md-5 d-flex">
                         <div class="cta-text-section">
                             <div class="headings">
                                 <h1 class="main-heading">Protect Your Brand Starting at ₹899 - Register Your Trademark Today!</h1>
@@ -86,7 +86,7 @@
                         
                     </section>
                     
-                    <section class="cta-form-section col-lg-7 animate__animated animate__fadeIn">
+                    <section class="cta-form-section col-12 col-sm-12 col-md-7 animate__animated animate__fadeIn">
                         
                         <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
                         [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement
@@ -155,9 +155,9 @@
         <div class="benefits-section-wrapper">
             <div class="container-xxl">
                 <div class="row">
-                    <section class="benefits-section col-lg-5" [@fadeInOut]="animationState">
+                    <section class="benefits-section col-lg-7 row" [@fadeInOut]="animationState">
                     
-                        <div class="benefit">
+                        <div class="benefit col-12 col-sm-12 col-lg-4">
                             <mat-icon>lock</mat-icon>
                             <div class="content">
                                 <span>
@@ -166,7 +166,7 @@
                                 <span>Secure</span>
                             </div>
                         </div>
-                        <div class="benefit">
+                        <div class="benefit col-12 col-sm-12 col-lg-4">
                             <mat-icon>verified_user</mat-icon>
                             <div class="content">
                                 <span>
@@ -175,7 +175,7 @@
                                 <span>Certified Agent</span>
                             </div>
                         </div>
-                        <div class="benefit">
+                        <div class="benefit col-12 col-sm-12 col-lg-4">
                             <mat-icon>access_time</mat-icon>
                             <div class="content">
                                 <span>

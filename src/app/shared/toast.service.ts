@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 
 export interface Toast {
   message: any;
@@ -14,9 +13,8 @@ export interface Toast {
   providedIn: 'root'
 })
 export class ToastService {
-
+    private messageService: any
   constructor(
-    private messageService: MessageService
   ) { }
 
   showSuccess(message:string) {

@@ -7,12 +7,12 @@ export const routes: Routes = [
     {
         path:"",
         component:HomeComponent,
-        title:"Home"
+        title:"Trademarx"
     },
     {
         path:"home",
         component:HomeComponent,
-        title:"Home"
+        title:"Trademarx"
     },
     {
         path:"privacy-policy",
