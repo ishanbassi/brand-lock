@@ -24,6 +24,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
 import { ToastService } from '../../shared/toast.service';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
+import { Meta } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-home',
@@ -73,7 +76,8 @@ export class HomeComponent implements OnInit {
     private readonly homeService: HomeService,
     private readonly leadFormService: LeadFormService,
     private readonly loadingService: LoadingService,
-    private readonly toastService:ToastrService
+    private readonly toastService:ToastrService,
+    private  readonly title: Title, private readonly meta: Meta
   ) {
   }
 
@@ -102,6 +106,11 @@ export class HomeComponent implements OnInit {
 
     // Check initial scroll position
     this.checkScrollPosition();
+
+    this.title.setTitle('Trademark Registration Services | Trademarx');
+  this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
+  this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
+
   }
 
   @HostListener('window:scroll', [])

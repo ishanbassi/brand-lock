@@ -15,6 +15,11 @@ export const routes: Routes = [
         title:"Trademarx"
     },
     {
+        path:"trademark",
+        component:HomeComponent,
+        title:"Trademarx"
+    },
+    {
         path:"privacy-policy",
         component:PrivacyPolicyComponent,
         title:"Privacy Policy"
