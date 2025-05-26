@@ -26,6 +26,7 @@ import { ToastService } from '../../shared/toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
 import { Meta } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -66,6 +67,12 @@ export class HomeComponent implements OnInit {
   toolbarState: 'visible' | 'hidden' = 'hidden';
   private ctaSection: HTMLElement | null = null;
   private isInitialLoad = true;
+  private utmSource:string = '';
+  private utmMedium:string = '';
+  private utmCampaign: string = '';
+  private utmTerm:string = '';
+  private utmContent:string = '';
+
 
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
@@ -76,8 +83,9 @@ export class HomeComponent implements OnInit {
     private readonly homeService: HomeService,
     private readonly leadFormService: LeadFormService,
     private readonly loadingService: LoadingService,
-    private readonly toastService:ToastrService,
-    private  readonly title: Title, private readonly meta: Meta
+    private readonly toastService: ToastrService,
+    private readonly title: Title, private readonly meta: Meta,
+    private readonly route:ActivatedRoute
   ) {
   }
 
@@ -108,9 +116,16 @@ export class HomeComponent implements OnInit {
     this.checkScrollPosition();
 
     this.title.setTitle('Trademark Registration Services | Trademarx');
-  this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
-  this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
+    this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
+    this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
 
+    this.route.queryParams.subscribe(params => {
+      this.utmSource = params['utm_source'];
+      this.utmMedium = params['utm_medium'];
+      this.utmCampaign = params['utm_campaign'];
+      this.utmTerm = params['utm_term'];
+      this.utmContent = params['utm_content'];
+    })
   }
 
   @HostListener('window:scroll', [])
@@ -196,7 +211,7 @@ export class HomeComponent implements OnInit {
         }
       })
   }
-  
+
   onPlanTypeChange(planType: string) {
     this.ctaForm.get('selectedPackage')?.setValue(planType);
     this.ctaNavForm.get('selectedPackage')?.setValue(planType);
@@ -222,6 +237,12 @@ export class HomeComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('form-name', 'leads');
+    formData.append('utmSource', this.utmSource);
+    formData.append('utmMedium', this.utmMedium);
+    formData.append('utmCampaign', this.utmCampaign);
+    formData.append('utmTerm', this.utmTerm);
+    formData.append('utmContent', this.utmContent);
+
     Object.keys(form).forEach(key => {
       formData.append(key, form[key]);
     });
@@ -231,7 +252,7 @@ export class HomeComponent implements OnInit {
       body: formData
     })
       .then((res) => {
-        if(!res.ok){
+        if (!res.ok) {
           this.toastService.error("There were some issues while submitting the detils. Please try later.");
           return;
         }
