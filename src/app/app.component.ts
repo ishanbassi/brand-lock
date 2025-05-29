@@ -9,5 +9,5 @@ import { NavbarComponent } from './navbar/navbar.component';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'brand-lock';
+  title = 'trademarx';
 }
