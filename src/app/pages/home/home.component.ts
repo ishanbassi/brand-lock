@@ -262,6 +262,7 @@ export class HomeComponent implements OnInit {
       })
       .catch(error => alert(error))
       .finally(() => {
+        formGroup.reset();
         this.isSubmitting = false;
         this.isNavSubmitting = false;
       })
