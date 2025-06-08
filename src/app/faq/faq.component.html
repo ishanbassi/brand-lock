@@ -1,0 +1,17 @@
+<section class="faq-section">
+    <div class="container-xl">
+        <div class="faq-heading">Frequently Asked Questions</div>
+        <mat-accordion multi>
+        <mat-expansion-panel *ngFor="let faq of trademarkFaqs;index as i">
+            <mat-expansion-panel-header>
+            <mat-panel-title>{{i+1}}. {{faq.question}}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>{{faq.answer}}</p>
+            
+        </mat-expansion-panel>
+
+        </mat-accordion>
+
+    </div>
+    
+</section>

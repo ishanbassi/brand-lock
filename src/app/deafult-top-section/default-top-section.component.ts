@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-default-top-section',
@@ -6,12 +6,17 @@ import { Component, Input } from '@angular/core';
   templateUrl: './default-top-section.component.html',
   styleUrl: './default-top-section.component.scss'
 })
-export class DefaultTopSectionComponent {
-
+export class DefaultTopSectionComponent implements OnInit {
+  
   @Input()
   heading = '';
   @Input()
   subHeading = '';
+
+  @Input()
+  backgroundImg = '';
   
+ngOnInit(): void {
+  }
 
 }

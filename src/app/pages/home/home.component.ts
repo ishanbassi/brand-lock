@@ -26,14 +26,16 @@ import { ToastService } from '../../shared/toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
 import { Meta } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
+import { FaqComponent } from '../../faq/faq.component';
+declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
 @Component({
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
     VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, NavbarComponent, FooterComponent,
-    NgxMaskDirective, NgxMaskPipe, MatProgressSpinnerModule, CountUpDirective
+    NgxMaskDirective, NgxMaskPipe, MatProgressSpinnerModule, CountUpDirective, FaqComponent
   ],
   standalone: true,
   templateUrl: './home.component.html',
@@ -85,7 +87,9 @@ export class HomeComponent implements OnInit {
     private readonly loadingService: LoadingService,
     private readonly toastService: ToastrService,
     private readonly title: Title, private readonly meta: Meta,
-    private readonly route:ActivatedRoute
+    private readonly route:ActivatedRoute,
+    private readonly router:Router,
+
   ) {
   }
 
@@ -257,7 +261,8 @@ export class HomeComponent implements OnInit {
           return;
         }
         this.toastService.success("Thank you for your submission! One of our team members will contact you soon.");
-        console.log("Form successfully submitted")
+        console.log("Form successfully submitted");
+        this.trackConversion();
 
       })
       .catch(error => alert(error))
@@ -282,6 +287,14 @@ export class HomeComponent implements OnInit {
     form.get('phoneNumber')?.updateValueAndValidity();
     form.markAllAsTouched();
 
+  }
+
+   trackConversion() {
+     gtag('event', 'conversion', {
+      'send_to': 'AW-17092944103/7IB9CLT_ktYaEOfBxtY_',
+      });
+ 
+    
   }
 
 }

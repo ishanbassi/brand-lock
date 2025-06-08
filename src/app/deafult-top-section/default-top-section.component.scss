@@ -5,6 +5,8 @@
         background-image: url("/assets/images/banner-img.jpg");
         position: relative;
         background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
 
         &::before {
             position: absolute;
@@ -41,8 +43,12 @@
     @media  (max-width:576px) {
         .top-section{
             .content{
+                .sub-heading{
+                    font-size: .8rem;
+                    margin-bottom: .2rem;
+                }
                 .heading{
-                    font-size: 2rem !important;
+                    font-size: 2.2rem !important;
                 }
             }
         }
