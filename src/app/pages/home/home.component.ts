@@ -17,7 +17,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { HomeService } from './home.service';
 import { LeadFormService } from '../../lead/lead-form.service';
 import { NewLead } from '../../lead/lead.model';
-import { LoadingService } from '../../shared/loading.service';
 import { FooterComponent } from '../../footer/footer.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -84,7 +83,6 @@ export class HomeComponent implements OnInit {
   constructor(
     private readonly homeService: HomeService,
     private readonly leadFormService: LeadFormService,
-    private readonly loadingService: LoadingService,
     private readonly toastService: ToastrService,
     private readonly title: Title, private readonly meta: Meta,
     private readonly route:ActivatedRoute,
@@ -153,15 +151,15 @@ export class HomeComponent implements OnInit {
   submit() {
     this.onClickValidation = true;
     this.isSubmitting = true;
-    // this.saveLead(this.ctaForm);
-    this.submitNetlifyForm(this.ctaForm);
+    this.saveLead(this.ctaForm);
+    // this.submitNetlifyForm(this.ctaForm);
   }
 
   navFormsubmit() {
     this.onClickValidation = true;
     this.isNavSubmitting = true;
-    // this.saveLead(this.ctaNavForm);
-    this.submitNetlifyForm(this.ctaNavForm)
+    this.saveLead(this.ctaNavForm);
+    // this.submitNetlifyForm(this.ctaNavForm)
   }
 
   slideConfig = {
@@ -201,14 +199,13 @@ export class HomeComponent implements OnInit {
       this.isNavSubmitting = false;
       return;
     }
-    this.loadingService.show();
     const lead = this.leadFormService.getLead(form) as NewLead;
     this.homeService.saveLead(lead)
       .subscribe({
         next: () => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
-        },
+        },  
         error: () => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;

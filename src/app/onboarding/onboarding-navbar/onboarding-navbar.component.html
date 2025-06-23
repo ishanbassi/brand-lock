@@ -1,0 +1,16 @@
+<mat-toolbar class="app-toolbar">
+  <span class="brand-logo" routerLink="/">Trademarx</span>
+  <div class="navbar-menu-actions d-none d-lg-block">
+    <!-- <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+          [routerLink]="['/about-us']">About Us </a> -->
+  </div>
+    <button mat-icon-button class="mobile-view-menu-icon d-block d-lg-none" aria-label="Menu" (click)="toggle()">
+        <mat-icon class="ham-menu">menu</mat-icon>
+    </button>
+</mat-toolbar>
+<mat-expansion-panel class="mobile-view-menu" [expanded]="panelOpenState" >
+  <div class="mobile-menu-items">
+      <!-- <a class="mobile-menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"  
+      [routerLink]="['/about-us']">About Us</a> -->
+  </div>
+</mat-expansion-panel>

@@ -1,0 +1,41 @@
+<form (ngSubmit)="submit()" [formGroup]="basicDetailsForm" class="nav-form" id="navForm"
+                [ngClass]="{'submitted': onClickValidation}"
+                >
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Full Name" name="fullName" #fullName
+                                formControlName="fullName">
+                                <mat-icon matPrefix>person</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Email" name="email" #email
+                                formControlName="email">
+                                <mat-icon matPrefix>email</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
+                            mask="00000-00000" formControlName="phoneNumber">
+                        </mat-form-field>
+                    </div>
+                    <div class=" form-input-container">
+
+                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                            <input matInput placeholder="City" name="city" #city
+                                formControlName="city">
+                                <mat-icon matPrefix> location_on</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
+                        <span *ngIf="!isSubmitting">Get Started</span>
+                        <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+
+                    </button>
+
+                </form>

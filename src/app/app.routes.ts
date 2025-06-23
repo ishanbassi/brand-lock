@@ -5,6 +5,7 @@ import { TermsConditionsComponent } from './terms-conditions/terms-conditions.co
 import { AboutUsComponent } from './about-us/about-us.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
 import { FaqComponent } from './faq/faq.component';
+import { OnboardingComponent } from './onboarding/onboarding.component';
 
 export const routes: Routes = [
     {
@@ -47,6 +48,13 @@ export const routes: Routes = [
         component:FaqComponent,
         title:"FAQ"
     },
+    {
+        path: 'trademark-registration',
+        component:OnboardingComponent,
+        loadChildren: () => import('./onboarding/onboarding.routes').then(m => m.onboardingRoutes),
+        title:"Trademark Registration"
+    },
+    
     {
         path:"**",
         redirectTo:""
