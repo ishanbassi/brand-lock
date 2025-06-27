@@ -268,11 +268,19 @@ export class HomeComponent implements OnInit {
       .catch(error => alert(error))
       .finally(() => {
 
+        formGroup.reset();
+        this.resetFormValidations(formGroup);
+
         this.isSubmitting = false;
         this.isNavSubmitting = false;
-        setTimeout(() => window.location.reload(), 3000)
       })
       ;
+  }
+  resetFormValidations(formGroup: FormGroup<any>) {
+    Object.keys(formGroup.controls).forEach(controlName => {
+      formGroup.get(controlName)?.clearValidators();
+      formGroup.get(controlName)?.updateValueAndValidity();
+    });
   }
   addValidationsToFormAndValidate(form: FormGroup<any>) {
     form.get('fullName')?.setValidators([Validators.required]);
