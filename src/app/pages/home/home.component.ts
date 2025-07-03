@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
@@ -29,6 +29,9 @@ import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { FaqComponent } from '../../faq/faq.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
+
 
 
 @Component({
@@ -61,7 +64,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   ],
   providers: [provideNgxMask()]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit{
 
   testimonials = TestimonialsList;
   documents = RequiredDocumentsList;
@@ -89,8 +92,15 @@ export class HomeComponent implements OnInit {
     private readonly title: Title, private readonly meta: Meta,
     private readonly route:ActivatedRoute,
     private readonly router:Router,
+    private readonly dialog:MatDialog,
+
 
   ) {
+  }
+  ngAfterViewInit(): void {
+            setTimeout(() => {
+      this.showLimitedOfferDialog();
+    }, 7000)
   }
 
   ctaForm = new FormGroup({
@@ -113,6 +123,8 @@ export class HomeComponent implements OnInit {
       this.animationState = 'visible';
     }, 100);
 
+
+
     // Get the cta-section element
     this.ctaSection = document.querySelector('.cta-section');
 
@@ -130,8 +142,9 @@ export class HomeComponent implements OnInit {
       this.utmTerm = params['utm_term'];
       this.utmContent = params['utm_content'];
     })
+; 
   }
-
+  
   @HostListener('window:scroll', [])
   onWindowScroll() {
     const triggerPoint = 400; // adjust as per your section
@@ -246,6 +259,7 @@ export class HomeComponent implements OnInit {
     formData.append('utmCampaign', this.utmCampaign);
     formData.append('utmTerm', this.utmTerm);
     formData.append('utmContent', this.utmContent);
+    formData.append('purpose', "Trademark Registration")
 
     Object.keys(form).forEach(key => {
       formData.append(key, form[key]);
@@ -304,5 +318,9 @@ export class HomeComponent implements OnInit {
  
     
   }
+  showLimitedOfferDialog() {
+    this.dialog.open(LimitedOfferDialogComponent, {hasBackdrop:true})
+  }
+
 
 }

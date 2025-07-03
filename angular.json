@@ -41,7 +41,9 @@
               "src/styles.scss",
               "node_modules/animate.css/animate.min.css",
               "node_modules/slick-carousel/slick/slick.scss",
-              "node_modules/slick-carousel/slick/slick-theme.scss"
+              "node_modules/slick-carousel/slick/slick-theme.scss",
+              "./node_modules/intl-tel-input/build/css/intlTelInput.css"
+
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -119,7 +121,8 @@
               "src/styles.scss",
               "node_modules/animate.css/animate.min.css",
               "node_modules/slick-carousel/slick/slick.scss",
-              "node_modules/slick-carousel/slick/slick-theme.scss"
+              "node_modules/slick-carousel/slick/slick-theme.scss",
+              "./node_modules/intl-tel-input/build/css/intlTelInput.css"
 
             ],
             "scripts": [
