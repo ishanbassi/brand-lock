@@ -9,6 +9,7 @@ import { NgxIntlTelInputModule ,SearchCountryField, CountryISO, PhoneNumberForma
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialogClose, MatDialogContent } from '@angular/material/dialog';
+import { DialogRef } from '@angular/cdk/dialog';
 
 export interface TimeInterface{
   secondsToDday: number;
@@ -42,7 +43,10 @@ export class LimitedOfferDialogComponent implements OnDestroy {
   // 20 minutes from now
   private readonly endDay = new Date(Date.now() +  (20 * 60 * 1000) + (33 * 1000));
 
-  constructor(private toastService:ToastrService){
+  constructor(
+    private toastService:ToastrService,
+    private dialogRef:DialogRef<LimitedOfferDialogComponent>
+  ){
     this.timeLeft$ = interval(1000).pipe(
       map(x => this.calculateDiff()),
       takeUntil(this.destroy$),
@@ -111,7 +115,10 @@ export class LimitedOfferDialogComponent implements OnDestroy {
 
       })
       .catch(error => alert(error))
-      .finally(() => this.isSubmitting=false)
+      .finally(() => {
+        this.isSubmitting=false;
+        this.dialogRef.close();
+      })
   }
 
 
