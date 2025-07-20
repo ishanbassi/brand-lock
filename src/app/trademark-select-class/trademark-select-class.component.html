@@ -1,0 +1,47 @@
+<section class="select-class-section">
+  <div class="container-xxl">
+    <div class="row">
+      <div class="col col-12 col-sm-12 col-lg-7">
+        <form>
+          <label class="mat-body-1" style="font-weight: 600;">
+            <span style="color: red;">*</span> Do you know the classifications that your trademark will need?
+          </label>
+          <div class="mat-caption" style="margin-bottom: 8px;">
+            Trademark classifications are used by governments to categorize brands based on how they are used.
+          </div>
+          <mat-radio-group [(ngModel)]="classificationChoice" name="classificationChoice" style="display: flex; gap: 16px; margin-bottom: 24px;">
+            <mat-radio-button value="pick">Yes, I will pick them myself</mat-radio-button>
+            <mat-radio-button value="auto">No, pick them for me</mat-radio-button>
+          </mat-radio-group>
+
+          <mat-tab-group>
+            <mat-tab label="Find appropriate class">
+              <div style="margin: 16px 0 8px 0; font-weight: 500;">
+                Enter products or services you will sell using your trademark <span class="mat-caption">(i.e.: shirt, coffee, restaurant, retail store).</span>
+              </div>
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>Search Products/Services</mat-label>
+                <input matInput [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search Products/Services">
+                <button mat-icon-button matSuffix tabindex="-1">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </mat-form-field>
+              <mat-selection-list [(ngModel)]="selectedItems" name="selectedItems">
+                <mat-list-option *ngFor="let item of filteredItems()" [value]="item">
+                  {{ item }}
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-tab>
+            <mat-tab label="Select by class code">
+              <!-- Placeholder for class code selection -->
+              <div style="margin: 16px 0;">Class code selection coming soon...</div>
+            </mat-tab>
+          </mat-tab-group>
+        </form>
+      </div>
+      <div class="col col-12 col-sm-12 col-lg-5">
+        <!-- Right column left empty for now -->
+      </div>
+    </div>
+  </div>
+</section>

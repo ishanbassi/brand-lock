@@ -35,21 +35,7 @@
                 [ngClass]="{'submitted': onClickValidation}"
                 >
                 <div class="form-group">
-                        <ngx-intl-tel-input
-                             [cssClass]="'custom-test'"
-                                [enableAutoCountrySelect]="true"
-                                [onlyCountries]="[CountryISO.India]"
-                                [searchCountryFlag]="false"
-                                [enablePlaceholder]="true"
-                                [selectFirstCountry]="false"
-                                [selectedCountryISO]="CountryISO.India"
-                                [maxLength]="10"
-                                [phoneValidation]="true"
-                                [numberFormat]="PhoneNumberFormat.National"
-                                name="phone"
-                                customPlaceholder="Enter Your Phone Number"
-                                formControlName="phoneNumber">
-                        </ngx-intl-tel-input>
+                        <app-phone-input [control]="limitedOfferForm.controls['phoneNumber']"></app-phone-input>
             </div>
             </form>
             

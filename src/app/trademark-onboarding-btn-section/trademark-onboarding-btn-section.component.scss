@@ -1,0 +1,23 @@
+.btn-section{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6.25rem;
+    .previous-btn{
+        background-color: transparent;
+        color:#696969;
+        box-shadow: none;
+    }
+    .next-btn{
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        gap: 15px;
+    }
+}
+
+@media screen and (max-width:36rem) {
+    .btn-section{
+        margin-top: 0 !important;
+    }
+}

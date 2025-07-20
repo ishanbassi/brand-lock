@@ -37,7 +37,7 @@ import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
     VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, NavbarComponent, FooterComponent,
-    NgxMaskDirective, NgxMaskPipe, MatProgressSpinnerModule, CountUpDirective, FaqComponent
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent
   ],
   standalone: true,
   templateUrl: './home.component.html',

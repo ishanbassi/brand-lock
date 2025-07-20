@@ -1,41 +1,70 @@
-<form (ngSubmit)="submit()" [formGroup]="basicDetailsForm" class="nav-form" id="navForm"
-                [ngClass]="{'submitted': onClickValidation}"
-                >
-                    <div class=" form-input-container">
-
-                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                            <input matInput placeholder="Full Name" name="fullName" #fullName
-                                formControlName="fullName">
-                                <mat-icon matPrefix>person</mat-icon>
-                        </mat-form-field>
+<section class="basic-details-section">
+    
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col col-12 col-sm-12 col-lg-7">
+                <section>
+                    <div class="basic-details-content">
+                        <h1>Tell us something about yourself</h1>
+                        <p>Details about your name, phone number</p>
                     </div>
-                    <div class=" form-input-container">
+                </section>
+                <section class="form-section">
+                    <form (ngSubmit)="submit()" [formGroup]="basicDetailsForm" class="nav-form" id="navForm"
+                        [ngClass]="{'submitted': onClickValidation}"
+                        >
+                        <div class="row">
+                            <div class="col-12 col-sm-12 col-md-6">
+                                <div class=" form-input-container  mat-density-3">
+                                <label for="fullName">Full Name</label>
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <input matInput placeholder="Enter full name" name="fullName" #fullName
+                                        formControlName="fullName">
+                                        <mat-icon matPrefix>person</mat-icon>
+                                </mat-form-field>
+                            </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-6">
+                                <div class=" form-input-container mat-density-3">
+                                <label for="email">Email</label>
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <input matInput placeholder="Enter email" name="email" #email
+                                        formControlName="email">
+                                        <mat-icon matPrefix>email</mat-icon>
+                                </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-6">
+                                        <div class=" form-input-container mat-density-3">
+                                <label for="phoneNumber">Phone number</label>
+                                <app-phone-input [control]="basicDetailsForm.controls['phoneNumber']"></app-phone-input>
+                            </div>
+                            </div>
+                            
+                            <div class="col-12 col-sm-12 col-md-6">
+                                    <div class=" form-input-container mat-density-3">
+                                <label for="city">City</label>
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <input matInput placeholder="Enter city name" name="city" #city
+                                        formControlName="city">
+                                        <mat-icon matPrefix> location_on</mat-icon>
+                                </mat-form-field>
+                            </div>
+                            </div>
+                            
+                        </div>
+                            
+        
+                        </form>
+                        <app-trademark-onboarding-btn-section 
+                        (skipEvent)="skip()"
+                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
+            </section>
+            </div>
+            <div class="col col-12 col-sm-12 col-lg-5"></div>
 
-                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                            <input matInput placeholder="Email" name="email" #email
-                                formControlName="email">
-                                <mat-icon matPrefix>email</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div class=" form-input-container">
+        </div>
+    </div>
 
-                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                            <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
-                            mask="00000-00000" formControlName="phoneNumber">
-                        </mat-form-field>
-                    </div>
-                    <div class=" form-input-container">
-
-                        <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                            <input matInput placeholder="City" name="city" #city
-                                formControlName="city">
-                                <mat-icon matPrefix> location_on</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
-                        <span *ngIf="!isSubmitting">Get Started</span>
-                        <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
-
-                    </button>
-
-                </form>
+ 
+</section>

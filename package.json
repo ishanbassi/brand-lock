@@ -30,6 +30,7 @@
     "intl-tel-input": "^19.5.7",
     "jquery": "^3.7.1",
     "ngx-bootstrap": "^19.0.2",
+    "ngx-file-drop": "^16.0.0",
     "ngx-intl-tel-input": "^17.0.0",
     "ngx-mask": "^19.0.6",
     "ngx-slick-carousel": "^19.0.0",

@@ -1,0 +1,54 @@
+::ng-deep{
+    body{
+        padding-top: 0;
+    }
+    .mat-drawer{
+        min-height: 100vh;
+        background-color: #338bdf !important;
+        position: fixed !important;
+        width: 300px !important;
+        background-image: url("/assets/images/wave.svg");
+        box-shadow: 0 2px 5px #00000008;
+        background-repeat: no-repeat;
+        background-position: bottom;
+    }
+    .mat-drawer-content{
+        min-height: 100vh;
+        overflow: visible !important;
+        background-color: #f4f6f8;
+
+    }
+}
+
+.onboarding-mat-drawer{
+    padding: 40px ;
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+    .sidenav-logo{
+        margin-bottom: 80px;
+    }
+    .sidenav-content{
+        color:#fff;
+        h1{
+            font-weight: 500;
+            font-size: 1.625rem;
+        }
+        h4{
+            font-weight: 200;
+            margin-bottom: .3125rem;
+            font-size: .875rem;
+        }
+    }
+}
+.onboarding-drawer-content{
+    padding: 40px;
+    .contact-us-section{
+        text-align: right;
+        margin-bottom: 40px;
+    }
+}
+
+@media screen and (max-width:576px) {
+    .onboarding-drawer-content{
+        padding:20px;
+    }
+}

@@ -1,0 +1,102 @@
+<section class="trademark-type-section">
+
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col col-12 col-sm-12 col-lg-7">
+                <section>
+                    <div class="trademark-type-heading-content">
+                        <h1>What would you like to protect ? </h1>
+                        <p>Select what you are trying to protect</p>
+                    </div>
+                </section>
+                <section>
+                    <div class="radio-wrapper-section">
+                        <label class="radio-wrapper">
+                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="brand-name"/>
+                            <span class="radio-tile">
+            
+                                <!--  <span class="radio-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor"
+                                        viewBox="0 0 256 256">
+                                        <rect width="256" height="256" fill="none"></rect>
+                                        <polygon points="72 40 184 40 240 104 128 224 16 104 72 40" fill="none"
+                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="12">
+                                        </polygon>
+                                        <polygon points="177.091 104 128 224 78.909 104 128 40 177.091 104" fill="none"
+                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="12">
+                                        </polygon>
+                                        <line x1="16" y1="104" x2="240" y2="104" fill="none" stroke="currentColor"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></line>
+                                    </svg> 
+                                </span> -->
+                                <div class="radio-label">
+                                    <h1>Brand Name</h1>
+                                    <p>Business name identifying your brand</p>
+                                </div>
+                                <span class="radio-icon">
+                                    <img src="/assets/images/nike-wordmark.svg" alt="">
+                                </span>
+                                
+                                
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-wrapper-section">
+                        <label class="radio-wrapper">
+                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="brand-logo"/>
+                            <span class="radio-tile">
+                                <div class="radio-label">
+                                    <h1>Brand Logo</h1>
+                                    <p>Graphic symbol or design that identifies your brand</p>
+                                </div>
+                                <span class="radio-icon">
+                                    <img src="/assets/images/nike-logo.svg" alt="">
+                                </span>
+                                
+                                
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-wrapper-section">
+                        <label class="radio-wrapper">
+                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="brand-name-logo"/>
+                            <span class="radio-tile">
+                                <div class="radio-label">
+                                    <h1>Brand name + Logo</h1>
+                                    <p>Business name and graphic design that identifies your brand</p>
+                                </div>
+                                <span class="radio-icon">
+                                    <img src="/assets/images/nike-logo-text.svg" alt="">
+                                </span>
+                                
+                                
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-wrapper-section">
+                        <label class="radio-wrapper">
+                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="slogan"/>
+                            <span class="radio-tile">
+                                <div class="radio-label">
+                                    <h1>Slogan</h1>
+                                    <p>Your brand's catchphrase or tagline</p>
+                                </div>
+                                <span class="radio-icon">
+                                    <img src="/assets/images/nike-slogan.svg" alt="">
+                                </span>
+                                
+                                
+                            </span>
+                        </label>
+                    </div>
+                </section>
+                <app-trademark-onboarding-btn-section
+                (skipEvent)="skip()"
+                [showSkipBtn]="false"
+                 [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
+            </div>
+            <div class="col col-12 col-sm-12 col-lg-5"></div>
+        </div>
+    </div>
+
+</section>

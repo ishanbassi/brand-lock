@@ -120,4 +120,12 @@ body { margin: 0}
     }
 }
 
+.mat-density-2 {
+  @include mat.all-component-densities(-2);
+}
+
+.mat-density-3 {
+  @include mat.all-component-densities(-3);
+}
+
 

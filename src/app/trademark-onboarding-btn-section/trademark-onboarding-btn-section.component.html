@@ -1,0 +1,10 @@
+<section class="btn-section">
+    <button *ngIf="showSkipBtn" mat-raised-button (click)="skip()" class="previous-btn">SKIP</button>
+    <button *ngIf="showNextBtn" mat-raised-button type="submit" color="primary" class="next-btn"
+    [disabled]="isSubmitting" (click)="submit()"
+    >
+        <span>NEXT</span>
+        <mat-icon>arrow_right_alt</mat-icon>
+
+    </button>
+</section>

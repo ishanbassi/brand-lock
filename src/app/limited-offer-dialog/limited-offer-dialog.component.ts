@@ -1,15 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { interval, map, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
 import { SharedModule } from '../shared/shared.module';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { MatFormField, MatInputModule } from '@angular/material/input';
-import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
-import { NgxIntlTelInputModule ,SearchCountryField, CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
+import {MatInputModule } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialogClose, MatDialogContent } from '@angular/material/dialog';
 import { DialogRef } from '@angular/cdk/dialog';
+import { PhoneInputComponent } from '../phone-input/phone-input.component';
 
 export interface TimeInterface{
   secondsToDday: number;
@@ -20,16 +19,12 @@ export interface TimeInterface{
 
 @Component({
   selector: 'app-limited-offer-dialog',
-  imports: [SharedModule, MatFormField, ReactiveFormsModule ,MatInputModule,NgxIntlTelInputModule,MatButton,MatIcon,MatDialogClose,MatDialogContent],
+  imports: [SharedModule, ReactiveFormsModule ,MatInputModule,MatButton,MatIcon,MatDialogClose,MatDialogContent,PhoneInputComponent],
   templateUrl: './limited-offer-dialog.component.html',
   styleUrl: './limited-offer-dialog.component.scss'
 })
 export class LimitedOfferDialogComponent implements OnDestroy {
   onClickValidation: boolean = false;
-  SearchCountryField = SearchCountryField;
-	CountryISO = CountryISO;
-  PhoneNumberFormat = PhoneNumberFormat;
-	preferredCountries: CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   isSubmitting = false;
   public timeLeft$:Observable<TimeInterface>;
   private readonly destroy$ = new Subject<void>();

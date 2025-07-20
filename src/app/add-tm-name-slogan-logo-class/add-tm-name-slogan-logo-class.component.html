@@ -1,0 +1,49 @@
+<section class="add-tm-name-slogan-logo-class-section">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col col-12 col-sm-12 col-lg-7">
+                <section>
+                    <div class="add-tm-name-slogan-logo-class-heading-content">
+                        <h1>Brand Details</h1>
+                        <p>Details about your trademark</p>
+                    </div>
+                </section>
+                <section class="form-section">
+                    <form (ngSubmit)="submit()" [formGroup]="trademarkDetailsForm"
+                            [ngClass]="{'submitted': onClickValidation}"
+                            >
+                            <div class=" form-input-container  mat-density-3">
+                                <label for="trademark">Enter your brand name you want to protect:</label>
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <input matInput placeholder="Enter brand name" name="trademark" #trademark
+                                        formControlName="trademark">
+                                </mat-form-field>
+                            </div>
+                            <div class="form-input-container">
+                                <div class="upload-logo-section">
+                                    <label for="trademarkLogo">Upload the logo you want to trademark:
+                                    </label>
+                                    <div>
+                                    <input type="file" name="trademarkLogo"  accept=".png, .jpg, .jpeg, .svg" (change)="onFileSelected($event)">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class=" form-input-container mat-density-3 ">
+                                <label for="trademarkSlogan">Enter the slogan you want to protect:</label>
+                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                    <input matInput placeholder="Enter slogan name" name="trademarkSlogan" #trademarkSlogan
+                                        formControlName="trademarkSlogan">
+                                </mat-form-field>
+                            </div>
+                        </form>
+                        <app-trademark-onboarding-btn-section [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
+                        
+                </section>
+            </div>
+            <div class="col col-12 col-sm-12  col-lg-5"></div>
+
+        </div>
+    </div>
+    
+</section>
