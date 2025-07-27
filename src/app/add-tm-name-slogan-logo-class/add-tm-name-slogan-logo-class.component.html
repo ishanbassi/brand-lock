@@ -12,32 +12,44 @@
                     <form (ngSubmit)="submit()" [formGroup]="trademarkDetailsForm"
                             [ngClass]="{'submitted': onClickValidation}"
                             >
-                            <div class=" form-input-container  mat-density-3">
+                            <div class=" form-input-container  mat-density-3" *ngIf="trademarkType === 'brand-name' || trademarkType === 'brand-name-logo' || trademarkType=='all'">
                                 <label for="trademark">Enter your brand name you want to protect:</label>
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
                                     <input matInput placeholder="Enter brand name" name="trademark" #trademark
-                                        formControlName="trademark">
+                                        formControlName="trademark" required>
+                                    <mat-error *ngIf="trademarkDetailsForm.get('trademark')?.hasError('required') && onClickValidation">
+                                        Brand name is required
+                                    </mat-error>
                                 </mat-form-field>
                             </div>
-                            <div class="form-input-container">
+                            <div class="form-input-container" *ngIf="trademarkType === 'brand-logo' || trademarkType === 'brand-name-logo' || trademarkType=='all'">
                                 <div class="upload-logo-section">
                                     <label for="trademarkLogo">Upload the logo you want to trademark:
                                     </label>
                                     <div>
-                                    <input type="file" name="trademarkLogo"  accept=".png, .jpg, .jpeg, .svg" (change)="onFileSelected($event)">
+                                    <input type="file" name="trademarkLogo"  accept=".png, .jpg, .jpeg, .svg" (change)="onFileSelected($event)" required>
+                                    <div class="text-danger" *ngIf="trademarkDetailsForm.get('trademarkLogo')?.hasError('required') && onClickValidation">
+                                        Logo is required
+                                    </div>
                                     </div>
                                 </div>
 
                             </div>
-                            <div class=" form-input-container mat-density-3 ">
+                            <div class=" form-input-container mat-density-3 " *ngIf="trademarkType === 'slogan' || trademarkType=='all'">
                                 <label for="trademarkSlogan">Enter the slogan you want to protect:</label>
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
                                     <input matInput placeholder="Enter slogan name" name="trademarkSlogan" #trademarkSlogan
-                                        formControlName="trademarkSlogan">
+                                        formControlName="trademarkSlogan" required>
+                                    <mat-error *ngIf="trademarkDetailsForm.get('trademarkSlogan')?.hasError('required') && onClickValidation">
+                                        Slogan is required
+                                    </mat-error>
                                 </mat-form-field>
                             </div>
                         </form>
-                        <app-trademark-onboarding-btn-section [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
+                        <app-trademark-onboarding-btn-section
+                        [showSkipBtn]="true"
+                        (skipEvent)="skip()" 
+                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
                         
                 </section>
             </div>

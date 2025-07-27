@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './add-trademark-type.component.scss'
 })
 export class AddTrademarkTypeComponent {
+
   trademarkType = "brand-name";
   constructor(
     private readonly router:Router
@@ -22,10 +23,14 @@ export class AddTrademarkTypeComponent {
 
   submit() {
     console.log(this.trademarkType)
+    this.router.navigate(['trademark-registration/step-3'], { queryParams: { trademarkType: this.trademarkType } });
+
     }
 
-    skip(){
-      this.router.navigateByUrl("trademark-registration/step-3")
-    }
+  skip() {
+    this.router.navigate(['trademark-registration/step-3'], { queryParams: { trademarkType: "all" } });
+
+  }
+
 
 }

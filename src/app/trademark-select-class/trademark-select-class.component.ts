@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormsModule } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { debounceTime, switchMap, map, startWith } from 'rxjs/operators';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { SharedModule } from '../shared/shared.module';
+import { DataService } from '../shared/data.service';
+import { LoadingService } from '../common/loading.service';
 
 @Component({
   selector: 'app-trademark-select-class',
@@ -26,9 +30,9 @@ import { SharedModule } from '../shared/shared.module';
   templateUrl: './trademark-select-class.component.html',
   styleUrl: './trademark-select-class.component.scss'
 })
-export class TrademarkSelectClassComponent {
-  classificationChoice: string = 'pick';
-  searchTerm: string = '';
+export class TrademarkSelectClassComponent implements OnInit {
+  inputControl = new FormControl('');
+  filteredItems$?: Observable<string[]>;
   selectedItems: string[] = [];
 
   // Mock data for products/services
@@ -50,9 +54,35 @@ export class TrademarkSelectClassComponent {
     'Legal Services'
   ];
 
-  filteredItems(): string[] {
-    const term = this.searchTerm.trim().toLowerCase();
-    if (!term) return this.items;
-    return this.items.filter(item => item.toLowerCase().includes(term));
+  constructor(
+    private readonly dataService: DataService,
+    private readonly loadingService:LoadingService
+  ) {}
+
+  ngOnInit() {
+    this.filteredItems$ = this.inputControl.valueChanges.pipe(
+      startWith(""),
+      debounceTime(300),
+      switchMap(value => this.fetchItems(value)),
+      map(items => items.filter(item => !this.selectedItems.includes(item)))
+    );
+  }
+
+  fetchItems(query: string|null): Observable<string[]> {
+    if (!query) {
+      return of([]);
+    }
+    return this.trademarkClassService.fetchItems(query); // Should return Observable<string[]>
+  }
+
+  addItem(item: string) {
+    if (!this.selectedItems.includes(item)) {
+      this.selectedItems.push(item);
+      this.inputControl.setValue('');
+    }
+  }
+
+  removeItem(item: string) {
+    this.selectedItems = this.selectedItems.filter(i => i !== item);
   }
 }

@@ -1,0 +1,14 @@
+<div class="payment-container">
+  <h2>Make Payment</h2>
+  <form #paymentForm="ngForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Amount (INR)</mat-label>
+      <input matInput type="number" name="amount" [(ngModel)]="amount" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Order ID</mat-label>
+      <input matInput type="text" name="orderId" [(ngModel)]="orderId" required>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="payWithRazorpay(orderId, amount)" [disabled]="!amount || !orderId">Pay with Razorpay</button>
+  </form>
+</div>
