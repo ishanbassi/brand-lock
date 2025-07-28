@@ -98,9 +98,6 @@ export class HomeComponent implements OnInit, AfterViewInit{
   ) {
   }
   ngAfterViewInit(): void {
-            setTimeout(() => {
-      this.showLimitedOfferDialog();
-    }, 7000)
   }
 
   ctaForm = new FormGroup({
