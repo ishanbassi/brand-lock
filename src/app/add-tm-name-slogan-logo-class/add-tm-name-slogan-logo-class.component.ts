@@ -6,6 +6,10 @@ import { MatIcon } from '@angular/material/icon';
 import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TrademarkType, TrademarkTypeList } from '../enumerations/trademark-type.model';
+import { TrademarkService } from '../shared/services/trademark.service';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { ITrademark } from '../../models/trademark.model';
 
 
 
@@ -21,7 +25,8 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
-  public trademarkType: string | null = null;
+  TrademarkTypeEnum  = TrademarkType;
+  trademark?:ITrademark;
 
   trademarkDetailsForm = new FormGroup({
     trademark: new FormControl<string | null>('', []), // will add Validators.required conditionally
@@ -33,28 +38,30 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly router:Router
+    private readonly router:Router,
+    private readonly trademarkService: TrademarkService,
+    private readonly localStorageService: LocalStorageService,
     ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.trademarkType = params['trademarkType'] || "all";
-      if(!["brand-name", "brand-name-logo", "brand-logo","slogan", "all"].some(type => this.trademarkType == type)){
-        this.trademarkType = "all"
-      }
+    this.trademark =  this.localStorageService.getObject('trademark');
+    if(!this.trademark){
+      this.router.navigate(['trademark-registration/step-2']);
+    }
+    
       // Set validators based on type
       const controls = this.trademarkDetailsForm.controls;
-      if (this.trademarkType === 'brand-name' || this.trademarkType === 'brand-name-logo' || this.trademarkType === 'all') {
+      if (this.trademark?.type === TrademarkType.TRADEMARK || this.trademark?.type === TrademarkType.TRADEMARK_WITH_IMAGE || this.trademark?.type === TrademarkType.ALL) {
         controls['trademark'].setValidators([Validators.required]);
       } else {
         controls['trademark'].clearValidators();
       }
-      if (this.trademarkType === 'brand-logo' || this.trademarkType === 'brand-name-logo' || this.trademarkType === 'all') {
+      if (this.trademark?.type === TrademarkType.IMAGEMARK || this.trademark?.type === TrademarkType.TRADEMARK_WITH_IMAGE|| this.trademark?.type === TrademarkType.ALL) {
         controls['trademarkLogo'].setValidators([Validators.required]);
       } else {
         controls['trademarkLogo'].clearValidators();
       }
-      if (this.trademarkType === 'slogan' || this.trademarkType === 'all') {
+      if (this.trademark?.type === TrademarkType.SLOGAN|| this.trademark?.type === TrademarkType.ALL) {
         controls['trademarkSlogan'].setValidators([Validators.required]);
       } else {
         controls['trademarkSlogan'].clearValidators();
@@ -62,17 +69,17 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
       controls['trademark'].updateValueAndValidity();
       controls['trademarkLogo'].updateValueAndValidity();
       controls['trademarkSlogan'].updateValueAndValidity();
-    });
   }
 
   submit() {
     this.onClickValidation = true;
+    this.isSubmitting = true;
     this.trademarkDetailsForm.markAllAsTouched();
     if (this.trademarkDetailsForm.invalid) {
-      console.log(this.trademarkDetailsForm.get('trademark')?.hasError("required") && this.onClickValidation)
       return;
     }
-    this.isSubmitting = true;
+    const trademarkData = this.trademarkDetailsForm.value;
+    this.trademarkService.partialUpdate()
     const formValue = this.trademarkDetailsForm.value;
     const formData = new FormData();
     formData.append('trademark', formValue.trademark || '');

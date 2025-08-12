@@ -1,8 +1,19 @@
 ::ng-deep{
     mat-form-field{
         background-color: #fff !important;
+        width: 100%;
+        textarea{
+            resize: none !important;
+        }
     }
     .mat-mdc-form-field-subscript-wrapper {
         display: none;
     }
+}
+.select-class-section{
+    background: #fff;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    box-shadow: 0rem .125rem .25rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.25rem;
 }

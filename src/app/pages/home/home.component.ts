@@ -15,8 +15,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HomeService } from './home.service';
-import { LeadFormService } from '../../lead/lead-form.service';
-import { NewLead } from '../../lead/lead.model';
+import { LeadFormService } from '../../../models/lead-form.service';
+import { NewLead } from '../../../models/lead.model';
 import { FooterComponent } from '../../footer/footer.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -30,6 +30,9 @@ import { FaqComponent } from '../../faq/faq.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
+import { LocalStorageService } from '../../shared/services/local-storage.service';
+import { LoadingService } from '../../common/loading.service';
+import { LeadService } from '../../shared/services/lead.service';
 
 
 
@@ -91,6 +94,9 @@ export class HomeComponent implements OnInit, AfterViewInit{
     private readonly route:ActivatedRoute,
     private readonly router:Router,
     private readonly dialog:MatDialog,
+    private readonly loadingService:LoadingService,
+    private readonly leadService: LeadService,
+    private readonly localStorageService: LocalStorageService
 
 
   ) {
@@ -213,17 +219,18 @@ export class HomeComponent implements OnInit, AfterViewInit{
       return;
     }
     const lead = this.leadFormService.getLead(form) as NewLead;
-    this.homeService.saveLead(lead)
-      .subscribe({
-        next: () => {
+    this.leadService.create(lead).subscribe({
+      next: () => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
+          this.localStorageService.setObject('lead', lead);
+          this.router.navigateByUrl("trademark-registration/step-2");
         },  
         error: () => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
         }
-      })
+    });
   }
 
   onPlanTypeChange(planType: string) {

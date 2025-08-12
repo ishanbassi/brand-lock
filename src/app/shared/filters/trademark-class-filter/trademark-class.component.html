@@ -1,0 +1,18 @@
+<!-- <div class="household-filter margin-left-10">
+    <input id="typeahead-http" type="text" class="form-control household-filter-input" [class.is-invalid]="searchFailed"
+      [(ngModel)]="searchText" [ngbTypeahead]="search" #searchElement [resultFormatter]="formatter"
+      [inputFormatter]="formatter" placeholder="Search products/services" (selectItem)="onTrademarkClassSelection($event)" />
+  </div> -->
+  <form>
+    <mat-form-field appearance="outline">
+      <mat-label>Search Classes</mat-label>
+      <input type="text" matInput name="class-description" [formControl]="searchControl" placeholder="e.g., marketing, software">
+    </mat-form-field>
+    
+    <mat-selection-list multiple>
+      <mat-list-option color="primary" *ngFor="let item of filteredClasses" [value]="item" checkboxPosition="before">
+        <b>Class {{ item.tmClass }}</b> – {{ item.keyword }}
+      </mat-list-option>
+    </mat-selection-list>
+  </form>
+  

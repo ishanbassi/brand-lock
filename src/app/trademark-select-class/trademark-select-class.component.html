@@ -1,7 +1,7 @@
-<section class="select-class-section">
+<section class="select-class-body">
   <div class="container-xxl">
     <div class="row">
-      <div class="col col-12 col-sm-12 col-lg-7">
+      <div class="col col-12 col-sm-12 col-lg-8 select-class-section">
         <form>
           <label class="mat-body-1" style="font-weight: 600;">
             <span style="color: red;">*</span> Do you know the classifications that your trademark will need?
@@ -9,51 +9,33 @@
           <div class="mat-caption" style="margin-bottom: 8px;">
             Trademark classifications are used by governments to categorize brands based on how they are used.
           </div>
-          <mat-radio-group [(ngModel)]="classificationChoice" name="classificationChoice" style="display: flex; gap: 16px; margin-bottom: 24px;">
+          <mat-radio-group [(ngModel)]="classificationChoice" name="classificationChoice" style="display: flex; gap: 16px; margin-bottom: 24px;" color="primary">
             <mat-radio-button value="pick">Yes, I will pick them myself</mat-radio-button>
             <mat-radio-button value="auto">No, pick them for me</mat-radio-button>
           </mat-radio-group>
 
-          <mat-tab-group>
-            <mat-tab label="Find appropriate class">
-              <div style="margin: 16px 0 8px 0; font-weight: 500;">
+          <div *ngIf="classificationChoice === 'pick'; else autoBlock">
+             <div style="margin: 16px 0 8px 0; font-weight: 500;">
                 Enter products or services you will sell using your trademark <span class="mat-caption">(i.e.: shirt, coffee, restaurant, retail store).</span>
               </div>
-              <mat-form-field class="w-100">
-                <input
-                  type="text"
-                  matInput
-                  placeholder="Type to search"
-                  [formControl]="inputControl"
-                  [matAutocomplete]="auto"
-                >
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addItem($event.option.value)">
-                  <mat-option *ngFor="let item of filteredItems$ | async" [value]="item">
-                    {{ item }}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>
+              <app-trademark-class (onChange)="onClassSelection($event)"
+          [filterChanges]="filterChanges"></app-trademark-class>
 
-              <div *ngIf="selectedItems.length > 0">
-                <h4>Selected Items:</h4>
-                <mat-chip-list>
-                  <mat-chip *ngFor="let item of selectedItems" (removed)="removeItem(item)">
-                    {{ item }}
-                    <button matChipRemove>
-                      <mat-icon>cancel</mat-icon>
-                    </button>
-                  </mat-chip>
-                </mat-chip-list>
-              </div>
-            </mat-tab>
-            <mat-tab label="Select by class code">
-              <!-- Placeholder for class code selection -->
-              <div style="margin: 16px 0;">Class code selection coming soon...</div>
-            </mat-tab>
-          </mat-tab-group>
+             
+          </div>
+          <ng-template #autoBlock>
+              <label for="productServiceDescription">Briefly describe your product or service</label>
+            <mat-form-field>
+              <textarea matInput id="productServiceDescription" required placeholder="e.g., marketing, software, textile"></textarea>
+            </mat-form-field>
+          </ng-template>
         </form>
+        <app-trademark-onboarding-btn-section 
+                        (skipEvent)="skip()"
+                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
       </div>
-      <div class="col col-12 col-sm-12 col-lg-5">
+      
+      <div class="col col-12 col-sm-12 col-lg-4">
         <!-- Right column left empty for now -->
       </div>
     </div>

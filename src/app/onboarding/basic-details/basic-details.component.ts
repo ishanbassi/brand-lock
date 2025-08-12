@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,15 +8,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SharedModule } from '../../shared/shared.module';
-import { NewLead } from '../../lead/lead.model';
+import { NewLead } from '../../../models/lead.model';
 import { HomeService } from '../../pages/home/home.service';
-import { LeadFormService } from '../../lead/lead-form.service';
+import { LeadFormService } from '../../../models/lead-form.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { PhoneInputComponent } from '../../phone-input/phone-input.component';
 import { LoadingService } from '../../common/loading.service';
 import { ToastService } from '../../shared/toast.service';
 import { Router } from '@angular/router';
 import { TrademarkOnboardingBtnSectionComponent } from '../../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
+import { LeadService } from '../../shared/services/lead.service';
+import { LocalStorageService } from '../../shared/services/local-storage.service';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -29,7 +31,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   templateUrl: './basic-details.component.html',
   styleUrl: './basic-details.component.scss'
 })
-export class BasicDetailsComponent {
+export class BasicDetailsComponent implements OnInit {
 
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
@@ -46,9 +48,23 @@ export class BasicDetailsComponent {
       private readonly leadFormService: LeadFormService,
       private loadingService:LoadingService,
       private toastService:ToastService,
-      private router:Router
+      private router:Router,
+      private readonly leadService: LeadService,
+      private readonly localStorageService: LocalStorageService
        
   ){}
+
+  ngOnInit(): void {
+    const lead = this.localStorageService.getObject('lead');
+    if(lead){
+      this.basicDetailsForm.patchValue({
+        fullName: lead.fullName,
+        city: lead.city,
+        email: lead.email,
+        phoneNumber: lead.phoneNumber
+      })
+    } 
+  }
 
   submit() {
     this.onClickValidation = true;
@@ -69,11 +85,12 @@ export class BasicDetailsComponent {
       })
       const lead = this.leadFormService.getLead(form) as NewLead;
       this.loadingService.show();
-      this.homeService.saveLead(lead)
+      this.leadService.create(lead)
         .subscribe({
           next: () => {
             this.isSubmitting = false;
             this.loadingService.hide();
+            this.localStorageService.setObject('lead', lead);
             this.router.navigateByUrl("trademark-registration/step-2")
 
           },  

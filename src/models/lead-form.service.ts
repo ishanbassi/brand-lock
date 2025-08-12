@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
 import { ILead, NewLead } from './lead.model';
-import { DATE_TIME_FORMAT } from '../config/input.constants';
+import { DATE_TIME_FORMAT } from '../app/config/input.constants';
 
 /**
  * A partial Type with required key is used as form input.

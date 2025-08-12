@@ -1,0 +1,11 @@
+export enum LeadStatus {
+  CONVERTED = 'CONVERTED',
+
+  NEW = 'NEW',
+
+  DOCUMENTS_PENDING = 'DOCUMENTS_PENDING',
+
+  LOST = 'LOST',
+
+  FOLLOW_UP = 'FOLLOW_UP',
+}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, switchMap, map, startWith } from 'rxjs/operators';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -10,8 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { SharedModule } from '../shared/shared.module';
-import { DataService } from '../shared/data.service';
+import { DataService } from '../shared/services/data.service';
 import { LoadingService } from '../common/loading.service';
+import { TrademarkClassService } from '../shared/services/trademark-class.service';
+import { TrademarkClassComponent } from '../shared/filters/trademark-class-filter/trademark-class.component';
+import { ITrademarkClass } from '../../models/trademark-class.model';
+import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-trademark-select-class',
@@ -25,64 +30,31 @@ import { LoadingService } from '../common/loading.service';
     MatIconModule,
     MatButtonModule,
     MatListModule,
-    SharedModule
+    SharedModule,
+    TrademarkClassComponent,
+    TrademarkOnboardingBtnSectionComponent
   ],
   templateUrl: './trademark-select-class.component.html',
   styleUrl: './trademark-select-class.component.scss'
 })
-export class TrademarkSelectClassComponent implements OnInit {
-  inputControl = new FormControl('');
-  filteredItems$?: Observable<string[]>;
-  selectedItems: string[] = [];
+export class TrademarkSelectClassComponent  {
+submit() {
+throw new Error('Method not implemented.');
+}
+filterChanges: Subject<boolean>|undefined;
+classificationChoice = "pick";
+isSubmitting: boolean = false;
 
-  // Mock data for products/services
-  items: string[] = [
-    'Shirt',
-    'Coffee',
-    'Restaurant',
-    'Retail Store',
-    'Shoes',
-    'Electronics',
-    'Consulting',
-    'Bakery',
-    'Fitness Training',
-    'Book Publishing',
-    'Mobile App',
-    'Jewelry',
-    'Furniture',
-    'Cosmetics',
-    'Legal Services'
-  ];
+onClassSelection($event: ITrademarkClass) {
+  throw new Error('Method not implemented.');
+}
+constructor(
+  private readonly router: Router,
+){}
 
-  constructor(
-    private readonly dataService: DataService,
-    private readonly loadingService:LoadingService
-  ) {}
-
-  ngOnInit() {
-    this.filteredItems$ = this.inputControl.valueChanges.pipe(
-      startWith(""),
-      debounceTime(300),
-      switchMap(value => this.fetchItems(value)),
-      map(items => items.filter(item => !this.selectedItems.includes(item)))
-    );
-  }
-
-  fetchItems(query: string|null): Observable<string[]> {
-    if (!query) {
-      return of([]);
+skip(){
+        this.router.navigateByUrl("trademark-registration/step-2")
     }
-    return this.trademarkClassService.fetchItems(query); // Should return Observable<string[]>
-  }
 
-  addItem(item: string) {
-    if (!this.selectedItems.includes(item)) {
-      this.selectedItems.push(item);
-      this.inputControl.setValue('');
-    }
-  }
-
-  removeItem(item: string) {
-    this.selectedItems = this.selectedItems.filter(i => i !== item);
-  }
+  
 }

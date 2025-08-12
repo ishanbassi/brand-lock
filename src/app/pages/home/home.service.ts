@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Lead, NewLead } from "../../lead/lead.model";
+import { Lead, NewLead } from "../../../models/lead.model";
 import { environment } from "../../../environments/environment";
 
 @Injectable({ providedIn: 'root' })

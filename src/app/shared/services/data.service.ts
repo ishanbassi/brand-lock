@@ -6,7 +6,7 @@ export interface RestResponse<T = any> {
   
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { environment } from "../../environments/environment";
+import { environment } from "../../../environments/environment";
 import { catchError, map, Observable } from "rxjs";
 
 @Injectable({

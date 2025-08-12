@@ -1,5 +1,5 @@
 import dayjs from "dayjs/esm";
-import { Employee, IEmployee } from "../models/employee.model";
+import { Employee, IEmployee } from "./employee.model";
 
 export enum ContactMethod {
     CALL = 'CALL',
