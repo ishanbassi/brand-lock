@@ -4,6 +4,8 @@ import { HeadOffice } from '../app/enumerations/head-office.model';
 import { TrademarkType } from '../app/enumerations/trademark-type.model';
 import { TrademarkSource } from '../app/enumerations/trademark-source.model';
 import { IUserProfile } from './user-profile.model';
+import { IDocuments } from './documents.model';
+import { ITrademarkClass } from './trademark-class.model';
 
 export interface ITrademark {
   id: number;
@@ -31,6 +33,13 @@ export interface ITrademark {
   source?: keyof typeof TrademarkSource | null;
   lead?: Pick<ILead, 'id'> | null;
   user?: Pick<IUserProfile, 'id'> | null;
+  trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
+
 }
 
 export type NewTrademark = Omit<ITrademark, 'id'> & { id: null };
+
+export type ITrademarkWithLogo = {
+  trademark: ITrademark 
+  document: IDocuments
+}

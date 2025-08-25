@@ -29,7 +29,7 @@ export class TrademarkClassService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/trademark-classes');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/trademark-classes');
 
 
   find(id: number): Observable<EntityResponseType> {
@@ -65,5 +65,35 @@ export class TrademarkClassService {
     return res.clone({
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
     });
+  }
+
+  getTrademarkClassIdentifier(trademarkClass: Pick<ITrademarkClass, 'id'>): number {
+    return trademarkClass.id;
+  }
+
+  compareTrademarkClass(o1: Pick<ITrademarkClass, 'id'> | null, o2: Pick<ITrademarkClass, 'id'> | null): boolean {
+    return o1 && o2 ? this.getTrademarkClassIdentifier(o1) === this.getTrademarkClassIdentifier(o2) : o1 === o2;
+  }
+
+  addTrademarkClassToCollectionIfMissing<Type extends Pick<ITrademarkClass, 'id'>>(
+    trademarkClassCollection: Type[],
+    ...trademarkClassesToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const trademarkClasses: Type[] = trademarkClassesToCheck.filter(t => t !== undefined && t !== null);
+    if (trademarkClasses.length > 0) {
+      const trademarkClassCollectionIdentifiers = trademarkClassCollection.map(trademarkClassItem =>
+        this.getTrademarkClassIdentifier(trademarkClassItem),
+      );
+      const trademarkClassesToAdd = trademarkClasses.filter(trademarkClassItem => {
+        const trademarkClassIdentifier = this.getTrademarkClassIdentifier(trademarkClassItem);
+        if (trademarkClassCollectionIdentifiers.includes(trademarkClassIdentifier)) {
+          return false;
+        }
+        trademarkClassCollectionIdentifiers.push(trademarkClassIdentifier);
+        return true;
+      });
+      return [...trademarkClassesToAdd, ...trademarkClassCollection];
+    }
+    return trademarkClassCollection;
   }
 }

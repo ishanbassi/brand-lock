@@ -3,16 +3,52 @@
       [(ngModel)]="searchText" [ngbTypeahead]="search" #searchElement [resultFormatter]="formatter"
       [inputFormatter]="formatter" placeholder="Search products/services" (selectItem)="onTrademarkClassSelection($event)" />
   </div> -->
-  <form>
+  <form [formGroup]="trademarkDetailsForm" class="trademark-class-form">
     <mat-form-field appearance="outline">
       <mat-label>Search Classes</mat-label>
       <input type="text" matInput name="class-description" [formControl]="searchControl" placeholder="e.g., marketing, software">
+      <a (click)="clearSearch()" class="close-icon-btn" matSuffix *ngIf="showCloseIcon; else searchIcon">
+        <mat-icon >close</mat-icon>
+      </a>  
+      <ng-template #searchIcon> 
+        <a class="close-icon-btn" matSuffix>
+                  <mat-icon   >search</mat-icon>
+              </a>
+      </ng-template>
+      
+
+      
+  
     </mat-form-field>
     
-    <mat-selection-list multiple>
+    <mat-selection-list multiple
+      name="trademarkClasses"
+      formControlName="trademarkClasses"
+        (selectionChange)="onSelectionChange($event)"
+
+    >
       <mat-list-option color="primary" *ngFor="let item of filteredClasses" [value]="item" checkboxPosition="before">
         <b>Class {{ item.tmClass }}</b> – {{ item.keyword }}
       </mat-list-option>
     </mat-selection-list>
   </form>
+  <div *ngIf="selectedTrademarkClassesChips.length > 0">
+    <h1>Selected Classes:</h1>
+    <div>
+      <mat-chip-listbox class="mat-mdc-chip-set-stacked">
+        <mat-chip
+          class="tm-mat-chip-option"
+         *ngFor="let item of selectedTrademarkClassesChips" [removable]="true" (removed)="removeClass(item)">
+          {{ item.tmClass }} - {{ item.description }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-listbox>
+
+    </div>
+  </div>
+  <app-trademark-onboarding-btn-section 
+                        (skipEvent)="skip()"
+                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
   

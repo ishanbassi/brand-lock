@@ -12,30 +12,38 @@
                     <form (ngSubmit)="submit()" [formGroup]="trademarkDetailsForm"
                             [ngClass]="{'submitted': onClickValidation}"
                             >
-                            <div class=" form-input-container  mat-density-3" *ngIf="this.trademarkType === TrademarkTypeEnum.TRADEMARK || this.trademarkType === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE || this.trademarkType === TrademarkTypeEnum.ALL">
+                            <div formGroupName="trademark" class=" form-input-container  mat-density-3" *ngIf="this.trademark?.type === TrademarkTypeEnum.TRADEMARK || this.trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE || this.trademark?.type === TrademarkTypeEnum.ALL">
                                 <label for="trademark">Enter your brand name you want to protect:</label>
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter brand name" name="trademark" #trademark
-                                        formControlName="trademark" required>
+                                    <input matInput placeholder="Enter brand name" name="name" #trademark
+                                        formControlName="name" >
                                     <mat-error *ngIf="trademarkDetailsForm.get('trademark')?.hasError('required') && onClickValidation">
                                         Brand name is required
                                     </mat-error>
                                 </mat-form-field>
                             </div>
-                            <div class="form-input-container" *ngIf="this.trademarkType === TrademarkTypeEnum.IMAGEMARK || this.trademarkType === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE|| this.trademarkType === TrademarkTypeEnum.ALL">
+                            <div class="form-input-container" *ngIf="this.trademark?.type === TrademarkTypeEnum.IMAGEMARK || this.trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE|| this.trademark?.type === TrademarkTypeEnum.ALL">
                                 <div class="upload-logo-section">
-                                    <label for="trademarkLogo">Upload the logo you want to trademark:
+                                    <label for="file">Upload the logo you want to trademark:
                                     </label>
                                     <div>
-                                    <input type="file" name="trademarkLogo"  accept=".png, .jpg, .jpeg, .svg" (change)="onFileSelected($event)" required>
-                                    <div class="text-danger" *ngIf="trademarkDetailsForm.get('trademarkLogo')?.hasError('required') && onClickValidation">
+                                    <input type="file"   accept=".png, .jpg, .jpeg, .svg" (change)="setFileData($event,'file' , true)" required>
+                                    <input type="hidden" class="form-control" name="file" formControlName="file" />
+                                    <div  formGroupName="document">
+                                        <input type="hidden" class="form-control" name="fileContentType" formControlName="fileContentType" />
+                                        <input type="hidden" class="form-control" name="fileName" formControlName="fileName" />
+                                        <input type="hidden" class="form-control" name="documentType" formControlName="documentType" value="LOGO"/>
+                                    </div>
+                                    
+                                   
+                                    <div class="text-danger" *ngIf="trademarkDetailsForm.get('file')?.hasError('required') && onClickValidation">
                                         Logo is required
                                     </div>
                                     </div>
                                 </div>
 
                             </div>
-                            <div class=" form-input-container mat-density-3 " *ngIf="TrademarkTypeEnum.SLOGAN|| this.trademarkType === TrademarkTypeEnum.ALL">
+                            <div class=" form-input-container mat-density-3 " *ngIf="this.trademark?.type === TrademarkTypeEnum.SLOGAN|| this.trademark?.type === TrademarkTypeEnum.ALL">
                                 <label for="trademarkSlogan">Enter the slogan you want to protect:</label>
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
                                     <input matInput placeholder="Enter slogan name" name="trademarkSlogan" #trademarkSlogan

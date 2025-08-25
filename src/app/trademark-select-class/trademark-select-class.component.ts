@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, switchMap, map, startWith } from 'rxjs/operators';
 import { MatRadioModule } from '@angular/material/radio';
@@ -17,6 +17,12 @@ import { TrademarkClassComponent } from '../shared/filters/trademark-class-filte
 import { ITrademarkClass } from '../../models/trademark-class.model';
 import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { Router } from '@angular/router';
+import { TrademarkService } from '../shared/services/trademark.service';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { SessionStorageService } from '../shared/services/session-storage.service';
+import { ToastService } from '../shared/toast.service';
+import { ITrademark } from '../../models/trademark.model';
+import { TrademarkFormService } from '../shared/services/trademark-form.service';
 
 @Component({
   selector: 'app-trademark-select-class',
@@ -32,29 +38,57 @@ import { Router } from '@angular/router';
     MatListModule,
     SharedModule,
     TrademarkClassComponent,
-    TrademarkOnboardingBtnSectionComponent
+    TrademarkOnboardingBtnSectionComponent,
+    ReactiveFormsModule
   ],
   templateUrl: './trademark-select-class.component.html',
   styleUrl: './trademark-select-class.component.scss'
 })
-export class TrademarkSelectClassComponent  {
-submit() {
-throw new Error('Method not implemented.');
+export class TrademarkSelectClassComponent implements OnInit {
+  constructor(
+    private readonly router:Router,
+    private readonly trademarkService: TrademarkService,
+    private readonly sessionStorageService: SessionStorageService,  
+    private readonly toastService:ToastService,
+    private readonly loadingService: LoadingService
+  ){}
+  filterChanges: Subject<boolean>|undefined;
+  classificationChoice = "pick";
+  isSubmitting: boolean = false;
+
+  onClickValidation: boolean = false;
+  trademark?:ITrademark|null;
+
+  protected trademarkFormService = inject(TrademarkFormService);
+  trademarkDetailsForm = this.trademarkFormService.createTrademarkFormGroup();
+
+
+ngOnInit(): void {
+  if(this.sessionStorageService.getObject('trademark')?.id){
+          this.trademarkService.find(this.sessionStorageService.getObject('trademark').id).subscribe({
+            next: (response) => {
+              this.trademark = response.body; 
+              if(this.trademark) {
+                this.updateForm(this.trademark);
+              }
+            }
+          })
+        }
+        else{
+        this.router.navigate(['trademark-registration/step-3']);
+        } 
+    
+
+
 }
-filterChanges: Subject<boolean>|undefined;
-classificationChoice = "pick";
-isSubmitting: boolean = false;
+protected updateForm(trademark:ITrademark): void {
+    this.trademark = trademark;
+    this.trademarkFormService.resetForm(this.trademarkDetailsForm, trademark);
+  }
 
-onClassSelection($event: ITrademarkClass) {
-  throw new Error('Method not implemented.');
-}
-constructor(
-  private readonly router: Router,
-){}
 
-skip(){
-        this.router.navigateByUrl("trademark-registration/step-2")
-    }
+  skip(){}
 
+  
   
 }

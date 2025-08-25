@@ -7,8 +7,16 @@ import dayjs from 'dayjs/esm';
 import { ApplicationConfigService } from '../../core/config/application-config.service';
 import { DATE_FORMAT } from '../../config/input.constants';
 import { ITrademark, NewTrademark } from '../../../models/trademark.model';
+import { IDocuments } from '../../../models/documents.model';
 
 export type PartialUpdateTrademark = Partial<ITrademark> & Pick<ITrademark, 'id'>;
+export type PartialUpdateTrademarkWithLogo = {
+  trademark: Partial<ITrademark> & Pick<ITrademark, 'id'>;
+  document: Partial<IDocuments>;
+  file: string | null;
+  trademarkSlogan: string | null;
+
+};
 
 type RestOf<T extends ITrademark | NewTrademark> = Omit<T, 'applicationDate' | 'createdDate' | 'modifiedDate' | 'renewalDate'> & {
   applicationDate?: string | null;
@@ -32,6 +40,7 @@ export class TrademarkService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/trademarks');
+  
 
   create(trademark: NewTrademark): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(trademark);
@@ -59,6 +68,11 @@ export class TrademarkService {
       .get<RestTrademark>(`${this.resourceUrl}/${id}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
+  partialUpdateWithLogo(trademarkWithLogo: PartialUpdateTrademarkWithLogo): Observable<EntityResponseType> {
+  return this.http
+    .patch<RestTrademark>(`${this.resourceUrl}/onboarding/${this.getTrademarkIdentifier(trademarkWithLogo.trademark)}`, trademarkWithLogo, { observe: 'response' })
+    .pipe(map(res => this.convertResponseFromServer(res)));
+}
 
 
   getTrademarkIdentifier(trademark: Pick<ITrademark, 'id'>): number {
@@ -69,7 +83,7 @@ export class TrademarkService {
     return o1 && o2 ? this.getTrademarkIdentifier(o1) === this.getTrademarkIdentifier(o2) : o1 === o2;
   }
 
-  protected convertDateFromClient<T extends ITrademark | NewTrademark | PartialUpdateTrademark>(trademark: T): RestOf<T> {
+  public convertDateFromClient<T extends ITrademark | NewTrademark | PartialUpdateTrademark>(trademark: T): RestOf<T> {
     return {
       ...trademark,
       applicationDate: trademark.applicationDate?.format(DATE_FORMAT) ?? null,
@@ -79,7 +93,7 @@ export class TrademarkService {
     };
   }
 
-  protected convertDateFromServer(restTrademark: RestTrademark): ITrademark {
+  public convertDateFromServer(restTrademark: RestTrademark): ITrademark {
     return {
       ...restTrademark,
       applicationDate: restTrademark.applicationDate ? dayjs(restTrademark.applicationDate) : undefined,

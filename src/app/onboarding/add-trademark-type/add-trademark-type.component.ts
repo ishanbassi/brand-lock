@@ -9,6 +9,7 @@ import { TrademarkType } from '../../enumerations/trademark-type.model';
 import { TrademarkService } from '../../shared/services/trademark.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { ILead } from '../../../models/lead.model';
+import { SessionStorageService } from '../../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-add-trademark-type',
@@ -23,16 +24,17 @@ export class AddTrademarkTypeComponent implements OnInit{
   constructor(
     private readonly router:Router,
     private readonly trademarkService: TrademarkService,
-    private readonly localStorageService: LocalStorageService
+    private readonly localStorageService: LocalStorageService,
+    private readonly sessionStorageService: SessionStorageService
   ){}
   
   ngOnInit(): void {
-    this.lead = this.localStorageService.getObject('lead');
+    this.lead = this.sessionStorageService.getObject('lead');
     if(!this.lead){
       this.router.navigate(['trademark-registration/step-1']);
       return
     }
-    this.trademarkType = this.localStorageService.getObject('trademark')?.type || TrademarkType.TRADEMARK;
+    this.trademarkType = this.sessionStorageService.getObject('trademark')?.type || TrademarkType.TRADEMARK;
   }
 
   isSubmitting = false;
@@ -43,7 +45,8 @@ export class AddTrademarkTypeComponent implements OnInit{
       next: (response) => {
         this.isSubmitting = false;
           this.router.navigate(['trademark-registration/step-3']);
-          this.localStorageService.setObject('trademark', response.body);
+
+          this.sessionStorageService.setObject('trademark', response.body);
       }})
 
     }

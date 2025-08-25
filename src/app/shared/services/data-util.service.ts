@@ -55,14 +55,16 @@ export class DataUtils {
    * @param editForm the form group where the input field is located
    * @param field the field name to set the file's 'base 64 data' on
    * @param isImage boolean representing if the file represented by the event is an image
+   * @param fileForm form group where the file data should be set, defaults to editForm
    * @returns an observable that loads file to form field and completes if sussessful
    *      or returns error as FileLoadError on failure
    */
-  loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean): Observable<void> {
+  loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean, fileForm =editForm): Observable<void> {
     return new Observable((observer: Observer<void>) => {
       const eventTarget: HTMLInputElement | null = event.target as HTMLInputElement | null;
       if (eventTarget?.files?.[0]) {
         const file: File = eventTarget.files[0];
+        console.log('File to load:', file);
         if (isImage && !file.type.startsWith('image/')) {
           const error: FileLoadError = {
             message: `File was expected to be an image but was found to be '${file.type}'`,
@@ -72,11 +74,17 @@ export class DataUtils {
           observer.error(error);
         } else {
           const fieldContentType: string = field + 'ContentType';
+          const fieldFileName: string = field + 'Name';
+          console.log(field, fieldContentType, fieldFileName);
           this.toBase64(file, (base64Data: string) => {
             editForm.patchValue({
               [field]: base64Data,
               [fieldContentType]: file.type,
+              [fieldFileName]: file.name,
             });
+            fileForm.patchValue({
+              [field]: base64Data,
+            })
             observer.next();
             observer.complete();
           });

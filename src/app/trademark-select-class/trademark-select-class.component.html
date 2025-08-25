@@ -18,7 +18,8 @@
              <div style="margin: 16px 0 8px 0; font-weight: 500;">
                 Enter products or services you will sell using your trademark <span class="mat-caption">(i.e.: shirt, coffee, restaurant, retail store).</span>
               </div>
-              <app-trademark-class (onChange)="onClassSelection($event)"
+              <app-trademark-class
+              [trademark]="trademark"
           [filterChanges]="filterChanges"></app-trademark-class>
 
              
@@ -30,9 +31,6 @@
             </mat-form-field>
           </ng-template>
         </form>
-        <app-trademark-onboarding-btn-section 
-                        (skipEvent)="skip()"
-                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
       </div>
       
       <div class="col col-12 col-sm-12 col-lg-4">

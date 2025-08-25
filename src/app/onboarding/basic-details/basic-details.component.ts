@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { TrademarkOnboardingBtnSectionComponent } from '../../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { LeadService } from '../../shared/services/lead.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
+import { SessionStorageService } from '../../shared/services/session-storage.service';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -50,12 +51,13 @@ export class BasicDetailsComponent implements OnInit {
       private toastService:ToastService,
       private router:Router,
       private readonly leadService: LeadService,
-      private readonly localStorageService: LocalStorageService
+      private readonly localStorageService: LocalStorageService,
+      private readonly sessionStorageService: SessionStorageService
        
   ){}
 
   ngOnInit(): void {
-    const lead = this.localStorageService.getObject('lead');
+    const lead = this.sessionStorageService.getObject('lead');
     if(lead){
       this.basicDetailsForm.patchValue({
         fullName: lead.fullName,
@@ -87,10 +89,10 @@ export class BasicDetailsComponent implements OnInit {
       this.loadingService.show();
       this.leadService.create(lead)
         .subscribe({
-          next: () => {
+          next: (newLead) => {
             this.isSubmitting = false;
             this.loadingService.hide();
-            this.localStorageService.setObject('lead', lead);
+            this.sessionStorageService.setObject('lead', newLead.body);
             this.router.navigateByUrl("trademark-registration/step-2")
 
           },  

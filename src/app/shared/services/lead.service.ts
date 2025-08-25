@@ -34,7 +34,8 @@ export class LeadService {
 
   create(lead: NewLead): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(lead);
-    return this.http.post<RestLead>(this.resourceUrl, copy, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
+    console.log(this.resourceUrlExtended);
+    return this.http.post<RestLead>(this.resourceUrlExtended, copy, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   update(lead: ILead): Observable<EntityResponseType> {

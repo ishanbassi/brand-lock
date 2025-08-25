@@ -33,6 +33,7 @@ import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { LoadingService } from '../../common/loading.service';
 import { LeadService } from '../../shared/services/lead.service';
+import { SessionStorageService } from '../../shared/services/session-storage.service';
 
 
 
@@ -96,7 +97,8 @@ export class HomeComponent implements OnInit, AfterViewInit{
     private readonly dialog:MatDialog,
     private readonly loadingService:LoadingService,
     private readonly leadService: LeadService,
-    private readonly localStorageService: LocalStorageService
+    private readonly localStorageService: LocalStorageService,
+    private readonly sessionStorageService: SessionStorageService
 
 
   ) {
@@ -220,13 +222,14 @@ export class HomeComponent implements OnInit, AfterViewInit{
     }
     const lead = this.leadFormService.getLead(form) as NewLead;
     this.leadService.create(lead).subscribe({
-      next: () => {
+      next: (newLead) => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
-          this.localStorageService.setObject('lead', lead);
+          this.sessionStorageService.setObject('lead', newLead.body);
           this.router.navigateByUrl("trademark-registration/step-2");
+          
         },  
-        error: () => {
+        error: (err) => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
         }
