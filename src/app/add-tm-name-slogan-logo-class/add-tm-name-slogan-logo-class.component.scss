@@ -46,6 +46,38 @@
                     }
                     }
                 }
+                .img-wrap{
+                    position: relative;
+                    display: inline-block;
+                    &:hover{
+                        .clear-btn{
+                            opacity: 100%;
+                        }
+                    }
+                    .logo-img{
+                        min-width: 100px;
+                        max-width: 12.5rem;
+                    }
+                    .clear-btn{
+                          position: absolute;
+                            top: 0;
+                            right: 0;
+                            opacity: 0;
+                            transition: all .25s ease-in-out;
+                            padding: 4px;
+                            display: flex;
+                    }
+                }
+                
+                .form-text{
+                    font-size: 1rem;
+                    .close-icon{
+                        font-size: 1rem;
+                        height: 1rem;
+                        width: 1rem;
+                    }
+                }
+                
               
                 }
         }   

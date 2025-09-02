@@ -18,6 +18,6 @@ export class PhoneInputComponent {
     preferredCountries: CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
     
     @Input()
-    control!:FormControl<string | null>;
+    control!:FormControl<string | null | undefined>;
 
 }

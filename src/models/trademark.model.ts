@@ -40,6 +40,6 @@ export interface ITrademark {
 export type NewTrademark = Omit<ITrademark, 'id'> & { id: null };
 
 export type ITrademarkWithLogo = {
-  trademark: ITrademark 
-  document: IDocuments
+  trademark: ITrademark  | null
+  document: IDocuments | null
 }

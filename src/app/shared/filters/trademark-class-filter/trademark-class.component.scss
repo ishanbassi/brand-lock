@@ -30,6 +30,10 @@
 
         }
     }
+    .mdc-list{
+        max-height: 300px ; 
+        overflow: auto;
+    }
 }
 .close-icon-btn{
     cursor: pointer;

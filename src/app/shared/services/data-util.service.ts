@@ -1,7 +1,9 @@
 import { Buffer } from 'buffer';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export type FileLoadErrorType = 'not.image' | 'could.not.extract';
 
@@ -18,6 +20,11 @@ export interface FileLoadError {
   providedIn: 'root',
 })
 export class DataUtils {
+
+  constructor(private readonly http: HttpClient){
+
+  }
+
   /**
    * Method to find the byte size of the string provides
    */
@@ -64,7 +71,6 @@ export class DataUtils {
       const eventTarget: HTMLInputElement | null = event.target as HTMLInputElement | null;
       if (eventTarget?.files?.[0]) {
         const file: File = eventTarget.files[0];
-        console.log('File to load:', file);
         if (isImage && !file.type.startsWith('image/')) {
           const error: FileLoadError = {
             message: `File was expected to be an image but was found to be '${file.type}'`,
@@ -75,7 +81,6 @@ export class DataUtils {
         } else {
           const fieldContentType: string = field + 'ContentType';
           const fieldFileName: string = field + 'Name';
-          console.log(field, fieldContentType, fieldFileName);
           this.toBase64(file, (base64Data: string) => {
             editForm.patchValue({
               [field]: base64Data,
@@ -134,5 +139,22 @@ export class DataUtils {
 
   private formatAsBytes(size: number): string {
     return size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' bytes'; // NOSONAR
+  }
+
+  downloadIcon(filePath:string) {
+    const url = 'files/'.concat(filePath);
+    return this.http.get(environment.BaseApiUrl+url, {responseType:'blob'})
+    .pipe(switchMap(v => this.blobToBase64(v)))      
+  }
+  blobToBase64(blob: Blob):Observable<string> {
+    return new Observable((subscriber) => {
+      let  reader  = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.addEventListener("load", () => {
+        const base64 = reader.result?.toString().split(',')[1] || '';
+        subscriber.next(base64);
+      })
+      reader.onerror = () => subscriber.error();
+    })
   }
 }

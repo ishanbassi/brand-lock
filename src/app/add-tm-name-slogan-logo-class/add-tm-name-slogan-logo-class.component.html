@@ -27,7 +27,23 @@
                                     <label for="file">Upload the logo you want to trademark:
                                     </label>
                                     <div>
-                                    <input type="file"   accept=".png, .jpg, .jpeg, .svg" (change)="setFileData($event,'file' , true)" required>
+                                        <div *ngIf="trademarkDetailsForm.get('file')?.value">
+                                            <div class="img-wrap">
+                                                <img  alt="logo" [src]="'data:' + trademarkDetailsForm.get('document')?.get('fileContentType')?.value + ';base64,' + trademarkDetailsForm.get('file')?.value"
+                                            class="logo-img"   />
+                                            <button type="button" (click)="clearInputImage('file', 'fileContentType', 'fileInput')"
+                                                    class="btn btn-secondary btn-xs pull-end clear-btn">
+                                                    <mat-icon class="close-icon">close</mat-icon>
+                                                </button>
+                                            </div>
+                                            <div  class="form-text  clearfix">
+                                                File Name: <span class="pull-start  text-danger">{{ trademarkDetailsForm.get('document')?.get('fileName')?.value }}</span>
+                                                
+                                        </div>
+                                        </div>
+                                        <input *ngIf="!trademarkDetailsForm.get('file')?.value" type="file" id="fileInput"  accept=".png, .jpg, .jpeg, .svg" (change)="setFileData($event,'file' , true)" required>
+                                    
+            
                                     <input type="hidden" class="form-control" name="file" formControlName="file" />
                                     <div  formGroupName="document">
                                         <input type="hidden" class="form-control" name="fileContentType" formControlName="fileContentType" />
@@ -55,8 +71,7 @@
                             </div>
                         </form>
                         <app-trademark-onboarding-btn-section
-                        [showSkipBtn]="true"
-                        (skipEvent)="skip()" 
+                        (backEvent)="back()" 
                         [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
                         
                 </section>

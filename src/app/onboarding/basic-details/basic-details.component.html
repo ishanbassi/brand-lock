@@ -10,7 +10,7 @@
                     </div>
                 </section>
                 <section class="form-section">
-                    <form (ngSubmit)="submit()" [formGroup]="basicDetailsForm" class="nav-form" id="navForm"
+                    <form (ngSubmit)="submit()" [formGroup]="leadForm" class="nav-form" id="navForm"
                         [ngClass]="{'submitted': onClickValidation}"
                         >
                         <div class="row">
@@ -22,6 +22,8 @@
                                         formControlName="fullName">
                                         <mat-icon matPrefix>person</mat-icon>
                                 </mat-form-field>
+                                <app-validation-message [field]="leadForm.get('fullName')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             </div>
                             <div class="col-12 col-sm-12 col-md-6">
@@ -32,13 +34,17 @@
                                         formControlName="email">
                                         <mat-icon matPrefix>email</mat-icon>
                                 </mat-form-field>
+                                <app-validation-message [field]="leadForm.get('email')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-12 col-md-6">
+                            <div class="col-12 col-sm-12 col-md-6 custom-phone-input">
                                         <div class=" form-input-container mat-density-3">
                                 <label for="phoneNumber">Phone number</label>
-                                <app-phone-input [control]="basicDetailsForm.controls['phoneNumber']"></app-phone-input>
-                            </div>
+                                <app-phone-input [control]="leadForm.controls['phoneNumber']"></app-phone-input>
+                                </div>
+                                <app-validation-message [field]="leadForm.get('phoneNumber')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             
                             <div class="col-12 col-sm-12 col-md-6">
@@ -49,6 +55,8 @@
                                         formControlName="city">
                                         <mat-icon matPrefix> location_on</mat-icon>
                                 </mat-form-field>
+                                <app-validation-message [field]="leadForm.get('city')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             </div>
                             
@@ -57,7 +65,7 @@
         
                         </form>
                         <app-trademark-onboarding-btn-section 
-                        (skipEvent)="skip()"
+                        [showBackBtn]="false"
                         [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
             </section>
             </div>

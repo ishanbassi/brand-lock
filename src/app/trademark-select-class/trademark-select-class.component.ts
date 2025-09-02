@@ -82,12 +82,32 @@ ngOnInit(): void {
 
 }
 protected updateForm(trademark:ITrademark): void {
-    this.trademark = trademark;
     this.trademarkFormService.resetForm(this.trademarkDetailsForm, trademark);
   }
 
 
-  skip(){}
+  back(){
+    this.router.navigateByUrl("trademark-registration/step-3")
+  }
+
+
+  submit() {
+    this.onClickValidation = true;
+    this.isSubmitting = true;
+    this.trademarkDetailsForm.markAllAsTouched();
+    if (this.trademarkDetailsForm.invalid) {
+      return;
+    }
+    this.loadingService.show();
+    const trademark  = this.trademarkFormService.getTrademark(this.trademarkDetailsForm);
+    if(!trademark.id) return;
+    this.trademarkService.partialUpdate(trademark)
+    .subscribe((res) => {
+      console.log(res.body)
+    })    
+    
+  }
+
 
   
   

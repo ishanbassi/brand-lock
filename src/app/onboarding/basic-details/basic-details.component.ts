@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SharedModule } from '../../shared/shared.module';
-import { NewLead } from '../../../models/lead.model';
+import { ILead, NewLead } from '../../../models/lead.model';
 import { HomeService } from '../../pages/home/home.service';
 import { LeadFormService } from '../../../models/lead-form.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
@@ -20,6 +20,9 @@ import { TrademarkOnboardingBtnSectionComponent } from '../../trademark-onboardi
 import { LeadService } from '../../shared/services/lead.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
+import { finalize, Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
+import { ValidationMessageComponent } from '../../shared/validation-message/validation-message.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -27,7 +30,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   selector: 'app-basic-details',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
      MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-     MatProgressSpinnerModule,NgxIntlTelInputModule,PhoneInputComponent, MatButton, TrademarkOnboardingBtnSectionComponent
+     MatProgressSpinnerModule,NgxIntlTelInputModule,PhoneInputComponent, MatButton, TrademarkOnboardingBtnSectionComponent, ValidationMessageComponent
   ],
   templateUrl: './basic-details.component.html',
   styleUrl: './basic-details.component.scss'
@@ -36,17 +39,13 @@ export class BasicDetailsComponent implements OnInit {
 
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
-    basicDetailsForm = new FormGroup({
-      fullName: new FormControl('',[Validators.required]),
-      city: new FormControl('',[Validators.required]),
-      email: new FormControl('',[Validators.required,Validators.pattern("[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$")]),
-      phoneNumber: new FormControl<any>('',[Validators.required]),
-      selectedPackage: new FormControl()
-  })
+  lead: ILead | null = null;
+  protected leadFormService = inject(LeadFormService);
+  leadForm = this.leadFormService.createLeadFormGroup();
+
 
   constructor(
      private readonly homeService: HomeService,
-      private readonly leadFormService: LeadFormService,
       private loadingService:LoadingService,
       private toastService:ToastService,
       private router:Router,
@@ -58,49 +57,47 @@ export class BasicDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     const lead = this.sessionStorageService.getObject('lead');
+    
     if(lead){
-      this.basicDetailsForm.patchValue({
-        fullName: lead.fullName,
-        city: lead.city,
-        email: lead.email,
-        phoneNumber: lead.phoneNumber
+
+      this.leadService.find(this.sessionStorageService.getObject('lead').id).subscribe({
+        next: (response) => {
+          this.lead = response.body; 
+          if(this.lead) {
+            this.updateForm(this.lead);
+          }
+        }
       })
+
     } 
+    this.addValidationsToFormAndValidate(this.leadForm);
   }
 
   submit() {
     this.onClickValidation = true;
     this.isSubmitting = true;
-    this.saveLead(this.basicDetailsForm);
+    this.saveLead(this.leadForm);
     // this.submitNetlifyForm(this.ctaForm);
   }
    saveLead(form: FormGroup) {
-      // this.addValidationsToFormAndValidate(form);
       if (!form.valid) {
-
         this.isSubmitting = false;
+        this.leadForm.markAllAsTouched();
+        console.log(form)
         return;
       }
       // setting phone number
       form.patchValue({
         "phoneNumber":form.value['phoneNumber']?.number
       })
-      const lead = this.leadFormService.getLead(form) as NewLead;
+      const lead = this.leadFormService.getLead(form);
       this.loadingService.show();
-      this.leadService.create(lead)
-        .subscribe({
-          next: (newLead) => {
-            this.isSubmitting = false;
-            this.loadingService.hide();
-            this.sessionStorageService.setObject('lead', newLead.body);
-            this.router.navigateByUrl("trademark-registration/step-2")
 
-          },  
-          error: () => {
-            this.isSubmitting = false;
-            this.loadingService.hide();
-          }
-        })
+      if(lead.id != null){
+        this.subscribeToSaveResponse(this.leadService.partialUpdate(lead))
+      }else{
+        this.subscribeToSaveResponse(this.leadService.create(lead as NewLead))
+      }
     }
 
     addValidationsToFormAndValidate(form: FormGroup<any>) {
@@ -114,12 +111,38 @@ export class BasicDetailsComponent implements OnInit {
         form.get('email')?.updateValueAndValidity();
         form.get('city')?.updateValueAndValidity();
         form.get('phoneNumber')?.updateValueAndValidity();
-        form.markAllAsTouched();
+
+
     
       }
 
-      skip(){
-        this.router.navigateByUrl("trademark-registration/step-2")
-      }
+
+    protected subscribeToSaveResponse(result: Observable<HttpResponse<ILead>>): void {
+      result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
+        next: (newLead) => this.onSaveSuccess(newLead),
+        error: () => this.onSaveError(),
+      });
+  }
+
+  protected onSaveSuccess( newLead: HttpResponse<ILead>): void {
+    this.sessionStorageService.setObject('lead', newLead.body);
+    this.router.navigateByUrl("trademark-registration/step-2")
+  }
+
+  protected onSaveError(): void {
+    // Api for inheritance.
+  }
+
+  protected onSaveFinalize(): void {
+    this.isSubmitting = false;
+    this.loadingService.hide();
+  }
+
+  protected updateForm(lead: ILead): void {
+    this.lead = lead;
+    this.leadFormService.resetForm(this.leadForm, lead);
+
+  }
+
 
 }

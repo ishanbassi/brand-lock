@@ -17,6 +17,11 @@
                     margin-bottom: 10px;
                 }
             }
+            .custom-phone-input{
+                .form-input-container{
+                    margin-bottom: 0 !important;
+                }
+            }
             .btn-section{
                 display: flex;
                 align-items: center;
@@ -43,6 +48,9 @@
     }
     .mat-mdc-form-field-bottom-align{
         display: none;
+    }
+    .iti{
+        margin-bottom:  0 !important;
     }
 }
 

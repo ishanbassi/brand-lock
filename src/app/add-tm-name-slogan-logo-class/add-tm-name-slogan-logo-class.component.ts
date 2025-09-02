@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatError, MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
@@ -35,6 +35,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
   isSubmitting: boolean = false;
   TrademarkTypeEnum  = TrademarkType;
   trademark?:ITrademark|null;
+  document?: IDocuments | null;
 
   
 
@@ -50,21 +51,30 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
     private readonly dataUtils: DataUtils,
     private readonly toastService:ToastService,
     private readonly loadingService: LoadingService,
+    protected elementRef: ElementRef,
+
     ) {}
     protected trademarkFormService = inject(TrademarkFormService);
     protected documentFormService = inject(DocumentsFormService);
+    
 
     trademarkDetailsForm: TrademarkWithLogoFormGroup = this.trademarkFormService.createTrademarkFormGroupWithLogo();
 
 
   ngOnInit(): void {
     if(this.sessionStorageService.getObject('trademark')?.id){
-      this.trademarkService.find(this.sessionStorageService.getObject('trademark').id).subscribe({
+      this.trademarkService.findWithLogo(this.sessionStorageService.getObject('trademark').id).subscribe({
         next: (response) => {
-          this.trademark = response.body; 
+          this.trademark = response.body?.trademark; 
           if(this.trademark) {
             this.updateForm(this.trademark);
           }
+          this.document = response.body?.document; 
+          if(this.document){
+            this.updateFormFromDocument(this.document);
+
+          }
+
         }
       })
       return;
@@ -116,7 +126,8 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
     }
     this.loadingService.show();
-  
+
+    
     this.trademarkService.partialUpdateWithLogo(trademarkDataWithLogo)
     .subscribe({
       next: (trademark) => {
@@ -136,8 +147,9 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
   }
 
-  skip() {
-    this.router.navigate(['trademark-registration/step-4']);
+  back() {
+    console.log('back')
+    this.router.navigate(['trademark-registration/step-2']);
 
     }
     
@@ -153,6 +165,39 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
   protected updateForm(trademark:ITrademark): void {
     this.trademark = trademark;
     this.trademarkFormService.resetForm(this.trademarkDetailsForm.get('trademark') as FormGroup, trademark);
+  }
+  protected updateFormFromDocument(document:IDocuments): void {
+    this.document = document;
+    this.trademarkFormService.resetForm(this.trademarkDetailsForm.get('document') as FormGroup, this.document);
+    this.downloadLogo();
+  }
+
+  
+  clearInputImage(field: string, fieldContentType: string, idInput: string): void {
+    this.trademarkDetailsForm.patchValue({
+      [field]: null,
+      [fieldContentType]: null,
+    });
+    if (idInput && this.elementRef.nativeElement.querySelector('#' + idInput)) {
+      this.elementRef.nativeElement.querySelector('#' + idInput).value = null;
+    }
+  }
+
+  downloadLogo() {
+    const filePath = this.document?.fileUrl;
+    console.log(filePath)
+    if(filePath){
+      this.dataUtils.downloadIcon(filePath)
+      .subscribe({
+        next:(val) => {
+          this.trademarkDetailsForm.controls["file"].setValue(val)
+        },
+        error:() => {
+          this.loadingService.hide();
+        }
+      });
+    }
+    
   }
   
 }

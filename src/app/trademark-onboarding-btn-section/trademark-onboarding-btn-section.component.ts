@@ -21,17 +21,17 @@ buttonClick = new EventEmitter();
 isSubmitting= false;
 
 @Input()
-showSkipBtn = true;
+showBackBtn = true;
 
 @Input()
 showNextBtn = true;
 
 
 @Output()
-skipEvent = new EventEmitter();
+backEvent = new EventEmitter();
 
-skip(){
-  this.skipEvent.emit(true)
+back(){
+  this.backEvent.emit(true)
 }
 
 

@@ -48,13 +48,13 @@ export class LeadService {
   partialUpdate(lead: PartialUpdateLead): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(lead);
     return this.http
-      .patch<RestLead>(`${this.resourceUrl}/${this.getLeadIdentifier(lead)}`, copy, { observe: 'response' })
+      .patch<RestLead>(`${this.resourceUrlExtended}/${this.getLeadIdentifier(lead)}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: number): Observable<EntityResponseType> {
     return this.http
-      .get<RestLead>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestLead>(`${this.resourceUrlExtended}/${id}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 

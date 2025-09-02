@@ -14,7 +14,7 @@
             <mat-radio-button value="auto">No, pick them for me</mat-radio-button>
           </mat-radio-group>
 
-          <div *ngIf="classificationChoice === 'pick'; else autoBlock">
+          <div [hidden]="classificationChoice !== 'pick'">
              <div style="margin: 16px 0 8px 0; font-weight: 500;">
                 Enter products or services you will sell using your trademark <span class="mat-caption">(i.e.: shirt, coffee, restaurant, retail store).</span>
               </div>
@@ -24,12 +24,18 @@
 
              
           </div>
-          <ng-template #autoBlock>
+          <div [hidden]="classificationChoice === 'pick'">
+            <form [formGroup]="trademarkDetailsForm">
               <label for="productServiceDescription">Briefly describe your product or service</label>
             <mat-form-field>
-              <textarea matInput id="productServiceDescription" required placeholder="e.g., marketing, software, textile"></textarea>
+              <textarea matInput id="productServiceDescription"  formControlName="details" required placeholder="e.g., marketing, software, textile"></textarea>
             </mat-form-field>
-          </ng-template>
+              <app-trademark-onboarding-btn-section 
+                  (backEvent)="back()"
+                  [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
+            </form>
+              
+          </div>
         </form>
       </div>
       

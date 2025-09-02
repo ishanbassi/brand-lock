@@ -10,25 +10,11 @@
                     </div>
                 </section>
                 <section>
-                    <div class="radio-wrapper-section">
+                    <form [formGroup]="trademarkForm">
+                        <div class="radio-wrapper-section">
                         <label class="radio-wrapper">
-                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="TRADEMARK"/>
+                            <input type="radio" class="radio-input"  formControlName="type" value="TRADEMARK"/>
                             <span class="radio-tile">
-            
-                                <!--  <span class="radio-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor"
-                                        viewBox="0 0 256 256">
-                                        <rect width="256" height="256" fill="none"></rect>
-                                        <polygon points="72 40 184 40 240 104 128 224 16 104 72 40" fill="none"
-                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="12">
-                                        </polygon>
-                                        <polygon points="177.091 104 128 224 78.909 104 128 40 177.091 104" fill="none"
-                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="12">
-                                        </polygon>
-                                        <line x1="16" y1="104" x2="240" y2="104" fill="none" stroke="currentColor"
-                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></line>
-                                    </svg> 
-                                </span> -->
                                 <div class="radio-label">
                                     <h1>Brand Name</h1>
                                     <p>Business name identifying your brand</p>
@@ -43,7 +29,7 @@
                     </div>
                     <div class="radio-wrapper-section">
                         <label class="radio-wrapper">
-                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="IMAGEMARK"/>
+                            <input type="radio" class="radio-input"  formControlName="type" value="IMAGEMARK"/>
                             <span class="radio-tile">
                                 <div class="radio-label">
                                     <h1>Brand Logo</h1>
@@ -59,7 +45,7 @@
                     </div>
                     <div class="radio-wrapper-section">
                         <label class="radio-wrapper">
-                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="TRADEMARK_WITH_IMAGE"/>
+                            <input type="radio" class="radio-input"  formControlName="type" value="TRADEMARK_WITH_IMAGE"/>
                             <span class="radio-tile">
                                 <div class="radio-label">
                                     <h1>Brand name + Logo</h1>
@@ -75,7 +61,7 @@
                     </div>
                     <div class="radio-wrapper-section">
                         <label class="radio-wrapper">
-                            <input type="radio" class="radio-input" name="trademark-type" [(ngModel)]="trademarkType" value="SLOGAN"/>
+                            <input type="radio" class="radio-input"  formControlName="type" value="SLOGAN"/>
                             <span class="radio-tile">
                                 <div class="radio-label">
                                     <h1>Slogan</h1>
@@ -89,10 +75,12 @@
                             </span>
                         </label>
                     </div>
+
+                    </form>
+                    
                 </section>
                 <app-trademark-onboarding-btn-section
-                [showSkipBtn]="true"
-                (skipEvent)="skip()"
+                (backEvent)="back()"
                  [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
             </div>
             <div class="col col-12 col-sm-12 col-lg-5"></div>

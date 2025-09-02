@@ -85,6 +85,7 @@ export class TrademarkClassComponent implements OnInit{
               this.trademark = response.body; 
               if(this.trademark) {
                 this.updateForm(this.trademark);
+                this.updateTmClassChips();
               }
             }
           })
@@ -148,12 +149,13 @@ export class TrademarkClassComponent implements OnInit{
   protected loadRelationshipsOptions(term: string) {
     const input = {} as any;
     input["keyword.contains"] = term;
+    input["sort"] = "tmClass,asc";
    
     return this.trademarkClassService
       .query(input)
       .pipe(
         map((res: HttpResponse<ITrademarkClass[]>) => {
-          return res.body ? res.body.slice(0, 10) : [];
+          return res.body ?? [];
         }),
       )
     }
@@ -174,10 +176,11 @@ export class TrademarkClassComponent implements OnInit{
   protected updateForm(trademark:ITrademark): void {
     this.trademark = trademark;
     this.trademarkFormService.resetForm(this.trademarkDetailsForm, trademark);
-    this.trademarkClassesSharedCollection = this.trademarkClassService.addTrademarkClassToCollectionIfMissing<ITrademarkClass>(
+    this.selectedTrademarkClasses = this.trademarkClassService.addTrademarkClassToCollectionIfMissing<ITrademarkClass>(
       this.trademarkClassesSharedCollection,
       ...(trademark.trademarkClasses ?? []),
     );
+    console.log(this.selectedTrademarkClasses)
   }
 
   submit() {
@@ -190,15 +193,18 @@ export class TrademarkClassComponent implements OnInit{
     this.loadingService.show();
     const trademark  = this.trademarkFormService.getTrademark(this.trademarkDetailsForm);
     console.log(trademark)
-    // if(!trademark.id) return;
-    // this.trademarkService.partialUpdate(trademark)
+    if(!trademark.id) return;
+    this.trademarkService.partialUpdate(trademark)
+    .subscribe((res) => {
+      console.log(res.body)
+    })
 
     
     
   }
 
-  skip(){
-
+  back(){
+    this.router.navigateByUrl("trademark-registration/step-3")
   }
 
   clearSearch() {
@@ -228,6 +234,7 @@ export class TrademarkClassComponent implements OnInit{
   }
 
   updateTmClassChips(){
+    console.log(this.selectedTrademarkClasses)
     this.selectedTrademarkClassesChips = [];
     this.selectedTrademarkClasses.forEach(tmClass => {
       if(!tmClass.tmClass || !tmClass.keyword) return;
