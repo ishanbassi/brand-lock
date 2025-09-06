@@ -1,0 +1,51 @@
+
+    .onboarding-stepper-section{
+        
+        .onboarding-stepper{
+            max-width: 1040px;
+            margin:0 auto;
+        }
+    }
+
+    ::ng-deep{
+      .mat-stepper-vertical{
+        background-color: #338bdf !important;
+        .mat-step-header{
+              
+        }
+        .mat-step-text-label{
+            color: #fff !important;
+        }
+        .mat-step-icon{
+            color:#338bdf !important;
+            background-color: #fff !important;
+        }
+        .mat-stepper-vertical-line::before{
+            border-left-color:#ffffff25 !important
+        }
+      }
+      .mat-step-header[ng-reflect-state="done"]{
+        .mat-step-icon{
+            background-color: #28a745 !important;
+            color:#fff !important;
+        }
+        .mat-step-text-label{
+            
+         opacity: 0.4;
+        transition: opacity 0.3s ease;
+        }
+      } 
+
+    }
+
+
+
+@media screen and  (max-width:991px) {
+    
+    .onboarding-stepper-section{
+        padding:10px 12px !important;
+        border-bottom: none  !important;
+        box-shadow: none !important;
+    }
+
+}
