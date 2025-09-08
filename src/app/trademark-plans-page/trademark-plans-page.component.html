@@ -1,0 +1,82 @@
+<app-navbar [focusMode]="true" ></app-navbar>
+<section class="plans__container">
+  <div class="plans">
+    <div class="plansHero">
+      <h1 class="plansHero__title">Simple, transparent pricing</h1>
+      <p class="plansHero__subtitle">No contracts. No suprise fees.</p>
+    </div>
+    <div class="planItem__container">
+      <!--pro plan starts -->
+      <div class="planItem planItem--pro">
+        <div class="card">
+          <div class="card__header">
+            <!-- <div class="card__icon symbol"></div> -->
+            <h2>Trademark Filing</h2>
+            <!-- <div class="card__label label">Best Value</div> -->
+          </div>
+          <div class="card__desc">Best for individuals who just want to secure an application number quickly.</div>
+        </div>
+
+        <div class="price">₹999
+            <span class="govt-fees">
+                <span>+</span>
+                <a  class="govt-fees-popup-link"   (click)="openGovtFeesPopup(999)">
+                    <span>Govt. Fees</span>
+                </a>
+                <mat-icon class="fees-info-icon">help_outline</mat-icon>
+            </span>
+
+        </div>
+
+        <ul class="featureList">
+          <li>Trademark Application Filing</li>
+          <li>Support via Call, Chat & Email</li>
+          <li>Trademark Certificate</li>
+          <li>Regular follow-ups until Trademark is Published in Journal</li>
+          <li>Continuous updates on your application status</li>
+          <li class="disabled">Reply to Examination Report</li>
+          <li class="disabled">Handling of Hearings</li>
+        </ul>
+
+        <button (click)="navigate()" class="button button--pink">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}} </button>
+      </div>
+      <!--pro plan ends -->
+
+      <!--entp plan starts -->
+      <div class="planItem planItem--entp">
+        <div class="card">
+          <div class="card__header">
+            <!-- <div class="card__icon"></div> -->
+            <h2>Trademark Filing + Complete Process till Publication</h2>
+          </div>
+          <div class="card__desc">Ideal for businesses who want end-to-end support until publication.</div>
+        </div>
+
+        <div class="price">₹2999
+            <span>
+                <span>+</span>
+                <a class="govt-fees-popup-link"   (click)="openGovtFeesPopup(2999)">
+                    <span>Govt. Fees</span>
+                </a>
+                <mat-icon class="fees-info-icon">help_outline</mat-icon>
+            </span>
+
+        </div>
+
+        <ul class="featureList">
+          <li>Trademark Application Filing</li>
+          <li>Support via Call, Chat & Email</li>
+          <li>Trademark Certificate</li>
+          <li>Regular follow-ups until Trademark is Published in Journal</li>
+          <li>Continuous updates on your application status</li>
+          <li>Reply to Examination Report</li>
+          <li>Handling of Hearings</li>          
+        </ul>
+
+        <button (click)="navigate()" class="button button--white">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}} </button>
+      </div>
+      <!--entp plan ends -->
+
+    </div>
+  </div>
+</section>

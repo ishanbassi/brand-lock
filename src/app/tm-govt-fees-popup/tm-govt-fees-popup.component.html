@@ -1,0 +1,52 @@
+<div class="p-5 test">
+    <div class="dual-btn-section">
+        <div class="toggle-container">
+            <button class="toggle-button" (click)="onBusinessTypeChange('individuals')"
+            [ngClass]="{'active': selectedTab === 'individuals'}"
+            >
+                For Individuals
+            </button>
+            <button class="toggle-button" (click)="onBusinessTypeChange('companies')"
+            [ngClass]="{'active': selectedTab === 'companies'}"
+            >
+                For Companies
+            </button>
+        </div>
+
+    </div>
+    <p class="note">
+        {{selectedTab === 'individuals' ? 
+            'Note: The fee below applies to both individuals and MSME registered companies, and it is for a single application.' :
+         'Note: The fee below applies to Limited companies and NON-MSME registered Partnerships and Compaines, and it is for a single application.'}}
+    
+    </p>
+<table class="table table-striped table-bordered w-75 mx-auto text-center">
+	<thead>
+		<tr>
+
+			<th scope="col" width="33.3">Our Fees</th>
+            <th scope="col" width="33.3">Govt. Fees</th>
+			<th scope="col" width="33.3">Estimated Final Amount</th>
+		</tr>
+	</thead>
+	<tbody>
+        <tr>
+				<td>
+				{{'₹'+fees}}
+				</td>
+				<td>{{'₹'+govtFees}} </td>
+				<td>{{'₹'+totalFees}}</td>
+        </tr>
+		
+		
+	</tbody>
+</table>
+<div class="terms-conditions">
+    <div class="heading">Terms & Conditions</div>
+    <ul>
+        <li>The government fees will be collected based  on the number of applications</li>
+        <li>The abovementioned fees is for a single application</li>
+    </ul>
+</div>
+</div>
+  
