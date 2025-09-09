@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, switchMap, map, startWith } from 'rxjs/operators';
+import { debounceTime, switchMap, map, startWith, finalize } from 'rxjs/operators';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -102,8 +102,14 @@ protected updateForm(trademark:ITrademark): void {
     const trademark  = this.trademarkFormService.getTrademark(this.trademarkDetailsForm);
     if(!trademark.id) return;
     this.trademarkService.partialUpdate(trademark)
+    .pipe(finalize(() => {
+      this.isSubmitting = false;
+      this.loadingService.hide();
+    }) )
+    
     .subscribe((res) => {
-      console.log(res.body)
+      console.log(res.body);
+      this.router.navigateByUrl("trademark-registration/select-plan");
     })    
     
   }

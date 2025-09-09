@@ -39,7 +39,8 @@ export class TrademarkPlansPageComponent implements OnInit {
     this.dialog.open(TmGovtFeesPopupComponent, {data: {fees: fees}});  
   }
 
-  navigate() {
+  navigate(planType:string) {
+    this.sessionStorageService.set("selectedPlan",planType);
     if(this.anonymousUser){
       this.router.navigate(['/trademark-registration/step-1']);
     }
