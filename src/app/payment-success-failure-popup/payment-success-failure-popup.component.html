@@ -1,0 +1,43 @@
+<mat-dialog-content>
+        <div id="overlay" class="overlay">
+        <div class="popup">
+            <!-- <button class="close-btn" onclick="closePopup()">&times;</button> -->
+            
+            <div class="popup-content">
+                <div class="icon-wrapper">
+                    <div class="icon-bg"></div>
+                    <div class="icon-circle">
+                        <svg class="checkmark" viewBox="0 0 52 52">
+                            <path d="M14 27l7 7 16-16"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h2>Payment Successful!</h2>
+                
+                <p class="description">
+                    Your payment has been processed successfully. A confirmation email has been sent to your registered email address.
+                </p>
+
+                <div class="payment-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction ID</span>
+                        <span class="detail-value">#TXN123456789</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">Oct 3, 2025</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount Paid</span>
+                        <span class="detail-value amount">$99.00</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="viewReceipt()">View Receipt</button>
+                <button class="btn btn-secondary" onclick="closePopup()">Close</button>
+            </div>
+        </div>
+    </div>
+
+</mat-dialog-content>

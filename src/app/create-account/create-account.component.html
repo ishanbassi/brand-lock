@@ -1,0 +1,88 @@
+<div class="form-section mx-2 mx-md-auto">
+          <form >
+            <div class="row g-4 no-mobile-view-g">
+              <div class="col-lg-12 site-form-field-container pe-md-0">
+                <label for="firstname">Name</label>
+                <mat-form-field class="site-form-field" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!firstName.valid && (onClickValidation || firstName.touched || firstName.dirty)}">
+                  <input matInput required="required" name="firstName"
+                    pattern="^[A-Za-z0-9_,.&()\/\\&quot;&#39; ]*$" id="firstname" maxlength="45"
+                    placeholder="Enter full Name" appWhitespaceValidator>
+                  <mat-icon matSuffix [ngClass]="firstName.value ? 'visible': 'invisible'"
+                    (click)="data.firstName=undefined">highlight_off</mat-icon>
+                </mat-form-field>
+                <app-validation-message [field]="firstName"
+                  [onClickValidation]="firstName.dirty || firstName.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+              
+            </div>
+            <div class="row g-0">
+              <div class="site-form-field-container no-padding">
+                <label for="email">Email</label>
+
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
+
+                  <input matInput required="required" name="userEmail" #userEmail="ngModel" [readonly]="loggedIn"
+                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$" [(ngModel)]="data.email" id="label"
+                    placeholder="Enter email address">
+                  <mat-icon *ngIf="!loggedIn" matSuffix [ngClass]=" userEmail.value ? 'visible': 'invisible'"
+                    (click)="data.email=undefined">highlight_off</mat-icon>
+                </mat-form-field>
+                <app-validation-message [field]="userEmail"
+                  [customPatternMessage]="'Please provide a valid email address'"
+                  [onClickValidation]="userEmail.dirty || userEmail.touched|| onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="row g-4 no-mobile-view-g">
+              <div class="col-lg-12 site-form-field-container">
+                <label for="phonenumber"> Phone number</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!phoneNumber.valid && (onClickValidation || phoneNumber.touched || phoneNumber.dirty)}">
+
+                  <input matInput type="tel" required="required" name="phoneNumber" #phoneNumber="ngModel"
+                    [(ngModel)]="data.phoneNumber" mask="000-000-0000" id="phonenumber"
+                    placeholder="Enter phone number">
+                  <mat-icon matSuffix [ngClass]="phoneNumber.value ? 'visible': 'invisible'"
+                    (click)="data.phoneNumber=undefined">highlight_off</mat-icon>
+                </mat-form-field>
+                <app-validation-message [field]="phoneNumber"
+                  [onClickValidation]="phoneNumber.dirty || phoneNumber.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="row g-0 no-mobile-view-g" *ngIf="!loggedIn">
+              <div class="col-lg-12 site-form-field-container password-field-container">
+                <label for="password">Password</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
+
+                  <input matInput [type]="passwordFieldType" required="required" name="userPassword"
+                    #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}" />
+                  <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
+                    (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
+                </mat-form-field>
+                <app-validation-message [field]="userPassword"
+                  [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
+                  [onClickValidation]=" userPassword.dirty || userPassword.touched ||onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            
+
+            <div class="register-action-container">
+              <button mat-raised-button class="register-btn" aria-label="Continue"
+                [ngClass]="{'disable-btn': !loginForm.form.valid}">
+                <span>Create Account</span>
+              </button>
+            </div>
+          </form>
+          <div class="terms-conditions-section">
+                    By clicking “Join now” you agree to our <a href="/term-conditions" target="_blank" class="form-links">Terms
+                        and Conditions</a> and the <a href="/privacy-policy" target="_blank" class="form-links">Privacy
+                    Policy</a>.
+            </div>
+        </div>

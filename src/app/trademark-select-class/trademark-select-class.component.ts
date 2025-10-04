@@ -105,10 +105,9 @@ protected updateForm(trademark:ITrademark): void {
     .pipe(finalize(() => {
       this.isSubmitting = false;
       this.loadingService.hide();
-    }) )
+    }))
     
     .subscribe((res) => {
-      console.log(res.body);
       this.router.navigateByUrl("trademark-registration/select-plan");
     })    
     

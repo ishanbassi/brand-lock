@@ -126,4 +126,20 @@ export class LeadFormService {
       modifiedDate: lead.modifiedDate ? lead.modifiedDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
+
+  addValidationsToFormAndValidate(form: FormGroup<any>) {
+        form.get('fullName')?.setValidators([Validators.required]);
+        form.get('email')?.setValidators([Validators.required, Validators.pattern("[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$")]);
+        form.get('city')?.setValidators([Validators.required]);
+        form.get('phoneNumber')?.setValidators([Validators.required]);
+    
+        // Recalculate validity with new validators
+        form.get('fullName')?.updateValueAndValidity();
+        form.get('email')?.updateValueAndValidity();
+        form.get('city')?.updateValueAndValidity();
+        form.get('phoneNumber')?.updateValueAndValidity();
+
+
+    
+      }
 }

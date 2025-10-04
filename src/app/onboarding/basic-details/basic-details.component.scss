@@ -17,11 +17,7 @@
                     margin-bottom: 10px;
                 }
             }
-            .custom-phone-input{
-                .form-input-container{
-                    margin-bottom: 0 !important;
-                }
-            }
+            
             .btn-section{
                 display: flex;
                 align-items: center;
@@ -51,6 +47,11 @@
     }
     .iti{
         margin-bottom:  0 !important;
+    }
+    .custom-phone-input{
+        .error-message{
+            transform: translateY(-26px);
+        }
     }
 }
 

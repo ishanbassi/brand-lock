@@ -6,6 +6,7 @@ import { TrademarkSource } from '../app/enumerations/trademark-source.model';
 import { IUserProfile } from './user-profile.model';
 import { IDocuments } from './documents.model';
 import { ITrademarkClass } from './trademark-class.model';
+import { ITrademarkPlan } from './trademark-plan.model';
 
 export interface ITrademark {
   id: number;
@@ -34,6 +35,8 @@ export interface ITrademark {
   lead?: Pick<ILead, 'id'> | null;
   user?: Pick<IUserProfile, 'id'> | null;
   trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
+  trademarkPlan?: Pick<ITrademarkPlan, 'id' | 'name'> | null;
+
 
 }
 

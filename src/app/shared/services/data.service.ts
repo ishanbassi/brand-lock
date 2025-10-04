@@ -4,28 +4,34 @@ export interface RestResponse<T = any> {
     data: any;
   }
   
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { catchError, map, Observable } from "rxjs";
+import { CreateOrder } from "../../../models/create-order-request.model";
+import { CreateOrderResponse } from "../../../models/create-order-response.model";
+import { TrademarkOrderSummary } from "../../../models/trademark-order-summary.model";
+import { RazorPayOrderResponse, RazorPaySignatureVerificationDTO } from "../../../models/razorpay-order-response.model";
+import { ILead } from "../../../models/lead.model";
 
 @Injectable({
     providedIn: 'root'
   })
   export class DataService {
+  
     
   constructor(private http: HttpClient) {   
     }
 
     getRecords(path: string): Observable<any> {
         return this.http
-          .get(environment.BaseApiUrl + path, { headers: environment.AppHeaders })
+          .get(environment.BaseApiUrl + path, { headers: environment.AppHeaders , observe: 'response' })
           .pipe(catchError(this.handleError));
       }
     
       saveRecord(path: string, resource: any): Observable<any> {
         return this.http
-          .post(environment.BaseApiUrl + path, resource, { headers: environment.AppHeaders })
+          .post(environment.BaseApiUrl + path, resource, { headers: environment.AppHeaders, observe: 'response' })
           .pipe(catchError(this.handleError));
       }
     
@@ -65,5 +71,20 @@ import { catchError, map, Observable } from "rxjs";
           })
         )
       }
+
+      createOrder(data:CreateOrder):Observable<HttpResponse<CreateOrderResponse>> {
+      return this.saveRecord('api/razor-pay/payments/create-order', data);
+    }
+
+    findByOrderId(orderId: string):Observable<HttpResponse<TrademarkOrderSummary>> {
+      return this.getRecords(`api/razor-pay/payments/order-id/${orderId}`)      
+      }
+
+      verifySignature(response: RazorPaySignatureVerificationDTO) {
+        return this.saveRecord('api/razor-pay/payments/verify-signature', response)
+
+      }
+    
+
     
   }  

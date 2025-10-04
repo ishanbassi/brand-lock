@@ -4,6 +4,7 @@ import { BasicDetailsComponent } from "./basic-details/basic-details.component";
 import { AddTmNameSloganLogoClassComponent } from "../add-tm-name-slogan-logo-class/add-tm-name-slogan-logo-class.component";
 import { TrademarkSelectClassComponent } from "../trademark-select-class/trademark-select-class.component";
 import { TrademarkPlansPageComponent } from "../trademark-plans-page/trademark-plans-page.component";
+import { CheckoutPageComponent } from "../checkout-page/checkout-page.component";
 
 export const onboardingRoutes: Routes = [
     {
@@ -27,14 +28,15 @@ export const onboardingRoutes: Routes = [
             component:AddTmNameSloganLogoClassComponent,
             title:"Trademark Registration | Step 3"
         },
-        {
-            path:"step-4",
-            component:TrademarkSelectClassComponent,
-            title:"Trademark Registration | Step 4"
-        },
+        
         {
             path:"select-plan",
             component:TrademarkPlansPageComponent,
             title:"Trademark Registration | Select Plan"
+        },
+        {
+            path:"checkout",
+            component:CheckoutPageComponent,
+            title:"Trademark Registration | Pay"
         },
 ]

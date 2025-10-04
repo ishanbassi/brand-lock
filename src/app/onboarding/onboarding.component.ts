@@ -25,7 +25,7 @@ export class OnboardingComponent implements OnInit {
   ngOnInit() {
   this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.Handset])
     .subscribe(result => {
-      if(this.router.url.includes('select-plan')){
+      if(this.router.url.includes('select-plan') || this.router.url.includes('checkout')){
         this.matDrawerOpened = false;
         return;
       }
@@ -38,11 +38,10 @@ export class OnboardingComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        if (this.router.url.includes('select-plan')) {
+        if (this.router.url.includes('select-plan') || this.router.url.includes('checkout')) {
           this.matDrawerOpened = false;
           return;
         }
-        this.matDrawerOpened = true;
       });
   }
   

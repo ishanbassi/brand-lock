@@ -134,7 +134,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
         this.isSubmitting = false;
         this.loadingService.hide();
         this.sessionStorageService.setObject('trademark', trademark.body);
-        this.router.navigate(['trademark-registration/step-4']);
+        this.router.navigate(['trademark-registration/select-plan']);
       },
       error: () => {
         this.isSubmitting = false;

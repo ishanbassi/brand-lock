@@ -1,0 +1,299 @@
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+    integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<div class="container">
+
+    <div class="row main-container">
+        <div class="col-xl-8">
+
+            <div class="card">
+                <div class="card-body">
+                    <ol class="activity-checkout mb-0 px-4 mt-3">
+                        <li class="checkout-item">
+                            <div class="avatar checkout-icon p-1">
+                                <div class="avatar-title rounded-circle bg-primary">
+                                    <i class="bx bxs-receipt text-white font-size-20"></i>
+                                </div>
+                            </div>
+                            <div class="feed-item-list">
+                                <div>
+                                    <h5 class="font-size-16 mb-4">Applicant Information</h5>
+                                    <!-- <p class="text-muted text-truncate mb-4">Sed ut perspiciatis unde omnis iste</p> -->
+                                    <div class="mb-3">
+                                        <div class="applicant-info">
+                                            <p class="applicant-name"><b>Name:</b> {{lead?.fullName}}</p>
+                                            <p class="applicant-email"><b>Email:</b> {{lead?.email}}</p>
+                                            <p class="applicant-phone-number"><b>Phone:</b> {{lead?.phoneNumber}}</p>
+                                        </div>
+                                        <div class="edit-btn bg-light  rounded">
+                                            <a routerLink="/trademark-registration/step-1" data-bs-toggle="tooltip" data-placement="top" title=""
+                                                data-bs-original-title="Edit">
+                                                <i class="bx bx-pencil font-size-16"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                    <!-- <div class="mb-3">
+                                        <form [formGroup]="leadForm">
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="billing-name">Name</label>
+                                                            <input type="text" formControlName="fullName" class="form-control" id="billing-name"
+                                                                placeholder="Enter name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="billing-email-address">Email
+                                                                Address</label>
+                                                            <input type="email"  formControlName="email" class="form-control"
+                                                                id="billing-email-address" placeholder="Enter email">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="billing-phone">Phone</label>
+                                                            <input type="text" formControlName="phoneNumber" class="form-control" id="billing-phone"
+                                                                placeholder="Enter Phone no.">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-4 mb-lg-0">
+                                                            <label class="form-label" for="billing-city">City</label>
+                                                            <input type="text" formControlName="city" class="form-control" id="billing-city"
+                                                                placeholder="Enter City">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </li>
+                        <li class="checkout-item">
+                            <div class="avatar checkout-icon p-1">
+                                <div class="avatar-title rounded-circle bg-primary">
+                                    <i class="bx bxs-truck text-white font-size-20"></i>
+                                </div>
+                            </div>
+                            <div class="feed-item-list">
+                                <div>
+                                    <h5 class="font-size-16 mb-4">Trademark Application Details</h5>
+                                    <!-- <p class="text-muted text-truncate mb-4">Neque porro quisquam est</p> -->
+                                    <!-- <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-sm-6">
+                                                <div data-bs-toggle="collapse">
+                                                    <label class="card-radio-label mb-0">
+                                                        <input type="radio" name="address" id="info-address1"
+                                                            class="card-radio-input" checked="">
+                                                        <div class="card-radio text-truncate p-3">
+                                                            <span class="fs-14 mb-4 d-block">Address 1</span>
+                                                            <span class="fs-14 mb-2 d-block">Bradley McMillian</span>
+                                                            <span
+                                                                class="text-muted fw-normal text-wrap mb-1 d-block">109
+                                                                Clarksburg Park Road Show Low, AZ 85901</span>
+
+                                                            <span class="text-muted fw-normal d-block">Mo.
+                                                                012-345-6789</span>
+                                                        </div>
+                                                    </label>
+                                                    <div class="edit-btn bg-light  rounded">
+                                                        <a href="#" data-bs-toggle="tooltip" data-placement="top"
+                                                            title="" data-bs-original-title="Edit">
+                                                            <i class="bx bx-pencil font-size-16"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div> -->
+                                    <div class="mb-3">
+                                        <div class="trademark-info">
+                                            <p class="applicant-name"><b>Trademark: </b> {{trademark?.name}}</p>
+                                            <p class="applicant-email"><b>Trademark Type: </b>{{getTrademarkType(trademark?.type)}}</p>
+                                            <p class="applicant-phone-number"><b>Plan:</b>
+                                                {{trademark?.trademarkPlan?.name}}</p>
+                                        </div>
+                                        <div class="edit-btn bg-light  rounded">
+                                            <a routerLink="/trademark-registration/step-3" data-bs-toggle="tooltip" data-placement="top" title=""
+                                                data-bs-original-title="Edit">
+                                                <i class="bx bx-pencil font-size-16"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col col-12 col-sm-12">
+                            <div class="d-flex align-items-center justify-content-start gap-3">
+                                <div class="custom-icon">
+                                    <mat-icon>account_balance</mat-icon>
+
+                                </div>
+                                <h5 class="font-size-16 fw-bold my-0">
+                                    Government fees is payable at the time of filing.
+                                </h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col col-12 col-sm-12">
+                            <div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="custom-icon">
+                                        <mat-icon>access_time</mat-icon>
+                                    </div>
+                                    <h5 class="font-size-16 fw-semibold my-0">Estimated Time</h5>
+
+                                </div>
+                                <p class="text-muted  mb-4">Once Payment is made, your application will be filed within
+                                    24 hours and acknowledgement will be sent via email or phone.</p>
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card money-back-guarantee-card">
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="col col-12 col-sm-12">
+                            <div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="custom-icon">
+                                        <mat-icon> attach_money</mat-icon>
+
+                                    </div>
+                                    <h5 class="font-size-16 fw-semibold my-0">100% Money Back Guarantee</h5>
+
+                                </div>
+
+                                <p class="text-muted  mb-4">If, for any reason, we are unable to file your trademark
+                                    application, you will receive a full refund of the fees paid.</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="banner-section d-flex align-items-center gap-3">
+                <a href="https://razorpay.com/" target="_blank"> <img referrerpolicy="origin"
+                        src="https://badges.razorpay.com/badge-dark.png " style="height: 45px; width: 113px;"
+                        alt="Razorpay | Payment Gateway | Neobank"></a>
+                <img class="money-back-img" src="/assets/images/money-back-guarantee.png" alt="">
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card checkout-order-summary">
+                <div class="card-body">
+                    <div class="p-3 bg-light mb-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="font-size-16 mb-0">Trademark Fees Summary</h5>
+                            <span class="float-end ms-2">#{{trademarkOrderSummary?.paymentDTO?.id}}</span>
+                        </div>
+                        
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-centered mb-0 table-nowrap">
+
+                            <thead>
+                                <tr>
+                                    <th class="border-top-0" style="width: 110px;" scope="col"></th>
+                                    <th class="border-top-0" scope="col">Description</th>
+                                    <th class="border-top-0" scope="col">Fees</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of trademarkOrderSummary?.orderSummaries">
+                                    <th scope="row">
+                                        <img *ngIf="trademarkOrderSummary?.documentsDTO?.fileName; else placeholderTmImg"
+                                         [src]="`${environment.BaseApiUrl}files/${trademarkOrderSummary?.documentsDTO?.fileUrl}`"
+                                         [alt]="trademarkOrderSummary?.documentsDTO?.fileName" class="logo-img avatar-lg rounded">
+
+                                         <ng-template #placeholderTmImg>
+                                            <img src="/assets/images/trademark.png" alt="Trademark" class="logo-img avatar-lg rounded">
+                                         </ng-template>
+
+                                        </th>
+                                    <td >
+                                        <h5 class="font-size-16 text-truncate"><a href="#" class="text-dark text-wrap-normal">
+                                            {{this.trademark?.trademarkPlan?.name}} (1 Class)
+                                        </a></h5>
+                                        <p class="text-muted mb-0 mt-1">₹ {{item.fees}}</p>
+                                    </td>
+                                    <td class="text-right white-space-no-wrap" colspan="2">₹ {{item.fees}}</td>
+                                </tr>
+                                 <tr>
+                                    <td colspan="2">
+                                        <h5 class="font-size-14 m-0">Estimated Tax :</h5>
+                                    </td>
+                                    <td colspan="2" class="text-right">
+                                        ₹ 78
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">
+                                        <h5 class="font-size-14 m-0">Discount :</h5>
+                                    </td>
+                                    <td colspan="2" class="text-right">
+                                        -₹ 78
+                                    </td>
+                                </tr>
+
+
+                                
+                                <tr class="bg-light">
+                                    <td colspan="1">
+                                        <h5 class="font-size-14 m-0">Total:</h5>
+                                    </td>
+                                    <td colspan="2" class="text-right">
+                                        ₹ {{trademarkOrderSummary?.totalFees}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="row my-4">
+
+                <div class="col col-12 col-sm-12">
+                    <div class="text-end mt-2 mt-sm-0">
+                        <a (click)="createRzpayOrder()" class="btn btn-success w-100">
+                            Pay ₹{{trademarkOrderSummary?.totalFees}}</a>
+                    </div>
+                </div> <!-- end col -->
+            </div> <!-- end row-->
+
+        </div>
+    </div>
+    <!-- end row -->
+
+</div>

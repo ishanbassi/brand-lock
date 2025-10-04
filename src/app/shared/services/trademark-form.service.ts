@@ -57,6 +57,7 @@ type TrademarkFormGroupContent = {
   source: FormControl<TrademarkFormRawValue['source']>;
   lead: FormControl<TrademarkFormRawValue['lead']>;
   user: FormControl<TrademarkFormRawValue['user']>;
+  trademarkPlan: FormControl<TrademarkFormRawValue['trademarkPlan']>;
   trademarkClasses: FormControl<TrademarkFormRawValue['trademarkClasses']>;
 
 };
@@ -112,6 +113,7 @@ export class TrademarkFormService {
       source: new FormControl(trademarkRawValue.source),
       lead: new FormControl(trademarkRawValue.lead),
       user: new FormControl(trademarkRawValue.user),
+      trademarkPlan: new FormControl(trademarkRawValue.trademarkPlan),
       trademarkClasses: new FormControl(trademarkRawValue.trademarkClasses ?? []),
 
 
