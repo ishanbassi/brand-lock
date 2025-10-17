@@ -1,0 +1,170 @@
+:host-context(app-login-v2),:host-context(app-forgot-password),:host-context(app-recover-password),:host-context(app-contact) {
+    .feature-section{
+        background-color: #f6f5f4;
+        padding: 100px 16px 284px;
+    }
+    @media  (max-width:1200px) {
+        .feature-section{
+
+            background-color: #fff !important;
+            padding:0 20px !important;
+            padding-top:40px !important; 
+        }   
+    }
+    
+}
+.feature-section {
+    background-color: #f6f5f4;
+    padding: 60px 20px;
+    height: 100%;
+    .no-mobile-view {
+        display: block;
+    }
+
+    .only-mobile-view {
+        display: none;
+    }
+
+    .feature-text-section {
+        max-width: 580px;
+
+        .feature-heading {
+            font-weight: 700;
+            font-size: 32px;
+            line-height: 46px;
+            letter-spacing: 0%;
+            margin-bottom: 10px;
+        }
+
+        .feature-text {
+            font-weight: 400;
+            font-size: 22px;
+            line-height: 28px;
+            letter-spacing: 0%;
+            margin-bottom: 30px;
+        }
+    }
+    .provider-cards {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 24px 0;
+        justify-content: space-around;
+
+        .provider-card {
+            width: 33.3%;
+            gap: 16px;
+            border-radius: 12px;
+            background: #FFF;
+            box-shadow: 0px 12px 16px -26px rgba(0, 0, 0, 0.06), 0px 12px 12px -6px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(0, 0, 0, 0.06);
+            min-height: 250px;
+            padding: 16px;
+
+            .provider-img-section {
+                min-height: 45px;
+                margin-bottom: 25px;
+                text-align: center;
+
+                .provider-img {
+                    max-width: 100%;
+                    width: 80px;
+
+                    
+                }
+            }
+
+            .provider-category {
+                margin-bottom: 20px;
+                text-align: center;
+                min-height: 40px;
+
+                .category-chip {
+                    border-radius: 100px;
+                }
+            }
+
+            .provider-savings-section {
+                color: #001F4D;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 25px;
+                text-align: center;
+
+                .savings-amount {
+                    font-size: 33px;
+                    font-weight: 600;
+                    line-height: normal;
+                }
+            }
+        }
+    }
+
+    .feature-condition-section {
+        color: #696969;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
+
+}
+
+@media screen and (max-width:1200px) {
+
+    .feature-section {
+        width: 100%;
+        background-color: #FFF;
+        padding: 0px 20px;
+        padding-top: 10px !important;
+        .no-mobile-view {
+            display: none;
+        }
+    
+        .only-mobile-view {
+            display: block;
+        }
+
+        .feature-heading {
+            font-size: 20px !important;
+            font-style: normal;
+            font-weight: 800 !important;
+            line-height: 28px !important;
+            color: var(--Blue-900, #001F4D);            
+        }
+
+        .feature-text {
+            font-size: 14px !important;
+            font-style: normal;
+            font-weight: 400 !important;
+            line-height: 24px !important;
+            margin-bottom: 0 !important;
+        }
+        .provider-cards {
+            flex-direction: column;
+
+            .provider-card {
+                width: 100%;
+                min-height: 220px !important;
+
+                .provider-img-section {
+                    margin-bottom: 10px !important;
+                }
+            }
+        }
+        .feature-condition-section {
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            line-height: normal !important;
+            color: #4A4A4A !important;
+        }
+    }
+
+}
+
+@media screen and (min-width:1900px) {
+    .feature-section{
+        min-height: 100vh;
+    }
+}

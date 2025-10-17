@@ -13,11 +13,15 @@ import { CreateOrderResponse } from "../../../models/create-order-response.model
 import { TrademarkOrderSummary } from "../../../models/trademark-order-summary.model";
 import { RazorPayOrderResponse, RazorPaySignatureVerificationDTO } from "../../../models/razorpay-order-response.model";
 import { ILead } from "../../../models/lead.model";
+import { Account } from "../../../models/account.model";
+import { JwtToken } from "../../../models/jwt.token";
+import { IUserProfile } from "../../../models/user-profile.model";
 
 @Injectable({
     providedIn: 'root'
   })
   export class DataService {
+  
   
     
   constructor(private http: HttpClient) {   
@@ -85,6 +89,17 @@ import { ILead } from "../../../models/lead.model";
 
       }
     
+    register(account: Account) {
+      return this.saveRecord('api/portal/register', account);  
+    }
+
+    login(data: any): Observable<JwtToken> {
+      return this.saveRecord('/api/authenticate', data);
+    }
+
+    getCurrentUser():Observable<IUserProfile>{
+      return this.getRecords("/api/current-user");
+    }
 
     
   }  

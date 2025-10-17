@@ -12,12 +12,12 @@ import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ITrademark } from '../../models/trademark.model';
 import { DataUtils, FileLoadError } from '../shared/services/data-util.service';
 import { TrademarkFormGroup, TrademarkFormService, TrademarkWithLogoFormGroup } from '../shared/services/trademark-form.service';
-import { ToastService } from '../shared/toast.service';
 import { LoadingService } from '../common/loading.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { DocumentsFormService } from '../shared/services/documents-form.service';
 import { IDocuments } from '../../models/documents.model';
 import { DocumentType } from '../enumerations/document-type.model';
+import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -49,7 +49,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
     private readonly localStorageService: LocalStorageService,
     private readonly sessionStorageService: SessionStorageService,  
     private readonly dataUtils: DataUtils,
-    private readonly toastService:ToastService,
+    private readonly toastService:ToastrService,
     private readonly loadingService: LoadingService,
     protected elementRef: ElementRef,
 
@@ -157,7 +157,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
   setFileData(event: Event, field: string, isImage: boolean): void {
     this.dataUtils.loadFileToForm(event, this.trademarkDetailsForm.get('document') as FormGroup, field, isImage, this.trademarkDetailsForm).subscribe({
       error: (err: FileLoadError) =>
-        this.toastService.showError(`Error loading file: ${err.message}`),
+        this.toastService.error(`Error loading file: ${err.message}`),
     });
   }
   

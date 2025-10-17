@@ -1,0 +1,57 @@
+  <mat-toolbar class="dashboard-nav-bar site-navbar">
+    <mat-toolbar-row>
+      <img class="sidenav-mobile-view-logo" src="/assets/images/trademarx.svg" alt="logo"
+        [routerLink]="['/portal/dashboard']" />
+      <div class="user-icon-container">
+
+
+        <a [matMenuTriggerFor]="menu">
+          <img src="/assets/images/icons/user-profile-icon.svg" alt="" class="user-icon">
+        </a>
+      </div>
+      <button mat-icon-button class="mobile-view-menu-icon" aria-label="Menu" (click)="toggle()">
+        <mat-icon class="ham-menu">menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="account-sub-menu">
+        <button mat-menu-item>
+          <!-- <span>{{firstName}} {{lastName}}</span> -->
+        </button>
+        <button mat-menu-item [routerLink]="['/portal/my/profile']">
+          <mat-icon>account_circle</mat-icon>
+          <span>Account Info</span>
+        </button>
+        
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <mat-expansion-panel class="mobile-view-menu mobile-menu-view-v2 " [expanded]="panelOpenState">
+    <div class="mobile-menu-items">
+      <a class="mobile-menu-item dashboard-nav-item first-mobile-item">
+        <!-- <span>{{firstName}} {{lastName}}</span> -->
+      </a>
+      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/dashboard']" (click)="toggle()">
+        <span>Dashboard</span>
+      </a>
+      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="['/portal/add-providers']"
+      (click)="toggle()"
+      >
+        <span>Add Providers</span>
+      </a>
+      
+      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+      [routerLink]="['/portal/statement']" (click)="toggle()"
+         >
+        <span>Statements</span>
+      </a>
+      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+      [routerLink]="['/portal/refer-your-friend']" (click)="toggle()"
+         >
+        <span>Refer a Friend and Get $50</span>
+      </a>
+    </div>
+  </mat-expansion-panel>

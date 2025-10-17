@@ -1,0 +1,509 @@
+.create-account-toolbar-row {
+    justify-content: space-between;
+
+    .login-link {
+        border-radius: 6px;
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+        color: var(--Blue-900, #001F4D);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 24px;
+        letter-spacing: -0.032px;
+
+    }
+}
+
+.create-account-page-v2 {
+    margin: 0 auto;
+
+    .create-account-main-section {
+        display: flex;
+        justify-content: space-between;
+
+        .feature-section {
+            background-color: #f6f5f4;
+            width: 50%;
+            padding: 100px 16px 284px;
+
+            .feature-text-section {
+                max-width: 580px;
+
+                .feature-heading {
+                    font-weight: 700;
+                    font-size: 32px;
+                    line-height: 46px;
+                    letter-spacing: 0%;
+                    margin-bottom: 12px;
+                }
+
+                .feature-text {
+                    font-weight: 400;
+                    font-size: 22px;
+                    line-height: 26px;
+                    margin-bottom: 24px;
+                }
+            }
+
+        }
+
+        .provider-cards {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 0;
+
+            .provider-card {
+                width: 33.3%;
+                gap: 16px;
+                border-radius: 12px;
+                background: #FFF;
+                box-shadow: 0px 12px 16px -26px rgba(0, 0, 0, 0.06), 0px 12px 12px -6px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(0, 0, 0, 0.06);
+                min-height: 250px;
+                padding: 16px;
+
+                .provider-img-section {
+                    min-height: 45px;
+                    margin-bottom: 35px;
+
+                    .provider-img {
+                        max-width: 100%;
+
+                        &#spectrum-logo {
+                            width: 132px;
+                        }
+
+                        &#aep-logo {
+                            width: 87px;
+                        }
+
+                        &#att-logo {
+                            width: 101px;
+                        }
+                    }
+                }
+
+                .provider-category {
+                    margin-bottom: 20px;
+
+                    .category-chip {
+                        padding: 0px 6px;
+                        border-radius: 100px;
+                    }
+                }
+
+                .provider-savings-section {
+                    color: #001F4D;
+                    font-size: 20px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: 25px;
+
+                    .savings-amount {
+                        font-size: 36px;
+                        font-weight: 600;
+                        line-height: normal;
+                    }
+                }
+            }
+        }
+
+        .feature-condition-section {
+            color: #696969;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+
+        .register-section {
+            width: 50%;
+            padding: 0px 73px 126px;
+
+            .welcome-text {
+                color: #001F4D;
+                text-align: center;
+                font-family: Inter;
+                font-size: 32px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: 46px;
+                margin-top: 98px;
+            }
+                   .create-account-desktop {
+                    color: var(--Blue-900, #001F4D);
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 46px;
+                    text-align: center;
+
+                    .create-account {
+                        color: #1877F2;
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 46px;
+                        text-decoration: none;
+                    }
+                }
+
+            .register-heading {
+                font-weight: 700;
+                font-size: 32px;
+                line-height: 46px;
+                letter-spacing: 0%;
+                text-align: center;
+                padding-bottom: 20px;
+            }
+
+            .form-section {
+                max-width: 720px;
+                margin: 0 auto;
+                box-shadow: 0px 8px 12px -6px #0000000F, 0px 12px 16px -20px #0000000F;
+                border: 1px solid #DBDBDB;
+                border-radius: 12px;
+
+                .site-form {
+                    padding: 18px 24px;
+
+                    label {
+                        color: var(--Black, #202020);
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                        letter-spacing: -0.028px;
+                        margin-bottom: 10px;
+                        display: block;
+                    }
+
+                    .password-field-container {
+                        margin-bottom: 0 !important;
+                    }
+
+                    .register-btn {
+                        display: block;
+                        border-radius: 6px;
+                        padding: 10px 12px;
+                        background: #e6e9ed;
+                        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+                        color: #FFFFFF;
+                        width: 100%;
+                        text-align: center;
+                        font-size: 19px;
+                        font-style: normal;
+                        font-weight: 700;
+                        letter-spacing: -0.038px;
+                    }
+                }
+
+                .sign-btn {
+                    display: flex;
+                    font-size: 19px;
+                    height: 55px;
+                    padding: 10px;
+                    justify-content: center;
+                    align-items: center;
+                    align-self: stretch;
+                    background: #001F4D;
+                    color: #fff;
+                    border-radius: 50px;
+                    background: var(--Blue-900, #001F4D);
+                    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+                    ;
+                    border: none;
+                    width: 100%;
+                    max-width: 468px;
+                    margin: auto;
+                }
+
+            }
+
+        }
+    }
+
+    .only-mobile-view {
+        display: none;
+    }
+}
+
+//input size reduce 
+
+.site-form-field-container {
+    ::ng-deep {
+        .mat-form-field-appearance-outline {
+            width: 100%;
+        }
+
+        .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+            padding-top: 10px;
+        }
+
+        .mat-mdc-text-field-wrapper {
+            height: 44px;
+        }
+
+        .mat-mdc-form-field-icon-suffix>.mat-icon {
+            padding: 0 12px 12px;
+        }
+    }
+}
+
+.or-text {
+    color: #090E1D;
+    text-align: center;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 10px;
+    /* 55.556% */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.facebook-container {
+    margin-top: 12px;
+
+    .facebook-sign-in {
+        border: none;
+        color: #FFF;
+        text-align: center;
+        font-family: Inter;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-color: #1877F2;
+        display: flex;
+        padding: 5px 22px 6px 73px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 20.997px;
+        background: #1877F2;
+        box-shadow: 0px 38.487px 71.476px 0px rgba(0, 0, 0, 0.07);
+        height: 55px;
+        width: 100%;
+        max-width: 468px;
+        margin: auto;
+    }
+}
+
+.google-container {
+    margin-top: 12px;
+
+    .google-sign-in {
+        border: none;
+        color: rgba(0, 0, 0, 0.54);
+        text-align: center;
+        font-family: Inter;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-color: #fff;
+        display: flex;
+        padding: 5px 22px 6px 78px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 20.997px;
+        background: #FFF;
+        box-shadow: 0px 38.487px 71.476px 0px rgba(0, 0, 0, 0.07);
+        height: 55px;
+        width: 100%;
+        max-width: 468px;
+        margin: auto;
+    }
+}
+
+@media screen and (max-width:510px) {
+    .google-container {
+        .google-sign-in {
+            padding-left: 50px !important;
+        }
+    }
+
+    .facebook-container {
+        .facebook-sign-in {
+            padding-left: 48px !important;
+        }
+    }
+}
+
+@media screen and (max-width:407px) {
+    .google-container {
+        .google-sign-in {
+            padding-left: 20px !important;
+            font-size: 19px !important;
+        }
+    }
+
+    .facebook-container {
+        .facebook-sign-in {
+            padding-left: 16px !important;
+            font-size: 19px !important;
+            padding-right: 10px !important;
+        }
+    }
+}
+
+@media screen and (max-width:355px) {
+    .google-container {
+        .google-sign-in {
+            padding-left: 15px !important;
+            font-size: 18px !important;
+        }
+    }
+
+    .facebook-container {
+        .facebook-sign-in {
+            gap: 0px !important;
+            padding-left: 9px !important;
+            padding-right: 5px !important;
+            font-size: 18px !important;
+        }
+    }
+}
+
+@media screen and (max-width:1360px) and (min-width: 1201px) {
+    .google-container {
+        .google-sign-in {
+            padding-left: 40px !important;
+        }
+    }
+
+    .facebook-container {
+        .facebook-sign-in {
+            padding-left: 30px !important;
+            padding-right: 12px !important;
+        }
+    }
+}
+
+@media screen and (max-width:1200px) {
+    .create-account-page-v2 {
+        .no-mobile-view {
+            display: none;
+        }
+
+        .only-mobile-view {
+            display: block;
+            line-height: 28px;
+            display: block;
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        .create-account-main-section {
+            flex-direction: column;
+
+            .feature-section {
+                width: 100%;
+                background-color: #FFF;
+                padding: 0px 20px;
+                padding-top: 40px !important;
+
+                .feature-heading {
+                    font-size: 20px !important;
+                    font-style: normal;
+                    font-weight: 700 !important;
+                    line-height: 28px !important;
+                }
+
+                .feature-text {
+                    font-size: 14px !important;
+                    font-style: normal;
+                    font-weight: 400 !important;
+                    line-height: 24px !important;
+                    margin-bottom: 0 !important;
+                }
+            }
+
+            .register-section {
+                width: 100%;
+                padding: 0px;
+
+                .form-section {
+                    border: none;
+
+                    .site-form {
+                        padding: 0px 12px 80px;
+                    }
+
+                    .register-btn {
+                        border-radius: 6px !important;
+                        background: #001F4D !important;
+                        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05) !important;
+                        color: #FFF;
+
+                        letter-spacing: -0.04px !important;
+                    }
+
+                    .sign-btn {
+                        display: flex;
+                        padding: 10px 12px;
+                        justify-content: center;
+                        align-items: center;
+                        align-self: stretch;
+                        background: #001F4D;
+                        color: #fff;
+                        border: none;
+                        width: 100%;
+                    }
+
+                }
+
+         
+
+
+                .register-heading {
+                    font-size: 18px !important;
+                    font-style: normal;
+                    font-weight: 700 !important;
+                    line-height: 46px !important;
+                }
+
+            }
+
+            .mobile-view-bottom-section {
+                padding: 10px 12px;
+                background-color: #F6F5F4;
+
+                .provider-cards {
+                    flex-direction: column;
+
+                    .provider-card {
+                        width: 100%;
+                        min-height: 220px !important;
+                        max-width: 342px;
+
+                        .provider-img-section {
+                            margin-bottom: 10px !important;
+                        }
+                    }
+                }
+
+                .feature-condition-section {
+                    font-size: 13px !important;
+                    font-weight: 400 !important;
+                    line-height: normal !important;
+                    color: #4A4A4A !important;
+                }
+            }
+        }
+    }
+
+
+    .welcome-text {
+        color: #001F4D;
+        text-align: center;
+        font-family: Inter;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 46px;
+        margin-top: 50px;
+    }
+}

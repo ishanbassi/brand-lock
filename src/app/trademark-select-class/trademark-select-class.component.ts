@@ -20,9 +20,9 @@ import { Router } from '@angular/router';
 import { TrademarkService } from '../shared/services/trademark.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
-import { ToastService } from '../shared/toast.service';
 import { ITrademark } from '../../models/trademark.model';
 import { TrademarkFormService } from '../shared/services/trademark-form.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-trademark-select-class',
@@ -49,7 +49,7 @@ export class TrademarkSelectClassComponent implements OnInit {
     private readonly router:Router,
     private readonly trademarkService: TrademarkService,
     private readonly sessionStorageService: SessionStorageService,  
-    private readonly toastService:ToastService,
+    private readonly toastService:ToastrService,
     private readonly loadingService: LoadingService
   ){}
   filterChanges: Subject<boolean>|undefined;

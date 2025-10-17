@@ -15,7 +15,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService } from '../shared/services/payment.service';
 import { TrademarkOrderSummary } from '../../models/trademark-order-summary.model';
 import { LoadingService } from '../common/loading.service';
-import { ToastService } from '../shared/toast.service';
 import { catchError, finalize } from 'rxjs';
 import { SharedModule } from '../shared/shared.module';
 import { MatIcon } from '@angular/material/icon';
@@ -24,6 +23,9 @@ import { TrademarkTypeValues } from '../enumerations/trademark-type.model';
 import { RazorPayOrderResponse, RazorPaySignatureVerificationDTO } from '../../models/razorpay-order-response.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentSuccessFailurePopupComponent } from '../payment-success-failure-popup/payment-success-failure-popup.component';
+import { PaymentConfirmationResponse } from '../../models/payment-confirmation-response.model';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-checkout-page',
@@ -56,8 +58,9 @@ environment = environment;
     private readonly route: ActivatedRoute,
     private readonly paymentService:PaymentService,
     private readonly loadingService:LoadingService,
-    private readonly toastService:ToastService,
+    private readonly toastService:ToastrService,
     private readonly dialog:MatDialog,
+    private readonly localstorageService:LocalStorageService
 
 
     
@@ -141,8 +144,10 @@ environment = environment;
         finalize(() => this.loadingService.hide())
       )
       .subscribe({
-        next:() =>{
-          setTimeout(() => this.showPaymentSuccessfulPopup(), 1000)
+        next:(paymentConfirmationResponse: PaymentConfirmationResponse) =>{
+          setTimeout(() => this.showPaymentSuccessfulPopup(), 1000);
+          this.localstorageService.storeAuthenticationToken(paymentConfirmationResponse.token.idToken);
+          this.router.navigate(['/dashboard'])
 
         },
         error:() => {

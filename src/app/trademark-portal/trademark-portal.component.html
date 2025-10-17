@@ -1,0 +1,47 @@
+<app-dashboard-header></app-dashboard-header>
+<mat-drawer-container class="dashboard-drawer-container">
+  <mat-drawer mode="side" [opened]="matDrawerOpened" class="dashboard-mat-drawer">
+    <div>
+     
+    <div class="sidenav-content sidenav-menu-content">
+      <a class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/dashboard']">
+        <div class="menu-item-heading  dashboard-margin">
+          <div class="dashboard-icon"><span>
+              <img src="/assets/images/icons/dashboard.svg" alt="dashboard-icon">
+        </span>
+        </div>
+        <p>Dashboard</p></div>
+      </a>
+      <a class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/new-filing']">
+        <div class="menu-item-heading  dashboard-margin">
+          <div class="dashboard-icon"><span>
+              <img src="/assets/images/icons/documents.svg" alt="dashboard-icon">
+        </span>
+        </div>
+        <p>File Trademark</p></div>
+      </a>
+      <a class="menu-item active" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/dashboard/uploaded-documents']">
+        <div class="menu-item-heading  dashboard-margin">
+          <div class="dashboard-icon"><span>
+              <img src="/assets/images/icons/documents.svg" alt="dashboard-icon">
+        </span>
+        </div>
+        <p>Documents</p></div>
+      </a>
+      
+     
+
+      
+    </div>
+    
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="dashboard-drawer-content">
+         <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

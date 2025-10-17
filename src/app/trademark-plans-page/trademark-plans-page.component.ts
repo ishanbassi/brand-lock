@@ -14,8 +14,8 @@ import { ITrademarkPlan, NewTrademarkPlan } from '../../models/trademark-plan.mo
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkPlanService } from '../shared/trademark-plan.service';
 import { finalize, switchMap } from 'rxjs';
-import { ToastService } from '../shared/toast.service';
 import { LoadingService } from '../common/loading.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-trademark-plans-page',
@@ -36,7 +36,7 @@ export class TrademarkPlansPageComponent implements OnInit {
     private readonly paymentService: PaymentService,
     private readonly trademarkService:TrademarkService,
     private readonly trademarkPlanService:TrademarkPlanService ,
-    private readonly toastService:ToastService,
+    private readonly toastService:ToastrService,
     private readonly loadingService:LoadingService
   ){}
   

@@ -21,7 +21,6 @@ import { FooterComponent } from '../../footer/footer.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
-import { ToastService } from '../../shared/toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
 import { Meta } from '@angular/platform-browser';

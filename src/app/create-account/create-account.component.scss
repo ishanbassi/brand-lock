@@ -1,0 +1,614 @@
+$primary: #001F4D;
+
+.create-account-toolbar-row {
+  justify-content: space-between;
+
+  .login-link {
+    border-radius: 6px;
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    color: var(--Blue-900, #001F4D);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: -0.032px;
+
+  }
+}
+
+.create-account-page-v2 {
+  margin: 0 auto;
+
+  .create-account-main-section {
+    display: flex;
+    justify-content: space-between;
+
+
+    .provider-cards {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 0;
+
+      .provider-card {
+        width: 33.3%;
+        gap: 16px;
+        border-radius: 12px;
+        background: #FFF;
+        box-shadow: 0px 12px 16px -26px rgba(0, 0, 0, 0.06), 0px 12px 12px -6px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(0, 0, 0, 0.06);
+        min-height: 250px;
+        padding: 16px;
+
+        .provider-img-section {
+          min-height: 45px;
+          margin-bottom: 35px;
+
+          .provider-img {
+            max-width: 100%;
+
+            &#spectrum-logo {
+              width: 132px;
+            }
+
+            &#aep-logo {
+              width: 87px;
+            }
+
+            &#att-logo {
+              width: 101px;
+            }
+          }
+        }
+
+        .provider-category {
+          margin-bottom: 20px;
+
+          .category-chip {
+            padding: 0px 6px;
+            border-radius: 100px;
+          }
+        }
+
+        .provider-savings-section {
+          color: #001F4D;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 25px;
+
+          .savings-amount {
+            font-size: 36px;
+            font-weight: 600;
+            line-height: normal;
+          }
+        }
+      }
+    }
+
+    .feature-condition-section {
+      color: #696969;
+      font-size: 19px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .register-section {
+      width: 50%;
+      padding: 64px 116px 126px;
+
+      .register-heading {
+        color: var(--Blue-900, #001F4D);
+        text-align: center;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 46px;
+        /* 143.75% */
+      }
+
+      .register-bottom {
+        letter-spacing: 0%;
+        padding-bottom: 10px;
+        color: var(--Blue-900, #001F4D);
+        text-align: center;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 10px;
+        /* 50% */
+        margin-top: 16px;
+      }
+
+      .form-section {
+        max-width: 488px;
+        margin: 0 auto;
+        border: 1px solid #DBDBDB;
+        border-radius: 6px;
+
+        .site-form {
+          padding: 10px 12px;
+          box-shadow: 0px 8px 12px -6px #0000000F, 0px 12px 16px -20px #0000000F;
+
+          label {
+            color: var(--Black, #202020);
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            letter-spacing: -0.028px;
+            margin-bottom: 10px;
+            &.form-labels{
+              display: block;
+            }
+          }
+
+          // .password-field-container {
+          //     margin-bottom: 0;
+          // }
+          input::-webkit-outer-spin-button,
+          input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+
+
+          .register-btn {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 50px;
+            background: var(--Blue-900, #001F4D);
+            box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+            ;
+            color: #FFFFFF;
+            width: 100%;
+            text-align: center;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 700;
+            letter-spacing: -0.038px;
+            height: 55px;
+            margin-bottom: 16px;
+          }
+
+          .or-text {
+            color: #090E1D;
+            text-align: center;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: 10px;
+            /* 55.556% */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 12px;
+          }
+
+          .facebook-container {
+            margin-top: 12px;
+
+            .facebook-sign-in {
+              border: none;
+              color: #FFF;
+              text-align: center;
+              font-family: Inter;
+              font-size: 20px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: normal;
+              border-color: #1877F2;
+              display: flex;
+
+              padding: 5px 22px 6px 73px;
+              align-items: center;
+              gap: 10px;
+              border-radius: 20.997px;
+              background: #1877F2;
+              box-shadow: 0px 38.487px 71.476px 0px rgba(0, 0, 0, 0.07);
+              height: 55px;
+              width: 100%;
+
+            }
+          }
+
+
+          .google-container {
+            margin-top: 12px;
+
+            .google-sign-in {
+              border: none;
+              color: rgba(0, 0, 0, 0.54);
+              text-align: center;
+              font-family: Inter;
+              font-size: 20px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: normal;
+              border-color: #fff;
+              display: flex;
+
+              padding: 5px 22px 6px 78px;
+              align-items: center;
+              gap: 10px;
+              border-radius: 20.997px;
+              background: #FFF;
+              box-shadow: 0px 38.487px 71.476px 0px rgba(0, 0, 0, 0.07);
+              height: 55px;
+              width: 100%;
+
+            }
+          }
+        }
+
+
+        .terms-conditions-section {
+          padding: 16px 24px;
+          color: #696969;
+          font-size: 10px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 17px;
+          border-top: 1px solid var(--Neutral-300, #DBDBDB);
+          background: var(--Neutral-100, #F6F5F4);
+
+          .form-links {
+            color: #696969;
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 17px;
+            text-decoration-line: underline !important;
+          }
+        }
+
+      }
+
+    }
+
+    .testimonials-section {
+      padding: 10px 12px;
+
+      .testimonial-heading {
+        color: var(--Blue-900, #001F4D);
+        text-align: center;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 28px;
+        margin-bottom: 19px;
+        margin-top: 26px;
+      }
+
+      .testimonials-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .testimonial {
+        border-radius: 25px;
+        border: 1px solid #EDEDED;
+        background: #001F4D;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        padding: 15px;
+
+        .stars img {
+          width: 134px;
+        }
+
+        .testimonial-comment {
+          color: #FFF;
+          font-size: 15.8px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px;
+          /* 125% */
+          margin: 16px 0;
+          opacity: .99;
+
+        }
+
+        .user-name {
+          color: #FFF;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 800;
+          line-height: 46px;
+          /* 287.5% */
+        }
+
+        .user-profile-image img {
+          width: 74px;
+          border-radius: 100px;
+
+        }
+      }
+    }
+
+    .manage-bills-section {
+      margin-top: 50px;
+      padding: 10px 16px;
+
+      .heading {
+        color: var(--Blue-900, #001F4D);
+        font-size: 26px;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 28px;
+        /* 107.692% */
+      }
+
+      ul {
+        list-style-image: url('/assets/images/tick.svg');
+        margin-top: 33px;
+
+        li {
+          color: #001F4D;
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 30px;
+          margin-bottom: 33px;
+
+          b {
+            font-weight: 700;
+
+          }
+
+        }
+      }
+    }
+  }
+
+  .only-mobile-view {
+    display: none;
+  }
+}
+
+//input size reduce
+
+.site-form-field-container {
+  ::ng-deep {
+    .mat-form-field-appearance-outline {
+      width: 100%;
+    }
+    .mat-mdc-form-field-subscript-wrapper{
+      display: none;
+    }
+    .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+      padding-top: 10px;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      height: 44px;
+    }
+
+    .mat-mdc-form-field-icon-suffix>.mat-icon {
+      padding: 0 12px 12px;
+    }
+
+  }
+}
+
+
+@media screen and (max-width:1200px) {
+  .create-account-page-v2 {
+    .no-mobile-view {
+      display: none;
+    }
+
+    .only-mobile-view {
+      display: block;
+    }
+
+    .create-account-main-section {
+      flex-direction: column;
+
+      .register-section {
+        width: 100%;
+        padding: 0px;
+
+        .form-section {
+          border: none;
+
+          .register-btn {
+            letter-spacing: -0.04px !important;
+            margin-bottom: 15px !important;
+          }
+        }
+
+        .register-bottom {
+          font-size: 15px !important;
+          font-style: normal;
+          font-weight: 400 !important;
+          line-height: 10px !important;
+          color: var(--Blue-900, #001F4D);
+          margin-top: 5px !important;
+        }
+      }
+
+      .mobile-view-bottom-section {
+        padding: 10px 12px;
+        background-color: #F6F5F4;
+
+        .negotiated-rates-section {
+          .heading {
+            color: #001F4D;
+            text-align: center;
+            font-size: 22px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: 27px;
+          }
+
+          .negotiated-rates {
+            color: var(--Neutra-800, #4A4A4A);
+            text-align: center;
+            font-size: 13px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 18px;
+            opacity: .5;
+            margin-top: 10px;
+          }
+        }
+
+        .provider-cards {
+          flex-direction: column;
+          padding-top: 8px !important;
+
+          .provider-card {
+            width: 100%;
+            min-height: 220px !important;
+            text-align: center;
+            .provider-img-section {
+              margin-bottom: 10px !important;
+            }
+            .provider-category{
+                font-size: 18px;
+              line-height: normal;
+              color: #001F4D;
+            }
+            .provider-savings-section{
+              font-size: 16px;
+            }
+          }
+        }
+
+        .feature-condition-section {
+          font-size: 13px !important;
+          font-weight: 400 !important;
+          line-height: normal !important;
+          color: #4A4A4A !important;
+        }
+      }
+
+      .terms-conditions-section {
+
+        color: var(--Neutral-700, #696969) !important;
+        text-align: center;
+        font-size: 8px !important;
+        font-weight: 400;
+        line-height: 20px;
+        margin: 0 !important;
+        border-top: none !important;
+        background: #fff !important;
+        padding-top: 0 !important;
+
+        .form-links {
+          font-size: 8px !important;
+        }
+
+      }
+    }
+  }
+
+}
+
+.disable-btn {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
+.pre-register-bottom {
+  color: var(--Blue-900, #001F4D);
+  text-align: center;
+  font-family: Inter;
+  font-size: 15px !important;
+  font-style: normal;
+  font-weight: 700 !important;
+  line-height: 22px !important;
+  /* 146.667% */
+
+}
+
+
+
+@media screen and (max-width:510px) {
+  .create-account-page-v2 {
+    .create-account-main-section {
+      .form-section {
+        .google-container {
+          .google-sign-in {
+            padding-left: 50px !important;
+          }
+        }
+
+        .facebook-container {
+          .facebook-sign-in {
+            padding-left: 48px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width:407px) {
+  .create-account-page-v2 {
+    .create-account-main-section {
+      .form-section {
+        .google-container {
+          .google-sign-in {
+            padding-left: 20px !important;
+            font-size: 19px !important;
+          }
+        }
+
+        .facebook-container {
+          .facebook-sign-in {
+            padding-left: 16px !important;
+            font-size: 19px !important;
+            padding-right: 10px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width:355px) {
+  .create-account-page-v2 {
+    .create-account-main-section {
+      .form-section {
+        .google-container {
+          .google-sign-in {
+            padding-left: 15px !important;
+            font-size: 18px !important;
+          }
+        }
+
+        .facebook-container {
+          .facebook-sign-in {
+            gap: 0px !important;
+            padding-left: 9px !important;
+            padding-right: 5px !important;
+            font-size: 18px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width:1360px) and (min-width: 1201px) {
+  .create-account-page-v2 {
+    .create-account-main-section {
+      .form-section {
+        .google-container {
+          .google-sign-in {
+            padding-left: 40px !important;
+          }
+        }
+
+        .facebook-container {
+          .facebook-sign-in {
+            padding-left: 30px !important;
+            padding-right: 12px !important;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,22 @@
-<div class="form-section mx-2 mx-md-auto">
-          <form >
+<div>
+  <app-dashboard-header></app-dashboard-header>
+  <div class="site-page-body create-account-page-v2">
+    <div class="create-account-main-section">
+      <app-features class="features-component"></app-features>
+      <div class="register-section">
+        <div class="register-heading no-mobile-view">
+          Create Account
+        </div>
+        <div class="form-section mx-2 mx-md-auto">
+          <form class="site-form" novalidate="novalidate" #loginForm="ngForm"
+            (ngSubmit)="executeRecaptchaAndRegister(loginForm.form)">
             <div class="row g-4 no-mobile-view-g">
-              <div class="col-lg-12 site-form-field-container pe-md-0">
-                <label for="firstname">Name</label>
+              <div class="col-lg-12 site-form-field-container mb-3">
+                <label for="firstname" class="form-labels">Name</label>
                 <mat-form-field class="site-form-field" appearance="outline"
                   [ngClass]="{'mat-form-field-invalid':!firstName.valid && (onClickValidation || firstName.touched || firstName.dirty)}">
-                  <input matInput required="required" name="firstName"
-                    pattern="^[A-Za-z0-9_,.&()\/\\&quot;&#39; ]*$" id="firstname" maxlength="45"
+                  <input matInput required="required" name="firstName" #firstName="ngModel" [(ngModel)]="data.firstName"
+                     id="firstname" maxlength="45"
                     placeholder="Enter full Name" appWhitespaceValidator>
                   <mat-icon matSuffix [ngClass]="firstName.value ? 'visible': 'invisible'"
                     (click)="data.firstName=undefined">highlight_off</mat-icon>
@@ -15,11 +25,11 @@
                   [onClickValidation]="firstName.dirty || firstName.touched || onClickValidation">
                 </app-validation-message>
               </div>
-              
+
             </div>
             <div class="row g-0">
-              <div class="site-form-field-container no-padding">
-                <label for="email">Email</label>
+              <div class="site-form-field-container mb-3 no-padding">
+                <label for="email" class="form-labels">Email</label>
 
                 <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
                   [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
@@ -37,8 +47,8 @@
               </div>
             </div>
             <div class="row g-4 no-mobile-view-g">
-              <div class="col-lg-12 site-form-field-container">
-                <label for="phonenumber"> Phone number</label>
+              <div class="col-lg-12 site-form-field-container mb-3">
+                <label for="phonenumber" class="form-labels"> Phone number</label>
                 <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
                   [ngClass]="{'mat-form-field-invalid':!phoneNumber.valid && (onClickValidation || phoneNumber.touched || phoneNumber.dirty)}">
 
@@ -54,14 +64,14 @@
               </div>
             </div>
             <div class="row g-0 no-mobile-view-g" *ngIf="!loggedIn">
-              <div class="col-lg-12 site-form-field-container password-field-container">
-                <label for="password">Password</label>
+              <div class="col-lg-12 site-form-field-container mb-3 password-field-container">
+                <label for="password" class="form-labels">Password</label>
                 <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
                   [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
 
                   <input matInput [type]="passwordFieldType" required="required" name="userPassword"
                     #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password"
-                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}" />
+                    />
                   <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
                     (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
                 </mat-form-field>
@@ -71,13 +81,24 @@
                 </app-validation-message>
               </div>
             </div>
-            
+        
 
             <div class="register-action-container">
               <button mat-raised-button class="register-btn" aria-label="Continue"
                 [ngClass]="{'disable-btn': !loginForm.form.valid}">
                 <span>Create Account</span>
               </button>
+            </div>
+
+
+          
+
+            <div class="pre-register-bottom">
+                <span>Save Time. Save Money.</span>
+            </div>
+
+            <div class="register-bottom">
+                Free to sign up. Pay only when you file.
             </div>
           </form>
           <div class="terms-conditions-section">
@@ -86,3 +107,101 @@
                     Policy</a>.
             </div>
         </div>
+      </div>
+      <div class="only-mobile-view mobile-view-bottom-section">
+        <div class="negotiated-rates-section only-mobile-view">
+            <div class="heading">
+                Own Your Name. Build Your Brand.
+            </div>
+            <div class="negotiated-rates">
+                Trusted by founders and startups across industries.
+            </div>
+
+        </div>
+        <div class="provider-cards">
+          <div class="provider-card">
+          <div class="provider-img-section">
+            <img src="/assets/images/tm-filing.png" class="provider-img" id="spectrum-logo" alt="Spectrum Logo">
+          </div>
+          <div class="provider-category">
+            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+              Trademark Filing
+            </span>
+          </div>
+          <div class="provider-savings-section">
+            <div class="line-height-0-6">At Just</div>
+            <div class="savings-amount">₹999</div>
+            <div class="line-height-0-6">only</div>
+          </div>
+        </div>
+        <div class="provider-card">
+          <div class="provider-img-section">
+            <img src="/assets/images/tm-filing-hearing.png" class="provider-img" id="aep-logo" alt="Spectrum Logo">
+          </div>
+          <div class="provider-category">
+            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+              Trademark Filing 
+            </span>
+            <br>
+            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+              & Hearings
+            </span>
+            
+               
+          </div>
+          <div class="provider-savings-section">
+            <div class="line-height-0-6">At Just</div>
+            <div class="savings-amount">₹2999</div>
+            <div class="line-height-0-6">only</div>
+          </div>
+        </div>
+        </div>
+        <div class="feature-condition-section only-mobile-view">
+          Trusted by 1000+ startups and small businesses across India.
+        </div>
+
+      </div>
+<!-- 
+
+        <div class="testimonials-section only-mobile-view">
+            <div class="testimonial-heading">
+                See Why Our Members Love SameSidewalk
+            </div>
+            <div class="testimonials-wrapper">
+                <div class="testimonial" *ngFor="let testimonail of testimonials">
+                                <div class="stars">
+                                    <img src="/assets/images/stars.png" alt="stars">
+                                </div>
+                                <div class="testimonial-comment">
+                                    {{testimonail.comment}}
+                                </div>
+                                <div class="user-name">
+                                    {{testimonail.customerName}}
+                                </div>
+                                <div class="user-profile-image">
+                                    <img [src]="'/assets/images/'+testimonail.profileImg" [alt]="testimonail.customerName">
+                                </div>
+                            </div>
+            </div>
+
+        </div> -->
+        <div class="manage-bills-section only-mobile-view">
+            <div class="heading">
+                There's a smarter way to protect your brand:
+            </div>
+            <ul>
+                <li>
+                    <b>Protect your name early—</b>register before someone else does and build brand ownership from day one.
+                </li>
+                <li>
+                    <b>Avoid rejection—</b>our smart checks detect similar trademarks before you file, reducing risk of objection.
+                </li>
+                <li>
+                    <b>Stay informed—</b>we track your application status and journal publications so you never miss an update.
+                </li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+</div>

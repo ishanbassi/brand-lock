@@ -14,7 +14,6 @@ import { LeadFormService } from '../../../models/lead-form.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { PhoneInputComponent } from '../../phone-input/phone-input.component';
 import { LoadingService } from '../../common/loading.service';
-import { ToastService } from '../../shared/toast.service';
 import { Router } from '@angular/router';
 import { TrademarkOnboardingBtnSectionComponent } from '../../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { LeadService } from '../../shared/services/lead.service';
@@ -23,6 +22,7 @@ import { SessionStorageService } from '../../shared/services/session-storage.ser
 import { finalize, Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { ValidationMessageComponent } from '../../shared/validation-message/validation-message.component';
+import { ToastrService } from 'ngx-toastr';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -47,7 +47,7 @@ export class BasicDetailsComponent implements OnInit {
   constructor(
      private readonly homeService: HomeService,
       private loadingService:LoadingService,
-      private toastService:ToastService,
+      private toastService:ToastrService,
       private router:Router,
       private readonly leadService: LeadService,
       private readonly localStorageService: LocalStorageService,

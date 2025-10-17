@@ -6,6 +6,10 @@ import { AboutUsComponent } from './about-us/about-us.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
 import { FaqComponent } from './faq/faq.component';
 import { OnboardingComponent } from './onboarding/onboarding.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { TrademarkPortalComponent } from './trademark-portal/trademark-portal.component';
+import { CreateAccountComponent } from './create-account/create-account.component';
+import { LoginV2Component } from './login-v2/login-v2.component';
 
 export const routes: Routes = [
     {
@@ -54,7 +58,22 @@ export const routes: Routes = [
         loadChildren: () => import('./onboarding/onboarding.routes').then(m => m.onboardingRoutes),
         title:"Trademark Registration"
     },
-    
+    {
+        path: 'portal',
+        component:TrademarkPortalComponent,
+        loadChildren: () => import('./trademark-portal/dashboard.routes').then(m => m.dashboardRoutes),
+        title:"Dashboard"
+    },
+    {
+        path: 'create-account',
+        component:CreateAccountComponent,
+        title:"Create Account"
+    },
+    {
+        path: 'login',
+        component:LoginV2Component,
+        title:"Login"
+    },
     {
         path:"**",
         redirectTo:""

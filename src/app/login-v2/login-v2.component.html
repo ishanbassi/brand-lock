@@ -1,0 +1,120 @@
+<div class="website-redesign-v2">
+  <app-dashboard-header></app-dashboard-header>
+    <div class="site-page-body create-account-page-v2">
+        <div class="create-account-main-section">
+            <app-features class="features-component"></app-features>
+            <div class="register-section">
+                <div class="welcome-text">Login</div>
+                <div class="create-account-desktop "> New User? <a class="create-account" [routerLink]="['/create-account']">Create free account</a></div>
+                <div class="form-section mx-2 mx-md-auto">
+                    <form class="site-form" novalidate="novalidate" #loginForm="ngForm"
+                        (ngSubmit)="login(loginForm.form)">
+                        <div class="row no-mobile-view-g">
+                            <div class="col-12 site-form-field-container">
+                                <label for="email">Email</label>
+                                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                                    [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
+
+                                    <input matInput required="required" name="userEmail" #userEmail="ngModel"
+                                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$"
+                                        [(ngModel)]="data.username" id="label" placeholder="Enter email address">
+                                    <mat-icon matSuffix [ngClass]=" userEmail.value ? 'visible': 'invisible'"
+                                        (click)="clearEmail()">highlight_off
+                                    </mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="userEmail"
+                                    [customPatternMessage]="'Please provide a valid email address'"
+                                    [onClickValidation]="userEmail.dirty || userEmail.touched|| onClickValidation">
+                                </app-validation-message>
+                            </div>
+                            <div class="col-lg-12 site-form-field-container password-field-container">
+                                <label for="password">Password</label>
+                                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                                    [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
+
+                                    <input matInput [type]="passwordFieldType" required="required" name="userPassword"
+                                        #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password"
+                                        id="password"
+                                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}" />
+                                    <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
+                                        (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
+                                </mat-form-field>
+                                <app-validation-message [field]="userPassword"
+                                    [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
+                                    [onClickValidation]=" userPassword.dirty || userPassword.touched ||onClickValidation">
+                                </app-validation-message>
+                            </div>
+                        </div>
+                        <div class="forgot-password-mobile-container mt-2 mb-4">
+                            <a [routerLink]="['/forgot/password']" class="text-dark text-decoration-underline">Forgot
+                                Password?</a>
+                        </div>
+                        <button mat-raised-button class="btn btn-lg sign-btn" [disabled]="loginForm.form.invalid">
+                            Sign In
+                        </button>
+                        
+                    </form>
+                </div>
+            </div>
+            <div class="only-mobile-view mobile-view-bottom-section">
+                <div class="feature-text only-mobile-view">
+                    With our negotiated rates at many providers, we ensure you’re always getting a great price
+                </div>
+                <div class="provider-cards">
+                    <div class="provider-card">
+                        <div class="provider-img-section">
+                            <img src="/assets/images/spectrum-logo.svg" class="provider-img" id="spectrum-logo"
+                                alt="Spectrum Logo">
+                        </div>
+                        <div class="provider-category">
+                            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+                                Internet
+                            </span>
+                        </div>
+                        <div class="provider-savings-section">
+                            <div>Receive</div>
+                            <div class="savings-amount">$432</div>
+                            <div>in savings</div>
+                        </div>
+                    </div>
+                    <div class="provider-card">
+                        <div class="provider-img-section">
+                            <img src="/assets/images/aep-logo.svg" class="provider-img" id="aep-logo"
+                                alt="Spectrum Logo">
+                        </div>
+                        <div class="provider-category">
+                            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+                                Electricity
+                            </span>
+                        </div>
+                        <div class="provider-savings-section">
+                            <div>Receive</div>
+                            <div class="savings-amount">$234</div>
+                            <div>in savings</div>
+                        </div>
+                    </div>
+                    <div class="provider-card">
+                        <div class="provider-img-section">
+                            <img src="/assets/images/att-logo.png" class="provider-img" id="att-logo"
+                                alt="Spectrum Logo">
+                        </div>
+                        <div class="provider-category">
+                            <span class="primary-secondary-btn category-chip redesign-btn-v2">
+                                Cell Phone
+                            </span>
+                        </div>
+                        <div class="provider-savings-section">
+                            <div>Receive</div>
+                            <div class="savings-amount">$240</div>
+                            <div>in savings</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-condition-section only-mobile-view">
+                    *Average savings for members with at least five added providers
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

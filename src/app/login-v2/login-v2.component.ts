@@ -1,0 +1,108 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { DataService } from '../shared/services/data.service';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { LoadingService } from '../common/loading.service';
+import { AuthService } from '../../models/auth.services';
+import { JwtToken } from '../../models/jwt.token';
+import { Login } from '../../models/login';
+import { FeaturesComponent } from '../features/features.component';
+import { MatFormField, MatInputModule } from '@angular/material/input';
+import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+
+
+@Component({
+  selector: 'app-login-v2',
+  templateUrl: './login-v2.component.html',
+  styleUrl: './login-v2.component.scss',
+  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule]
+})
+export class LoginV2Component implements OnInit{
+ onClickValidation: boolean = false;
+  data: Login = new Login();
+  passwordFieldType: string = "password";
+  returnUrl: string = '/portal/dashboard';
+  oAuthToken?: string;
+  constructor(private readonly toastService: ToastrService, private readonly dataService: DataService,
+    private  readonly router: Router, private  readonly localStorageService: LocalStorageService,
+    private readonly loadingService: LoadingService, private readonly  authService:AuthService, 
+    private readonly route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.data = new Login();
+    const urlFromQuery = this.route.snapshot.queryParams['returnUrl'];
+  if (urlFromQuery) {
+    this.returnUrl = urlFromQuery;
+  }
+
+  
+  }
+
+  login(form: any): void {
+    this.onClickValidation = !form.valid;
+    if (!form.valid || !this.data.isValidLoginRequest(form)) {
+      return;
+    }
+    this.loadingService.show();
+    this.dataService.login(this.data.forRequest())
+      .subscribe({
+        next: (response: JwtToken) => {
+          this.loadingService.hide();
+          this.localStorageService.storeAuthenticationToken(response.id_token);
+          this.fetchUserDetail();
+        }, error: (error: any) => {
+          this.loadingService.hide();
+          if (!error.detail?.includes('Bad Credentials')) {
+            this.toastService.error(error.detail);
+            return;
+          }
+          this.toastService.error("Failed to sign in! Please check your credentials and try again.");
+        }
+      });
+  }
+
+  fetchUserDetail() {
+    this.dataService.getCurrentUser()
+      .subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          this.localStorageService.setObject('userProfile', response);
+          const targetResource = sessionStorage.getItem('targetResource');
+          if (targetResource) {
+            sessionStorage.removeItem('targetResource');
+             window.location.href = targetResource;
+          } else {
+          this.router.navigate(['/dashboard']); // fallback default
+          }
+          setTimeout(() => {
+            this.router.navigateByUrl(this.returnUrl);
+          }, 200);
+        }, error: (error: any) => {
+          this.loadingService.hide();
+          this.toastService.error("Failed to sign in! Please check your credentials and try again.");
+        }
+      });
+  }
+
+  eyePassword() {
+    if (this.passwordFieldType === "password") {
+      this.passwordFieldType = "text";
+    } else {
+      this.passwordFieldType = "password";
+    }
+  }
+
+  clearEmail() {
+    this.data.username = undefined;
+  }
+
+  changePrimaryColor(color: string) {
+    document.documentElement.style.setProperty('--primary', color);
+  }
+
+}

@@ -1,0 +1,81 @@
+::ng-deep {
+    body {
+        background-color: #f6f5f4;
+    }
+
+    .mat-drawer {
+        position: fixed !important;
+        width: 300px !important;
+        box-shadow: 0 2px 5px #00000008 !important;
+        background-repeat: no-repeat;
+        background-position: bottom;
+        margin-top: 24px;
+        margin-left: 24px;
+        margin-bottom: 24px;
+        background-color: #fff !important;
+        height: 87%;
+        padding-top: 24px;
+        border-radius: 16px !important;
+        border: 1px solid #EDEDED !important;
+        top: 64px !important;
+
+
+
+
+    }
+    .mat-drawer-content{
+        margin-top:30px !important;
+        width: calc(100% - 300px) !important;
+    }
+
+    .mat-drawer-container {
+        background-color: #f6f5f4 !important;
+    }
+
+    .sidenav-menu-content {
+        background-color: #F6F5F4 !important;
+        border-right: none !important;
+
+
+        .menu-item {
+            padding: 18px 1px 18px 12px !important;
+            display: flex;
+            min-height: 70px;
+            align-items: center;
+            gap: 10px;
+            align-self: stretch;
+            background-color: #fff;
+            text-decoration: none;
+            &.active{
+                background-color: #d9d9d9 !important
+            }
+
+            .menu-item-heading {
+                color: #525866 !important;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 500 !important;
+                line-height: 20px;
+                /* 125% */
+                letter-spacing: -0.48px;
+                display: contents;
+                width: 258px;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                }
+                p{
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: 20px; /* 125% */
+                    letter-spacing: -0.16px;
+                    margin:0;
+                            }
+
+                &.active {
+                    background-color: #D9D9D9 !important;
+                }
+            }
+        }
+    }

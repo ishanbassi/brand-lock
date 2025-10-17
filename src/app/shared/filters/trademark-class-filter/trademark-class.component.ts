@@ -18,10 +18,10 @@ import { TrademarkFormService } from '../../services/trademark-form.service';
 import { Router } from '@angular/router';
 import { TrademarkService } from '../../services/trademark.service';
 import { SessionStorageService } from '../../services/session-storage.service';
-import { ToastService } from '../../toast.service';
 import { LoadingService } from '../../../common/loading.service';
 import { TrademarkOnboardingBtnSectionComponent } from '../../../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { MatButtonModule } from '@angular/material/button';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -70,7 +70,7 @@ export class TrademarkClassComponent implements OnInit{
     private readonly router:Router,
     private readonly trademarkService: TrademarkService,
     private readonly sessionStorageService: SessionStorageService,  
-    private readonly toastService:ToastService,
+    private readonly toastService:ToastrService,
     private readonly loadingService: LoadingService,
 
   ) {
