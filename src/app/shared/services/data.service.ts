@@ -16,6 +16,7 @@ import { ILead } from "../../../models/lead.model";
 import { Account } from "../../../models/account.model";
 import { JwtToken } from "../../../models/jwt.token";
 import { IUserProfile } from "../../../models/user-profile.model";
+import { DashboardStats } from "../../../models/dashboard-stats.model";
 
 @Injectable({
     providedIn: 'root'
@@ -89,17 +90,20 @@ import { IUserProfile } from "../../../models/user-profile.model";
 
       }
     
-    register(account: Account) {
+    register(account: Account): Observable<HttpResponse<IUserProfile>> {
       return this.saveRecord('api/portal/register', account);  
     }
 
-    login(data: any): Observable<JwtToken> {
-      return this.saveRecord('/api/authenticate', data);
+    login(data: any): Observable<HttpResponse<JwtToken>> {
+      return this.saveRecord('api/authenticate', data);
     }
 
-    getCurrentUser():Observable<IUserProfile>{
-      return this.getRecords("/api/current-user");
+    getCurrentUser():Observable<HttpResponse<IUserProfile>>{
+      return this.getRecords("api/current-user");
     }
 
+    getDashboardStats():Observable<HttpResponse<DashboardStats>>{
+      return this.getRecords("api/portal/dashboard/stats");
+    }
     
   }  

@@ -1,7 +1,7 @@
 import { IUserProfile } from "./user-profile.model";
 
 export interface PaymentConfirmationResponse{
-    token:JwtToken;
+    token?:JwtToken;
     status:string;
     UserProfileDTO:IUserProfile;
 }

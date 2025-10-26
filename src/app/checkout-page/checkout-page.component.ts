@@ -26,6 +26,8 @@ import { PaymentSuccessFailurePopupComponent } from '../payment-success-failure-
 import { PaymentConfirmationResponse } from '../../models/payment-confirmation-response.model';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ToastrService } from 'ngx-toastr';
+import { IUserProfile } from '../../models/user-profile.model';
+import { AuthService } from '../../models/auth.services';
 
 @Component({
   selector: 'app-checkout-page',
@@ -39,6 +41,7 @@ export class CheckoutPageComponent implements OnInit {
 
 
   lead?: ILead | null = null;
+  userProfile?: IUserProfile | null;
   protected leadFormService = inject(LeadFormService);
   leadForm = this.leadFormService.createLeadFormGroup();
 
@@ -47,6 +50,7 @@ export class CheckoutPageComponent implements OnInit {
   trademarkForm = this.trademarkFormService.createTrademarkFormGroup();
   orderId?: string;
 environment = environment;
+  isAuthorizedUser: any;
   
   constructor(
     private readonly winRef: WindowRefService,
@@ -60,7 +64,8 @@ environment = environment;
     private readonly loadingService:LoadingService,
     private readonly toastService:ToastrService,
     private readonly dialog:MatDialog,
-    private readonly localstorageService:LocalStorageService
+    private readonly localstorageService:LocalStorageService,
+    private readonly authservice:AuthService
 
 
     
@@ -77,7 +82,8 @@ environment = environment;
 
 
   ngOnInit() {
-      
+    this.isAuthorizedUser = this.authservice.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
+
     this.route.queryParams.subscribe(params => {
       this.orderId = params['order_id'];
       if(this.orderId){  
@@ -87,6 +93,7 @@ environment = environment;
             this.trademarkOrderSummary = res.body;
             this.trademark =  this.trademarkOrderSummary?.trademarkDTO;
             this.lead = this.trademarkOrderSummary?.leadDTO;
+            this.userProfile = this.trademarkOrderSummary?.userProfileDTO;
             this.createOrderRequest = {
               trademarkDTO:this.trademark,
               paymentDTO:this.trademarkOrderSummary?.paymentDTO
@@ -139,6 +146,7 @@ environment = environment;
       console.log(error);
       const signatureVerficationDto:RazorPaySignatureVerificationDTO = response;
       signatureVerficationDto.leadDTO = this.trademarkOrderSummary?.leadDTO;
+      signatureVerficationDto.userProfileDTO = this.userProfile;
       this.dataService.verifySignature(signatureVerficationDto)
       .pipe(
         finalize(() => this.loadingService.hide())
@@ -146,8 +154,10 @@ environment = environment;
       .subscribe({
         next:(paymentConfirmationResponse: PaymentConfirmationResponse) =>{
           setTimeout(() => this.showPaymentSuccessfulPopup(), 1000);
-          this.localstorageService.storeAuthenticationToken(paymentConfirmationResponse.token.idToken);
-          this.router.navigate(['/dashboard'])
+          if(paymentConfirmationResponse?.token?.idToken){
+          this.localstorageService.storeAuthenticationToken(paymentConfirmationResponse.token.idToken);            
+          }
+          this.router.navigate(['/portal/dashboard'])
 
         },
         error:() => {

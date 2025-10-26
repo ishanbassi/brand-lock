@@ -7,6 +7,7 @@ import { IUserProfile } from './user-profile.model';
 import { IDocuments } from './documents.model';
 import { ITrademarkClass } from './trademark-class.model';
 import { ITrademarkPlan } from './trademark-plan.model';
+import { TrademarkStatus } from '../app/enumerations/trademark-status.model';
 
 export interface ITrademark {
   id: number;
@@ -25,7 +26,7 @@ export interface ITrademark {
   deleted?: boolean | null;
   usage?: string | null;
   associatedTms?: string | null;
-  trademarkStatus?: string | null;
+  trademarkStatus?: TrademarkStatus | null;
   createdDate?: dayjs.Dayjs | null;
   modifiedDate?: dayjs.Dayjs | null;
   renewalDate?: dayjs.Dayjs | null;

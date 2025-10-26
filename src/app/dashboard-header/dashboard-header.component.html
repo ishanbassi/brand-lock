@@ -14,7 +14,7 @@
       </button>
       <mat-menu #menu="matMenu" class="account-sub-menu">
         <button mat-menu-item>
-          <!-- <span>{{firstName}} {{lastName}}</span> -->
+          <span>{{userProfile?.firstName}} {{userProfile?.lastName}}</span>
         </button>
         <button mat-menu-item [routerLink]="['/portal/my/profile']">
           <mat-icon>account_circle</mat-icon>

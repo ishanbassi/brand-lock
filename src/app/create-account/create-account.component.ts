@@ -43,12 +43,11 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
   loggedIn: any;
 
 
-  constructor(private toastService: ToastrService,
-    private router: Router, private localStorageService: LocalStorageService,
-    private loadingService: LoadingService, private route: ActivatedRoute,
-    private _renderer2: Renderer2,
-    private recaptchaV3Service: ReCaptchaV3Service,
-    private dataService: DataService
+  constructor(private readonly toastService: ToastrService,
+    private readonly router: Router, private readonly localStorageService: LocalStorageService,
+    private readonly loadingService: LoadingService,
+    private  readonly recaptchaV3Service: ReCaptchaV3Service,
+    private readonly dataService: DataService
 
   ) { }
 
@@ -73,7 +72,8 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
         this.loadingService.show();
         this.dataService.register(this.data.forRequest())
           .subscribe({
-            next: (response: any) => {
+            next: (response) => {
+              this.localStorageService.setObject('user', response.body?.user);
               this.processLogin();
             }, error: (error: any) => {
               this.loadingService.hide();
@@ -93,9 +93,9 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
     this.dataService.login(input.forRequest())
     .pipe(finalize(() => this.loadingService.hide()))
       .subscribe({
-        next: (response: JwtToken) => {
-          this.localStorageService.storeAuthenticationToken(response.id_token);
-          // this.router.navigateByUrl("/portal/trademark-registration/type");
+        next: (response) => {
+          this.localStorageService.storeAuthenticationToken(response.body!.id_token);
+          this.router.navigateByUrl("trademark-registration/step-2");
 
         }, error: (error: any) =>   {
           this.toastService.error("Failed to sign in! Please check your credentials and try again.");

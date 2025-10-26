@@ -25,7 +25,11 @@
     }
     .mat-drawer-content{
         margin-top:30px !important;
-        width: calc(100% - 300px) !important;
+        width: calc(100% - 324px) !important;
+        min-height: 100vh;
+        overflow: visible !important;
+        margin-left: 324px !important;
+        
     }
 
     .mat-drawer-container {
@@ -76,6 +80,11 @@
                 &.active {
                     background-color: #D9D9D9 !important;
                 }
+            }
+        }
+        @media (max-width:959px){
+            .mat-drawer-content{
+                margin-left: 0 !important;
             }
         }
     }

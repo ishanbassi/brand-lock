@@ -1,3 +1,3 @@
-export class JwtToken {
-  id_token: string = "";
+export interface JwtToken {
+  id_token: string;
 };

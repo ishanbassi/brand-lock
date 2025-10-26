@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { LocalStorageService } from '../app/shared/services/local-storage.service';
+import { IUser } from './user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private sessionExpired = false;
-  private showExpiredSessionMessage = false;
 
-  constructor(private localStorageService: LocalStorageService, private readonly router: Router) {
+  constructor(private  readonly localStorageService: LocalStorageService) {
   }
 
   logout() {
@@ -23,16 +21,16 @@ export class AuthService {
     return token;
   }
 
-  getUser(): any {
+  getUser(): IUser {
     const user: any = this.localStorageService.getObject('user');
     return user;
   }
 
 
-  getRoles() {
+  getRoles():Array<{name:string}> {
     const user: any = this.localStorageService.getObject('user');
     if (!user) {
-      return new Array<string>();
+      return new Array<any>();
     }
     return user.authorities;
   }
@@ -47,9 +45,7 @@ export class AuthService {
   }
 
   hasRole(roles: any[]): boolean {
-    // this is used in case user has single role
-    //return roles.indexOf(this.getRoles()) !== -1;
-    return roles.some(r => this.getUser().authorities.includes(r));
+    return roles.some(r => this.getUser().authorities?.some(x => x == r));
   }
 
 
@@ -66,6 +62,6 @@ export class AuthService {
       this.localStorageService.remove('token');
       this.localStorageService.remove('user');
     }
-    return { hasAccess: this.hasValidToken(), hasRoleAccess: roles.some(x => this.getRoles().indexOf(x) !== -1) };
+    return { hasAccess: this.hasValidToken(), hasRoleAccess: roles.some(x => this.getRoles().some(role => role.name == x))};
   }
 }

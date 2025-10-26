@@ -1,22 +1,21 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpHandlerFn, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ApplicationConfigService } from '../core/config/application-config.service';
 
+export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+    const applicationConfigService = inject(ApplicationConfigService);
+    const stateStorageService = inject(LocalStorageService);
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private readonly stateStorageService = inject(LocalStorageService);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const serverApiUrl = this.applicationConfigService.getEndpointFor('');
+  const serverApiUrl = applicationConfigService.getEndpointFor('');
     if (!request.url || (request.url.startsWith('http') && !(serverApiUrl && request.url.startsWith(serverApiUrl)))) {
-      return next.handle(request);
+      return next(request);
     }
 
-    const token: string | null = this.stateStorageService.getAuthenticationToken();
+    const token: string | null = stateStorageService.getAuthenticationToken();
+    console.log(token)
     if (token) {
       request = request.clone({
         setHeaders: {
@@ -24,6 +23,5 @@ export class AuthInterceptor implements HttpInterceptor {
         },
       });
     }
-    return next.handle(request);
-  }
+    return next(request)
 }

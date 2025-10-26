@@ -2,6 +2,7 @@
 export class Login {
   username: string | undefined;
   password: string | undefined;
+  rememberMe:boolean = true
 
   isValidLoginRequest(form: any) {
     if (!this.username || this.username.trim() === '') {

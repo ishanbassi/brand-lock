@@ -23,9 +23,10 @@
                                     <!-- <p class="text-muted text-truncate mb-4">Sed ut perspiciatis unde omnis iste</p> -->
                                     <div class="mb-3">
                                         <div class="applicant-info">
-                                            <p class="applicant-name"><b>Name:</b> {{lead?.fullName}}</p>
-                                            <p class="applicant-email"><b>Email:</b> {{lead?.email}}</p>
-                                            <p class="applicant-phone-number"><b>Phone:</b> {{lead?.phoneNumber}}</p>
+                                            <p class="applicant-name"><b>Name:</b> {{isAuthorizedUser ? userProfile?.firstName  + ' ' + userProfile?.lastName   
+                                             :  lead?.fullName}}</p>
+                                            <p class="applicant-email"><b>Email:</b> {{isAuthorizedUser ? userProfile?.email : lead?.email}}</p>
+                                            <p class="applicant-phone-number"><b>Phone:</b> {{isAuthorizedUser ? userProfile?.phoneNumber : lead?.phoneNumber}}</p>
                                         </div>
                                         <div class="edit-btn bg-light  rounded">
                                             <a routerLink="/trademark-registration/step-1" data-bs-toggle="tooltip" data-placement="top" title=""

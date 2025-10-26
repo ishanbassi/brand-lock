@@ -15,6 +15,10 @@ import { finalize, Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { LoadingService } from '../../common/loading.service';
 import { TrademarkFormService } from '../../shared/services/trademark-form.service';
+import { AuthService } from '../../../models/auth.services';
+import { DataService } from '../../shared/services/data.service';
+import { IUserProfile } from '../../../models/user-profile.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-trademark-type',
@@ -29,22 +33,30 @@ export class AddTrademarkTypeComponent implements OnInit{
   isSubmitting = false;
   protected trademarkFormService = inject(TrademarkFormService);
   trademarkForm = this.trademarkFormService.createTrademarkFormGroup();
+  userProfile?: IUserProfile| null
+  isAuthorizedUser?: boolean;
   constructor(
     private readonly router:Router,
     private readonly trademarkService: TrademarkService,
     private readonly localStorageService: LocalStorageService,
     private readonly sessionStorageService: SessionStorageService,
     private readonly loadingService:LoadingService,
+    private readonly authservice:AuthService,
+    private readonly dataService: DataService,
+    private readonly toastService:ToastrService
+    
   ){}
   
   ngOnInit(): void {
     // defaults to Trademark type
     this.trademarkForm.controls['type'].setValue("TRADEMARK");
     this.lead = this.sessionStorageService.getObject('lead');
-    if(!this.lead){
+    this.isAuthorizedUser = this.authservice.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
+    if(!this.lead &&  !this.isAuthorizedUser){
       this.router.navigate(['trademark-registration/step-1']);
       return
     }
+
     this.trademarkForm.patchValue({
       'lead':this.lead
     })
@@ -58,7 +70,21 @@ export class AddTrademarkTypeComponent implements OnInit{
         } 
       })
     }
-    
+    if(this.isAuthorizedUser){
+      this.dataService.getCurrentUser().subscribe({
+        next: (userProfileResponse) => {
+          this.userProfile = userProfileResponse.body;
+          this.trademarkForm.patchValue({
+            'user': this.userProfile
+          })
+        },
+        error: (err) => {
+          console.error('Error fetching user profile:', err);
+          this.toastService.error('Failed to load user profile. Please try again later.', 'Error');
+        }
+      });
+    }
+
   }
 
 

@@ -1,91 +1,209 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
 <div class="container">
     <div class="row">
-        <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-blue order-card">
-                <div class="card-block">
-                    <h6 class="m-b-20">Applications Filed</h6>
-                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
-                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
-                </div>
-            </div>
-        </div>
+        <div class="col-xl-8 col-xxl-6 col col-12 col-sm-12">
+         
 
-        <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-green order-card">
-                <div class="card-block">
-                    <h6 class="m-b-20">Documents Uploaded</h6>
-                    <h2 class="text-right"><i class="fa fa-rocket f-left"></i><span>486</span></h2>
-                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
-                </div>
-            </div>
-        </div>
-
-        
-    </div>
-</div>
-<div class="my-trademark-section">
-    <div class="container">
-    <div class="row flex-lg-nowrap">
+            <div class="my-trademark-section">
+                <div class="container">
+                    <div class="row flex-lg-nowrap">
 
 
-        <div class="col">
+                        <div class="col">
 
-            <div class="row flex-lg-nowrap">
-                <div class="col mb-3">
-                    <div class="e-panel card">
-                        <div class="card-body">
-                            <div class="card-title">
-                            </div>
-                            <div class="e-table">
-                                <div class="table-responsive table-lg mt-3">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                
-                                                <th></th>
-                                                <th class="max-width">Trademark</th>
-                                                <th class="sortable">Date</th>
-                                                <th>Status </th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                            <div class="row flex-lg-nowrap">
+                                <div class="col mb-3">
+                                    <div class="e-panel card ">
+                                        <div class="card-body">
+                                            <div class="card-title">
+                                            </div>
+                                            <div class="e-table">
+                                                <div class="table-responsive table-lg mt-3">
+                                                    <h3>Recent Applications</h3>
+                                                    <table class="table recent-application-table">
+                                                        <thead>
+                                                            <tr>
 
-                                            <tr>
-                                                
-                                                <td class="align-middle text-center">
-                                                    <div class="bg-light d-inline-flex justify-content-center align-items-center align-top"
-                                                        style="width: 35px; height: 35px; border-radius: 3px;"><i
-                                                            class="fa fa-fw fa-photo" style="opacity: 0.8;"></i></div>
-                                                </td>
-                                                <td class="text-nowrap align-middle">Dorothea Joicey</td>
-                                                <td class="text-nowrap align-middle"><span>12 Dec 2017</span></td>
-                                                <td class="text-center align-middle"><i
-                                                        class="fa fa-fw text-secondary cursor-pointer fa-toggle-on"></i>
-                                                </td>
-                                                <td class="text-center align-middle">
-                                                    <div class="btn-group align-top">
-                                                        <button class="btn btn-sm btn-outline-secondary badge"
-                                                            type="button" data-toggle="modal"
-                                                            data-target="#user-form-modal">View</button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                                <th class="max-width">Trademark</th>
+                                                                <th class="max-width">Class</th>
 
-                                        </tbody>
-                                    </table>
+                                                                <th class="sortable">Application No.</th>
+                                                                <th>Status </th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            <tr *ngFor="let applications of dashboardStats?.recentApplications">
+
+
+                                                                <td class="text-nowrap align-middle">
+                                                                    {{applications.name}}
+                                                                </td>
+                                                                <td class="text-nowrap align-middle tm-class">{{applications.tmClass || '-'}}</td>
+                                                                <td class="text-nowrap align-middle application-no"><span>{{applications.applicationNo || 'Awaiting filing'}}</span></td>
+                                                                <td class="text-center align-middle review-status">
+                                                                    <span [ngClass]="{
+                                                                        'active': activeStatuses.includes(applications?.trademarkStatus!),
+                                                                        'in-process': inProcessStatuses.includes(applications?.trademarkStatus!),
+                                                                        'failure-status': failureStatuses.includes(applications?.trademarkStatus!)
+                                                                    }">
+                                                                    
+                                                                        {{applications.trademarkStatus || 'UNKNOWN'}}
+
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-center align-middle">
+                                                                    <div class="btn-group align-top">
+                                                                        <button
+                                                                            class="btn btn-primary"
+                                                                            type="button" data-toggle="modal"
+                                                                            >View</button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
+
                         </div>
+
+                    </div>
+                </div>
+
+            </div>
+             <div class="trademark-application-stats">
+                <div class="container">
+                    <div class="row flex-lg-nowrap">
+
+
+                        <div class="col">
+
+                            <div class="row flex-lg-nowrap">
+                                <div class="col mb-3">
+                                    <div class="e-panel card ">
+                                        <div class="card-body">
+                                            <div class="card-title">
+                                            </div>
+                                            <div class="e-table">
+                                                <div class="table-responsive table-lg mt-3">
+                                                    <h3>Application Stats</h3>
+                                                    <table class="table recent-application-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th *ngFor="let stat of dashboardStats?.stats">
+                                                                    {{stat.trademarkStatus | trademarkStatus}}
+                                                                </th>
+                                                                
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            <tr>
+
+
+                                                                <td *ngFor="let stat of dashboardStats?.stats" 
+                                                                class="text-nowrap align-middle">
+                                                                    {{stat.count}}
+                                                                </td>
+                                                                
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
 
             </div>
 
         </div>
-        
+        <div class="col-12 col-sm-12 col-xl-4">
+            <div class="notification-section dashboard-card mb-3">
+    <div class="section-header">
+        <h3>Pending Actions</h3>
+        <span class="badge-count" *ngIf="dashboardStats?.pendingTasks?.length">
+            {{dashboardStats?.pendingTasks!.length}}
+        </span>
+    </div>
+    
+    <div class="notifications">
+        <div class="notification-item" *ngFor="let tasks of getDisplayedTasks(); let i = index">
+            <div class="notification-icon">
+                <i class="fa-regular fa-file"></i>
+            </div>
+            <div class="notification-content">
+                <h4 class="notification-title">{{tasks.title}}</h4>
+                <p class="notification-description">{{tasks.description}}</p>
+            </div>
+            <div class="notification-action">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!dashboardStats?.pendingTasks || dashboardStats?.pendingTasks?.length === 0">
+            <i class="fa-regular fa-circle-check"></i>
+            <p>No pending actions</p>
+        </div>
+
+        <!-- Show More/Less Button -->
+        <button class="show-more-btn" 
+                *ngIf="dashboardStats?.pendingTasks!.length > maxVisibleTasks"
+                (click)="toggleShowAll()">
+            <span *ngIf="!showAllTasks">
+                <i class="fa-solid fa-chevron-down"></i>
+                Show More ({{dashboardStats?.pendingTasks!.length - maxVisibleTasks}} more)
+            </span>
+            <span *ngIf="showAllTasks">
+                <i class="fa-solid fa-chevron-up"></i>
+                Show Less
+            </span>
+        </button>
     </div>
 </div>
 
-</div>
+
+            <div class="">
+                <div class="card m-b-30">
+                    <div class="card-body row">
+                        <h3>Agent</h3>
+                        <div class="col-4">
+                            <a href=""><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt=""
+                                    class="img-fluid rounded-circle w-60"></a>
+                        </div>
+                        <div class="col-8 card-title align-self-center mb-0">
+                            <h5>Name: Emma A. Main</h5>
+                            <p class="m-0">Trademark Attorney</p>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"> <i class="fa fa-envelope float-right"></i><span
+                                class="email">Email</span> : <br> <a href="#">ishan&#64;gmail.com</a></li>
+                        <li class="list-group-item"><i class="fa fa-phone float-right"></i><span class="phone">Phone
+                            </span>:<br> 000 123-456</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        

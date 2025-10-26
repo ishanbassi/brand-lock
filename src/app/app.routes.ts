@@ -10,22 +10,29 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { TrademarkPortalComponent } from './trademark-portal/trademark-portal.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { LoginV2Component } from './login-v2/login-v2.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     {
         path:"",
         component:HomeComponent,
-        title:"Trademarx"
+        title:"Trademarx",
+        canActivate: [AuthGuard],   
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path:"home",
         component:HomeComponent,
-        title:"Trademarx"
+        title:"Trademarx",
+        canActivate: [AuthGuard],   
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path:"trademark",
         component:HomeComponent,
-        title:"Trademarx"
+        title:"Trademarx",
+        canActivate: [AuthGuard],       
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path:"privacy-policy",
@@ -56,23 +63,29 @@ export const routes: Routes = [
         path: 'trademark-registration',
         component:OnboardingComponent,
         loadChildren: () => import('./onboarding/onboarding.routes').then(m => m.onboardingRoutes),
-        title:"Trademark Registration"
+        title:"Trademark Registration",
     },
     {
         path: 'portal',
         component:TrademarkPortalComponent,
         loadChildren: () => import('./trademark-portal/dashboard.routes').then(m => m.dashboardRoutes),
-        title:"Dashboard"
+        title:"Dashboard",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_USER'] }
     },
     {
         path: 'create-account',
         component:CreateAccountComponent,
-        title:"Create Account"
+        title:"Create Account",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'login',
         component:LoginV2Component,
-        title:"Login"
+        title:"Login",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path:"**",

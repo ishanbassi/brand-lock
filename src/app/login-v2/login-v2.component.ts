@@ -51,9 +51,9 @@ export class LoginV2Component implements OnInit{
     this.loadingService.show();
     this.dataService.login(this.data.forRequest())
       .subscribe({
-        next: (response: JwtToken) => {
+        next: (response) => {
           this.loadingService.hide();
-          this.localStorageService.storeAuthenticationToken(response.id_token);
+          this.localStorageService.storeAuthenticationToken(response.body!.id_token);
           this.fetchUserDetail();
         }, error: (error: any) => {
           this.loadingService.hide();
@@ -71,16 +71,10 @@ export class LoginV2Component implements OnInit{
       .subscribe({
         next: (response) => {
           this.loadingService.hide();
-          this.localStorageService.setObject('userProfile', response);
-          const targetResource = sessionStorage.getItem('targetResource');
-          if (targetResource) {
-            sessionStorage.removeItem('targetResource');
-             window.location.href = targetResource;
-          } else {
-          this.router.navigate(['/dashboard']); // fallback default
-          }
+          this.localStorageService.setObject('user', response.body?.user);
+          
           setTimeout(() => {
-            this.router.navigateByUrl(this.returnUrl);
+          this.router.navigate(['/dashboard']); // fallback default
           }, 200);
         }, error: (error: any) => {
           this.loadingService.hide();
@@ -101,8 +95,5 @@ export class LoginV2Component implements OnInit{
     this.data.username = undefined;
   }
 
-  changePrimaryColor(color: string) {
-    document.documentElement.style.setProperty('--primary', color);
-  }
 
 }
