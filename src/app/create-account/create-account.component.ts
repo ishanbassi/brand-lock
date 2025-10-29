@@ -17,10 +17,11 @@ import { Login } from '../../models/login';
 import { JwtToken } from '../../models/jwt.token';
 import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent],
+  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent],
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss'
 })

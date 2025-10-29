@@ -21,6 +21,7 @@ export class DashboardHeaderComponent implements OnInit {
 
   userProfile?:IUser|null;
   isAuthorizedUser: any;
+  isLoginPage = false;
 
 
   constructor(
@@ -34,6 +35,7 @@ export class DashboardHeaderComponent implements OnInit {
     if(this.isAuthorizedUser){  
       this.userProfile = this.authService.getUser();
     }
+    this.isLoginPage = this.router.url.includes("login");
 
   }
 

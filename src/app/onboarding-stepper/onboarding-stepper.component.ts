@@ -56,7 +56,6 @@ export class OnboardingStepperComponent implements OnInit {
     else if (url.includes('step-4'))   {
       this.currentStepIndex = 3;
     }
-    console.log(this.currentStepIndex)
     this.cdRef.detectChanges();
 
   }

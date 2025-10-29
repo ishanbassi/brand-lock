@@ -28,11 +28,12 @@ import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { IUserProfile } from '../../models/user-profile.model';
 import { AuthService } from '../../models/auth.services';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 
 @Component({
   selector: 'app-checkout-page',
   imports: [
-    ReactiveFormsModule, SharedModule, MatIcon
+    ReactiveFormsModule, SharedModule, MatIcon, DashboardHeaderComponent
   ],
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.scss'
@@ -143,7 +144,6 @@ environment = environment;
     };
     options.handler = ((response:RazorPayOrderResponse, error:any) => {
       options.response = response;
-      console.log(error);
       const signatureVerficationDto:RazorPaySignatureVerificationDTO = response;
       signatureVerficationDto.leadDTO = this.trademarkOrderSummary?.leadDTO;
       signatureVerficationDto.userProfileDTO = this.userProfile;
@@ -153,9 +153,11 @@ environment = environment;
       )
       .subscribe({
         next:(paymentConfirmationResponse: PaymentConfirmationResponse) =>{
-          setTimeout(() => this.showPaymentSuccessfulPopup(), 1000);
           if(paymentConfirmationResponse?.token?.idToken){
-          this.localstorageService.storeAuthenticationToken(paymentConfirmationResponse.token.idToken);            
+          this.localstorageService.storeAuthenticationToken(paymentConfirmationResponse.token.idToken); 
+          // clear session storage after successful payment
+          this.sessionStorageService.remove("trademark")
+                     
           }
           this.router.navigate(['/portal/dashboard'])
 

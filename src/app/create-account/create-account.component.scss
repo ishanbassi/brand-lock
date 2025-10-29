@@ -23,74 +23,6 @@ $primary: #001F4D;
     justify-content: space-between;
 
 
-    .provider-cards {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 24px 0;
-
-      .provider-card {
-        width: 33.3%;
-        gap: 16px;
-        border-radius: 12px;
-        background: #FFF;
-        box-shadow: 0px 12px 16px -26px rgba(0, 0, 0, 0.06), 0px 12px 12px -6px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(0, 0, 0, 0.06);
-        min-height: 250px;
-        padding: 16px;
-
-        .provider-img-section {
-          min-height: 45px;
-          margin-bottom: 35px;
-
-          .provider-img {
-            max-width: 100%;
-
-            &#spectrum-logo {
-              width: 132px;
-            }
-
-            &#aep-logo {
-              width: 87px;
-            }
-
-            &#att-logo {
-              width: 101px;
-            }
-          }
-        }
-
-        .provider-category {
-          margin-bottom: 20px;
-
-          .category-chip {
-            padding: 0px 6px;
-            border-radius: 100px;
-          }
-        }
-
-        .provider-savings-section {
-          color: #001F4D;
-          font-size: 20px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: 25px;
-
-          .savings-amount {
-            font-size: 36px;
-            font-weight: 600;
-            line-height: normal;
-          }
-        }
-      }
-    }
-
-    .feature-condition-section {
-      color: #696969;
-      font-size: 19px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
 
     .register-section {
       width: 50%;
@@ -424,62 +356,6 @@ $primary: #001F4D;
           line-height: 10px !important;
           color: var(--Blue-900, #001F4D);
           margin-top: 5px !important;
-        }
-      }
-
-      .mobile-view-bottom-section {
-        padding: 10px 12px;
-        background-color: #F6F5F4;
-
-        .negotiated-rates-section {
-          .heading {
-            color: #001F4D;
-            text-align: center;
-            font-size: 22px;
-            font-style: normal;
-            font-weight: 800;
-            line-height: 27px;
-          }
-
-          .negotiated-rates {
-            color: var(--Neutra-800, #4A4A4A);
-            text-align: center;
-            font-size: 13px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 18px;
-            opacity: .5;
-            margin-top: 10px;
-          }
-        }
-
-        .provider-cards {
-          flex-direction: column;
-          padding-top: 8px !important;
-
-          .provider-card {
-            width: 100%;
-            min-height: 220px !important;
-            text-align: center;
-            .provider-img-section {
-              margin-bottom: 10px !important;
-            }
-            .provider-category{
-                font-size: 18px;
-              line-height: normal;
-              color: #001F4D;
-            }
-            .provider-savings-section{
-              font-size: 16px;
-            }
-          }
-        }
-
-        .feature-condition-section {
-          font-size: 13px !important;
-          font-weight: 400 !important;
-          line-height: normal !important;
-          color: #4A4A4A !important;
         }
       }
 

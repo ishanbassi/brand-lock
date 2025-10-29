@@ -2,12 +2,20 @@
     <mat-toolbar-row>
       <img class="sidenav-mobile-view-logo" src="/assets/images/trademarx.svg" alt="logo"
         [routerLink]="['/portal/dashboard']" />
-      <div class="user-icon-container">
+      <div class="user-icon-container" *ngIf="isAuthorizedUser">
 
 
         <a [matMenuTriggerFor]="menu">
           <img src="/assets/images/icons/user-profile-icon.svg" alt="" class="user-icon">
         </a>
+      </div>
+      <div class="nav-bar-actions" *ngIf="!isAuthorizedUser">
+        <button *ngIf="!isLoginPage" mat-raised-button class="primary-secondary-btn login-link" [routerLink]="['/login']">
+            <span>Login</span>
+          </button>
+          <button  *ngIf="isLoginPage" mat-raised-button class="primary-secondary-btn register-link" [routerLink]="['/create-account']">
+            <span>Create Account</span>
+        </button>
       </div>
       <button mat-icon-button class="mobile-view-menu-icon" aria-label="Menu" (click)="toggle()">
         <mat-icon class="ham-menu">menu</mat-icon>

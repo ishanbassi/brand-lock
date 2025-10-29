@@ -10,7 +10,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [SharedModule,MatProgressBarModule, MatSidenavModule,DashboardHeaderComponent, NavbarComponent],
+  imports: [SharedModule,MatProgressBarModule, MatSidenavModule,DashboardHeaderComponent],
   templateUrl: './trademark-portal.component.html',
   styleUrl: './trademark-portal.component.scss'
 })

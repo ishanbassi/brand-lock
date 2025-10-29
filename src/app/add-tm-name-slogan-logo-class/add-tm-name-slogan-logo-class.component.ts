@@ -18,6 +18,7 @@ import { DocumentsFormService } from '../shared/services/documents-form.service'
 import { IDocuments } from '../../models/documents.model';
 import { DocumentType } from '../enumerations/document-type.model';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../models/auth.services';
 
 
 
@@ -36,6 +37,8 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
   TrademarkTypeEnum  = TrademarkType;
   trademark?:ITrademark|null;
   document?: IDocuments | null;
+  isAuthorizedUser?: boolean;
+
 
   
 
@@ -52,7 +55,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
     private readonly toastService:ToastrService,
     private readonly loadingService: LoadingService,
     protected elementRef: ElementRef,
-
+    private readonly authservice:AuthService
     ) {}
     protected trademarkFormService = inject(TrademarkFormService);
     protected documentFormService = inject(DocumentsFormService);
@@ -62,6 +65,8 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.isAuthorizedUser = this.authservice.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
+    console.log(this.isAuthorizedUser)
     if(this.sessionStorageService.getObject('trademark')?.id){
       this.trademarkService.findWithLogo(this.sessionStorageService.getObject('trademark').id).subscribe({
         next: (response) => {
@@ -79,7 +84,12 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
       })
       return;
     } 
-    this.router.navigate(['trademark-registration/step-2']);
+    if(!this.isAuthorizedUser){ 
+      this.router.navigate(['trademark-registration/step-2']);
+      return;
+    }
+    this.router.navigate(['portal/trademark-registration/type']);
+
 
     
       // Set validators based on type

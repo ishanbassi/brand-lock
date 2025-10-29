@@ -112,7 +112,12 @@ export class AddTrademarkTypeComponent implements OnInit{
 
   protected onSaveSuccess( trademark: HttpResponse<ITrademark>): void {
     this.sessionStorageService.setObject('trademark', trademark.body);
+    if(this.isAuthorizedUser){
+      this.router.navigateByUrl("portal/trademark-registration/details")
+      return
+    }
     this.router.navigateByUrl("trademark-registration/step-3")
+
   }
 
   protected onSaveError(): void {

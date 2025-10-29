@@ -3,17 +3,17 @@
 <div class="container">
     <div class="row">
         <div class="col-xl-8 col-xxl-6 col col-12 col-sm-12">
-         
+
 
             <div class="my-trademark-section">
                 <div class="container">
                     <div class="row flex-lg-nowrap">
 
 
-                        <div class="col">
+                        <div class="col col-12 col-sm-12">
 
                             <div class="row flex-lg-nowrap">
-                                <div class="col mb-3">
+                                <div class="col col-12 col-sm-12 mb-3">
                                     <div class="e-panel card ">
                                         <div class="card-body">
                                             <div class="card-title">
@@ -35,31 +35,32 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            <tr *ngFor="let applications of dashboardStats?.recentApplications">
+                                                            <tr
+                                                                *ngFor="let applications of dashboardStats?.recentApplications">
 
 
                                                                 <td class="text-nowrap align-middle">
                                                                     {{applications.name}}
                                                                 </td>
-                                                                <td class="text-nowrap align-middle tm-class">{{applications.tmClass || '-'}}</td>
-                                                                <td class="text-nowrap align-middle application-no"><span>{{applications.applicationNo || 'Awaiting filing'}}</span></td>
+                                                                <td class="text-nowrap align-middle tm-class">
+                                                                    {{applications.tmClass || '-'}}</td>
+                                                                <td class="text-nowrap align-middle application-no">
+                                                                    <span>{{applications.applicationNo || 'Awaiting filing'}}</span></td>
                                                                 <td class="text-center align-middle review-status">
                                                                     <span [ngClass]="{
                                                                         'active': activeStatuses.includes(applications?.trademarkStatus!),
                                                                         'in-process': inProcessStatuses.includes(applications?.trademarkStatus!),
                                                                         'failure-status': failureStatuses.includes(applications?.trademarkStatus!)
                                                                     }">
-                                                                    
+
                                                                         {{applications.trademarkStatus || 'UNKNOWN'}}
 
                                                                     </span>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <div class="btn-group align-top">
-                                                                        <button
-                                                                            class="btn btn-primary"
-                                                                            type="button" data-toggle="modal"
-                                                                            >View</button>
+                                                                        <button class="btn btn-primary" type="button"
+                                                                            data-toggle="modal">View</button>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -80,7 +81,7 @@
                 </div>
 
             </div>
-             <div class="trademark-application-stats">
+            <div class="trademark-application-stats">
                 <div class="container">
                     <div class="row flex-lg-nowrap">
 
@@ -102,7 +103,7 @@
                                                                 <th *ngFor="let stat of dashboardStats?.stats">
                                                                     {{stat.trademarkStatus | trademarkStatus}}
                                                                 </th>
-                                                                
+
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -110,11 +111,11 @@
                                                             <tr>
 
 
-                                                                <td *ngFor="let stat of dashboardStats?.stats" 
-                                                                class="text-nowrap align-middle">
+                                                                <td *ngFor="let stat of dashboardStats?.stats"
+                                                                    class="text-nowrap align-middle">
                                                                     {{stat.count}}
                                                                 </td>
-                                                                
+
                                                             </tr>
 
                                                         </tbody>
@@ -137,48 +138,47 @@
         </div>
         <div class="col-12 col-sm-12 col-xl-4">
             <div class="notification-section dashboard-card mb-3">
-    <div class="section-header">
-        <h3>Pending Actions</h3>
-        <span class="badge-count" *ngIf="dashboardStats?.pendingTasks?.length">
-            {{dashboardStats?.pendingTasks!.length}}
-        </span>
-    </div>
-    
-    <div class="notifications">
-        <div class="notification-item" *ngFor="let tasks of getDisplayedTasks(); let i = index">
-            <div class="notification-icon">
-                <i class="fa-regular fa-file"></i>
-            </div>
-            <div class="notification-content">
-                <h4 class="notification-title">{{tasks.title}}</h4>
-                <p class="notification-description">{{tasks.description}}</p>
-            </div>
-            <div class="notification-action">
-                <i class="fa-solid fa-chevron-right"></i>
-            </div>
-        </div>
+                <div class="section-header">
+                    <h3>Pending Actions</h3>
+                    <span class="badge-count" *ngIf="dashboardStats?.pendingTasks?.length">
+                        {{dashboardStats?.pendingTasks!.length}}
+                    </span>
+                </div>
 
-        <div class="empty-state" *ngIf="!dashboardStats?.pendingTasks || dashboardStats?.pendingTasks?.length === 0">
-            <i class="fa-regular fa-circle-check"></i>
-            <p>No pending actions</p>
-        </div>
+                <div class="notifications">
+                    <div class="notification-item" *ngFor="let tasks of getDisplayedTasks(); let i = index">
+                        <div class="notification-icon">
+                            <i class="fa-regular fa-file"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4 class="notification-title">{{tasks.title}}</h4>
+                            <p class="notification-description">{{tasks.description}}</p>
+                        </div>
+                        <div class="notification-action">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
 
-        <!-- Show More/Less Button -->
-        <button class="show-more-btn" 
-                *ngIf="dashboardStats?.pendingTasks!.length > maxVisibleTasks"
-                (click)="toggleShowAll()">
-            <span *ngIf="!showAllTasks">
-                <i class="fa-solid fa-chevron-down"></i>
-                Show More ({{dashboardStats?.pendingTasks!.length - maxVisibleTasks}} more)
-            </span>
-            <span *ngIf="showAllTasks">
-                <i class="fa-solid fa-chevron-up"></i>
-                Show Less
-            </span>
-        </button>
-    </div>
-</div>
+                    <div class="empty-state"
+                        *ngIf="!dashboardStats?.pendingTasks || dashboardStats?.pendingTasks?.length === 0">
+                        <i class="fa-regular fa-circle-check"></i>
+                        <p>No pending actions</p>
+                    </div>
 
+                    <!-- Show More/Less Button -->
+                    <button class="show-more-btn" *ngIf="dashboardStats?.pendingTasks!.length > maxVisibleTasks"
+                        (click)="toggleShowAll()">
+                        <span *ngIf="!showAllTasks">
+                            <i class="fa-solid fa-chevron-down"></i>
+                            Show More ({{dashboardStats?.pendingTasks!.length - maxVisibleTasks}} more)
+                        </span>
+                        <span *ngIf="showAllTasks">
+                            <i class="fa-solid fa-chevron-up"></i>
+                            Show Less
+                        </span>
+                    </button>
+                </div>
+            </div>
 
             <div class="">
                 <div class="card m-b-30">
@@ -203,7 +203,3 @@
                 </div>
             </div>
         </div>
-
-
-
-        

@@ -13,13 +13,15 @@ import { MatFormField, MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { MatIcon } from '@angular/material/icon';
+import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
 
 
 @Component({
   selector: 'app-login-v2',
   templateUrl: './login-v2.component.html',
   styleUrl: './login-v2.component.scss',
-  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule]
+  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,MatIcon,CommonRegisterLoginMobileSectionComponent]
 })
 export class LoginV2Component implements OnInit{
  onClickValidation: boolean = false;
@@ -74,7 +76,7 @@ export class LoginV2Component implements OnInit{
           this.localStorageService.setObject('user', response.body?.user);
           
           setTimeout(() => {
-          this.router.navigate(['/dashboard']); // fallback default
+          this.router.navigate(['/dashboard']);
           }, 200);
         }, error: (error: any) => {
           this.loadingService.hide();

@@ -26,6 +26,16 @@
     .mat-toolbar-row {
       padding-left: 30px;
       padding-right: 30px;
+      justify-content: space-between;
+      .primary-secondary-btn {
+          background-color: #C5D9FD !important;
+          color: #001F4D !important;
+        }
+
+    .primary-secondary-btn:hover {
+      background-color: #B0CBFC !important;
+      color: #001F4D !important;
+    }
     }
     .sidenav-mobile-view-logo {
       margin-top: -5px;

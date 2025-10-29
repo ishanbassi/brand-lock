@@ -1,12 +1,14 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpHandlerFn, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ApplicationConfigService } from '../core/config/application-config.service';
+import { Router } from '@angular/router';
 
 export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
     const applicationConfigService = inject(ApplicationConfigService);
     const stateStorageService = inject(LocalStorageService);
+    const router = inject(Router);
 
 
   const serverApiUrl = applicationConfigService.getEndpointFor('');
@@ -15,7 +17,6 @@ export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandler
     }
 
     const token: string | null = stateStorageService.getAuthenticationToken();
-    console.log(token)
     if (token) {
       request = request.clone({
         setHeaders: {
@@ -23,5 +24,12 @@ export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandler
         },
       });
     }
-    return next(request)
+    return next(request).pipe(catchError((error) => {
+      if (error.status === 401) {
+        stateStorageService.remove('token');
+        stateStorageService.remove('user');
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    }));
 }

@@ -16,10 +16,11 @@ import { TrademarkPlanService } from '../shared/trademark-plan.service';
 import { finalize, switchMap } from 'rxjs';
 import { LoadingService } from '../common/loading.service';
 import { ToastrService } from 'ngx-toastr';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 
 @Component({
   selector: 'app-trademark-plans-page',
-  imports: [PricingSectionComponent,NavbarComponent,MatButtonModule,MatIcon,SharedModule],
+  imports: [DashboardHeaderComponent,MatButtonModule,MatIcon,SharedModule],
   templateUrl: './trademark-plans-page.component.html',
   styleUrl: './trademark-plans-page.component.scss'
 })
