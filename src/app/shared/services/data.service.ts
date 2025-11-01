@@ -17,12 +17,13 @@ import { Account } from "../../../models/account.model";
 import { JwtToken } from "../../../models/jwt.token";
 import { IUserProfile } from "../../../models/user-profile.model";
 import { DashboardStats } from "../../../models/dashboard-stats.model";
+import { ResetPassword } from "./reset.password";
 
 @Injectable({
     providedIn: 'root'
   })
   export class DataService {
-  
+    
   
     
   constructor(private http: HttpClient) {   
@@ -104,6 +105,16 @@ import { DashboardStats } from "../../../models/dashboard-stats.model";
 
     getDashboardStats():Observable<HttpResponse<DashboardStats>>{
       return this.getRecords("api/portal/dashboard/stats");
+    }
+
+    
+    forgotPassword(data: any) {
+      return this.saveRecord('api/portal/account/reset-password/init', data);
+    }
+
+    
+    resetPassword(data: any): Observable<any> {
+      return this.saveRecord('api/account/reset-password/finish', data);
     }
     
   }  

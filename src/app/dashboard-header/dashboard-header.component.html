@@ -41,25 +41,14 @@
       <a class="mobile-menu-item dashboard-nav-item first-mobile-item">
         <!-- <span>{{firstName}} {{lastName}}</span> -->
       </a>
-      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-        [routerLink]="['/portal/dashboard']" (click)="toggle()">
-        <span>Dashboard</span>
-      </a>
-      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="['/portal/add-providers']"
-      (click)="toggle()"
-      >
-        <span>Add Providers</span>
-      </a>
+      <div class="mobile-menu-actions" *ngIf="!isAuthorizedUser">
+      <button  *ngIf="!isLoginPage" mat-raised-button class="primary-secondary-btn login-link" [routerLink]="['/login']">
+        <span>Login</span>
+      </button>
+      <button  *ngIf="isLoginPage" mat-raised-button class="primary-secondary-btn register-link" [routerLink]="['/create-account']">
+        <span>Create Account</span>
+      </button>
+      </div>
       
-      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-      [routerLink]="['/portal/statement']" (click)="toggle()"
-         >
-        <span>Statements</span>
-      </a>
-      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-      [routerLink]="['/portal/refer-your-friend']" (click)="toggle()"
-         >
-        <span>Refer a Friend and Get $50</span>
-      </a>
     </div>
   </mat-expansion-panel>

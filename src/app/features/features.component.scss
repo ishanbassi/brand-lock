@@ -1,4 +1,4 @@
-:host-context(app-login-v2),:host-context(app-forgot-password),:host-context(app-recover-password),:host-context(app-contact) {
+:host-context(app-login-v2),:host-context(app-forgot-password),:host-context(app-recover-password),:host-context(app-contact),:host-context(app-create-account), :host-context(app-create-new-password) {
     .feature-section{
         background-color: #f6f5f4;
         padding: 100px 16px 284px;
@@ -8,7 +8,6 @@
 
             background-color: #fff !important;
             padding:0 20px !important;
-            padding-top:40px !important; 
         }   
     }
     
@@ -167,4 +166,28 @@
     .feature-section{
         min-height: 100vh;
     }
+}
+::ng-deep{
+    .features-component{
+        width: 50%;
+    }
+@media screen and (max-width:1200px) {
+  .only-mobile-view {
+      display: block;
+    }
+    .features-component{
+      width: 100%;
+    }
+}
+
+
+@media screen and (min-width:768px) and (max-width:1200px) {
+
+    .features-component{
+     width: 100% !important;
+     max-width: 488px;
+     margin: 0 auto;
+    }
+}
+
 }

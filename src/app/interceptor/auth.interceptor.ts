@@ -4,10 +4,12 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ApplicationConfigService } from '../core/config/application-config.service';
 import { Router } from '@angular/router';
+import { SessionStorageService } from '../shared/services/session-storage.service';
 
 export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
     const applicationConfigService = inject(ApplicationConfigService);
     const stateStorageService = inject(LocalStorageService);
+    const sessionStorageService = inject(SessionStorageService);
     const router = inject(Router);
 
 
@@ -28,6 +30,7 @@ export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandler
       if (error.status === 401) {
         stateStorageService.remove('token');
         stateStorageService.remove('user');
+        sessionStorageService.remove('trademark');
         router.navigate(['/login']);
       }
       return throwError(() => error);

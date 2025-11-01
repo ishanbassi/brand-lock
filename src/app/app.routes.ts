@@ -11,6 +11,8 @@ import { TrademarkPortalComponent } from './trademark-portal/trademark-portal.co
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { LoginV2Component } from './login-v2/login-v2.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { CreateNewPassword } from './create-new-password/create-new-password.component';
 
 export const routes: Routes = [
     {
@@ -87,8 +89,22 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
+        {
+        path: 'forgot-password',
+        component:ForgotPasswordComponent,
+        title:"Forgot Password",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'reset-password',
+        component:CreateNewPassword,
+        title:"Reset Password",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
     {
         path:"**",
-        redirectTo:""
+        redirectTo:"login"
     }
 ];

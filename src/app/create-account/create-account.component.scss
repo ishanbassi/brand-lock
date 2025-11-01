@@ -339,6 +339,9 @@ $primary: #001F4D;
       .register-section {
         width: 100%;
         padding: 0px;
+        .register-heading{
+          margin-top: 20px !important;
+        }
 
         .form-section {
           border: none;

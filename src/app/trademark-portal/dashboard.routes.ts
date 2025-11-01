@@ -9,27 +9,27 @@ export const dashboardRoutes: Routes = [
     {
             path:"dashboard",
             component:DashboardComponent,
-            title:"Thank You"
+            title:"Dashboard"
         },
         {
             path:"trademark-registration/type",
             component:AddTrademarkTypeComponent,
-            title:"Thank You"
+            title:"Select Type | Trademark Filing"
         },
         {
             path:"trademark-registration/details",
             component:AddTmNameSloganLogoClassComponent,
-            title:"Thank You"
+            title:"Fill Details | Trademark Filing"
         },
         {
             path:"trademark-registration/select-plan",
             component:TrademarkPlansPageComponent,
-            title:"Thank You"
+            title:"Select Plan | Trademark Filing"
         },
         {
             path:"trademark-registration/checkout",
             component:CheckoutPageComponent,
-            title:"Thank You"
+            title:"Checkout | Trademark Filing"
         },
 
     

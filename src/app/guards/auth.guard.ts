@@ -22,7 +22,7 @@ export class PermissionsService {
       return true;
     }
     if (!response.hasAccess) {
-      this.router.navigate(['account/login'], { queryParams: { returnUrl: state.url } });
+      this.router.navigate(['login'], { queryParams: { returnUrl: state.url } });
       return false;
     }
     if (!response.hasRoleAccess) {

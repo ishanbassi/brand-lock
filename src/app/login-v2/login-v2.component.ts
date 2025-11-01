@@ -76,7 +76,7 @@ export class LoginV2Component implements OnInit{
           this.localStorageService.setObject('user', response.body?.user);
           
           setTimeout(() => {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/portal/dashboard']);
           }, 200);
         }, error: (error: any) => {
           this.loadingService.hide();

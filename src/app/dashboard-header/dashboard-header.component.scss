@@ -27,15 +27,6 @@
       padding-left: 30px;
       padding-right: 30px;
       justify-content: space-between;
-      .primary-secondary-btn {
-          background-color: #C5D9FD !important;
-          color: #001F4D !important;
-        }
-
-    .primary-secondary-btn:hover {
-      background-color: #B0CBFC !important;
-      color: #001F4D !important;
-    }
     }
     .sidenav-mobile-view-logo {
       margin-top: -5px;
@@ -52,21 +43,20 @@
   }
 
   @media screen and (max-width: 990px) {
+    .nav-bar-actions {
+    display: none !important;
+  }
+  
   .dashboard-nav-bar {
     .mat-toolbar-row {
       justify-content: space-between;
-      padding-left: 3px !important;
+      padding-left: 20px !important;
       padding-right: 10px !important;
       .user-icon-container {
         order: 3;
         width: auto;
       }
-      .sidenav-mobile-view-logo {
-        order: 2;
-      }
-      .mobile-view-menu-icon {
-        order: 1;
-      }
+      
     }
     .sidenav-mobile-view-logo {
       display: inline !important;
@@ -131,5 +121,21 @@
         background-color: transparent !important;
       }
     }
+  }
+}
+
+.primary-secondary-btn {
+          background-color: #C5D9FD !important;
+          color: #001F4D !important;
+        }
+
+.primary-secondary-btn:hover {
+  background-color: #B0CBFC !important;
+  color: #001F4D !important;
+}
+
+::ng-deep{
+  .mat-expansion-panel-body{
+    padding:10px 24px 16px !important;
   }
 }

@@ -59,13 +59,11 @@ body{
 .only-mobile-view {
     display: none;
 }
-
 @media screen and (max-width:1200px) {
-  
-    .only-mobile-view {
+  .only-mobile-view {
       display: block;
     }
-}
-.features-component{
-  width: 50%;
+    .site-page-body{
+      padding-top: 40px !important;
+    }
 }

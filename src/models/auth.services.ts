@@ -1,19 +1,21 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from '../app/shared/services/local-storage.service';
 import { IUser } from './user.model';
+import { SessionStorageService } from '../app/shared/services/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private  readonly localStorageService: LocalStorageService) {
+  constructor(private  readonly localStorageService: LocalStorageService, private readonly sessionStorageService:SessionStorageService) {
   }
 
   logout() {
     this.localStorageService.remove('token');
     this.localStorageService.remove('user');
     this.localStorageService.remove('userProfile');
+    this. sessionStorageService.remove('trademark');
   }
 
   getToken(): any {
