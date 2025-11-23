@@ -40,6 +40,8 @@ type DocumentsFormGroupContent = {
   modifiedDate: FormControl<DocumentsFormRawValue['modifiedDate']>;
   deleted: FormControl<DocumentsFormRawValue['deleted']>;
   trademark: FormControl<DocumentsFormRawValue['trademark']>;
+  file: FormControl<DocumentsFormRawValue['file']>;
+
 };
 
 export type DocumentsFormGroup = FormGroup<DocumentsFormGroupContent>;
@@ -67,6 +69,8 @@ export class DocumentsFormService {
       modifiedDate: new FormControl(documentsRawValue.modifiedDate),
       deleted: new FormControl(documentsRawValue.deleted),
       trademark: new FormControl(documentsRawValue.trademark),
+      file : new FormControl(),
+
     });
   }
 
@@ -112,4 +116,15 @@ export class DocumentsFormService {
       modifiedDate: documents.modifiedDate ? documents.modifiedDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
+
+  addValidationsToFormAndValidate(form: FormGroup<any>) {
+        form.get('trademark')?.setValidators([Validators.required]);
+        form.get('fileContentType')?.setValidators([Validators.required]);
+        form.get('fileName')?.setValidators([Validators.required]);
+        form.get('documentType')?.setValidators([Validators.required]);
+        form.get('file')?.setValidators([Validators.required]);
+
+
+    
+      }
 }

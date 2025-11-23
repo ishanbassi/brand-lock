@@ -6,6 +6,7 @@ import dayjs from 'dayjs/esm';
 import { IDocuments, NewDocuments } from '../../../models/documents.model';
 import { ApplicationConfigService } from '../../core/config/application-config.service';
 import { createRequestOption } from '../../core/request/request-util';
+import { DocumentsFormGroup } from './documents-form.service';
 
 
 
@@ -64,6 +65,18 @@ export class DocumentsService {
     return this.http
       .get<RestDocuments[]>(this.resourceUrl, { params: options, observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+  getDocumentsForCurrentUser(): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestDocuments[]>(`${this.resourceUrl}/current-user`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  createAndSaveFile(documents: NewDocuments): Observable<EntityResponseType> {
+    const copy = this.convertDateFromClient(documents);
+    return this.http
+      .post<RestDocuments>(`${this.resourceUrl}/save`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
@@ -125,4 +138,5 @@ export class DocumentsService {
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
     });
   }
+
 }

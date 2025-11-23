@@ -13,15 +13,10 @@ import { LoginV2Component } from './login-v2/login-v2.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { CreateNewPassword } from './create-new-password/create-new-password.component';
+import { FaqPageComponent } from './faq-page/faq-page.component';
 
 export const routes: Routes = [
-    {
-        path:"",
-        component:HomeComponent,
-        title:"Trademarx",
-        canActivate: [AuthGuard],   
-        data:{ roles: ['ROLE_ANONYMOUS'] }
-    },
+    
     {
         path:"home",
         component:HomeComponent,
@@ -58,7 +53,7 @@ export const routes: Routes = [
     },
     {
         path:"faq",
-        component:FaqComponent,
+        component:FaqPageComponent,
         title:"FAQ"
     },
     {

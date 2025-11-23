@@ -1,1 +1,55 @@
-<p>upload-document-page works!</p>
+<div class="upload-document-page">
+    
+    <div class="container">
+        <div class="top-section">
+        <div class="section-header">
+                <h3>Upload Documnets</h3>
+                <p>Attach documents to your trademark applications.</p>
+        </div>
+        <div>
+            <form [formGroup]="documentForm" (ngSubmit)="submit()">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-4">
+                    <div>
+                        <mat-form-field  [hideRequiredMarker]="true" class="site-form-field" appearance="fill" appearance="outline">
+                            <mat-label>Select Application</mat-label>
+                            <mat-select name="trademark-application" placeholder="Select Application" formControlName="trademark" (selectionChange)="updateDocumentTypeValues()">
+                                <mat-option [value]="application" *ngFor="let application of applications;let i = index">{{application.name || `Trademark Application  No. ${i+1}`}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4">
+                        <div>
+                        <mat-form-field  [hideRequiredMarker]="true" class="site-form-field" appearance="fill" appearance="outline">
+                            <mat-label>Document Type</mat-label>
+                            <mat-select name="document Type" placeholder="Document Type" formControlName="documentType" (selectionChange)="updateDocumentTypeValues()">
+                                <mat-option [disabled]="document.disabled" [value]="document.value" *ngFor="let document of documentTypeValues;let i = index">{{document.label}}
+                                    <mat-icon  matSuffix color="primary" *ngIf="document.disabled">check</mat-icon>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-2">
+                        <button mat-raised-button class="upload-btn" aria-label="Upload"
+                        [ngClass]="{'disable-btn': documentForm.invalid || documentForm.untouched}"
+                        type="submit"
+                        >
+                            <span>Upload</span>
+                        </button>
+                    </div>
+                </div>
+                
+
+                
+                <app-upload-document [resetFormSubject]="resetFormSubject" (onDocumentUpload)="onDocumentUpload($event)"></app-upload-document>
+
+            </form>
+
+        </div>
+        </div>
+
+        <app-upload-document-table [resetFormSubject]="resetFormSubject" (documentsChange)="onDocumentListChange($event)" ></app-upload-document-table>
+    </div>
+</div>

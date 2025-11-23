@@ -18,6 +18,7 @@ import { JwtToken } from "../../../models/jwt.token";
 import { IUserProfile } from "../../../models/user-profile.model";
 import { DashboardStats } from "../../../models/dashboard-stats.model";
 import { ResetPassword } from "./reset.password";
+import { ITrademark } from "../../../models/trademark.model";
 
 @Injectable({
     providedIn: 'root'
@@ -116,5 +117,10 @@ import { ResetPassword } from "./reset.password";
     resetPassword(data: any): Observable<any> {
       return this.saveRecord('api/account/reset-password/finish', data);
     }
+
+    getTrademarkForCurrentUser(withDocuments:boolean=false):Observable<HttpResponse<ITrademark[]>> {
+      return this.getRecords(`api/trademarks/current-user?documents=${withDocuments}`)
+    }
+  
     
   }  

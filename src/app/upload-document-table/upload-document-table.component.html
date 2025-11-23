@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css" integrity="sha512-pVCM5+SN2+qwj36KonHToF2p1oIvoU3bsqxphdOIWMYmgr4ZqD3t5DjKvvetKhXGc/ZG5REYTT6ltKfExEei/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+
+<div class="container">
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="">
+                <div class="table-responsive">
+                    <table class="table project-list-table table-nowrap align-middle table-borderless">
+                        <thead>
+                            <tr>
+                                
+                                <th scope="col">Document Name</th>
+                                <th scope="col">Document Type</th>
+                                <th scope="col">Upload Date</th>
+                                <th scope="col">Application Number</th>
+                                <th scope="col" style="width: 200px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let document of documents"> 
+                                
+                                <td>
+                                    <img [src]="document.fileContentType?.startsWith('image/') ? `${baseApiUrl}files/${document.fileUrl}` : '/assets/images/icons/pdf-icon.svg'"
+                                 [alt]="document.documentType" class="avatar-sm me-2" >
+                                    <a href="#" class="text-body">
+                                    {{document.fileName}}
+                                </a></td>
+                                <td><span class="badge badge-soft-success mb-0">{{document.documentType}}</span></td>
+                                <td>{{document.createdDate}}</td>
+                                <td>{{document.trademark?.id}}</td>
+                                <td>
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item">
+                                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" class="px-2 text-primary"><i class="bx bx-pencil font-size-18"></i></a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" class="px-2 text-danger"><i class="bx bx-trash-alt font-size-18"></i></a>
+                                        </li>
+                                        
+                                    </ul>
+                                </td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+</div>

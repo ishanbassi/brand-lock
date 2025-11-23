@@ -37,6 +37,7 @@ export interface ITrademark {
   user?: Pick<IUserProfile, 'id'> | null;
   trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
   trademarkPlan?: Pick<ITrademarkPlan, 'id' | 'name'> | null;
+  documents?: Pick<IDocuments, 'id'| 'documentType'>[] | null;
 
 
 }

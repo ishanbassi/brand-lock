@@ -49,5 +49,4 @@ export const TestimonialsList = [
         author: "Nitin Bhatnagar",
         location: "Ludhiana,Punjab"
     },
-    // Add 40 more testimonial objects following the same structure
 ];

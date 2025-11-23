@@ -1,0 +1,68 @@
+<div class="container">
+    
+    
+    <div class="dropbox" id="dropbox" #dropbox 
+      (dragover)="onDragOver($event, dropbox)"
+      (dragleave)="onDragLeave($event, dropbox)"
+      (drop)="onDrop($event, dropbox)"
+      (click)="openFilePicker($event)"
+
+      >
+      <div class="dropbox-icon">📁</div>
+      <div class="dropbox-text">Drop files here</div>
+      <div class="dropbox-subtext">Supported formats: JPEG, PNG, PDF (Max 5MB)</div>
+      <button class="browse-btn" type="button" (click)="openFilePicker($event)">Browse Files</button>
+      <form [formGroup]="documentForm">
+        <input type="file" id="fileInput" #fileInputEl accept=".png, .jpg, .jpeg, .svg, .pdf, .doc , .docx"  hidden (change)="handleFileInput($event)">
+        <input type="hidden" class="form-control" name="fileContentType" formControlName="fileContentType" />
+        <input type="hidden" class="form-control" name="fileName" formControlName="fileName" />
+        <input type="hidden" class="form-control" name="file" formControlName="file" />
+
+      </form>
+    
+    </div>
+    
+    <div class="upload-stats" id="uploadStats" #uploadStats>
+      <div class="stats-header">
+        <div class="stats-title">Upload Summary</div>
+      </div>
+      <div class="stats-info">
+        <div class="stat-item">
+          <div class="stat-value" #fileCountEl id="fileCount">0</div>
+          <div class="stat-label">Files</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" #totalSizeEl id="totalSize">0 KB</div>
+          <div class="stat-label">Total Size</div>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-top: 15px;">
+        <div class="progress-fill" #progressFill id="progressFill"></div>
+      </div>
+    </div>
+    
+    
+    <div class="file-previews" id="filePreviews" #filePreviews>
+        <div *ngIf="documentMetaData" [id]="documentMetaData.fileId" class="file-preview">
+            <div class="preview-img-container">
+                <img [src]="documentMetaData.previewContent" alt="" *ngIf="documentMetaData.isImage;else documentBlock" class="preview-img">
+                <ng-template #documentBlock>
+                    <div class="file-icon">{{documentMetaData.previewContent}}</div>
+                </ng-template>
+            </div>
+                <div class="file-info">
+                <div class="file-name">{{documentMetaData.fileName}}</div>
+                <div class="file-size">{{documentMetaData.fileSize}}</div>
+                <div class="file-actions">
+                    <button type="button" class="remove-btn" (click)="removeFile(documentMetaData.fileId,documentMetaData.fileSizeNumber)">Remove</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+  </div>
+  
+  <div class="upload-notification" id="notification" #notification>
+    <span id="notificationText">File uploaded successfully!</span>
+    <div class="notification-progress"></div>
+  </div>
