@@ -1,5 +1,5 @@
 <app-dashboard-header></app-dashboard-header>
-<mat-drawer-container class="dashboard-drawer-container">
+<mat-drawer-container class="dashboard-drawer-container" [ngClass]="!this.matDrawerOpened ? 'sidenav-closed' :''">
   <mat-drawer mode="side" [opened]="matDrawerOpened" class="dashboard-mat-drawer">
     <div>
      

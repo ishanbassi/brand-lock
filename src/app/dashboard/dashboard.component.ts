@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { DataService } from '../shared/services/data.service';
-import { DashboardStats } from '../../models/dashboard-stats.model';
+import { DashboardStats, TaskDTO } from '../../models/dashboard-stats.model';
 import { MatIcon } from '@angular/material/icon';
 import { TrademarkStatusPipe } from '../shared/pipe/trademark-status-translate.pipe';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { Router } from '@angular/router';
+import { LoadingService } from '../common/loading.service';
+import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
+import { SessionStorageService } from '../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,25 +18,69 @@ import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansi
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit{
+
   dashboardStats?:DashboardStats|null;
   activeStatuses = ['DRAFT', 'FILED', 'UNDER_EXAMINATION', 'PUBLISHED'];
   inProcessStatuses = ['OBJECTED', 'EXAMINATION_REPLY_FILED', 'ACCEPTED_AND_ADVERTISED', 'OPPOSED', 'HEARING'];
   failureStatuses = ['ABANDONED', 'WITHDRAWN', 'REJECTED', 'EXPIRED', 'UNKNOWN'];
 
   constructor(
-    private readonly dataService:DataService
+    private readonly dataService:DataService,
+    private readonly router:Router,
+    private readonly loadingService:LoadingService,
+    private readonly toastService:ToastrService,
+    private readonly sessionStorageService:SessionStorageService,
   ){
 
   }
   ngOnInit(): void {
-    this.dataService.getDashboardStats().subscribe((response)=>{
-      this.dashboardStats = response.body;
+    // clear session storage all the onboarding properties after redirected to dashboard
+    this.sessionStorageService.remove("trademark")
+    this.sessionStorageService.remove("initial-onboarding");
+    this.sessionStorageService.remove("payment_id");
+    
+    this.loadingService.show();
+    this.dataService.getDashboardStats()
+    .pipe(
+      finalize(() => {
+        this.loadingService.hide();
+      })
+    )
+    .subscribe({
+      next:(response) => {
+        this.dashboardStats = response.body;
+        this.processPendingTasksLinks(this.dashboardStats);
+      },
+      error:() => {
+        this.toastService.error("Unable to load the details. Please contact the administrator.")
+      }
     });
+  }
+  processPendingTasksLinks(dashboardStats?: DashboardStats | null) {
+    if(!dashboardStats?.pendingTasks) return;
+    this.dashboardStats!.pendingTasks = this.dashboardStats!.pendingTasks.map(task => {
+      switch(task.type){
+        case "DOCUMENT_UPLOAD":
+          task.link = `portal/upload-documents?application=${task.applicationId}&document=${task.documentType}`;
+          break;
+        case "PAYMENT_PENDING":
+          task.link = `trademark-registration/checkout?order_id=${task.applicationId}`;
+          break;
+        case "PLAN_PENDING":
+        task.link = `trademark-registration/select-plan?application=${task.applicationId}`;
+        break;
+        default:
+          task.link = `portal/trademark/edit/${task.applicationId}`;
+      }
+      return task;
+    })
+
+
   }
   showAllTasks: boolean = false;
   maxVisibleTasks: number = 3;
   // Method to get displayed tasks based on showAllTasks flag
-  getDisplayedTasks() {
+    getDisplayedTasks() {
     if (!this.dashboardStats?.pendingTasks) {
       return [];
     }
@@ -54,6 +103,10 @@ export class DashboardComponent implements OnInit{
         section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
+  }
+  openPendingTask(link: string) {
+    console.log(link)
+    this.router.navigateByUrl(link);
   }
 
    

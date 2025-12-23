@@ -18,6 +18,7 @@ import { JwtToken } from '../../models/jwt.token';
 import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
+import { SessionStorageService } from '../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-create-account',
@@ -31,9 +32,7 @@ export class CreateAccountComponent {
 
   loginForm: any;
 fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
-  eyePassword() {
-    throw new Error('Method not implemented.');
-  }
+  
   onClickValidation: boolean = false;
   passwordFieldType: string = "password";
   confirmPasswordFieldType: string = "password";
@@ -48,7 +47,8 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
     private readonly router: Router, private readonly localStorageService: LocalStorageService,
     private readonly loadingService: LoadingService,
     private  readonly recaptchaV3Service: ReCaptchaV3Service,
-    private readonly dataService: DataService
+    private readonly dataService: DataService,
+    private readonly sessionStorageService:SessionStorageService
 
   ) { }
 
@@ -96,12 +96,23 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
       .subscribe({
         next: (response) => {
           this.localStorageService.storeAuthenticationToken(response.body!.id_token);
+          this.sessionStorageService.set("initial-onboarding", true)
           this.router.navigateByUrl("trademark-registration/step-2");
+          
 
         }, error: (error: any) =>   {
           this.toastService.error("Failed to sign in! Please check your credentials and try again.");
         }
       });
+  }
+
+  eyePassword() {
+    if (this.passwordFieldType === "password") {
+      this.passwordFieldType = "text";
+    } else {
+      this.passwordFieldType = "password";
+
+    }
   }
 
 

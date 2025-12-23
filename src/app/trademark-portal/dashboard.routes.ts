@@ -5,6 +5,8 @@ import { AddTmNameSloganLogoClassComponent } from "../add-tm-name-slogan-logo-cl
 import { TrademarkPlansPageComponent } from "../trademark-plans-page/trademark-plans-page.component";
 import { CheckoutPageComponent } from "../checkout-page/checkout-page.component";
 import { UploadDocumentPageComponent } from "../upload-document-page/upload-document-page.component";
+import { TrademarkEditPageComponent } from "../trademark-edit-page/trademark-edit-page.component";
+import trademarkResolve from "../trademark-edit-page/trademark-routing-resolve.service";
 
 export const dashboardRoutes: Routes = [
     {
@@ -36,6 +38,14 @@ export const dashboardRoutes: Routes = [
             path:"upload-documents",
             component:UploadDocumentPageComponent,
             title:"Upload Documents | Trademark Filing"
+        },
+        {
+            path:"trademark/edit/:id",
+            component:TrademarkEditPageComponent,
+            title:"Edit Trademark | Trademark Filing",
+            resolve: {
+                trademarkWithLogo: trademarkResolve,
+            },
         },
 
     

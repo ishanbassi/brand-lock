@@ -40,7 +40,7 @@
                                         (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
                                 </mat-form-field>
                                 <app-validation-message [field]="userPassword"
-                                    [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
+                                    [customPatternMessage]="'Please provide a valid value.'"
                                     [onClickValidation]=" userPassword.dirty || userPassword.touched ||onClickValidation">
                                 </app-validation-message>
                             </div>

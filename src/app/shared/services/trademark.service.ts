@@ -69,7 +69,7 @@ export class TrademarkService {
 
   find(id: number): Observable<EntityResponseType> {
     return this.http
-      .get<RestTrademark>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestTrademark>(`${this.resourceUrl}/get/${id}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 

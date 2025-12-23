@@ -60,7 +60,7 @@
                                                                 <td class="text-center align-middle">
                                                                     <div class="btn-group align-top">
                                                                         <button class="btn btn-primary" type="button"
-                                                                            data-toggle="modal">View</button>
+                                                                        [routerLink]="`/portal/trademark/edit/${applications.id}`">View</button>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -146,9 +146,19 @@
                 </div>
 
                 <div class="notifications">
-                    <div class="notification-item" *ngFor="let tasks of getDisplayedTasks(); let i = index">
-                        <div class="notification-icon">
-                            <i class="fa-regular fa-file"></i>
+                    <div class="" *ngFor="let tasks of getDisplayedTasks(); let i = index">
+                        <a (click)="openPendingTask(tasks.link)"
+                         class="notification-link">
+                            <div class="notification-item">
+                                <div class="notification-icon">
+                                    
+                          <i [ngClass]="
+                            tasks.type === 'DOCUMENT_UPLOAD'    ? ['fa-regular', 'fa-file'] :
+                            tasks.type === 'PAYMENT_PENDING'    ? ['fa-solid', 'fa-indian-rupee-sign'] :
+                            tasks.type === 'DETAILS_MISSING'    ? ['fa-solid', 'fa-trademark'] :
+                            tasks.type === 'PLAN_PENDING'       ? ['fa-solid', 'fa-exclamation'] :
+                            []
+                        "></i>
                         </div>
                         <div class="notification-content">
                             <h4 class="notification-title">{{tasks.title}}</h4>
@@ -157,6 +167,9 @@
                         <div class="notification-action">
                             <i class="fa-solid fa-chevron-right"></i>
                         </div>
+                            </div>
+                        </a>
+                        
                     </div>
 
                     <div class="empty-state"

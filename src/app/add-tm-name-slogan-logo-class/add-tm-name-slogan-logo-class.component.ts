@@ -66,7 +66,6 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAuthorizedUser = this.authservice.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
-    console.log(this.isAuthorizedUser)
     if(this.sessionStorageService.getObject('trademark')?.id){
       this.trademarkService.findWithLogo(this.sessionStorageService.getObject('trademark').id).subscribe({
         next: (response) => {
@@ -84,7 +83,8 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
       })
       return;
     } 
-    if(!this.isAuthorizedUser){ 
+    const isInitialOnboarding = this.sessionStorageService.get("initial-onboarding");
+    if(!this.isAuthorizedUser || isInitialOnboarding){ 
       this.router.navigate(['trademark-registration/step-2']);
       return;
     }
@@ -144,7 +144,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
         this.isSubmitting = false;
         this.loadingService.hide();
         this.sessionStorageService.setObject('trademark', trademark.body);
-        this.router.navigate(['trademark-registration/select-plan']);
+        this.router.navigate(['trademark-registration/select-plan'], {queryParams: {application:trademark.body?.id}});
       },
       error: () => {
         this.isSubmitting = false;

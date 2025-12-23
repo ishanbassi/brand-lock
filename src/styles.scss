@@ -28,18 +28,18 @@ $light-focused: rgba($light-primary-text, 0.12);
 
 
 body {
-  --primary-color: #338bdf;
+  --primary-color: #001F4D;
   --primary-lighter-color: #bfd0ff;
-  --primary-darker-color: #338bdf;
+  --primary-darker-color: #001F4D;
   --text-primary-color: #{$light-primary-text};
   --text-primary-lighter-color: #{$dark-primary-text};
   --text-primary-darker-color: #{$light-primary-text};
 }   
 $mat-primary: (
-  main: #338bdf,
+  main: #001F4D,
   lighter: #bfd0ff,
-  darker: #338bdf,
-  200: #338bdf, // For slide toggle,
+  darker: #001F4D,
+  200: #001F4D, // For slide toggle,
   contrast : (
     main: $light-primary-text,
     lighter: $dark-primary-text,

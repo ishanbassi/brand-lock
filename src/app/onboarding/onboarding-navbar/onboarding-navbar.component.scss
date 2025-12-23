@@ -1,6 +1,6 @@
 .app-toolbar{
     background-color: white ;
-    color: #338bdf;
+    color: #001F4D;
     justify-content: space-between;
         top: 0;
     box-shadow: -0.25rem 1.25rem 2.5rem #0000000f, 0 .125rem .625rem #0000001a;
@@ -39,7 +39,7 @@
     ::ng-deep{
         
         .mat-expansion-panel-body{
-            background-color: #338bdf;
+            background-color: #001F4D;
             padding: 1.625rem 1.5rem 1rem 1.5rem;
         }   
     }

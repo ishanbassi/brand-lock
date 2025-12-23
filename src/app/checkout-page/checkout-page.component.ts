@@ -50,6 +50,7 @@ export class CheckoutPageComponent implements OnInit {
   protected trademarkFormService = inject(TrademarkFormService);
   trademarkForm = this.trademarkFormService.createTrademarkFormGroup();
   orderId?: string;
+  applicationId?:number;
 environment = environment;
   isAuthorizedUser: any;
   
@@ -87,6 +88,7 @@ environment = environment;
 
     this.route.queryParams.subscribe(params => {
       this.orderId = params['order_id'];
+      this.applicationId = params['application']
       if(this.orderId){  
         this.dataService.findByOrderId(this.orderId)
         .subscribe({
@@ -99,7 +101,6 @@ environment = environment;
               trademarkDTO:this.trademark,
               paymentDTO:this.trademarkOrderSummary?.paymentDTO
             }
-
             this.leadFormService.addValidationsToFormAndValidate(this.leadForm);
 
           },
@@ -107,7 +108,9 @@ environment = environment;
             console.log(err)
           }
         })
+        return;
       }
+      this.router.navigateByUrl("portal/dashboard");
     }
     )
 

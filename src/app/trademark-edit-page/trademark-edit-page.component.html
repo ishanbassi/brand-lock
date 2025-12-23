@@ -1,0 +1,222 @@
+<div class="container-fluid py-3">
+
+<div class="container">
+  <!-- Title -->
+  <div class="row justify-content-between align-items-lg-center py-3 flex-column flex-lg-row">
+    <h2 class="mb-3 mb-lg-0"><a href="../../pages/admin/customers.html" class="text-muted"><i class="bi bi-arrow-left-square me-2"></i></a> Edit Trademark Application</h2>
+
+  </div>
+  <form [formGroup]="trademarkForm" (ngSubmit)="submit()">
+      <div class="row">
+    <div class="col-lg-8 col-xl-7"  formGroupName="trademark">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mb-4 fw-bold">Trademark Details</h3>
+          <div class="row" >
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="trademarkName" class="form-labels"> Trademark name</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!trademarkForm.get('trademark')?.get('name')?.valid && (onClickValidation ||
+                   trademarkForm.get('trademark')?.get('name')?.touched || trademarkForm.get('trademark')?.get('name')?.dirty)}">
+
+                  <input matInput type="text" required="required" name="trademarkName" formControlName="name"
+                     id="trademarkName"
+                     
+                    placeholder="Enter Trademark name">
+                  
+                </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('name')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('name')?.dirty || trademarkForm.get('trademark')?.get('name')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="col-lg-6">
+
+                            <div class="site-form-field-container mb-3">
+                <label for="trademarkClass" class="form-labels"> Trademark Class</label>
+                <mat-form-field class="site-form-field custom-form-field" appearance="fill" appearance="outline">
+
+                  <input matInput type="text"  name="trademarkClass" formControlName="tmClass" 
+                     id="trademarkClass"
+                     
+                    placeholder="To be assigned">
+                  
+                </mat-form-field>
+
+              </div>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="applicationNo" class="form-labels">Application Number</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline">
+
+                  <input matInput type="text"  name="applicationNo" formControlName="applicationNo"
+                     id="applicationNo" 
+                    placeholder="To be filed">                  
+                </mat-form-field>
+
+              </div>
+              
+            </div>
+            <div class="col-lg-6">
+                <div class="site-form-field-container mb-3">
+                <label for="applicationDate" class="form-labels">Filing Date</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline">
+
+                  <input matInput type="text"  name="applicationDate" formControlName="applicationDate"
+                     id="applicationDate"  placeholder="To be filed">
+                  
+                </mat-form-field>
+              </div>
+              </div>
+            
+          </div>
+
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mb-4 fw-bold">Applicant Information</h3>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="proprietorName" class="form-labels">Full Name</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!trademarkForm.get('trademark')?.get('proprietorName')?.valid && (onClickValidation ||
+                   trademarkForm.get('trademark')?.get('proprietorName')?.touched || trademarkForm.get('trademark')?.get('proprietorName')?.dirty)}">
+
+                  <input matInput type="text" required="required" name="proprietorName" formControlName="proprietorName"
+                     id="proprietorName"
+                     
+                    placeholder="Enter full Name">
+                  
+                </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('proprietorName')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('proprietorName')?.dirty || trademarkForm.get('trademark')?.get('proprietorName')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="phoneNumber" class="form-labels"> Phone number</label>
+                
+                    <app-phone-input [control]="trademarkForm.controls.trademark.controls.phoneNumber"></app-phone-input>
+
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('phoneNumber')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('phoneNumber')?.dirty || trademarkForm.get('trademark')?.get('phoneNumber')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="email" class="form-labels"> Email</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!trademarkForm.get('trademark')?.get('email')?.valid && (onClickValidation ||
+                   trademarkForm.get('trademark')?.get('email')?.touched || trademarkForm.get('trademark')?.get('email')?.dirty)}">
+
+                  <input matInput required="required" name="userEmail" 
+                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$" formControlName="email" 
+                    placeholder="Enter email address">
+                  
+                </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('email')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('email')?.dirty || trademarkForm.get('trademark')?.get('email')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="site-form-field-container mb-3">
+                <label for="email" class="form-labels"> Organization Type</label>
+
+                <mat-form-field  [hideRequiredMarker]="true" class="site-form-field" appearance="fill" appearance="outline">
+                            <mat-select name="Organization Type" placeholder="Organization Type" formControlName="organizationType" >
+                                <mat-option [value]="type.value" *ngFor="let type of organizationType;let i = index">{{type.label}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('organizationType')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('organizationType')?.dirty || trademarkForm.get('trademark')?.get('organizationType')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="site-form-field-container text-area mb-3">
+                <label for="proprietorAddress" class="form-labels">Address</label>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!trademarkForm.get('trademark')?.get('proprietorAddress')?.valid && (onClickValidation ||
+                   trademarkForm.get('trademark')?.get('proprietorAddress')?.touched || trademarkForm.get('trademark')?.get('proprietorAddress')?.dirty)}">
+
+                
+                    <input matInput required="required" name="proprietorAddress" formControlName="proprietorAddress"
+                      id="proprietorAddress" placeholder="Applicant's Address"
+                        >
+                  
+                </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('proprietorAddress')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('proprietorAddress')?.dirty || trademarkForm.get('trademark')?.get('proprietorAddress')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+              
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              
+            </div>
+            <div class="col-lg-6">
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+    </div>
+    <!-- Right side -->
+    <div class="col-lg-4">
+      
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mb-3 fw-bold">Logo</h3>
+          <app-upload-document  (onDocumentUpload)="onDocumentUpload($event)" [documentSubject]="documentSubject"> </app-upload-document>
+        </div>
+      </div>
+      <!-- Notes -->
+      <div class="card mb-4" formGroupName="trademark">
+        <div class="card-body">
+          <!-- <h3 class="h6">Description</h3> -->
+          <div class="site-form-field-container text-area mb-3">
+                <h4 for="details" class="mb-3 fw-bold">Details about your goods & services</h4>
+                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
+                  [ngClass]="{'mat-form-field-invalid':!trademarkForm.get('trademark')?.get('details')?.valid && (onClickValidation ||
+                   trademarkForm.get('trademark')?.get('details')?.touched || trademarkForm.get('trademark')?.get('details')?.dirty)}">
+
+                
+                    <textarea matInput  name="details" formControlName="details"
+                      id="details" placeholder="Details about goods or services you offer" rows="3"></textarea>
+                  
+                </mat-form-field>
+                <app-validation-message [field]="trademarkForm.get('trademark')?.get('details')"
+                  [onClickValidation]="trademarkForm.get('trademark')?.get('details')?.dirty || trademarkForm.get('trademark')?.get('details')?.touched || onClickValidation">
+                </app-validation-message>
+              </div>
+          
+        </div>
+      </div>
+            <div class="hstack gap-3">
+      <button class="btn btn-light btn-sm btn-icon-text" routerLink="/portal/dashboard"><i class="bi bi-x"></i> <span class="text">Cancel</span></button>
+      <button mat-raised-button color="primary" type="submit"><i class="bi bi-save"></i> <span class="text">Save</span></button>
+    </div>
+      
+    </div>
+  </div>
+
+  </form>
+
+</div>
+
+  </div>

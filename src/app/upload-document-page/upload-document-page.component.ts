@@ -16,8 +16,11 @@ import { DataUtils } from '../shared/services/data-util.service';
 import { TrademarkWithLogoFormGroup } from '../shared/services/trademark-form.service';
 import { ITrademark } from '../../models/trademark.model';
 import { finalize, Observable, of, Subject } from 'rxjs';
-import { DocumentTypeValues } from '../enumerations/document-type.model';
+import { DocumentType, DocumentTypeValues } from '../enumerations/document-type.model';
 import { MatIcon } from '@angular/material/icon';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteDocumentPopupComponent } from '../delete-document-popup/delete-document-popup.component';
 
 
 @Component({
@@ -39,12 +42,17 @@ export class UploadDocumentPageComponent implements OnInit {
   protected documentFormService = inject(DocumentsFormService);
   documentForm = this.documentFormService.createDocumentsFormGroup();
   resetFormSubject =  new Subject<boolean>();
+  documentSubject =  new Subject<IDocuments[]|null>();
+  currentApplicationId?:number;
+  currentDocumentType?:DocumentType
 
   constructor(
     private readonly documentService: DocumentsService,
     private readonly dataService: DataService,
     private readonly loadingService: LoadingService,
     private readonly toastService: ToastrService,
+    private readonly router:Router,
+    private readonly route:ActivatedRoute,
 
 
   ) {
@@ -52,7 +60,7 @@ export class UploadDocumentPageComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loadingService.show();
-    this.dataService.getTrademarkForCurrentUser(true)
+    this.dataService.getTrademarkForCurrentUser()
       .pipe(
         finalize(() => this.loadingService.hide())
       )
@@ -63,6 +71,12 @@ export class UploadDocumentPageComponent implements OnInit {
         } 
       })
       this.documentFormService.addValidationsToFormAndValidate(this.documentForm);
+      this.route.queryParams.subscribe(params => {
+        this.currentApplicationId = params['application'];
+        this.currentDocumentType  = params['document'];
+      });
+      this.getDocumentsForCurrentUser();
+
       
   }
 
@@ -83,14 +97,28 @@ export class UploadDocumentPageComponent implements OnInit {
     .pipe(finalize(() => this.resetForm()))
     .subscribe({
       next:(res) => {
-        this.toastService.info("Document Uploaded Successfully!");
+        this.toastService.success("Document Uploaded Successfully!");
       },
       error:(err) =>{
         this.toastService.show(err);
       }
     })
   }
-  resetForm(): void {
+  getDocumentsForCurrentUser() {
+    this.loadingService.show();
+    this.documentService.getDocumentsForCurrentUser()
+    .pipe(
+      finalize(() => this.loadingService.hide())
+    )
+    .subscribe({
+      next:(res) => {
+        this.documents =  res.body;
+        this.documentSubject.next(this.documents);
+        this.setDefaultApplication();
+      } 
+    })
+  }
+   resetForm(): void {
     this.loadingService.hide();
     this.documentForm.reset();
     Object.keys(this.documentForm.controls).forEach(key => {
@@ -98,19 +126,13 @@ export class UploadDocumentPageComponent implements OnInit {
     control?.setErrors(null);        
     control?.markAsPristine();
     control?.markAsUntouched();
-    this.resetFormSubject.next(true);
     this.documentTypeValues = DocumentTypeValues;
   });
-
+  this.getDocumentsForCurrentUser();
+  this.resetFormSubject.next(true);
   this.documentFormService.addValidationsToFormAndValidate(this.documentForm);
   }
 
-  onDocumentListChange($event: IDocuments[]|null) {
-    this.documents =  $event; 
-    this.setDefaultApplication();
-   
-    
-  }
   updateDocumentTypeValues() {
     this.documentTypeValues = this.documentTypeValues.map(d => {
       
@@ -122,15 +144,29 @@ export class UploadDocumentPageComponent implements OnInit {
   }
 
   setDefaultApplication(){
- if(this.applications && this.applications.length > 0){
+ if(!this.currentApplicationId &&  this.applications && this.applications.length > 0){
       this.documentForm.patchValue({
         trademark:this.applications[0]
       })
-        this.updateDocumentTypeValues();
     }
+  if(this.currentApplicationId){
+    this.documentForm.get('trademark')?.markAsTouched();
+    const trademark = this.applications?.find(app => app.id == this.currentApplicationId);
+    this.documentForm.patchValue({
+        trademark
+      })
+  }
+  if(this.currentDocumentType){
+    this.documentForm.get('documentType')?.markAsTouched();
+    this.documentForm.patchValue({
+        documentType:this.currentDocumentType
+      })
+  }
+  this.updateDocumentTypeValues();
+
   }
 
-
+  
 
 
 

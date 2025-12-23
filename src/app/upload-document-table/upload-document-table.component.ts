@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, output, Output } from '@angular/core';
 import { DocumentsService } from '../shared/services/documents.service';
 import { DataService } from '../shared/services/data.service';
 import { LoadingService } from '../common/loading.service';
@@ -7,6 +7,9 @@ import { IDocuments } from '../../models/documents.model';
 import { SharedModule } from '../shared/shared.module';
 import { finalize, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
+import { DeleteDocumentPopupComponent } from '../delete-document-popup/delete-document-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-upload-document-table',
@@ -16,11 +19,15 @@ import { environment } from '../../environments/environment';
 })
 export class UploadDocumentTableComponent implements OnInit{
 
+
   constructor(
       private readonly documentService: DocumentsService,
       private readonly dataService:DataService,
       private readonly loadingService: LoadingService,
-      private readonly toastService:ToastrService
+      private readonly toastService:ToastrService,
+      private readonly router:Router,
+      public readonly dialog: MatDialog
+
       
     ){
   
@@ -28,20 +35,19 @@ export class UploadDocumentTableComponent implements OnInit{
   
   
   documents?: IDocuments[] | null = [];
-  @Output()
-  documentsChange:EventEmitter<IDocuments[]|null> = new EventEmitter();
-
-  @Input()
-  resetFormSubject?: Observable<boolean>;
 
   baseApiUrl = environment.BaseApiUrl;
+  @Input()
+  documentSubject?: Observable<IDocuments[]|null>;
+
+  @Output()
+  onDocumentDeleted: EventEmitter<boolean> = new EventEmitter();
 
 
   ngOnInit(): void {
-    this.getDocumentsForCurrentUser();
-    this.resetFormSubject?.subscribe(val => {
+       this.documentSubject?.subscribe(val => {
       if(val){
-        this.getDocumentsForCurrentUser();
+        this.documents = val;
       }
     })
     
@@ -55,10 +61,28 @@ export class UploadDocumentTableComponent implements OnInit{
     .subscribe({
       next:(res) => {
         this.documents =  res.body
-        this.documentsChange.emit(this.documents);
       } 
     })
   }
+
+  deleteDocument(document: IDocuments) {
+    let dialogRef = this.dialog.open(DeleteDocumentPopupComponent,
+          {
+            closeOnNavigation: true,
+            data:document
+          });
+    dialogRef.afterClosed().subscribe(result => {
+        console.log(result)
+
+      if(result?.refresh){
+        this.onDocumentDeleted.emit(true);
+      }
+      
+    })
+  };
+
+
+
 
 
 

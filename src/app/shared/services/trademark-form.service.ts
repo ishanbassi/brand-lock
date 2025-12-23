@@ -59,6 +59,10 @@ type TrademarkFormGroupContent = {
   user: FormControl<TrademarkFormRawValue['user']>;
   trademarkPlan: FormControl<TrademarkFormRawValue['trademarkPlan']>;
   trademarkClasses: FormControl<TrademarkFormRawValue['trademarkClasses']>;
+  organizationType: FormControl<TrademarkFormRawValue['organizationType']>;
+  phoneNumber: FormControl<TrademarkFormRawValue['phoneNumber']>;
+  email: FormControl<TrademarkFormRawValue['email']>;
+  
 
 };
 
@@ -91,15 +95,15 @@ export class TrademarkFormService {
       ),
       name: new FormControl(trademarkRawValue.name),
       details: new FormControl(trademarkRawValue.details),
-      applicationNo: new FormControl(trademarkRawValue.applicationNo),
-      applicationDate: new FormControl(trademarkRawValue.applicationDate),
+      applicationNo: new FormControl({value:trademarkRawValue.applicationNo,disabled:true}),
+      applicationDate: new FormControl({value: trademarkRawValue.applicationDate, disabled:true}),
       agentName: new FormControl(trademarkRawValue.agentName),
       agentAddress: new FormControl(trademarkRawValue.agentAddress),
       proprietorName: new FormControl(trademarkRawValue.proprietorName),
       proprietorAddress: new FormControl(trademarkRawValue.proprietorAddress),
       headOffice: new FormControl(trademarkRawValue.headOffice),
       imgUrl: new FormControl(trademarkRawValue.imgUrl),
-      tmClass: new FormControl(trademarkRawValue.tmClass),
+      tmClass: new FormControl({value: trademarkRawValue.tmClass,disabled:true}),
       journalNo: new FormControl(trademarkRawValue.journalNo),
       deleted: new FormControl(trademarkRawValue.deleted),
       usage: new FormControl(trademarkRawValue.usage),
@@ -115,6 +119,10 @@ export class TrademarkFormService {
       user: new FormControl(trademarkRawValue.user),
       trademarkPlan: new FormControl(trademarkRawValue.trademarkPlan),
       trademarkClasses: new FormControl(trademarkRawValue.trademarkClasses ?? []),
+      phoneNumber: new FormControl(trademarkRawValue.phoneNumber),
+      email: new FormControl(trademarkRawValue.email),
+      organizationType: new FormControl(trademarkRawValue.organizationType),
+      
 
 
     });

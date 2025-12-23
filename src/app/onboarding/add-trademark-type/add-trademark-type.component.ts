@@ -112,7 +112,9 @@ export class AddTrademarkTypeComponent implements OnInit{
 
   protected onSaveSuccess( trademark: HttpResponse<ITrademark>): void {
     this.sessionStorageService.setObject('trademark', trademark.body);
-    if(this.isAuthorizedUser){
+    const isInitialOnboarding = this.sessionStorageService.get("initial-onboarding");
+
+    if(!isInitialOnboarding){
       this.router.navigateByUrl("portal/trademark-registration/details")
       return
     }

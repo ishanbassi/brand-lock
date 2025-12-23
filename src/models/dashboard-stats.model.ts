@@ -1,5 +1,6 @@
 import dayjs from "dayjs/esm";
 import { ITrademark } from "./trademark.model";
+import { DocumentType } from "../app/enumerations/document-type.model";
 
 export interface DashboardStats {
     userSummary:UserSummaryDTO;
@@ -23,6 +24,8 @@ export interface TaskDTO {
     description:string; 
     type:string;
     link:string;
+    applicationId:number;
+    documentType?:DocumentType
 
 }
 

@@ -1,7 +1,7 @@
 .home-page{
     .top-section{
         .cta-section-wrapper{
-            background-color:#338bdf;
+            background-color:#001F4D;
         }
         .cta-section{
             margin: 0 auto;
@@ -134,7 +134,7 @@
                     font-weight: 500;
                 }
                 .mat-icon{
-                    color: #338bdf;
+                    color: #001F4D;
                     width: 3.125rem;
                     height: 3.125rem;
                     font-size: 3.125rem;
@@ -147,7 +147,7 @@
             .testimonial-top-section{
                 text-align: center;
                 .testimonial-heading{
-                    color: #338bdf;
+                    color: #001F4D;
                     font-size: 1.0625rem;
                     font-weight: bold;
                     letter-spacing: 0.1875rem;
@@ -205,14 +205,14 @@
                     p{
                         margin: 0.5rem 0 0 1.25rem;
                         text-align: left;
-                        color: #338bdf;
+                        color: #001F4D;
                     }
                 }
             }
         }
 
         .stats-banner{
-            background-color: #338bdf;
+            background-color: #001F4D;
             padding: 60px 120px;
             .stat-content{
                 color: #fff;
@@ -261,7 +261,7 @@
                         
                         mat-card-header {
                             .doc-icon {
-                                background: #338bdf;
+                                background: #001F4D;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
@@ -293,7 +293,7 @@
                                 font-size: 14px;
                                 
                                 strong {
-                                    color: #338bdf;
+                                    color: #001F4D;
                                 }
                             }
                         }
@@ -378,7 +378,7 @@
         max-height: 15px;
     }
     .form-toolbar{
-        background-color: #338bdf !important;
+        background-color: #001F4D !important;
         .mat-mdc-form-field {
             .mat-mdc-text-field-wrapper {
                 padding: 0 12px;
@@ -436,7 +436,7 @@
   z-index: 1000;
   padding: 0;
   top:-100px;
-  background-color: #338bdf !important;
+  background-color: #001F4D !important;
   transition: top 1s linear 0;
 
   &.fixed-toolbar {
@@ -461,7 +461,7 @@
     }
     .cta-submit-btn{
         background-color: white;
-        color: #338bdf;
+        color: #001F4D;
     }
     
 }

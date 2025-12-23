@@ -1,0 +1,77 @@
+::ng-deep{
+    .mat-mdc-dialog-surface{
+        width: 430px !important;
+        max-width: 100% !important;
+        border-radius: 25px !important;
+        background: #FFF !important;
+        border: 1px solid #c9c9c9 !important;
+    }
+}
+.new-deactivate-popup{
+    .popup-content{
+        .heading{
+            color: #001F4D;
+            text-align: center;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 30px; 
+            letter-spacing: -0.038px;
+        }
+        .deactivate-text{
+            color: #001F4D;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 30px; /* 157.895% */
+            letter-spacing: -0.038px;
+            padding:20px 0;
+        }
+        .deactivate-btns{
+            display: flex;
+            gap:16px;
+            .deactivate-btn{
+                flex-grow: 1;
+                border-radius: var(--Radius-6, 6px);
+                box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+                color: var(--White, #FFF);
+                text-align: center;
+                font-size: 19px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: 24px; 
+                letter-spacing: -0.038px;
+                &.cancel-btn{
+    
+                    background: var(--Blue-900, #001F4D);
+                }
+                &.confirm-btn{
+    
+                    background: #007AFF;
+                }
+            }
+        }
+        
+    }
+
+}
+@media screen and (max-width:576px) {
+    .new-deactivate-popup{
+        .popup-content{
+            .deactivate-text{
+                font-size: 16px;
+            }
+            .deactivate-btns{
+                gap: 5px;
+                .deactivate-btn{
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+    ::ng-deep{
+        .mat-mdc-dialog-content {
+            padding:10px !important;
+        }
+    }
+}

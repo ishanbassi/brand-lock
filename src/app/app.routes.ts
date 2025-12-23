@@ -14,9 +14,16 @@ import { AuthGuard } from './guards/auth.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { CreateNewPassword } from './create-new-password/create-new-password.component';
 import { FaqPageComponent } from './faq-page/faq-page.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 export const routes: Routes = [
     
+    {
+        path:"",
+        redirectTo:"login",
+        pathMatch:"full"
+    },
+
     {
         path:"home",
         component:HomeComponent,
@@ -99,7 +106,12 @@ export const routes: Routes = [
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
+        path: 'not-found',
+        component:PageNotFoundComponent,
+        title:"404"
+    },
+    {
         path:"**",
-        redirectTo:"login"
+        redirectTo:"not-found"
     }
 ];

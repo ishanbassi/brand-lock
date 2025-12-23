@@ -72,10 +72,12 @@ export class PaymentService {
   }
 
 
-  createPaymentFromTrademark(tmId:number): Observable<RestPayment> {
-    return this.http
-      .post<RestPayment>(`${this.resourceUrl}/create/${tmId}`,  { observe: 'response' })
-  }
+ createPaymentFromTrademark(tmId: number): Observable<EntityResponseType> {
+  return this.http
+    .post<RestPayment>(`${this.resourceUrl}/create/${tmId}`, null, { observe: 'response' })
+    .pipe(map(res => this.convertResponseFromServer(res)));
+}
+
 
   getPaymentIdentifier(payment: Pick<IPayment, 'id'>): number {
     return payment.id;

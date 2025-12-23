@@ -3,7 +3,7 @@
     <div class="container">
         <div class="top-section">
         <div class="section-header">
-                <h3>Upload Documnets</h3>
+                <h3>Upload Documents</h3>
                 <p>Attach documents to your trademark applications.</p>
         </div>
         <div>
@@ -50,6 +50,6 @@
         </div>
         </div>
 
-        <app-upload-document-table [resetFormSubject]="resetFormSubject" (documentsChange)="onDocumentListChange($event)" ></app-upload-document-table>
+        <app-upload-document-table [documentSubject]="documentSubject" (onDocumentDeleted)="getDocumentsForCurrentUser()"></app-upload-document-table>
     </div>
 </div>

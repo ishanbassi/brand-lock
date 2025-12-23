@@ -42,6 +42,7 @@ export class OnboardingComponent implements OnInit {
           this.matDrawerOpened = false;
           return;
         }
+        this.matDrawerOpened = true;
       });
   }
   

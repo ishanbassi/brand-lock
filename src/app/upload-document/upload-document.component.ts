@@ -7,7 +7,7 @@ import { DocumentsFormService } from '../shared/services/documents-form.service'
 import { ToastrService } from 'ngx-toastr';
 import { IDocuments, NewDocuments, NewFormDocument } from '../../models/documents.model';
 import { NewRestDocuments } from '../shared/services/documents.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-upload-document',
@@ -16,9 +16,7 @@ import { Observable } from 'rxjs';
   styleUrl: './upload-document.component.scss'
 })
 export class UploadDocumentComponent implements AfterViewInit, OnInit {
-  submit() {
-    throw new Error('Method not implemented.');
-  }
+  
 
   constructor(
     private readonly dataUtils: DataUtils,
@@ -28,7 +26,7 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
 
   @ViewChild('fileInputEl') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('filePreviews') filePreviews!: ElementRef<HTMLDivElement>;
-  @ViewChild('notification') notification!: ElementRef<HTMLDivElement>;
+  @ViewChild('notification')  notification!: ElementRef<HTMLDivElement>;
   @ViewChild('uploadStats') uploadStats!: ElementRef<HTMLDivElement>;
   @ViewChild('fileCountEl') fileCountEl!: ElementRef<HTMLSpanElement>;
   @ViewChild('totalSizeEl') totalSizeEl!: ElementRef<HTMLSpanElement>;
@@ -39,43 +37,56 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
   documentMetaData?: DocumentMetaData | null;
   protected documentFormService = inject(DocumentsFormService);
   documentForm = this.documentFormService.createDocumentsFormGroup();
+  uploaded  = false;
 
   @Output()
   private onDocumentUpload: EventEmitter<NewFormDocument> = new EventEmitter();
 
+  
+  @Input()
+  documentSubject?: BehaviorSubject<IDocuments | null>;
+  
   @Input()
   resetFormSubject?: Observable<boolean>;
 
 
 
 
-  allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+  allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'image/svg+xml', ''];
   maxSize = 5 * 1024 * 1024; // 5 MB
   maxFile = 1;
 
   ngAfterViewInit() {
-    this.updateDisplay();
   }
-  ngOnInit(): void {
-    this.resetFormSubject?.subscribe(val => {
-      if(val){
-        this.removeFile(this.documentMetaData!.fileId, this.documentMetaData!.fileSizeNumber)
-      }
-    })
-  }
+    ngOnInit(): void {
+      
+      this.documentSubject?.subscribe(doc => {
+        console.log(doc)
+        if(doc){
+          const fileId = `file-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+          this.documentMetaData =  new DocumentMetaData(fileId,null,doc.fileContentType?.includes("image"),doc.fileName, null);
+          this.downloadLogo(doc);
+
+        }
+      });
+       this.resetFormSubject?.subscribe(val => {
+        if(val){
+          this.removeFile(this.documentMetaData!.fileId!, this.documentMetaData!.fileSizeNumber)
+        }
+       });
+    }
 
 
 
   handleFiles(files: FileList) {
+    this.uploaded = true;
+
     let validFiles = 0;
     let invalidFiles = 0;
 
     Array.from(files).forEach(file => {
-      if (!this.allowedTypes.includes(file.type)) {
-        this.showNotification(`${file.name} is not a valid file type.`, 'error');
-        invalidFiles++;
-        return;
-      }
+
 
       if (file.size > this.maxSize) {
         this.showNotification(`${file.name} is too large. Maximum file size is 5 MB.`, 'error');
@@ -88,7 +99,6 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
     });
 
     if (validFiles > 0) {
-      this.simulateUpload(validFiles);
       this.showNotification(`${validFiles} file${validFiles !== 1 ? 's' : ''} added successfully.`, 'success');
     }
 
@@ -111,13 +121,13 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
       this.documentMetaData.previewContent = previewContent;
       this.fileCount = 1;
       this.totalSize = file.size;
-      this.updateDisplay();
     };
 
     reader.readAsDataURL(file);
   }
 
-  removeFile(fileId: string, size: number) {
+  removeFile(fileId: string, size?: number|null) {
+    this.uploaded = false;
     const fileElement = document.getElementById(fileId);
     if (fileElement) {
       fileElement.style.opacity = '0';
@@ -126,14 +136,12 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
       setTimeout(() => {
         fileElement.remove();
         this.fileCount--;
-        this.totalSize -= size;
+        this.totalSize -= size ?? 0;
         this.documentMetaData = null;
-        this.updateDisplay();
         this.showNotification('File removed', 'success');
       }, 300);
     }
 
-    this.resetFileInput();
     this.documentForm.patchValue({
       file: null,
       fileContentType: null,
@@ -229,6 +237,7 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files) this.handleFiles(input.files);
     this.setFileData(event, 'file', false);
+    this.uploaded = true;
 
   }
 
@@ -239,6 +248,24 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
       error: (err: FileLoadError) =>
         this.toastService.error(`Error loading file: ${err.message}`),
     });
+  }
+
+  downloadLogo(document:IDocuments): void {
+    const filePath = document?.fileUrl;
+    if(filePath){
+      this.dataUtils.downloadIcon(filePath)
+      .subscribe({
+        next:(val) => {
+          this.uploaded = true;
+          this.documentForm.controls["file"].setValue(val);
+          this.documentMetaData!.previewContent = `data:${document.fileContentType};base64,${val}`;
+
+        },
+        error:() => {
+        }
+      });
+    }
+    
   }
 
 

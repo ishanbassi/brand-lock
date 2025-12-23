@@ -150,6 +150,9 @@ a {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    .notification-link{
+        text-decoration: none;
+    }
 }
 
 /* Notification Item */

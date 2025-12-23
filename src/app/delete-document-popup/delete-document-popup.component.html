@@ -1,0 +1,20 @@
+<div class="new-deactivate-popup">
+    <mat-dialog-content>
+        <div class="popup-content">
+            <div class="heading">
+                Are You Sure ?
+            </div>
+            <div class="deactivate-text">
+                Are you sure you want to remove this provider from your SameSidewalk household? If SameSidewalk is currently responsible for making payments to this provider, we will no longer be after removal.
+            </div>
+            
+            <div class="deactivate-btns">
+                <button mat-flat-button color="primary" class="cancel-btn deactivate-btn" mat-dialog-close>Nevermind</button>
+                <button mat-flat-button color="primary" class="confirm-btn deactivate-btn"  (click)="delete()" >Yes, I’m Sure</button>
+            </div>
+        </div>
+
+        
+      </mat-dialog-content>
+      
+</div>

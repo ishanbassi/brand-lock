@@ -15,7 +15,8 @@ export class AuthService {
     this.localStorageService.remove('token');
     this.localStorageService.remove('user');
     this.localStorageService.remove('userProfile');
-    this. sessionStorageService.remove('trademark');
+    this.sessionStorageService.remove('trademark');
+    this.sessionStorageService.remove("initial-onboarding");
   }
 
   getToken(): any {
