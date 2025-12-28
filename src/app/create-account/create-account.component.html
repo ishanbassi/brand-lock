@@ -70,6 +70,7 @@
                   [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
 
                   <input matInput [type]="passwordFieldType" required="required" name="userPassword"
+                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}"
                     #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password"
                     />
                   <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"

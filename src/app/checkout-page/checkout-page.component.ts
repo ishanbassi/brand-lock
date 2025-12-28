@@ -134,7 +134,7 @@ environment = environment;
       currency: orderResponse.currency,
       name: 'Trademarx', 
       description: this.trademarkOrderSummary?.trademarkDTO.trademarkPlan?.name, 
-      // image: './assets/logo.png', // company logo or product image
+      image: '/assets/images/trademarx.svg',
       order_id: orderResponse.orderId,
       modal: {
         escape: false,

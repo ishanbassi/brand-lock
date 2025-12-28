@@ -19,10 +19,12 @@ import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
 import { SessionStorageService } from '../shared/services/session-storage.service';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent],
+  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective],
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss'
 })

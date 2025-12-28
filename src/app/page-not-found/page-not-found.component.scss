@@ -36,12 +36,12 @@ body {
     background-color: #ffffff;
 }
 .page-404 .outer .middle .inner .inner-circle:hover i {
-    color: #39bbdb!important;
+    color: #001F4D!important;
     background-color: #f5f5f5;
-    box-shadow: 0 0 0 15px #39bbdb;
+    box-shadow: 0 0 0 15px #001F4D;
 }
 .page-404 .outer .middle .inner .inner-circle:hover span {
-    color: #39bbdb;
+    color: #001F4D;
 }
 .page-404 .outer .middle .inner .inner-circle i {
     font-size: 5em;
@@ -61,7 +61,7 @@ body {
 
     color: #f5f5f5!important;
     border-radius: 50%;
-    background-color: #39bbdb;
+    background-color: #001F4D;
     box-shadow: 0 0 0 15px #f0f0f0;
 }
 .page-404 .outer .middle .inner .inner-circle span {
@@ -87,7 +87,7 @@ body {
 
     text-align: center;
 
-    color: #39bbdb;
+    color: #001F4D;
 }
 .page-404 .outer .middle .inner .inner-detail {
     line-height: 1.4em;
@@ -99,4 +99,14 @@ body {
     text-align: center;
 
     color: #999999;
+}
+.btn-info{
+    background-color: #001F4D;
+    border-color: #001F4D;
+    color: #ffffff;
+    &:active{
+        background-color: #ffffff;
+        border-color: #001F4D;
+        color: #001F4D;
+    }
 }

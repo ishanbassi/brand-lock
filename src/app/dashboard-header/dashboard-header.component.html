@@ -1,5 +1,5 @@
   <mat-toolbar class="dashboard-nav-bar site-navbar">
-    <mat-toolbar-row>
+    <mat-toolbar-row [ngClass]="isAuthorizedUser ? 'logged-in-toolbar' : ''">
       <img class="sidenav-mobile-view-logo" src="/assets/images/trademarx.svg" alt="logo"
         [routerLink]="['/portal/dashboard']" />
       <div class="user-icon-container" *ngIf="isAuthorizedUser">
@@ -24,10 +24,6 @@
         <button mat-menu-item>
           <span>{{userProfile?.firstName}} {{userProfile?.lastName}}</span>
         </button>
-        <button mat-menu-item [routerLink]="['/portal/my/profile']">
-          <mat-icon>account_circle</mat-icon>
-          <span>Account Info</span>
-        </button>
         
         <button mat-menu-item (click)="logout()">
           <mat-icon>logout</mat-icon>
@@ -38,8 +34,8 @@
   </mat-toolbar>
   <mat-expansion-panel class="mobile-view-menu mobile-menu-view-v2 " [expanded]="panelOpenState">
     <div class="mobile-menu-items">
-      <a class="mobile-menu-item dashboard-nav-item first-mobile-item">
-        <!-- <span>{{firstName}} {{lastName}}</span> -->
+      <a class="mobile-menu-item dashboard-nav-item first-mobile-item" *ngIf="isAuthorizedUser">
+          <span>{{userProfile?.firstName}} {{userProfile?.lastName}}</span>
       </a>
       <div class="mobile-menu-actions" *ngIf="!isAuthorizedUser">
       <button  *ngIf="!isLoginPage" mat-raised-button class="primary-secondary-btn login-link" [routerLink]="['/login']">
@@ -49,6 +45,20 @@
         <span>Create Account</span>
       </button>
       </div>
+    <div class="mobile-menu-actions" *ngIf="isAuthorizedUser">
+            <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/dashboard']" (click)="toggle()">
+        <span>Dashboard</span>
+      </a>
+      <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/trademark-registration/type']" (click)="toggle()">
+        <span>File New Trademark</span>
+      </a>
+            <a class="mobile-menu-item dashboard-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        [routerLink]="['/portal/upload-documents']" (click)="toggle()">
+        <span>Upload Documents</span>
+      </a>
+    </div>
       
     </div>
   </mat-expansion-panel>

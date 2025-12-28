@@ -32,7 +32,7 @@
                                 <td>
                                     <img [src]="document.fileContentType?.startsWith('image/') ? `${baseApiUrl}files/${document.fileUrl}` : '/assets/images/icons/pdf-icon.svg'"
                                  [alt]="document.documentType" class="avatar-sm me-2" >
-                                    <a href="#" class="text-body">
+                                    <a class="text-body">
                                     {{document.fileName}}
                                 </a></td>
                                 <td><span class="badge badge-soft-success mb-0">{{document.documentType}}</span></td>
