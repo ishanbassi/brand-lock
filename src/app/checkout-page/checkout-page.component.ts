@@ -174,6 +174,8 @@ environment = environment;
     options.modal.ondismiss = (() => {
       // handle the case when user closes the form while transaction is in progress
       console.log('Transaction cancelled.');
+      this.loadingService.hide();
+      this.toastService.warning("Transaction was cancelled.");
     });
     const rzp = new this.winRef.nativeWindow.Razorpay(options);
     rzp.open();
