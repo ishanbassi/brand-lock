@@ -29,6 +29,7 @@ import { ToastrService } from 'ngx-toastr';
 import { IUserProfile } from '../../models/user-profile.model';
 import { AuthService } from '../../models/auth.services';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -67,7 +68,8 @@ environment = environment;
     private readonly toastService:ToastrService,
     private readonly dialog:MatDialog,
     private readonly localstorageService:LocalStorageService,
-    private readonly authservice:AuthService
+    private readonly authservice:AuthService,
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService
 
 
     
@@ -162,7 +164,7 @@ environment = environment;
           this.sessionStorageService.remove("trademark")
                      
           }
-          this.router.navigate(['/portal/dashboard'])
+          this.googleConversionTrackingService.reportPurchaseConversion(response.razorpay_payment_id,this.createOrderResponse?.amount, "portal/dashboard" )
 
         },
         error:() => {

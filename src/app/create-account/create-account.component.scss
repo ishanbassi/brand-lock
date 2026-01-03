@@ -27,7 +27,17 @@ $primary: #001F4D;
     .register-section {
       width: 50%;
       padding: 64px 116px 126px;
+      .cta-form-call-now{
+              font-size:1.25rem;
+              text-align: center;
+              .call-now{
+                  color:#001F4D;
+                  font-weight: 600;
+                  margin-top: 1.25rem;
 
+
+              }
+          }
       .register-heading {
         color: var(--Blue-900, #001F4D);
         text-align: center;
@@ -315,8 +325,15 @@ $primary: #001F4D;
       .register-section {
         width: 100%;
         padding: 0px;
+        .cta-form-call-now{
+              margin-bottom: 0px;
+              .call-now{
+                  margin-top: 1rem;
+
+              }
+          }
         .register-heading{
-          margin-top: 20px !important;
+          margin-top: 0px !important;
         }
 
         .form-section {

@@ -4,6 +4,9 @@
     <div class="create-account-main-section">
       <app-features class="features-component"></app-features>
       <div class="register-section">
+        <p class="cta-form-call-now">Call Now:
+          <a type="button" class="call-now" href="tel:+919878987497">9878987497</a>
+        </p>
         <div class="register-heading ">
           Register Your Trademark
         </div>
@@ -16,8 +19,7 @@
                 <mat-form-field class="site-form-field" appearance="outline"
                   [ngClass]="{'mat-form-field-invalid':!firstName.valid && (onClickValidation || firstName.touched || firstName.dirty)}">
                   <input matInput required="required" name="firstName" #firstName="ngModel" [(ngModel)]="data.firstName"
-                     id="firstname" maxlength="45"
-                    placeholder="Enter full Name" appWhitespaceValidator>
+                    id="firstname" maxlength="45" placeholder="Enter full Name" appWhitespaceValidator>
                   <mat-icon matSuffix [ngClass]="firstName.value ? 'visible': 'invisible'"
                     (click)="data.firstName=undefined">highlight_off</mat-icon>
                 </mat-form-field>
@@ -70,9 +72,8 @@
                   [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
 
                   <input matInput [type]="passwordFieldType" required="required" name="userPassword"
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}"
-                    #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password"
-                    />
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}"
+                    #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password" />
                   <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
                     (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
                 </mat-form-field>
@@ -82,7 +83,7 @@
                 </app-validation-message>
               </div>
             </div>
-        
+
 
             <div class="register-action-container">
               <button mat-raised-button class="register-btn" aria-label="Continue"
@@ -92,41 +93,43 @@
             </div>
 
 
-          
+
 
             <div class="pre-register-bottom">
-                <span>Save Time. Save Money.</span>
+              <span>Save Time. Save Money.</span>
             </div>
 
             <div class="register-bottom">
-                Free to sign up. Pay only when you file.
+              Free to sign up. Pay only when you file.
             </div>
           </form>
           <div class="terms-conditions-section">
-                    By clicking “Join now” you agree to our <a  href="/terms-and-conditions" target="_blank" class="form-links">Terms
-                        and Conditions</a> and the <a href="/privacy-policy" target="_blank" class="form-links">Privacy
-                    Policy</a>.
-            </div>
+            By clicking “Join now” you agree to our <a href="/terms-and-conditions" target="_blank"
+              class="form-links">Terms
+              and Conditions</a> and the <a href="/privacy-policy" target="_blank" class="form-links">Privacy
+              Policy</a>.
+          </div>
         </div>
       </div>
       <app-common-register-login-mobile-section></app-common-register-login-mobile-section>
 
-        <div class="manage-bills-section only-mobile-view">
-            <div class="heading">
-                There's a smarter way to protect your brand:
-            </div>
-            <ul>
-                <li>
-                    <b>Protect your name early—</b>register before someone else does and build brand ownership from day one.
-                </li>
-                <li>
-                    <b>Avoid rejection—</b>our smart checks detect similar trademarks before you file, reducing risk of objection.
-                </li>
-                <li>
-                    <b>Stay informed—</b>we track your application status and journal publications so you never miss an update.
-                </li>
-            </ul>
+      <div class="manage-bills-section only-mobile-view">
+        <div class="heading">
+          There's a smarter way to protect your brand:
         </div>
+        <ul>
+          <li>
+            <b>Protect your name early—</b>register before someone else does and build brand ownership from day one.
+          </li>
+          <li>
+            <b>Avoid rejection—</b>our smart checks detect similar trademarks before you file, reducing risk of
+            objection.
+          </li>
+          <li>
+            <b>Stay informed—</b>we track your application status and journal publications so you never miss an update.
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 

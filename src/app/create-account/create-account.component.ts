@@ -21,6 +21,7 @@ import { CommonRegisterLoginMobileSectionComponent } from '../common-register-lo
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxMaskDirective } from 'ngx-mask';
+import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 
 @Component({
   selector: 'app-create-account',
@@ -50,7 +51,8 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
     private readonly loadingService: LoadingService,
     private  readonly recaptchaV3Service: ReCaptchaV3Service,
     private readonly dataService: DataService,
-    private readonly sessionStorageService:SessionStorageService
+    private readonly sessionStorageService:SessionStorageService,
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService
 
   ) { }
 
@@ -98,8 +100,9 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
       .subscribe({
         next: (response) => {
           this.localStorageService.storeAuthenticationToken(response.body!.id_token);
-          this.sessionStorageService.set("initial-onboarding", true)
-          this.router.navigateByUrl("trademark-registration/step-2");
+          this.sessionStorageService.set("initial-onboarding", true);
+          this.googleConversionTrackingService.reportSignupConversion("trademark-registration/step-2");
+          // this.router.navigateByUrl("trademark-registration/step-2");
           
 
         }, error: (error: any) =>   {
