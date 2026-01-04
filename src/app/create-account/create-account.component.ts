@@ -32,7 +32,6 @@ import { GoogleConversionTrackingService } from '../shared/services/google-conve
 
 export class CreateAccountComponent {
 
-
   loginForm: any;
 fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
   
@@ -121,7 +120,9 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
   }
 
 
-
+trackCallToActionEvent(){
+  this.googleConversionTrackingService.reportClickToCall();
+}
 
 }
 

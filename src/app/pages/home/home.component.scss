@@ -33,23 +33,6 @@
                
                 
             }
-            .trust-section{
-                margin-top: 1.875rem;
-                display: flex;
-                align-items: center;
-                .stars{
-                    display: flex;
-                    gap: 0.1875rem;
-                    .star-icons{
-                        width: 1.25rem;
-                    }
-                }
-                .content{
-                    font-weight: 600;
-                    line-height: 120%;
-                    font-size: 1.375rem;
-                }
-            }
             .cta-form-section{
                 background-image: url('/assets/images/cta-form-bg-img.png');
                 background-size: contain;
@@ -310,26 +293,6 @@
                 font-size: 32px;
                 font-weight: 600;
             }
-        }
-    }
-    .whatsapp-button{
-        position: fixed; 
-        right: 15px;
-        bottom: 15px;
-        z-index: 1000;
-        img{
-            width: 50px;
-            height: 50px;
-        }
-    }
-    .call-button{
-        z-index: 1000;
-        position: fixed;
-        right: 15px;
-        bottom: 80px;
-        img{
-            width: 45px;
-            height: 45px;
         }
     }
     .call-us-section{

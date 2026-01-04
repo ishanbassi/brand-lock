@@ -56,4 +56,11 @@ export class GoogleConversionTrackingService {
     // Fallback in case callback doesn't fire
     setTimeout(navigate, 2000);
     }
+
+  reportClickToCall(): void {
+    gtag('event', 'conversion', {
+      send_to: 'AW-17846624059/AazSCNHZ0twbELu-971C'
+    });
+  }
+
 }
