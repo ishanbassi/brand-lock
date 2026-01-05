@@ -28,6 +28,7 @@
 
         </div>
 
+
         <ul class="featureList">
           <li>Trademark Application Filing</li>
           <li>Support via Call, Chat & Email</li>
@@ -39,6 +40,9 @@
         </ul>
 
         <button (click)="navigate(899)" class="button button--pink">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}} </button>
+        <div class="text-center mt-2">
+          <a class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
+      </div>
       </div>
       <!--pro plan ends -->
 
@@ -62,6 +66,7 @@
             </span>
 
         </div>
+        
 
         <ul class="featureList">
           <li>Trademark Application Filing</li>
@@ -74,6 +79,9 @@
         </ul>
 
         <button (click)="navigate(2999)" class="button button--white">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}} </button>
+        <div class="text-center mt-2">
+          <a class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
+        </div>
       </div>
       <!--entp plan ends -->
 
