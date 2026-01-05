@@ -13,9 +13,9 @@ export enum DocumentType {
 export const DocumentTypeValues:DocumentTypeValues[] = [
   
   {label: 'Logo', value: DocumentType.LOGO},
-  {label: 'Address Proof', value: DocumentType.ADDRESS_PROOF},
+  {label: 'Address Proof (GST)', value: DocumentType.ADDRESS_PROOF},
   {label: 'Signed Power Of Attorney', value: DocumentType.SIGNED_POA},
-  {label: 'Proof of Applicant Identity', value: DocumentType.APPLICANT_IDENTITY},
+  {label: 'Proof of Applicant Identity (Adhaar Card)', value: DocumentType.APPLICANT_IDENTITY},
   {label: 'Others', value: DocumentType.OTHERS},
 ]
 
