@@ -5,6 +5,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { OnboardingStepperComponent } from '../onboarding-stepper/onboarding-stepper.component';
 import { filter } from 'rxjs';
+import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 
 
 @Component({
@@ -19,7 +20,8 @@ export class OnboardingComponent implements OnInit {
 
   constructor(
     private readonly breakpointObserver: BreakpointObserver,
-    private readonly router:Router
+    private readonly router:Router,
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService
   ){}
   
   ngOnInit() {
@@ -50,6 +52,10 @@ export class OnboardingComponent implements OnInit {
         }
         this.matDrawerOpened = true;
       });
+  }
+
+  trackCallToActionEvent(){
+    this.googleConversionTrackingService.reportClickToCall();
   }
   
 }
