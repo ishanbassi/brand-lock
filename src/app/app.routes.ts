@@ -85,6 +85,34 @@ export const routes: Routes = [
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
+        path: 'instant-filing',
+        component:CreateAccountComponent,
+        title:"Instant Filing",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'tm-filing',
+        component:CreateAccountComponent,
+        title:"Trademark Filing",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'free-search',
+        component:CreateAccountComponent,
+        title:"Free Trademark Search",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'trademark-whatsapp-support',
+        component:CreateAccountComponent,
+        title:"Free Whatsapp Assistance",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
         path: 'login',
         component:LoginV2Component,
         title:"Login",
