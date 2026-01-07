@@ -113,6 +113,20 @@ export const routes: Routes = [
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
+        path: 'trademark-renewal',
+        component:CreateAccountComponent,
+        title:"Trademark Renewal",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'trademark-process',
+        component:CreateAccountComponent,
+        title:"Trademark Process",
+        canActivate: [AuthGuard],
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
         path: 'login',
         component:LoginV2Component,
         title:"Login",

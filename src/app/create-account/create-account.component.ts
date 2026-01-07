@@ -22,10 +22,11 @@ import { SessionStorageService } from '../shared/services/session-storage.servic
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
+import { PhoneInputComponent } from '../phone-input/phone-input.component';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective],
+  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective, PhoneInputComponent],
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss'
 })
@@ -73,6 +74,7 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
         this.data.firstName = nameParts[0];
         this.data.lastName = nameParts.slice(1).join(" ") || " ";
         this.data.login = this.data.email;
+        this.data.password = "Ish@n@070720"
         this.loadingService.show();
         this.dataService.register(this.data.forRequest())
           .subscribe({
