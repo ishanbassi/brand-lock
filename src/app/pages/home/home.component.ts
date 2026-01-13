@@ -217,17 +217,20 @@ export class HomeComponent implements OnInit, AfterViewInit{
       return;
     }
     const lead = this.leadFormService.getLead(form) as NewLead;
+    this.loadingService.show();
     this.leadService.create(lead).subscribe({
       next: (newLead) => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
           this.sessionStorageService.setObject('lead', newLead.body);
           this.router.navigateByUrl("trademark-registration/step-2");
+          this.loadingService.hide();
           
         },  
         error: (err) => {
           this.isSubmitting = false;
           this.isNavSubmitting = false;
+          this.loadingService.hide();
         }
     });
   }

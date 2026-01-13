@@ -20,7 +20,7 @@ export const routes: Routes = [
     
     {
         path:"",
-        redirectTo:"create-account",
+        redirectTo:"home",
         pathMatch:"full"
     },
 

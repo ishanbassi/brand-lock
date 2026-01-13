@@ -23,18 +23,58 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { PhoneInputComponent } from '../phone-input/phone-input.component';
+import { SlickCarouselModule } from 'ngx-slick-carousel';
+import { MatStepperModule } from '@angular/material/stepper';
+import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
+import { MatCardModule } from '@angular/material/card';
+import { PricingSectionComponent } from '../pricing-section/pricing-section.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { FooterComponent } from '../footer/footer.component';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { FaqComponent } from '../faq/faq.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CountUpDirective } from '../shared/directives/count-up.directive';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { TestimonialsList } from '../enums/TestimonialsList';
+import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective, PhoneInputComponent],
+  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective, PhoneInputComponent,
+    ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
+        VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
+        NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent
+
+  ],
   templateUrl: './create-account.component.html',
-  styleUrl: './create-account.component.scss'
+  styleUrl: './create-account.component.scss',
+  animations: [
+    trigger('fadeInOut', [
+      state('visible', style({
+        opacity: 1,
+      })),
+      state('hidden', style({
+        opacity: 0.1,
+      })),
+      transition('hidden => visible', [
+        animate('0.5s ease-in-out')
+      ])
+    ]),
+    trigger('toolbarAnimation', [
+      state('hidden', style({ transform: 'translateY(-100%)', opacity: 0 })),
+      state('visible', style({ transform: 'translateY(0)', opacity: 1 })),
+      transition('hidden => visible', animate('300ms ease-out')),
+      transition('visible => hidden', animate('300ms ease-in'))
+    ])
+  ]
 })
 
 export class CreateAccountComponent {
-
+  animationState = 'hidden';
   loginForm: any;
 fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
+testimonials = TestimonialsList;
+  documents = RequiredDocumentsList;
   
   onClickValidation: boolean = false;
   passwordFieldType: string = "password";
@@ -45,6 +85,35 @@ fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
   data: Account = new Account();
   loggedIn: any;
 
+  slideConfig = {
+    slidesToShow: 3, // Number of visible slides
+    slidesToScroll: 1, // Number of slides to scroll at a time
+    autoplay: true, // Enables auto-scrolling
+    autoplaySpeed: 4000, // Time interval for auto scroll (2 sec)
+    dots: false, // Show navigation dots
+    infinite: true, // Infinite loop
+    arrows: false, // Hide arrows (optional)
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
+  };
 
   constructor(private readonly toastService: ToastrService,
     private readonly router: Router, private readonly localStorageService: LocalStorageService,

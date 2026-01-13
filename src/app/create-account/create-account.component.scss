@@ -485,3 +485,332 @@ $primary: #001F4D;
     }
   }
 }
+.testimonial-section{
+            background-color: #F2F8FE;
+            padding: 3.75rem;
+            .testimonial-top-section{
+                text-align: center;
+                .testimonial-heading{
+                    color: #001F4D;
+                    font-size: 1.0625rem;
+                    font-weight: bold;
+                    letter-spacing: 0.1875rem;
+                    line-height: 1.6rem;
+                    margin-bottom: 1.25rem;
+                    text-transform: uppercase;
+                }
+                .testimonial-sub-heading{
+                    color: #273653;
+                    font-size: 3rem;
+                    font-weight: bold;
+                    letter-spacing: -0.0625rem;
+                    line-height: 4.8rem;
+                    margin-bottom: 5.6rem;
+                }
+            }
+            .content {
+                .testimonial{
+                    blockquote{
+                        cursor: pointer;
+                        margin: 0.625rem 0.625rem 0;
+                        background: #efefef;
+                        padding: 1.25rem 3.75rem;
+                        position: relative;
+                        border: none;
+                        border-radius: 0.5rem;
+                        font-style: italic;
+                        height: 6.25rem;
+                        &:before, &:after{
+                            content: "\201C";
+                            position: absolute;
+                            font-size: 5rem;
+                            line-height: 1;
+                            color: #757f9a;
+                            font-style: normal;
+                        }
+                        &:before{
+                            top: 0;
+                            left: 0.625rem;
+                        }
+                        &:after{
+                            content: "\201D";
+                            right: 0.625rem;
+                            bottom: -0.5em;
+                        }
+                    }
+                    div{
+                        width: 0;
+                        height: 0;
+                        border-left: 0 solid transparent;
+                        border-right: 1.25rem solid transparent;
+                        border-top: 1.25rem solid #efefef;
+                        margin: 0 0 0 3.75rem;
+                    }
+                    p{
+                        margin: 0.5rem 0 0 1.25rem;
+                        text-align: left;
+                        color: #001F4D;
+                    }
+                }
+            }
+        }
+
+        .stats-banner{
+            background-color: #001F4D;
+            padding: 60px 120px;
+            .stat-content{
+                color: #fff;
+                text-align: center;
+                .title{
+                    font-size: 50px;
+                    font-weight: bold;
+                    letter-spacing: -0.06rem;
+                    line-height: 120%;
+                }
+                .description{
+                    font-size: 18px;
+                    font-weight: 600;
+                    line-height: 2.4rem;
+                }
+            }
+        }
+        .hiw-section{
+            padding:60px;
+            .hiw-heading{
+                color: #273653;
+                font-size: 48px;
+                font-weight: bold;
+                letter-spacing: -1px;
+                line-height: 4.8rem;
+                margin-bottom: 5.6rem;
+                text-align: center;
+                
+            }
+        }
+        .required-documents-section{
+            padding: 60px;
+            background-color: #F2F8FE;
+            h1 {
+                text-align: center;
+                margin-bottom: 40px;
+                font-size: 32px;
+                font-weight: 600;
+            }
+            .document-cards {
+                .document-card-grid {
+                    .document-card {
+                        margin-bottom: 20px;
+                        height: 100%;
+                        border-radius: 25px;
+                        
+                        mat-card-header {
+                            .doc-icon {
+                                background: #001F4D;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                
+                                mat-icon {
+                                    color: white;
+                                }
+                            }
+                            
+                            mat-card-title {
+                                font-size: 18px;
+                                font-weight: 600;
+                                margin-bottom: 16px;
+                            }
+                        }
+                        
+                        mat-card-content {
+                            ul {
+                                padding-left: 20px;
+                                
+                                li {
+                                    margin-bottom: 8px;
+                                    line-height: 1.5;
+                                }
+                            }
+                            
+                            p {
+                                margin-top: 16px;
+                                font-size: 14px;
+                                
+                                strong {
+                                    color: #001F4D;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+        .call-us-section{
+        border-radius: 2rem;
+        padding: 10rem;
+        z-index: 2;
+        position: relative;
+        background-image: url(/assets/images/call-us-bg.jpg);
+        max-width: 1200px;
+        margin: 0 auto;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: bottom;
+        .content{ 
+            color:#FFF;
+            max-width: 60%;
+            h1{
+                font-size: 50px;
+                font-weight: 700;
+            }
+            p{
+                font-size: 19px;
+                line-height: 150%;
+                margin-top: 2.6rem;
+            }
+            .call-us-btn{
+                margin-top: 70px;
+                border: 2px solid #fff;
+                color: #fff;
+                font-weight: 700;
+                font-size: 20px;
+                padding: 10px 30px;
+                display: inline-block;
+                &:hover{
+                    background-color:transparent;
+                }
+            }
+        }
+    }
+        
+
+
+        ::ng-deep{
+    .mat-mdc-form-field-bottom-align{
+        max-height: 15px;
+    }
+    .form-toolbar{
+        background-color: #001F4D !important;
+        .mat-mdc-form-field {
+            .mat-mdc-text-field-wrapper {
+                padding: 0 12px;
+                background-color: #fff;
+                height: 40px;
+                border-radius: 4px;
+            }
+    
+            .mat-mdc-form-field-flex {
+                height: 100%;
+                align-items: center;
+            }
+            .mat-mdc-form-field-bottom-align {
+                display: none;
+            }
+    
+            .mat-mdc-form-field-subscript-wrapper {
+                margin-top: 0;
+            }
+    
+            // Adjust icon size and position
+            .mat-icon {
+                width: 20px;
+                height: 20px;
+                font-size: 20px;
+                margin-right: 8px;
+            }
+            .mat-mdc-form-field-infix{
+                    padding-top: 0;
+                    padding-bottom: 0;
+                    height: 100%;
+                    display: flex;
+            }
+            
+        }
+    }
+    .cta-form-section{
+        .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+        }
+    }
+    // Custom form field styles
+    .mdc-button__label{
+        display: flex;
+        align-items: center;
+        gap:5px;
+        justify-content: center;
+    }
+   
+}
+
+@media (max-width:576px) {
+  .testimonial-section{
+                padding:60px 0;
+                .testimonial-top-section{
+                        .testimonial-sub-heading{
+                            font-size: 30px;
+                            margin-bottom:20px;
+                        }
+                        
+                        
+                }
+                .content{
+                    .testimonial{
+                        
+                        blockquote{
+                            padding:20px;
+                            &:before, &:after{
+                                font-size: 40px;
+                            }
+                        }
+                    }
+                }
+            }
+            .hiw-section{
+                padding:10px !important;
+                .hiw-heading{
+                    font-size: 20px;
+    				margin-bottom: 10px;
+	    			letter-spacing: 4px;
+                }
+            }
+            .stats-banner{
+                padding:70px 0;
+                .content{
+                    gap:50px;
+                    .stat-content{
+                        .description{
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+            .required-documents-section{
+                padding:10px;
+                h1{
+                    font-size: 20px;
+                }
+            }
+            .call-us-section{
+            padding:100px 20px 30px 20px ;
+            margin:10px;
+            background-image: url("/assets/images/call-us-mobile-bg.jpg");
+            .content{
+                max-width: 100%;
+                h1{
+                    font-size: 40px;
+                }
+                p{
+                    font-size: 14px;
+                    font-weight: 600;
+                    line-height: 140%;
+                }
+                .call-us-btn{
+                    margin-top: 35px;
+                    background-color: #fff;
+                    color:#273653;
+                    font-size: 20px;
+                }
+            }
+        }
+}
