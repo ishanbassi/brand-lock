@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../shared/services/data.service';
@@ -32,7 +32,8 @@ export class LoginV2Component implements OnInit{
   constructor(private readonly toastService: ToastrService, private readonly dataService: DataService,
     private  readonly router: Router, private  readonly localStorageService: LocalStorageService,
     private readonly loadingService: LoadingService, private readonly  authService:AuthService, 
-    private readonly route: ActivatedRoute) {
+    private readonly route: ActivatedRoute,private meta: Meta,
+    private title: Title) {
   }
 
   ngOnInit(): void {
@@ -41,6 +42,20 @@ export class LoginV2Component implements OnInit{
   if (urlFromQuery) {
     this.returnUrl = urlFromQuery;
   }
+  this.title.setTitle(
+    'Trademark Registration in India @ ₹6500 | Trademarx'
+  );
+
+  this.meta.updateTag({
+    name: 'description',
+    content: 'Low-cost trademark registration in India. Govt fees included. Affordable and fast services by experts.'
+  });
+
+  this.meta.updateTag({
+    name: 'robots',
+    content: 'index, follow'
+  });
+  this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' }); 
 
   
   }

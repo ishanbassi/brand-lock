@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
@@ -37,6 +37,7 @@ import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { TestimonialsList } from '../enums/TestimonialsList';
 import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-create-account',
@@ -69,7 +70,7 @@ import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
   ]
 })
 
-export class CreateAccountComponent {
+export class CreateAccountComponent  implements OnInit{
   animationState = 'hidden';
   loginForm: any;
 fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
@@ -121,9 +122,28 @@ testimonials = TestimonialsList;
     private  readonly recaptchaV3Service: ReCaptchaV3Service,
     private readonly dataService: DataService,
     private readonly sessionStorageService:SessionStorageService,
-    private readonly googleConversionTrackingService:GoogleConversionTrackingService
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
+    private meta: Meta,
+    private title: Title
 
   ) { }
+  ngOnInit() {
+  this.title.setTitle(
+    'Trademark Registration in India @ ₹6500 | Trademarx'
+  );
+
+  this.meta.updateTag({
+    name: 'description',
+    content: 'Low-cost trademark registration in India. Govt fees included. Affordable and fast services by experts.'
+  });
+
+  this.meta.updateTag({
+    name: 'robots',
+    content: 'index, follow'
+  });
+  this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
+}
+
 
   executeRecaptchaAndRegister(form: FormGroup<any>) {
     this.recaptchaV3Service.execute('submit')
