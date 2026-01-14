@@ -15,6 +15,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { CreateNewPassword } from './create-new-password/create-new-password.component';
 import { FaqPageComponent } from './faq-page/faq-page.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { BlogDetailComponent } from './blog-detail/blog-detail.component';
 
 export const routes: Routes = [
     
@@ -152,6 +153,11 @@ export const routes: Routes = [
         component:PageNotFoundComponent,
         title:"404"
     },
+    {
+        path: 'blog/:slug',
+        component: BlogDetailComponent
+    },
+
     {
         path:"**",
         redirectTo:"not-found"

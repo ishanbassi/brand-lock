@@ -8,6 +8,7 @@ import { provideToastr } from 'ngx-toastr';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha-2";
 import { environment } from '../environments/environment';
 import { authInterceptor } from './interceptor/auth.interceptor';
+import { provideMarkdown } from 'ngx-markdown';
 
 
 export const appConfig: ApplicationConfig = {
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
          }),
          importProvidersFrom(RecaptchaV3Module),
          { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey },
+         provideMarkdown()
 
           
         ],
