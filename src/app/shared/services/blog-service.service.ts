@@ -10,14 +10,19 @@ export class BlogService {
   ){}
 
   getBlogs() {
-    return this.http.get<any>(`${environment.BaseBlogUrl}?populate=*`);
+    return this.http.get<any>(`${environment.BaseBlogUrl}/api/blogs?populate=*`);
   }
 
   getBlogBySlug(slug: string) {
     return this.http.get<any>(
-      `${environment.BaseBlogUrl}?filters[slug][$eq]=${slug}&populate=*`
+      `${environment.BaseBlogUrl}/api/blogs?filters[slug][$eq]=${slug}&populate=*`
     );
   }
+
+  getBlogsByPage(page=1, pageSize=5){
+    return this.http.get<any>(`${environment.BaseBlogUrl}/api/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
+  }
+  
 
 
 }

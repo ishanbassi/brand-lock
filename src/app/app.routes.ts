@@ -16,6 +16,7 @@ import { CreateNewPassword } from './create-new-password/create-new-password.com
 import { FaqPageComponent } from './faq-page/faq-page.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { BlogDetailComponent } from './blog-detail/blog-detail.component';
+import { BlogListComponent } from './blog-list/blog-list.component';
 
 export const routes: Routes = [
     
@@ -154,7 +155,12 @@ export const routes: Routes = [
         title:"404"
     },
     {
-        path: 'blog/:slug',
+        path: 'blogs',
+        component: BlogListComponent
+    },
+    
+    {
+        path: 'blogs/:slug',
         component: BlogDetailComponent
     },
 

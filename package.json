@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:ssr:brand-lock": "node dist/brand-lock/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -19,7 +20,9 @@
     "@angular/material": "^19.2.6",
     "@angular/platform-browser": "^19.2.15",
     "@angular/platform-browser-dynamic": "^19.2.15",
+    "@angular/platform-server": "^19.2.15",
     "@angular/router": "^19.2.15",
+    "@angular/ssr": "^19.2.15",
     "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "@popperjs/core": "^2.11.8",
     "@primeng/themes": "^19.1.2",
@@ -29,6 +32,7 @@
     "bootstrap": "^5.3.3",
     "brand-lock": "file:",
     "dayjs": "^1.11.13",
+    "express": "^4.18.2",
     "google-libphonenumber": "^3.2.42",
     "intl-tel-input": "^19.5.7",
     "jquery": "^3.7.1",
@@ -52,7 +56,9 @@
     "@angular/cli": "^19.2.14",
     "@angular/compiler-cli": "^19.2.15",
     "@angular/localize": "^19.2.15",
+    "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
+    "@types/node": "^18.18.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
