@@ -1,6 +1,6 @@
 // vertical-stepper.component.ts
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, NgModule, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, NgModule, HostListener, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { RegistrationProcessList } from '../enums/RegistrationProcessList';
 
@@ -32,21 +32,25 @@ interface Step {
 })
 export class VerticalStepperComponent implements OnInit, AfterViewInit {
   activeStep = 0;
-  
+  private isBrowser: boolean;
+
   registrationSteps = RegistrationProcessList;
 
   @ViewChildren('stepContents') 
   stepContents!: QueryList<ElementRef>;
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef,    @Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
+    if(!this.isBrowser) return;
     this.checkScrollPosition();
   }
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll')
   onWindowScroll() {
     this.checkScrollPosition();
   }

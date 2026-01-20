@@ -3,7 +3,7 @@ import { HttpHeaders } from '@angular/common/http';
 export const environment = {
   production: true,
   BaseApiUrl: 'https://admin.trademarx.in/',
-  BaseBlogUrl: 'http://localhost:1337',
+  BaseBlogUrl: 'https://cms.trademarx.in/',
   AppHeaders: new HttpHeaders({
     'Content-Type': 'application/json',
     Accept: 'application/json'

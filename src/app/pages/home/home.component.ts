@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
@@ -33,6 +33,7 @@ import { LocalStorageService } from '../../shared/services/local-storage.service
 import { LoadingService } from '../../common/loading.service';
 import { LeadService } from '../../shared/services/lead.service';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
+import { isPlatformBrowser } from '@angular/common';
 
 
 
@@ -85,6 +86,8 @@ export class HomeComponent implements OnInit, AfterViewInit{
   isSubmitting: boolean = false;
   isNavSubmitting: boolean = false;
   @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
+  private isBrowser: boolean;
+
 
   constructor(
     private readonly homeService: HomeService,
@@ -97,12 +100,15 @@ export class HomeComponent implements OnInit, AfterViewInit{
     private readonly loadingService:LoadingService,
     private readonly leadService: LeadService,
     private readonly localStorageService: LocalStorageService,
-    private readonly sessionStorageService: SessionStorageService
-
-
+    private readonly sessionStorageService: SessionStorageService,
+    @Inject(PLATFORM_ID) platformId: Object
   ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+
   }
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+    this.ctaSection = document.querySelector('.cta-section') as HTMLElement;
   }
 
   ctaForm = new FormGroup({
@@ -125,10 +131,6 @@ export class HomeComponent implements OnInit, AfterViewInit{
       this.animationState = 'visible';
     }, 100);
 
-
-
-    // Get the cta-section element
-    this.ctaSection = document.querySelector('.cta-section');
 
     // Check initial scroll position
     this.checkScrollPosition();
