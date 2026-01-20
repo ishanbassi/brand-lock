@@ -2,10 +2,17 @@
     <mat-toolbar-row [ngClass]="isAuthorizedUser ? 'logged-in-toolbar' : ''">
       <img class="sidenav-mobile-view-logo" src="/assets/images/trademarx.svg" alt="logo"
         />
-      <div class="user-icon-container" *ngIf="isAuthorizedUser">
+      <div class="user-icon-container" >
+<div class="nav-bar-actions">
+              <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
+              [routerLink]="['/trademark']">Trademark</a>
+              <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
+              [routerLink]="['/blogs']"
+              >Blogs</a>
+              
+          </div>
 
-
-        <a [matMenuTriggerFor]="menu">
+        <a [matMenuTriggerFor]="menu" *ngIf="isAuthorizedUser">
           <img src="/assets/images/icons/user-profile-icon.svg" alt="" class="user-icon">
         </a>
       </div>

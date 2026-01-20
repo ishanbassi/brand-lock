@@ -8,11 +8,12 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { environment } from '../../environments/environment';
 import dayjs from 'dayjs/esm';
+import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule, DashboardHeaderComponent, FooterComponent],
+  imports: [SharedModule, DashboardHeaderComponent, FooterComponent,RecentPostsComponent],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })
@@ -20,6 +21,13 @@ export class BlogListComponent implements OnInit{
 
     blogs?: Blog;
     blogBaseUrl = `${environment.BaseBlogUrl}`;
+    currentPage = 1;
+    pageSize = 6;
+    totalPages = 0;
+    pages: number[] = [];
+
+
+
 
 
   constructor(
@@ -30,11 +38,7 @@ export class BlogListComponent implements OnInit{
 
 
    ngOnInit() {
-    this.blogService.getBlogs().subscribe(data => {
-      console.log(data)
-      this.blogs = this.convertDateFromServer(data);
-      console.log(this.blogs)
-    });
+      this.loadBlogsByPage(1);
   }
      convertDateFromServer(blog: Blog): Blog {
       blog.data = blog.data.map(d => {
@@ -46,6 +50,20 @@ export class BlogListComponent implements OnInit{
       })
       return blog
 
+    }
+
+    loadBlogsByPage(page:number){
+      this.currentPage = page;
+      this.blogService.getBlogsByPage(this.currentPage,this.pageSize)
+      .subscribe(res => {
+        this.blogs = this.convertDateFromServer(res);
+         const pagination = res.meta.pagination;
+        this.totalPages = pagination.pageCount;
+        this.pages = Array.from(
+          { length: this.totalPages },
+          (_, i) => i + 1
+        );
+      })
     }
 
 }

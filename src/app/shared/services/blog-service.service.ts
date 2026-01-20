@@ -22,6 +22,10 @@ export class BlogService {
   getBlogsByPage(page=1, pageSize=5){
     return this.http.get<any>(`${environment.BaseBlogUrl}/api/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
   }
+
+  getLatestBlogs(limit=3) {
+    return this.http.get<any>(`${environment.BaseBlogUrl}/api/blogs?sort=createdAt:desc&pagination[limit]=${limit}&populate=*`);
+  }
   
 
 

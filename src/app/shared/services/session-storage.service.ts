@@ -1,58 +1,74 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SessionStorageService {
+  private isBrowser: boolean;
 
-  currentStorage = sessionStorage;
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  private get storage(): Storage | null {
+    if (!this.isBrowser) {
+      return null;
+    }
+    return sessionStorage;
+  }
+
   set(key: string, value: any): boolean {
     try {
-      this.currentStorage.setItem(key, value);
+      this.storage?.setItem(key, value);
       return true;
-    } catch (reason) {
+    } catch {
       return false;
     }
   }
 
   get(key: string): any {
-    const result = this.currentStorage.getItem(key);
-    if (result == null) {
-      return null;
-    }
-    return result;
+    return this.storage?.getItem(key) ?? null;
   }
 
   setObject(key: string, object: any): boolean {
-    this.currentStorage.setItem(key, JSON.stringify(object));
-    return true;
+    try {
+      this.storage?.setItem(key, JSON.stringify(object));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   getObject(key: string): any {
-    const result = this.currentStorage.getItem(key);
-    if (result == null) {
-      return null;
-    }
-    return JSON.parse(result);
+    const result = this.storage?.getItem(key);
+    return result ? JSON.parse(result) : null;
   }
 
-  remove(key: string) {
-    this.currentStorage.removeItem(key);
+  remove(key: string): void {
+    this.storage?.removeItem(key);
   }
 
   storeAuthenticationToken(authenticationToken: string): void {
-    authenticationToken = JSON.stringify(authenticationToken);
+    if (!this.isBrowser) return;
+
     this.clearAuthenticationToken();
-    this.currentStorage.setItem('token', authenticationToken);
+    sessionStorage.setItem('token', JSON.stringify(authenticationToken));
   }
 
   clearAuthenticationToken(): void {
-    this.currentStorage.removeItem('token');
-    this.currentStorage.removeItem('token');
+    if (!this.isBrowser) return;
+
+    sessionStorage.removeItem('token');
   }
 
   getAuthenticationToken(): string | null {
-    const authenticationToken = localStorage.getItem('token') ?? sessionStorage.getItem('token');
-    return authenticationToken ? (JSON.parse(authenticationToken) as string | null) : authenticationToken;
+    if (!this.isBrowser) return null;
+
+    const token =
+      sessionStorage.getItem('token') ??
+      localStorage.getItem('token');
+
+    return token ? JSON.parse(token) : null;
   }
 }

@@ -1,8 +1,60 @@
-<!-- <article class="blog">
-  <h1>{{ blog?.title }}</h1>
+<app-dashboard-header></app-dashboard-header>
+<header class="blog-hero">
+    <div class="blog-hero__container">
+        <nav class="breadcrumb">
+            <a href="javascript:void(0)">Trademarx</a>
+            <span>›</span>
+            <a routerLink="/blogs">Blog</a>
+            <span>›</span>
+            <a href="javascript:void(0)">{{blog?.category}}</a>
 
-  <markdown
-    class="blog-content"
-    [data]="blog?.content">
-  </markdown>
-</article> -->
+        </nav>
+
+        <h1 class="blog-title">
+            {{blog?.title}}
+        </h1>
+
+        <div class="blog-meta">
+            <span>Author: <strong>{{blog?.author || 'Trademarx'}}</strong></span>
+            <span>•</span>
+            <span>10 min read</span>
+            <span>•</span>
+            <span>{{blog?.createdAt?.format('MMM D, YYYY')}}</span>
+        </div>
+
+    </div>
+</header>
+
+<div class="blog-single">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 m-15px-tb">
+                <article class="article">
+                    <div class="article-img">
+                        <img [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
+                    </div>
+                    <div class="article-content">
+                        <markdown class="blog-content" [data]="blog?.content" (ready)="onMarkdownReady()">
+                        </markdown>
+                    </div>
+                </article>
+            </div>
+            <div class="col-lg-4 m-15px-tb blog-aside">
+                <aside class="toc">
+                        <h4>Table of Contents</h4>
+                        <ul>
+                            <li *ngFor="let item of toc" [class.level-3]="item.level === 3">
+
+                                <a [routerLink]="[]" [fragment]="item.id">
+                                    {{ item.text }}
+                                </a>
+                            </li>
+                        </ul>
+                </aside>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>

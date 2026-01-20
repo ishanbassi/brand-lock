@@ -13,10 +13,12 @@ export interface BlogData{
     title:string;
     content:string;
     slug:string;
-    excerpt?:string;
+    excerpt:string;
     featuredImage?:FeaturedImage;
     metaTitle?:string;
     metaDescription?:string;
+    author:string;
+    category:string;
     createdAt?:dayjs.Dayjs | null;
     updatedAt?:dayjs.Dayjs | null
 
