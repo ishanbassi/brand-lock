@@ -23,6 +23,10 @@ export const serverRoutes: ServerRoute[] = [
 
   },
   {
+    path: 'portal/**',
+    renderMode: RenderMode.Client
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender
   }

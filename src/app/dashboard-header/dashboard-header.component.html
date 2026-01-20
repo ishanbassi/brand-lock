@@ -4,8 +4,8 @@
         />
       <div class="user-icon-container" >
 <div class="nav-bar-actions">
-              <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
-              [routerLink]="['/trademark']">Trademark</a>
+              <!-- <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
+              [routerLink]="['/trademark']">Trademark</a> -->
               <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
               [routerLink]="['/blogs']"
               >Blogs</a>
@@ -44,6 +44,8 @@
       <a class="mobile-menu-item dashboard-nav-item first-mobile-item" *ngIf="isAuthorizedUser">
           <span>{{userProfile?.firstName}} {{userProfile?.lastName}}</span>
       </a>
+      <a class="mobile-menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+       [routerLink]="['/blogs']" >Blogs</a>
       <div class="mobile-menu-actions" *ngIf="!isAuthorizedUser">
       <button  *ngIf="!isLoginPage" mat-raised-button class="primary-secondary-btn login-link" [routerLink]="['/login']">
         <span>Login</span>

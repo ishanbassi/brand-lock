@@ -181,6 +181,20 @@
     }
   }
 }
+.mobile-menu-items {
+    .mobile-menu-item {
+      color: #001f4d;
+      padding: 16px 0px;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px;
+      letter-spacing: 0.1px;
+      display: block;
+      width: 100%;
+      text-decoration: none;
+    }
+  }
 
 .primary-secondary-btn {
           background-color: #C5D9FD !important;
@@ -199,7 +213,7 @@
     }
   }
   .mat-expansion-panel-body{
-    padding:10px 24px 16px !important;
+    padding:10px 10px 16px !important;
     background: #F2F4F4 !important;
 
   }

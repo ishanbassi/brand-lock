@@ -14,7 +14,7 @@ export interface BlogData{
     content:string;
     slug:string;
     excerpt:string;
-    featuredImage?:FeaturedImage;
+    featuredImage:FeaturedImage;
     metaTitle?:string;
     metaDescription?:string;
     author:string;
