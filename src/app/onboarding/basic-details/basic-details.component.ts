@@ -9,7 +9,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SharedModule } from '../../shared/shared.module';
 import { ILead, NewLead } from '../../../models/lead.model';
-import { HomeService } from '../../pages/home/home.service';
+import { HomeService } from '../../pages/trademark-page/home.service';
 import { LeadFormService } from '../../../models/lead-form.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { PhoneInputComponent } from '../../phone-input/phone-input.component';

@@ -1,4 +1,6 @@
-<app-navbar></app-navbar>
+<app-top-header></app-top-header>
+<app-navbar-v2></app-navbar-v2>
+
 <mat-toolbar color="primary" class="form-toolbar" 
 [@toolbarAnimation]="toolbarState" 
 [class.fixed-toolbar]="toolbarState === 'visible'">
@@ -54,10 +56,14 @@
             <div class="container-xxl">
                 <div class="cta-section row gx-0 justify-content-center">
                     <!-- <img src="/assets/images/brand creation-rafiki.svg" alt="" class="landing-bg-img"> -->
-                    <section class="col-12 col-sm-12 col-md-5 d-flex">
+                    <section class="col-12 col-sm-12 col-md-7 d-flex">
                         <div class="cta-text-section">
                             <div class="headings">
-                                <h1 class="main-heading">Protect Your Brand Starting at ₹6500 - Register Your Trademark Today!</h1>
+                                <h1 class="main-heading">Trademark Registration in Just 
+                                    <span class="tm-offer-base-price" style="text-decoration:line-through">₹8,000</span>
+                            <span class="tm-offer-price">₹6,399</span>
+                                    </h1>
+                                <p class="main-sub-heading">We simply trademark registration process for you. Completely online process. 30+ years of experience.</p>
                             </div>
                             <div class="features">
                                 <div class="feature">
@@ -90,7 +96,7 @@
                         
                     </section>
                     
-                    <section class="cta-form-section col-12 col-sm-12 col-md-7 animate__animated animate__fadeIn">
+                    <section class="cta-form-section col-12 col-sm-12 col-md-5 animate__animated animate__fadeIn">
                         <div>
                         <p class="cta-form-call-now">Call Now: 
                             <a type="button" class="call-now" href="tel:+919878987497">9878987497</a></p>
@@ -103,10 +109,10 @@
                                 </h1>
                             </div>
                             <div class=" form-input-container">
-        
+                                <label for="name" class="form-labels">Name</label>
+
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <mat-label>Full Name</mat-label>
-                                    <input matInput placeholder="Full Name" name="fullName" #fullName
+                                    <input matInput placeholder="Full Name" name="fullName" #fullName id="name"
                                         formControlName="fullName">
                                         <mat-icon matPrefix>person</mat-icon>
                                 </mat-form-field>
@@ -114,10 +120,10 @@
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <div class=" form-input-container">
+                                <label for="email" class="form-labels">Email</label>
         
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <mat-label>Email</mat-label>
-                                    <input matInput placeholder="Email" name="email" #email
+                                    <input matInput placeholder="Email" name="email" #email id="email"
                                         formControlName="email">
                                         <mat-icon matPrefix>email</mat-icon>
                                 </mat-form-field>
@@ -125,10 +131,9 @@
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <div class=" form-input-container">
-        
+                                <label for="phoneNumber" class="form-labels">Phone Number</label>
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <mat-label>Phone Number</mat-label>
-                                    <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber
+                                    <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber id="phoneNumber"
                                         formControlName="phoneNumber" mask="0000000000">
                                         <mat-icon matPrefix>phone</mat-icon>
                                         
@@ -137,10 +142,10 @@
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <div class=" form-input-container">
+                                <label for="city" class="form-labels">City</label>
         
                                 <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <mat-label>City</mat-label>
-                                    <input matInput placeholder="City" name="city" #city
+                                    <input matInput placeholder="City" name="city" #city id="city"
                                         formControlName="city">
                                         <mat-icon matPrefix> location_on</mat-icon>
                                 </mat-form-field>
@@ -198,42 +203,6 @@
             </div>
             
         </div>
-        
-        
-        <div class="testimonial-section" [@fadeInOut]="animationState">
-            <div class="container-xxl">
-                <div class="testimonial-top-section">
-                    <div class="testimonial-heading">
-                        TESTIMONIALS
-                    </div>
-                    <div class="testimonial-sub-heading">
-                        What Our Clients Say? 
-                    </div>
-                </div>
-                <div class="content">
-                    <ngx-slick-carousel class="carousel" 
-                    #slickModal="slick-carousel" 
-                    [config]="slideConfig" 
-                    >
-                    <div ngxSlickItem *ngFor="let testimonial of testimonials">
-                        <div  class="testimonial" >
-                            <blockquote>
-                                {{testimonial.quote}}
-                            </blockquote>
-                            <div></div>
-                            <p>
-                                {{testimonial.author}} &mdash; {{testimonial.location}}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    </ngx-slick-carousel>
-                </div>
-            </div>
-          
-            
-            
-        </div>
         <div class="stats-banner" [@fadeInOut]="animationState">
             <div class="container-xxl">
                 <div class="row content">
@@ -258,6 +227,14 @@
                     </div>
             </div>
            
+        </div> 
+        
+        
+        <div class="" [@fadeInOut]="animationState">
+            <app-rating-review></app-rating-review>
+          
+            
+            
         </div>
         <div class="hiw-section" [@fadeInOut]="animationState">
             <div class="hiw-heading">Registration Process</div>
@@ -301,7 +278,18 @@
 
         <div class="pricing-section">
             
-            <app-pricing-section (planTypeEmitter)="onPlanTypeChange($event)"></app-pricing-section>
+            <!-- <app-pricing-section (planTypeEmitter)="onPlanTypeChange($event)"></app-pricing-section> -->
+             <app-trademark-plan-cards [showPayLater]="false" (onPlanSelect)="onPlanTypeChange($event)"></app-trademark-plan-cards>
+        </div>
+        <div class="container">
+            <div class="trademark-registration-process-section">
+                <header>
+                    <h1 class="blog-title">{{blog?.title}}</h1>
+                    <img class="blog-img" [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
+                </header>
+                <app-blog-markdown [blog]="blog"  ></app-blog-markdown>
+            </div>
+            
         </div>
         <section class="call-us-section">
             <div class="content">
@@ -324,5 +312,6 @@
 </a>
   
 </div>
-<app-footer></app-footer>
+<!-- <app-footer></app-footer> -->
+ <app-footer-v2></app-footer-v2>
 

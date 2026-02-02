@@ -15,6 +15,7 @@ export class TmGovtFeesPopupComponent {
   selectedTab = 'individuals';
   govtFees = 0;
   totalFees = 0;
+  eStampDuty = 1000;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:{fees:number}
@@ -30,7 +31,7 @@ export class TmGovtFeesPopupComponent {
   onBusinessTypeChange(type: string) {
     this.selectedTab = type;
     this.govtFees = this.selectedTab == 'individuals'?  4500 : 9000;
-    this.totalFees = this.fees + this.govtFees;
+    this.totalFees = this.fees + this.govtFees + this.eStampDuty;
 }
 
   

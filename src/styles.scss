@@ -9,7 +9,7 @@ html {
 }
 
 $my-typography: mat.m2-define-typography-config(
-  $font-family: "'Inter', sans-serif"
+  $font-family: "'Plus Jakarta Sans', sans-serif"
 );
 // Light Theme Text
 $dark-text: #000000;
@@ -28,18 +28,18 @@ $light-focused: rgba($light-primary-text, 0.12);
 
 
 body {
-  --primary-color: #001F4D;
+  --primary-color: #2563eb;
   --primary-lighter-color: #bfd0ff;
-  --primary-darker-color: #001F4D;
+  --primary-darker-color: #2563eb;
   --text-primary-color: #{$light-primary-text};
   --text-primary-lighter-color: #{$dark-primary-text};
   --text-primary-darker-color: #{$light-primary-text};
 }   
 $mat-primary: (
-  main: #001F4D,
+  main: #2563eb,
   lighter: #bfd0ff,
-  darker: #001F4D,
-  200: #001F4D, // For slide toggle,
+  darker: #2563eb,
+  200: #2563eb, // For slide toggle,
   contrast : (
     main: $light-primary-text,
     lighter: $dark-primary-text,

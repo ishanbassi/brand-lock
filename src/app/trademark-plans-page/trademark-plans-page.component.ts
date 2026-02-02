@@ -19,10 +19,11 @@ import { ToastrService } from 'ngx-toastr';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { IPayment } from '../../models/payment.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 
 @Component({
   selector: 'app-trademark-plans-page',
-  imports: [DashboardHeaderComponent,MatButtonModule,MatIcon,SharedModule],
+  imports: [DashboardHeaderComponent,MatButtonModule,MatIcon,SharedModule, TrademarkPlanCardsComponent],
   templateUrl: './trademark-plans-page.component.html',
   styleUrl: './trademark-plans-page.component.scss'
 })

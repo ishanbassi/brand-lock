@@ -1,12 +1,25 @@
 .home-page{
     .top-section{
         .cta-section-wrapper{
-            background-color:#001F4D;
+            background-color:var(--section-bg);
+            position: relative;
+            padding:8rem 0;
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.1) 100%);
+                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
+            }
         }
         .cta-section{
             margin: 0 auto;
-            color:#fff;
+            color:var(--light-text)  ;
             padding: 0 1.25rem;
+            align-items: center;
             .landing-bg-img{
                 z-index: -1;
                 position: absolute;
@@ -15,11 +28,37 @@
             }
 
             .cta-text-section{
-                max-width: 26.875rem;
                 h1.main-heading{
-                    font-size: 2.25rem;
+                    font-size: 3.2rem;
                     font-weight: 600;
                     line-height: 120%;
+                    line-height: 1.2;
+                    margin-bottom: 1.5rem;
+                    color: var(--text-color);
+                    font-weight: 700;
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    .tm-offer-base-price{
+                        font-size: 2.5rem;
+                    }
+                    .tm-offer-price{
+                        font-weight:800;
+                        background: linear-gradient(      135deg,#BF953F,      #AA771C);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        font-size: 3.5rem;
+                        
+                    }
+                }
+                p{
+                    font-size: 1.25rem;
+                    color: var(--light-text);
+                    margin-bottom: 2.5rem;
+                    line-height: 1.8;
+                    &.main-sub-heading{
+                        font-weight: 600;
+                    }
                 }
                 .features{
                     .feature{
@@ -34,24 +73,27 @@
                 
             }
             .cta-form-section{
-                background-image: url('/assets/images/cta-form-bg-img.png');
+                // background-image: url('/assets/images/cta-form-bg-img.png');
                 background-size: contain;
                 background-repeat: no-repeat;
                 display: flex;
                 justify-content: flex-end;
                 position: relative;
                 > div{
-                    max-width: 26.25rem;
-                    position: absolute;
-                    top: 6.25rem;
+                    
                     flex-grow: 1;
                     .cta-form-call-now{
                         font-size:1.25rem;
                         text-align: center;
                         .call-now{
-                            color:#fff;
+                            color: var(--light-text);
                             font-weight: 600;
                             margin-top: 1.25rem;
+                            transition: var(--transition);
+                            &:hover{
+                                transform: translateY(-1px);
+                                text-decoration: underline;
+                            }
 
 
                         }
@@ -67,7 +109,7 @@
 
                     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
                     .form-input-container{
-                        margin-bottom: 1.25rem;
+                        margin-bottom: 10px;
                     }
                     .form-heading-section{
                         color: #273653;
@@ -87,12 +129,23 @@
                         padding: 1.25rem;
                         text-align: center;
                         width: 100%;
+                        background:var(--gradient);
                         mat-spinner {
                             margin: 0 auto;
                         }
                         span {
                             margin: 0 auto;
                         }
+                    }
+                    label{
+                        text-align: left;
+                        color: var(--Black, #202020);
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                        letter-spacing: -0.028px;
+                        margin-bottom: 5px;
                     }
                 }
             }
@@ -195,7 +248,7 @@
         }
 
         .stats-banner{
-            background-color: #001F4D;
+            background: var(--gradient);
             padding: 60px 120px;
             .stat-content{
                 color: #fff;
@@ -292,6 +345,16 @@
                 text-align: center;
                 font-size: 32px;
                 font-weight: 600;
+            }
+        }
+        .trademark-registration-process-section{
+            padding: 60px 120px;
+            .blog-title{
+                font-size: 48px;
+                line-height: 1.2;
+                font-weight: 700;
+                margin-bottom: 24px;
+                text-align: center;
             }
         }
     }
@@ -435,11 +498,24 @@
 @media (max-width:576px) {
     .home-page{
         .top-section{
+            .cta-section-wrapper{
+                padding:4rem 0 !important;
+            }
             .cta-section{
                 padding: 10px 0 ;
                 .cta-text-section{
                     h1.main-heading{
+                        font-size: 24px;
+                        .tm-offer-base-price{
                         font-size: 20px;
+                        }
+                        .tm-offer-price{
+                        font-size: 26px;
+                        
+                    }
+                    }
+                    .main-sub-heading{
+                        font-size: 16px;
                     }
                     .features{
                         text-align: center;
@@ -535,6 +611,10 @@
                 }
                 
             }
+            .trademark-registration-process-section{
+                padding: 10px !important;
+
+            }
             
         }
         .call-us-section{
@@ -572,8 +652,12 @@
     .cta-form{
         position: static !important; 
     }
+    
     .benefits-section-wrapper{
         padding-bottom: 6.25rem !important;
+        .benefits-section{
+            gap:25px;
+        }
         }
 }
 

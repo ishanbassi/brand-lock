@@ -1,51 +1,61 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
-import { MatInputModule } from '@angular/material/input';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { TestimonialsList } from '../../enums/TestimonialsList';
-import { SlickCarouselModule } from 'ngx-slick-carousel';
-import { MatStepperModule } from '@angular/material/stepper';
-import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
-import { MatCardModule } from '@angular/material/card';
-import { RequiredDocumentsList } from '../../enums/RequiredDocumentsList';
-import { PricingSectionComponent } from '../../pricing-section/pricing-section.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NavbarComponent } from '../../navbar/navbar.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { HomeService } from './home.service';
+import { isPlatformBrowser } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Meta, Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { SlickCarouselModule } from 'ngx-slick-carousel';
+import { ToastrService } from 'ngx-toastr';
 import { LeadFormService } from '../../../models/lead-form.service';
 import { NewLead } from '../../../models/lead.model';
-import { FooterComponent } from '../../footer/footer.component';
-import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CountUpDirective } from '../../shared/directives/count-up.directive';
-import { ToastrService } from 'ngx-toastr';
-import { Title } from '@angular/platform-browser';
-import { Meta } from '@angular/platform-browser';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { FaqComponent } from '../../faq/faq.component';
-declare let gtag: Function; // Add this at the top of your TypeScript file
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
-import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { LoadingService } from '../../common/loading.service';
+import { RequiredDocumentsList } from '../../enums/RequiredDocumentsList';
+import { TestimonialsList } from '../../enums/TestimonialsList';
+import { FaqComponent } from '../../faq/faq.component';
+import { FooterV2Component } from '../../footer-v2/footer-v2.component';
+import { FooterComponent } from '../../footer/footer.component';
+import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
+import { NavbarV2Component } from '../../navbar-v2/navbar-v2.component';
+import { PricingSectionComponent } from '../../pricing-section/pricing-section.component';
+import { RatingReviewComponent } from '../../rating-review/rating-review.component';
+import { CountUpDirective } from '../../shared/directives/count-up.directive';
+import { BlogService } from '../../shared/services/blog-service.service';
 import { LeadService } from '../../shared/services/lead.service';
+import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
-import { isPlatformBrowser } from '@angular/common';
+import { SharedModule } from '../../shared/shared.module';
+import { TopHeaderComponent } from '../../top-header/top-header.component';
+import { TrademarkPlanCardsComponent } from '../../trademark-plan-cards/trademark-plan-cards.component';
+import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
+import { HomeService } from './home.service';
+import { BlogData } from '../../../models/blog.model';
+import { BlogMarkdownComponent } from '../../blog-markdown/blog-markdown.component';
+import { environment } from '../../../environments/environment';
+import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
+declare let gtag: Function; // Add this at the top of your TypeScript file
+
 
 
 
 @Component({
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
-    VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, NavbarComponent, FooterComponent,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent
+    VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent,RatingReviewComponent,TrademarkPlanCardsComponent, FooterV2Component,
+    BlogMarkdownComponent
   ],
   standalone: true,
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  templateUrl: './trademark-page.component.html',
+  styleUrl: './trademark-page.component.scss',
   animations: [
     trigger('fadeInOut', [
       state('visible', style({
@@ -67,7 +77,7 @@ import { isPlatformBrowser } from '@angular/common';
   ],
   providers: [provideNgxMask()]
 })
-export class HomeComponent implements OnInit, AfterViewInit{
+export class TrademarkPageComponent implements OnInit, AfterViewInit{
 
   testimonials = TestimonialsList;
   documents = RequiredDocumentsList;
@@ -87,7 +97,8 @@ export class HomeComponent implements OnInit, AfterViewInit{
   isNavSubmitting: boolean = false;
   @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
   private isBrowser: boolean;
-
+  blog?: BlogData;
+  blogBaseUrl = `${environment.BaseBlogUrl}`;
 
   constructor(
     private readonly homeService: HomeService,
@@ -101,6 +112,10 @@ export class HomeComponent implements OnInit, AfterViewInit{
     private readonly leadService: LeadService,
     private readonly localStorageService: LocalStorageService,
     private readonly sessionStorageService: SessionStorageService,
+    private blogService: BlogService,
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
+    
+    
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -145,6 +160,11 @@ export class HomeComponent implements OnInit, AfterViewInit{
       this.utmCampaign = params['utm_campaign'];
       this.utmTerm = params['utm_term'];
       this.utmContent = params['utm_content'];
+    })
+
+    this.blogService.getBlogBySlug("online-trademark-registration-process-in-india").subscribe(res => {
+      this.blog = res?.data[0];
+      if (!this.blog) return;
     })
 ; 
   }
@@ -225,11 +245,15 @@ export class HomeComponent implements OnInit, AfterViewInit{
           this.isSubmitting = false;
           this.isNavSubmitting = false;
           this.sessionStorageService.setObject('lead', newLead.body);
-          this.router.navigateByUrl("trademark-registration/step-2");
+          this.toastService.success("Thank you for your submission! One of our team members will contact you soon.");
+          console.log("Form successfully submitted");
+          this.trackConversion();
+          // this.router.navigateByUrl("trademark-registration/step-2");
           this.loadingService.hide();
           
         },  
         error: (err) => {
+          this.toastService.error("There were some issues while submitting the detils. Please try later.");
           this.isSubmitting = false;
           this.isNavSubmitting = false;
           this.loadingService.hide();
@@ -237,7 +261,7 @@ export class HomeComponent implements OnInit, AfterViewInit{
     });
   }
 
-  onPlanTypeChange(planType: string) {
+  onPlanTypeChange(planType: any) {
     this.ctaForm.get('selectedPackage')?.setValue(planType);
     this.ctaNavForm.get('selectedPackage')?.setValue(planType);
     this.focusOnCtaForm();
@@ -320,9 +344,7 @@ export class HomeComponent implements OnInit, AfterViewInit{
   }
 
    trackConversion() {
-     gtag('event', 'conversion', {
-      'send_to': 'AW-17092944103/7IB9CLT_ktYaEOfBxtY_',
-      });
+    this.googleConversionTrackingService.reportSignupConversion();
  
     
   }

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
+import {TrademarkPageComponent } from './pages/trademark-page/trademark-page.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 import { AboutUsComponent } from './about-us/about-us.component';
@@ -17,6 +17,7 @@ import { FaqPageComponent } from './faq-page/faq-page.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { BlogDetailComponent } from './blog-detail/blog-detail.component';
 import { BlogListComponent } from './blog-list/blog-list.component';
+import { HomeV2Component } from './home-v2/home-v2.component';
 
 export const routes: Routes = [
     
@@ -28,14 +29,14 @@ export const routes: Routes = [
 
     {
         path:"home",
-        component:HomeComponent,
+        component:HomeV2Component,
         title:"Trademarx",
         canActivate: [AuthGuard],   
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path:"trademark",
-        component:HomeComponent,
+        component:TrademarkPageComponent,
         title:"Trademarx",
         canActivate: [AuthGuard],       
         data:{ roles: ['ROLE_ANONYMOUS'] }

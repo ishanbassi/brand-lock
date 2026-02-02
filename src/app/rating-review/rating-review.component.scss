@@ -1,0 +1,36 @@
+ /* Define keyframes for the top-to-bottom scroll animation */
+        @keyframes scroll-top-to-bottom {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        /* Define keyframes for the bottom-to-top scroll animation */
+        @keyframes scroll-bottom-to-top {
+            0% {
+                transform: translateY(-50%);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* Class to apply the top-to-bottom animation */
+        .animate-scroll-t2b {
+            animation: scroll-top-to-bottom 60s linear infinite;
+        }
+
+        /* Class to apply the bottom-to-top animation */
+        .animate-scroll-b2t {
+            animation: scroll-bottom-to-top 60s linear infinite;
+        }
+
+        /* Utility class to pause the animation on hover */
+        .group:hover .group-hover-pause {
+            animation-play-state: paused;
+        }

@@ -1,4 +1,4 @@
-<div class="p-5 test">
+<div class="gov-fees-popup">
     <div class="dual-btn-section">
         <div class="toggle-container">
             <button class="toggle-button" (click)="onBusinessTypeChange('individuals')"
@@ -24,9 +24,10 @@
 	<thead>
 		<tr>
 
-			<th scope="col" width="33.3">Our Fees</th>
-            <th scope="col" width="33.3">Govt. Fees</th>
-			<th scope="col" width="33.3">Estimated Final Amount</th>
+			<th scope="col" width="25">Our Fees</th>
+            <th scope="col" width="25">Govt. Fees</th>
+            <th scope="col" width="25">E-Stamp Duty</th>
+			<th scope="col" width="25">Estimated Final Amount</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -35,6 +36,7 @@
 				{{'₹'+fees}}
 				</td>
 				<td>{{'₹'+govtFees}} </td>
+				<td>{{'₹'+eStampDuty}} </td>
 				<td>{{'₹'+totalFees}}</td>
         </tr>
 		

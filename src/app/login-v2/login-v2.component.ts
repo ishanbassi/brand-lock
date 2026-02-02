@@ -43,7 +43,7 @@ export class LoginV2Component implements OnInit{
     this.returnUrl = urlFromQuery;
   }
   this.title.setTitle(
-    'Trademark Registration in India @ ₹6500 | Trademarx'
+    'Trademark Registration in India @ ₹6399 | Trademarx'
   );
 
   this.meta.updateTag({

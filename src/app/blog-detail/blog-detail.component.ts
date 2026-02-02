@@ -11,10 +11,11 @@ import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
 import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [MarkdownComponent, DashboardHeaderComponent, FooterComponent, RouterLink, SharedModule, RecentPostsComponent],
+  imports: [MarkdownComponent, DashboardHeaderComponent, FooterComponent, RouterLink, SharedModule, RecentPostsComponent, BlogMarkdownComponent],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })

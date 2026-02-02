@@ -1,0 +1,46 @@
+<div class="bg-gray-950 text-white flex items-center justify-center min-h-screen px-4 py-16">
+
+    <div class="container mx-auto max-w-7xl group">
+        <div class="text-center mb-16">
+            <h1
+                class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                What Our Customers Say
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400">
+                Hear from thousands of happy users who trust our service.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+
+            <div
+                class="overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)] md:col-span-1 lg:col-span-1">
+                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-t2b">
+                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
+                        <app-review-card [review]="r"></app-review-card>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div
+                class="hidden md:block overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_top,transparent,white_20%,white_80%,transparent)]">
+                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-b2t">
+                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
+                        <app-review-card [review]="r"></app-review-card>
+                    </ng-container>
+                    
+                </div>
+            </div>
+
+            <div
+                class="hidden lg:block overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)]">
+                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-t2b">
+                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
+                        <app-review-card [review]="r"></app-review-card>
+                    </ng-container>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

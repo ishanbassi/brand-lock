@@ -34,8 +34,8 @@
                         <img [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
                     </div>
                     <div class="article-content">
-                        <markdown class="blog-content" [data]="blog?.content" (ready)="onMarkdownReady()">
-                        </markdown>
+                        
+                        <app-blog-markdown [blog]="blog" (markdownReady)="onMarkdownReady()"></app-blog-markdown>
                     </div>
                 </article>
             </div>

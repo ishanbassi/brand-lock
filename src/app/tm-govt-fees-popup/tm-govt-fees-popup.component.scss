@@ -8,8 +8,9 @@
             
 
 }
-.test{
+.gov-fees-popup{
     max-width: 870px;
+    padding:3rem;
 }
 .dual-btn-section{
     text-align: center;
@@ -85,5 +86,17 @@
             color: #6B7280;
             padding-bottom: 0.3rem;
         }
+    }
+}
+@media  (max-width:576px){
+    .gov-fees-popup{
+        padding:1rem !important;
+    }
+    .dual-btn-section{
+        .toggle-button{
+            padding: 12px 10px !important;
+            font-size: 13px !important;
+        }
+        padding:12px 10px !important;
     }
 }
