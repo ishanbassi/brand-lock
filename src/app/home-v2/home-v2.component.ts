@@ -182,6 +182,10 @@ ngOnDestroy(): void {
 
   ngOnInit(): void {
       this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
+      this.title.setTitle('Trademark Registration, ISO Certification & Business Registrations in India');
+      this.meta.updateTag({ name: 'description', content: 'Get trademark registration, ISO certification, MSME registration, and import export code services in India. Fast process, affordable pricing, expert support.' });
+      this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
+
     }
   
     convertDateFromServer(blog: Blog): Blog {

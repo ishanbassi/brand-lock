@@ -18,13 +18,16 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { BlogDetailComponent } from './blog-detail/blog-detail.component';
 import { BlogListComponent } from './blog-list/blog-list.component';
 import { HomeV2Component } from './home-v2/home-v2.component';
+import { Iso9001Component } from './iso-9001/iso-9001.component';
 
 export const routes: Routes = [
     
     {
         path:"",
-        redirectTo:"create-account",
-        pathMatch:"full"
+        component:HomeV2Component,
+        title:"Trademarx",
+        canActivate: [AuthGuard],   
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
 
     {
@@ -163,6 +166,13 @@ export const routes: Routes = [
     {
         path: 'blogs/:slug',
         component: BlogDetailComponent
+    },
+    {
+        path:"iso/iso-9001-2015",
+        component:Iso9001Component,
+        title:"ISO 9001:2015 at Just ₹999",
+        canActivate: [AuthGuard],       
+        data:{ roles: ['ROLE_ANONYMOUS'] }
     },
 
     {

@@ -41,6 +41,8 @@ import { BlogData } from '../../../models/blog.model';
 import { BlogMarkdownComponent } from '../../blog-markdown/blog-markdown.component';
 import { environment } from '../../../environments/environment';
 import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
+import { LeadFormComponent } from '../../lead-form/lead-form.component';
+import { RegistrationProcessList } from '../../enums/RegistrationProcessList';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -51,7 +53,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
     VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
     NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent,RatingReviewComponent,TrademarkPlanCardsComponent, FooterV2Component,
-    BlogMarkdownComponent
+    BlogMarkdownComponent,LeadFormComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',
@@ -83,6 +85,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   documents = RequiredDocumentsList;
   animationState = 'hidden';
   toolbarState: 'visible' | 'hidden' = 'hidden';
+  registrationSteps = RegistrationProcessList;
   private ctaSection: HTMLElement | null = null;
   private isInitialLoad = true;
   private utmSource:string = '';
@@ -126,13 +129,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     this.ctaSection = document.querySelector('.cta-section') as HTMLElement;
   }
 
-  ctaForm = new FormGroup({
-    fullName: new FormControl('',),
-    city: new FormControl('',),
-    email: new FormControl('',),
-    phoneNumber: new FormControl(''),
-    selectedPackage: new FormControl()
-  })
+  
   ctaNavForm = new FormGroup({
     fullName: new FormControl('',),
     city: new FormControl('',),
@@ -150,7 +147,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     // Check initial scroll position
     this.checkScrollPosition();
 
-    this.title.setTitle('Trademark Registration Services | Trademarx');
+    this.title.setTitle('Trademark At Lowest Price | Trademark filing at Just ₹6399');
     this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
 
@@ -187,12 +184,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     }
   }
 
-  submit() {
-    this.onClickValidation = true;
-    this.isSubmitting = true;
-    this.saveLead(this.ctaForm);
-    // this.submitNetlifyForm(this.ctaForm);
-  }
+  
 
   navFormsubmit() {
     this.onClickValidation = true;
@@ -262,7 +254,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   }
 
   onPlanTypeChange(planType: any) {
-    this.ctaForm.get('selectedPackage')?.setValue(planType);
+    // this.ctaForm.get('selectedPackage')?.setValue(planType);
     this.ctaNavForm.get('selectedPackage')?.setValue(planType);
     this.focusOnCtaForm();
   }

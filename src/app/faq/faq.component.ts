@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelDescription, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { trademarkFaqs } from '../enums/faqList';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
@@ -11,7 +11,8 @@ import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.c
   styleUrl: './faq.component.scss'
 })
 export class FaqComponent {
-  trademarkFaqs = trademarkFaqs;
+  @Input()
+  faqs = trademarkFaqs;
   constructor(){
   }
 

@@ -658,11 +658,15 @@ body {
     box-shadow: var(--card-shadow);
     position: relative;
     overflow: hidden;
+    height: 100%;
     img{
         max-height: 50px;
         position: relative;
         z-index: 1;
         margin: 0 auto 1.5rem;
+        &.business-scope-icon{
+            width: 50px;
+        }
     }
 }
 

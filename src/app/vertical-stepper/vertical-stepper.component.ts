@@ -1,5 +1,5 @@
 // vertical-stepper.component.ts
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, NgModule, HostListener, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, NgModule, HostListener, PLATFORM_ID, Inject, Input } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { RegistrationProcessList } from '../enums/RegistrationProcessList';
@@ -34,6 +34,7 @@ export class VerticalStepperComponent implements OnInit, AfterViewInit {
   activeStep = 0;
   private isBrowser: boolean;
 
+  @Input()
   registrationSteps = RegistrationProcessList;
 
   @ViewChildren('stepContents') 

@@ -1,0 +1,185 @@
+<app-top-header></app-top-header>
+<app-navbar-v2></app-navbar-v2>
+
+<div class="home-page">
+    <div class="top-section">
+        <div class="cta-section-wrapper">
+            <div class="container-xxl">
+                <div class="cta-section row gx-0 justify-content-center">
+                    <!-- <img src="/assets/images/brand creation-rafiki.svg" alt="" class="landing-bg-img"> -->
+                    <section class="col-12 col-sm-12 col-md-7 d-flex">
+                        <div class="cta-text-section">
+                            <div class="headings">
+                                <h1 class="main-heading">ISO 9001:2015 Certification in Just
+                                    <s class="tm-offer-base-price">₹1,500</s>
+                                    <span class="tm-offer-price">₹999</span>
+                                </h1>
+                                <p class="main-sub-heading">We simply ISO Certification process for you. Our Certificate
+                                    is completely valid in tenders.</p>
+                            </div>
+                            <div class="features">
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>No Hidden Charges</span>
+                                </div>
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Valid in Tenders</span>
+                                </div>
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Govt-recognized certification</span>
+                                </div>
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Free Consultation</span>
+                                </div>
+
+                                <div class="feature">
+                                    <mat-icon>check_circle_outline</mat-icon>
+                                    <span>Affordable pricing</span>
+                                </div>
+
+                            </div>
+                            <section class="trust-section">
+                                <div class="stars">
+                                    <img src="/assets/images/star-icon.png" class="star-icons" alt="star"
+                                        *ngFor="let _ of [].constructor(5)">
+                                </div>
+                                <div class="content">Trusted by 3,000+ Startups & Entrepreneurs</div>
+                            </section>
+                        </div>
+
+
+                    </section>
+
+                    <div class="col-12 col-sm-12 col-md-5 animate__animated animate__fadeIn">
+                        <app-lead-form [heading]="'Get ISO Certified'" [cta]="'Get Started'" [comments]="'ISO 9001:2015'" ></app-lead-form>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="stats-banner">
+            <div class="container-xxl">
+                <div class="row content">
+                    <div class="stat col-xs-12 col-sm-4">
+                        <div class="stat-content">
+                            <div class="title" appCountUp [endValue]="1000" [suffix]="'+'">0+</div>
+                            <div class="description">ISO Certificates issued</div>
+                        </div>
+                    </div>
+                    <div class="stat col-xs-12 col-sm-4">
+                        <div class="stat-content">
+                            <div class="title" appCountUp [endValue]="20" [suffix]="'+'">0+</div>
+                            <div class="description">Years Of Experience</div>
+                        </div>
+                    </div>
+                    <div class="stat col-xs-12 col-sm-4">
+                        <div class="stat-content">
+                            <div class="title" appCountUp [endValue]="100" [suffix]="'%'">0%</div>
+                            <div class="description">Customer Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="">
+            <app-rating-review></app-rating-review>
+
+
+
+        </div>
+
+        <div class="required-documents-section">
+            <section id="services" class="services">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Document Required</h2>
+                        <p>Documents required For ISO 9001:2015 Certification</p>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <img src="/assets/images/icons/msme-icon.svg" alt="MSME Icon">
+                            <h3>Business Registration Proof</h3>
+                            <p>Any valid legal document such as MSME, Udyam, GST, Partnership Deed, Certificate of
+                                Incorporation</p>
+                        </div>
+                        <div class="service-card">
+                            <img src="/assets/images/icons/letter-head.svg" alt="Letter Head Icon">
+                            <h3>Letter Head or Visiting Card</h3>
+                            <p>A copy of your business letterhead or visiting card displaying the business name,
+                                address, and contact details for identification and record purposes.</p>
+                        </div>
+                        <div class="service-card">
+                            <img src="/assets/images/icons/gst-blue.svg" alt="GST Icon">
+                            <h3>GST or Sale/Purchase Invoice</h3>
+                            <p>GST Certificate or a invoice or sale/purchase bill issued by your business to verify
+                                business activity.</p>
+                        </div>
+                        <div class="service-card">
+                            <img src="/assets/images/icons/business-scope.svg" alt="Business Icon"
+                                class="business-scope-icon">
+                            <h3>Scope Of Business</h3>
+                            <p>A brief description of your business activities, products, or services to define the
+                                scope under which ISO 9001:2015 certification will be issued.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+        <div class="hiw-section">
+            <div class="section-header">
+                <h2>ISO 9001:2015 Certification Process</h2>
+            </div>
+
+            <app-vertical-stepper [registrationSteps]="isoCertificationProcessList"></app-vertical-stepper>
+
+        </div>
+
+        <div class="pricing-section">
+
+
+        </div>
+        <div class="container">
+            <div class="iso-certification-process-section">
+                <header>
+                    <h1 class="blog-title">{{blog?.title}}</h1>
+                    <img class="blog-img" [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title"
+                        [alt]="blog?.title">
+                </header>
+                <app-blog-markdown [blog]="blog"></app-blog-markdown>
+            </div>
+
+        </div>
+        <section class="call-us-section">
+            <div class="content">
+                <h1>Let's talk</h1>
+                <p>Have questions about ISO Certification, protecting your brand, or just not sure where to start?
+                    Whether you're a startup, a growing business, or just exploring ideas, we'd love to hear from you.
+                    Let's build something that protects and elevates your brand.</p>
+                <a type="button" class="btn btn-outline-primary call-us-btn" href="tel:+919878987497">Call
+                    9878987497</a>
+
+            </div>
+        </section>
+        <section class="home-faq-section">
+            <app-faq [faqs]="faqs"></app-faq>
+        </section>
+    </div>
+    <a href="https://api.whatsapp.com/send?phone=9878987497&text=I%20want%20a%20iso%20certification"
+        class="whatsapp-button" target="_blank">
+        <img src="/assets/images/whatsapp-icon.png" alt="whatsapp icon">
+    </a>
+    <a href="tel:+919878987497" class="call-button">
+        <img src="/assets/images/call-now-icon.png" alt="Call Button">
+    </a>
+
+</div>
+<!-- <app-footer></app-footer> -->
+<app-footer-v2></app-footer-v2>

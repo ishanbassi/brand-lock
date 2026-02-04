@@ -60,10 +60,10 @@
                         <div class="cta-text-section">
                             <div class="headings">
                                 <h1 class="main-heading">Trademark Registration in Just 
-                                    <span class="tm-offer-base-price" style="text-decoration:line-through">₹8,000</span>
+                                    <s class="tm-offer-base-price" >₹8,000</s>
                             <span class="tm-offer-price">₹6,399</span>
                                     </h1>
-                                <p class="main-sub-heading">We simply trademark registration process for you. Completely online process. 30+ years of experience.</p>
+                                <p class="main-sub-heading">We simply trademark registration process for you. Completely online process. 20+ years of experience.</p>
                             </div>
                             <div class="features">
                                 <div class="feature">
@@ -95,72 +95,9 @@
                         
                         
                     </section>
-                    
-                    <section class="cta-form-section col-12 col-sm-12 col-md-5 animate__animated animate__fadeIn">
-                        <div>
-                        <p class="cta-form-call-now">Call Now: 
-                            <a type="button" class="call-now" href="tel:+919878987497">9878987497</a></p>
-                        <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
-                        [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement
-                        >
-                            <div class="form-heading-section">
-                                <h1 class="form-heading">
-                                    Register Your Trademark!
-                                </h1>
-                            </div>
-                            <div class=" form-input-container">
-                                <label for="name" class="form-labels">Name</label>
-
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Full Name" name="fullName" #fullName id="name"
-                                        formControlName="fullName">
-                                        <mat-icon matPrefix>person</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('fullName')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container">
-                                <label for="email" class="form-labels">Email</label>
-        
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Email" name="email" #email id="email"
-                                        formControlName="email">
-                                        <mat-icon matPrefix>email</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('email')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container">
-                                <label for="phoneNumber" class="form-labels">Phone Number</label>
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber id="phoneNumber"
-                                        formControlName="phoneNumber" mask="0000000000">
-                                        <mat-icon matPrefix>phone</mat-icon>
-                                        
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('phoneNumber')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container">
-                                <label for="city" class="form-labels">City</label>
-        
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="City" name="city" #city id="city"
-                                        formControlName="city">
-                                        <mat-icon matPrefix> location_on</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('city')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
-                                <span>Get Started</span>
-                                <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
-                            </button>
-        
-                        </form>
-                        </div>
-                        
-                    </section>
+                    <div class="col-12 col-sm-12 col-md-5 animate__animated animate__fadeIn">
+                    <app-lead-form [heading]="'Register Your Trademark!'" [cta]="'Get Started'" [comments]="'TRADEMARK REGISTRATION'" ></app-lead-form>
+                    </div>
                 
                 </div>
             </div>
@@ -214,7 +151,7 @@
                     </div>
                     <div class="stat col-xs-12 col-sm-4">
                         <div class="stat-content">
-                            <div class="title" appCountUp [endValue]="30" [suffix]="'+'">0+</div>
+                            <div class="title" appCountUp [endValue]="20" [suffix]="'+'">0+</div>
                             <div class="description">Years Of Experience</div>
                         </div>
                     </div>
@@ -238,12 +175,12 @@
         </div>
         <div class="hiw-section" [@fadeInOut]="animationState">
             <div class="hiw-heading">Registration Process</div>
-                    <app-vertical-stepper></app-vertical-stepper>
+                    <app-vertical-stepper [registrationSteps]="registrationSteps"></app-vertical-stepper>
             
         </div>
         <div class="required-documents-section" [@fadeInOut]="animationState">
             <div class="container-xxl">
-                <h1>📄 Documents Required for Trademark Registration in India</h1>
+                <h2>📄 Documents Required for Trademark Registration in India</h2>
                 <div class="document-cards">
                     <div class="document-card-grid">
                         <div class="row gy-4">
