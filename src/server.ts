@@ -11,7 +11,7 @@ import { environment } from './environments/environment';
 import { Blog } from './models/blog.model';
 import path from 'path';
 import fs from 'fs';
-let staticUrls:string[] = []
+let staticUrls: string[] = []
 
 
 
@@ -24,7 +24,7 @@ const angularApp = new AngularNodeAppEngine();
 const SITE_URL = 'https://trademarx.in';
 
 
-export function walk(dir:string, urlPath = '') {
+export function walk(dir: string, urlPath = '') {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
@@ -67,13 +67,14 @@ app.use(
 );
 
 app.get('/sitemap.xml', async (req, res) => {
-  const SITE_URL = 'https://trademarx.in';
-  const response  = (await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`));
-  const json:Blog = await response.json();
-  staticUrls = [];
-  walk(browserDistFolder);
+  try {
+    const SITE_URL = 'https://trademarx.in';
+    const response = (await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`));
+    const json: Blog = await response.json();
+    staticUrls = [];
+    walk(browserDistFolder);
 
-  const urls = json.data.map(blog => `
+    const urls = json.data.map(blog => `
     <url>
       <loc>${SITE_URL}/blogs/${blog.slug}</loc>
       <lastmod>${blog.updatedAt}</lastmod>
@@ -81,7 +82,7 @@ app.get('/sitemap.xml', async (req, res) => {
       <priority>0.7</priority>
     </url>
   `);
-  const staticUrlsList = staticUrls.map(url => `
+    const staticUrlsList = staticUrls.map(url => `
       <url>
         <loc>${url}</loc>
         <changefreq>weekly</changefreq>
@@ -89,13 +90,18 @@ app.get('/sitemap.xml', async (req, res) => {
       </url>
     `);
     const urlString = urls.concat(staticUrlsList).join('');
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     ${urlString}
   </urlset>`;
 
-  res.header('Content-Type', 'application/xml');
-  res.send(sitemap);
+    res.header('Content-Type', 'application/xml');
+    res.send(sitemap);
+  } catch (err) {
+    console.error('❌ Blog sitemap error:', err);
+    res.status(500).send('Sitemap error');
+  }
+
 });
 
 
