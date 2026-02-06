@@ -62,7 +62,6 @@ export class UploadDocumentComponent implements AfterViewInit, OnInit {
     ngOnInit(): void {
       
       this.documentSubject?.subscribe(doc => {
-        console.log(doc)
         if(doc){
           const fileId = `file-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
           this.documentMetaData =  new DocumentMetaData(fileId,null,doc.fileContentType?.includes("image"),doc.fileName, null);

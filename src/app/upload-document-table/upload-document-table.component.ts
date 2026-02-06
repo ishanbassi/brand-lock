@@ -72,7 +72,6 @@ export class UploadDocumentTableComponent implements OnInit{
             data:document
           });
     dialogRef.afterClosed().subscribe(result => {
-        console.log(result)
 
       if(result?.refresh){
         this.onDocumentDeleted.emit(true);

@@ -15,7 +15,6 @@ export class PermissionsService {
     
     const response: any = this.authService.isAuthorizedUser(roles);
     if (roles.includes('ROLE_ANONYMOUS')) {
-      console.log(roles,response)
       if(response.hasAccess){
         this.router.navigate(['portal/dashboard']);
         return false;

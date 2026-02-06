@@ -21,6 +21,8 @@ export interface BlogData{
     category:string;
     createdAt?:dayjs.Dayjs | null;
     updatedAt?:dayjs.Dayjs | null
+    campaignBlock?:CampaignBlock
+    backgroundColor?:string
 
 
 }
@@ -78,3 +80,14 @@ export interface ImageFormat {
   sizeInBytes: number;
   url: string;
 }
+export interface CampaignBlock{
+    id:number;
+    title:string;
+    description?:string;
+    ctaText:string;
+    ctaLink:string;
+    position?:number;
+    backgroundColor?:string
+    campaignImage?:string
+}
+

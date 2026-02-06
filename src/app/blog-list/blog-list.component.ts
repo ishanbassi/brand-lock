@@ -9,11 +9,14 @@ import { FooterComponent } from '../footer/footer.component';
 import { environment } from '../../environments/environment';
 import dayjs from 'dayjs/esm';
 import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
+import { FooterV2Component } from '../footer-v2/footer-v2.component';
+import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { TopHeaderComponent } from '../top-header/top-header.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule, DashboardHeaderComponent, FooterComponent,RecentPostsComponent],
+  imports: [SharedModule, DashboardHeaderComponent, FooterComponent,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })

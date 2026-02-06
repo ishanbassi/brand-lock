@@ -83,7 +83,6 @@ export class BasicDetailsComponent implements OnInit {
       if (!form.valid) {
         this.isSubmitting = false;
         this.leadForm.markAllAsTouched();
-        console.log(form)
         return;
       }
       // setting phone number

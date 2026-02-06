@@ -43,6 +43,7 @@ import { environment } from '../../../environments/environment';
 import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
 import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { RegistrationProcessList } from '../../enums/RegistrationProcessList';
+import { Subject } from 'rxjs';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -98,10 +99,11 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
   isNavSubmitting: boolean = false;
-  @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
+  
   private isBrowser: boolean;
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
+  planTypeSubject = new Subject();
 
   constructor(
     private readonly homeService: HomeService,
@@ -256,17 +258,10 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   onPlanTypeChange(planType: any) {
     // this.ctaForm.get('selectedPackage')?.setValue(planType);
     this.ctaNavForm.get('selectedPackage')?.setValue(planType);
-    this.focusOnCtaForm();
+    // this.focusOnCtaForm();
+    this.planTypeSubject.next(planType);
   }
 
-  focusOnCtaForm() {
-    if (this.ctaFormElement) {
-      const firstInput = this.ctaFormElement.nativeElement.querySelector('input');
-      if (firstInput) {
-        firstInput.focus();
-      }
-    }
-  }
   submitNetlifyForm(formGroup: FormGroup) {
     this.addValidationsToFormAndValidate(formGroup);
     if (!formGroup.valid) {

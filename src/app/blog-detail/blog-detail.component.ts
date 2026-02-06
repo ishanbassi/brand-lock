@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MarkdownComponent } from 'ngx-markdown';
 import { BlogService } from '../shared/services/blog-service.service';
 import { Meta, Title } from '@angular/platform-browser';
-import { Blog, BlogData } from '../../models/blog.model';
+import { Blog, BlogData, CampaignBlock } from '../../models/blog.model';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { environment } from '../../environments/environment';
@@ -12,10 +12,13 @@ import { SharedModule } from '../shared/shared.module';
 import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
+import { FooterV2Component } from '../footer-v2/footer-v2.component';
+import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [MarkdownComponent, DashboardHeaderComponent, FooterComponent, RouterLink, SharedModule, RecentPostsComponent, BlogMarkdownComponent],
+  imports: [DashboardHeaderComponent, FooterComponent, RouterLink, SharedModule, RecentPostsComponent, BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })
@@ -23,6 +26,15 @@ export class BlogDetailComponent implements OnInit {
 
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
+  collapsed=false;
+  previewCount = 4;
+  showAll = false;
+  private isBrowser = false;
+
+  get visibleToc() {
+    return this.showAll ? this.toc : this.toc.slice(0, this.previewCount);
+  }
+
 
   constructor(
     private route: ActivatedRoute,
@@ -32,7 +44,9 @@ export class BlogDetailComponent implements OnInit {
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  ) { 
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug')!;
@@ -90,26 +104,50 @@ export class BlogDetailComponent implements OnInit {
       .replace(/\s+/g, '-');
   }
 
-  toc: { id: string; text: string; level: number, active?: boolean }[] = [];
+  toc: { id: string; text: string; level: number, active?: boolean, expanded:boolean; children:any[] }[] = [];
 
   buildTOC() {
-    if (!isPlatformBrowser(this.platformId)) return;
+  this.toc = [];
 
-    const headings = document.querySelectorAll('.blog-content h2, .blog-content h3');
-    headings.forEach((heading: Element) => {
-      const text = heading.textContent || '';
-      const id = this.slugify(text);
+  const headings = document.querySelectorAll(
+    '.blog-content h2, .blog-content h3'
+  );
 
-      heading.setAttribute('id', id);
+  let currentParent: any = null;
 
-      this.toc.push({
+  headings.forEach((heading: Element) => {
+    const text = heading.textContent?.trim() || '';
+    if (!text) return;
+
+    const id = this.slugify(text);
+    heading.setAttribute('id', id);
+
+    const level = heading.tagName === 'H2' ? 2 : 3;
+
+    if (level === 2) {
+      // New parent item
+      currentParent = {
         id,
         text,
-        level: heading.tagName === 'H2' ? 2 : 3
-      });
-    });
+        level: 2,
+        expanded: true,
+        children: []
+      };
 
-  }
+      this.toc.push(currentParent);
+    }
+
+    if (level === 3 && currentParent) {
+      // Child of last H2
+      currentParent.children.push({
+        id,
+        text,
+        level: 3
+      });
+    }
+  });
+}
+
   @HostListener('window:scroll')
   onScroll() {
     for (const item of this.toc) {
@@ -121,10 +159,11 @@ export class BlogDetailComponent implements OnInit {
     }
   }
 
-  onMarkdownReady() {
-    this.buildTOC();
-  }
 
+  onMarkdownReady() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.buildTOC();
+}
 
 
 

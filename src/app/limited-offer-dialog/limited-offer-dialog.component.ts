@@ -118,7 +118,6 @@ export class LimitedOfferDialogComponent implements OnDestroy {
 
 
     submit() {
-      console.log(this.limitedOfferForm.value)
       this.onClickValidation = true;
       this.isSubmitting = true;
       this.submitNetlifyForm(this.limitedOfferForm);

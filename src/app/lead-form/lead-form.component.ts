@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
@@ -12,7 +12,7 @@ import { SessionStorageService } from '../shared/services/session-storage.servic
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { NewLead } from '../../models/lead.model';
-import { finalize } from 'rxjs';
+import { finalize, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-lead-form',
@@ -20,7 +20,7 @@ import { finalize } from 'rxjs';
   templateUrl: './lead-form.component.html',
   styleUrl: './lead-form.component.scss'
 })
-export class LeadFormComponent {
+export class LeadFormComponent implements OnInit {
 
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
@@ -28,6 +28,8 @@ export class LeadFormComponent {
   @Input() heading:string = 'Apply Now';
   @Input() cta:string = 'Apply Now';
   @Input() comments = "";
+  @Input() planTypeSubject?:Subject<any>;
+  @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
 
   constructor(
     private readonly leadFormService: LeadFormService,
@@ -39,6 +41,12 @@ export class LeadFormComponent {
     private readonly googleConversionTrackingService:GoogleConversionTrackingService,
     
   ){}
+  ngOnInit(): void {
+      this.planTypeSubject?.subscribe(planType => {
+      this.ctaForm.get('selectedPackage')?.setValue(planType);
+      this.focusOnCtaForm();
+    })
+  }
 
   ctaForm = new FormGroup({
     fullName: new FormControl('',),
@@ -113,5 +121,15 @@ export class LeadFormComponent {
         formGroup.get(controlName)?.updateValueAndValidity();
       });
     }
+
+    
+  focusOnCtaForm() {
+    if (this.ctaFormElement) {
+      const firstInput = this.ctaFormElement.nativeElement.querySelector('input');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }
+  }
 
 }

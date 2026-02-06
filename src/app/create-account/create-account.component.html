@@ -1,5 +1,6 @@
+<app-top-header></app-top-header>
+<app-navbar-v2></app-navbar-v2>
 <div>
-  <app-dashboard-header></app-dashboard-header>
   <div class="site-page-body create-account-page-v2">
     <div class="create-account-main-section">
       <app-features class="features-component"></app-features>
@@ -8,7 +9,7 @@
           <a type="button" class="call-now" href="tel:+919878987497" (click)="trackCallToActionEvent()">9878987497</a>
         </p>
         <h2 class="register-heading ">
-          Register Your Trademark
+          Create Account
         </h2>
         <div class="form-section mx-2 mx-md-auto">
           <form class="site-form" novalidate="novalidate" #loginForm="ngForm"
@@ -131,115 +132,6 @@
         </ul>
       </div>
     </div>
-    <div class="testimonial-section" >
-            <div class="container-xxl">
-                <div class="testimonial-top-section">
-                    <div class="testimonial-heading">
-                        TESTIMONIALS
-                    </div>
-                    <div class="testimonial-sub-heading">
-                        What Our Clients Say? 
-                    </div>
-                </div>
-                <div class="content">
-                    <ngx-slick-carousel class="carousel" 
-                    #slickModal="slick-carousel" 
-                    [config]="slideConfig" 
-                    >
-                    <div ngxSlickItem *ngFor="let testimonial of testimonials">
-                        <div  class="testimonial" >
-                            <blockquote>
-                                {{testimonial.quote}}
-                            </blockquote>
-                            <div></div>
-                            <p>
-                                {{testimonial.author}} &mdash; {{testimonial.location}}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    </ngx-slick-carousel>
-                </div>
-            </div>
-          
-            
-            
-        </div>
-        <div class="stats-banner" >
-            <div class="container-xxl">
-                <div class="row content">
-                    <div class="stat col-xs-12 col-sm-4">
-                        <div class="stat-content">
-                            <div class="title" appCountUp [endValue]="1000" [suffix]="'+'">0+</div>
-                            <div class="description">Registrations</div>
-                        </div>
-                    </div>
-                    <div class="stat col-xs-12 col-sm-4">
-                        <div class="stat-content">
-                            <div class="title" appCountUp [endValue]="30" [suffix]="'+'">0+</div>
-                            <div class="description">Years Of Experience</div>
-                        </div>
-                    </div>
-                    <div class="stat col-xs-12 col-sm-4">
-                            <div class="stat-content">
-                                <div class="title" appCountUp [endValue]="100" [suffix]="'%'">0%</div>
-                                <div class="description">Customer Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-           
-        </div>
-        <div class="hiw-section" >
-            <div class="hiw-heading">Registration Process</div>
-                    <app-vertical-stepper></app-vertical-stepper>
-            
-        </div>
-        <div class="required-documents-section" >
-            <div class="container-xxl">
-                <h1>📄 Documents Required for Trademark Registration in India</h1>
-                <div class="document-cards">
-                    <div class="document-card-grid">
-                        <div class="row gy-4">
-                            <div class="col-12 col-sm-12 col-md-5 col-xl-4" *ngFor="let doc of documents">
-                                <mat-card class="document-card"  appearance="outlined">
-                                    <mat-card-header>
-                                      <mat-card-title-group>
-              
-                                          <div mat-card-avatar class="doc-icon">
-                                          <mat-icon>{{ doc.icon }}</mat-icon>
-                                          </div>
-                                          <mat-card-title>{{ doc.title }}</mat-card-title>
-                                      </mat-card-title-group>
-                                    </mat-card-header>
-                                    <mat-card-content>
-                                      <ul *ngIf="doc.points?.length">
-                                        <li *ngFor="let point of doc.points">{{ point }}</li>
-                                      </ul>
-                                      <p *ngIf="doc.note"><strong>Note:</strong> {{ doc.note }}</p>
-                                    </mat-card-content>
-                                  </mat-card>
-                            </div>
-                         
-                        </div>
-                        
-                      </div>
-                      
-                </div>
-            </div>
-            
-        </div>
-        <section class="call-us-section">
-            <div class="content">
-                <h1>Let's talk</h1>
-                <p>Have questions about trademark registration, protecting your brand, or just not sure where to start?  Whether you're a startup, a growing business, or just exploring ideas, we'd love to hear from you. Let's build something that protects and elevates your brand.</p>
-                <a type="button" class="btn btn-outline-primary call-us-btn" href="tel:+919878987497">Call 9878987497</a>
-
-            </div>
-        </section>
-        <section class="home-faq-section">
-            <app-faq></app-faq>
-        </section>
   </div>
 
 </div>
@@ -250,4 +142,4 @@
    >
   <img src="/assets/images/call-now-icon.png" alt="Call Button">
 </a>
-<app-footer></app-footer>
+<app-footer-v2></app-footer-v2>

@@ -158,7 +158,6 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
   }
 
   back() {
-    console.log('back')
     this.router.navigate(['trademark-registration/step-2']);
 
     }
@@ -195,7 +194,6 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
 
   downloadLogo() {
     const filePath = this.document?.fileUrl;
-    console.log(filePath)
     if(filePath){
       this.dataUtils.downloadIcon(filePath)
       .subscribe({

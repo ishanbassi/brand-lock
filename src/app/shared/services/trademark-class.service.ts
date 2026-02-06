@@ -40,7 +40,6 @@ export class TrademarkClassService {
 
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    console.log(this.resourceUrl)
     return this.http
       .get<RestTrademarkClass[]>(this.resourceUrl, { params: options, observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));

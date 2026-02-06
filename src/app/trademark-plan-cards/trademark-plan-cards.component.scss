@@ -163,6 +163,9 @@ html {
   }
   &--theme{
     background: var(--gradient);
+    &:hover{
+      box-shadow: 0px 6px 10px #9E9E9E !important;
+    }
   }
 
   &--white {

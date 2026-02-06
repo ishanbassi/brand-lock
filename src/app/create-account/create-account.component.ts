@@ -1,50 +1,50 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, Renderer2 } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormField, MatInputModule } from '@angular/material/input';
-import { SharedModule } from '../shared/shared.module';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LocalStorageService } from '../shared/services/local-storage.service';
-import { LoadingService } from '../common/loading.service';
-import { FeaturesComponent } from '../features/features.component';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { Account } from '../../models/account.model';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatFormField, MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Meta, Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { ReCaptchaV3Service } from 'ng-recaptcha-2';
-import { DataService } from '../shared/services/data.service';
-import { Login } from '../../models/login';
-import { JwtToken } from '../../models/jwt.token';
-import { finalize } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
-import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
-import { SessionStorageService } from '../shared/services/session-storage.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxMaskDirective } from 'ngx-mask';
-import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
-import { PhoneInputComponent } from '../phone-input/phone-input.component';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
-import { MatStepperModule } from '@angular/material/stepper';
-import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
-import { MatCardModule } from '@angular/material/card';
-import { PricingSectionComponent } from '../pricing-section/pricing-section.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { FooterComponent } from '../footer/footer.component';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { FaqComponent } from '../faq/faq.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CountUpDirective } from '../shared/directives/count-up.directive';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { TestimonialsList } from '../enums/TestimonialsList';
+import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
+import { Account } from '../../models/account.model';
+import { Login } from '../../models/login';
+import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
+import { LoadingService } from '../common/loading.service';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
-import { Meta, Title } from '@angular/platform-browser';
+import { TestimonialsList } from '../enums/TestimonialsList';
+import { FaqComponent } from '../faq/faq.component';
+import { FeaturesComponent } from '../features/features.component';
+import { FooterComponent } from '../footer/footer.component';
+import { PhoneInputComponent } from '../phone-input/phone-input.component';
+import { PricingSectionComponent } from '../pricing-section/pricing-section.component';
+import { CountUpDirective } from '../shared/directives/count-up.directive';
+import { DataService } from '../shared/services/data.service';
+import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { SessionStorageService } from '../shared/services/session-storage.service';
+import { SharedModule } from '../shared/shared.module';
+import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
+import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { TopHeaderComponent } from '../top-header/top-header.component';
+import { FooterV2Component } from '../footer-v2/footer-v2.component';
 
 @Component({
   selector: 'app-create-account',
   imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective, PhoneInputComponent,
     ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
         VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
-        NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent
+        NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component
 
   ],
   templateUrl: './create-account.component.html',

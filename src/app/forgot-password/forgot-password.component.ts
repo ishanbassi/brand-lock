@@ -11,12 +11,15 @@ import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { MatIcon } from '@angular/material/icon';
+import { FooterV2Component } from '../footer-v2/footer-v2.component';
+import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
-  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,MatIcon]
+  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,MatIcon,TopHeaderComponent, NavbarV2Component, FooterV2Component]
 
 })
 export class ForgotPasswordComponent implements OnInit {

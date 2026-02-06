@@ -1,5 +1,6 @@
-<app-dashboard-header></app-dashboard-header>
-<header class="blog-hero">
+<app-top-header></app-top-header>
+<app-navbar-v2></app-navbar-v2>
+<header class="blog-hero" [ngStyle]="{'background-color': blog?.backgroundColor}">
     <div class="blog-hero__container">
         <nav class="breadcrumb">
             <a href="javascript:void(0)">Trademarx</a>
@@ -27,34 +28,86 @@
 
 <div class="blog-single">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 m-15px-tb">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6 m-15px-tb">
                 <article class="article">
                     <div class="article-img">
                         <img [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
                     </div>
                     <div class="article-content">
-                        
+
                         <app-blog-markdown [blog]="blog" (markdownReady)="onMarkdownReady()"></app-blog-markdown>
                     </div>
                 </article>
             </div>
-            <div class="col-lg-4 m-15px-tb blog-aside">
-                <aside class="toc">
-                        <h4>Table of Contents</h4>
-                        <ul>
-                            <li *ngFor="let item of toc" [class.level-3]="item.level === 3">
+            <div class="col-lg-4 col-xl-3 m-15px-tb blog-aside">
+                <aside>
+                    <div class="toc">
+                        <h4>📑 Table of Contents</h4>
 
-                                <a [routerLink]="[]" [fragment]="item.id">
-                                    {{ item.text }}
-                                </a>
+                        <ul class="toc-list">
+                            <li *ngFor="let item of visibleToc">
+
+                                <!-- Parent heading -->
+                                <div class="toc-parent">
+                                    <a [routerLink]="[]" [fragment]="item.id">
+                                        {{ item.text }}
+                                    </a>
+
+                                    <button *ngIf="item.children.length" class="toggle-btn"
+                                        (click)="item.expanded = !item.expanded">
+                                        {{ item.expanded ? '−' : '+' }}
+                                    </button>
+                                </div>
+
+                                <!-- Child headings -->
+                                <ul class="toc-children" *ngIf="item.children.length && item.expanded">
+                                    <li *ngFor="let child of item.children">
+                                        <a [routerLink]="[]" [fragment]="child.id">
+                                            {{ child.text }}
+                                        </a>
+                                    </li>
+                                </ul>
+
                             </li>
                         </ul>
+
+                        <!-- Show more / less -->
+                        <button class="show-more" *ngIf="toc.length > previewCount" (click)="showAll = !showAll">
+                            {{ showAll ? 'Show less' : 'Show more' }}
+                        </button>
+                    </div>
+                    <div class="campaign-section campaign-visible" *ngIf="blog?.campaignBlock"
+                        [ngStyle]="{'background': blog?.campaignBlock?.backgroundColor || 'var(--gradient)' }">
+
+                        <div class="campaign-content">
+                            <div *ngIf="blog?.campaignBlock?.campaignImage" class="campaign-image">
+                                <img [src]="blog?.campaignBlock?.campaignImage" [alt]="blog?.campaignBlock?.title"
+                                    [title]="blog?.campaignBlock?.title" loading="lazy">
+
+                            </div>
+                            <div class="campaign-text">
+                                <h3>{{blog?.campaignBlock?.title}}</h3>
+                                <p>{{blog?.campaignBlock?.description || ''}}</p>
+                                <a [href]="blog?.campaignBlock?.ctaLink" class="cta-button">
+                                    {{blog?.campaignBlock?.ctaText}}
+                                    <svg class="cta-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
                 </aside>
+
+
+
 
 
             </div>
         </div>
     </div>
 </div>
-<app-footer></app-footer>
+<app-footer-v2></app-footer-v2>

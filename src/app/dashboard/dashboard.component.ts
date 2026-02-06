@@ -105,7 +105,6 @@ export class DashboardComponent implements OnInit{
     }
   }
   openPendingTask(link: string) {
-    console.log(link)
     this.router.navigateByUrl(link);
   }
 

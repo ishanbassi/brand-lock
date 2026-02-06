@@ -180,7 +180,6 @@ export class TrademarkClassComponent implements OnInit{
       this.trademarkClassesSharedCollection,
       ...(trademark.trademarkClasses ?? []),
     );
-    console.log(this.selectedTrademarkClasses)
   }
 
   submit() {
@@ -192,11 +191,9 @@ export class TrademarkClassComponent implements OnInit{
     }
     this.loadingService.show();
     const trademark  = this.trademarkFormService.getTrademark(this.trademarkDetailsForm);
-    console.log(trademark)
     if(!trademark.id) return;
     this.trademarkService.partialUpdate(trademark)
     .subscribe((res) => {
-      console.log(res.body)
     })
 
     
@@ -234,7 +231,6 @@ export class TrademarkClassComponent implements OnInit{
   }
 
   updateTmClassChips(){
-    console.log(this.selectedTrademarkClasses)
     this.selectedTrademarkClassesChips = [];
     this.selectedTrademarkClasses.forEach(tmClass => {
       if(!tmClass.tmClass || !tmClass.keyword) return;
