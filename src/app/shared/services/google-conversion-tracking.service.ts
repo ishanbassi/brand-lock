@@ -63,4 +63,20 @@ export class GoogleConversionTrackingService {
     });
   }
 
+  reportLeadFormSubmit(redirectUrl?: string): void {
+    const callback = () => {
+      if (redirectUrl) {
+        this.router.navigateByUrl(redirectUrl);
+      }
+    };
+
+    gtag('event', 'conversion', {
+      send_to: 'AW-17846624059/m5ZbCO6Nw_UbELu-971C',
+      event_callback: callback
+    });
+
+    // Fallback in case callback doesn't fire
+    setTimeout(callback, 2000);
+  }
+
 }

@@ -111,7 +111,7 @@ export class LeadFormComponent implements OnInit {
 
   }
   trackConversion() {
-    this.googleConversionTrackingService.reportSignupConversion(); 
+    this.googleConversionTrackingService.reportLeadFormSubmit(); 
   }
 
   resetFormValidations(formGroup: FormGroup<any>) {
