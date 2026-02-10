@@ -103,6 +103,16 @@ app.get('/sitemap.xml', async (req, res) => {
   }
 
 });
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`
+User-agent: *
+Allow: /
+
+Sitemap: https://trademarx.in/sitemap.xml
+`);
+});
+
 
 
 /**
