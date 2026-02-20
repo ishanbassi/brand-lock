@@ -129,7 +129,7 @@ testimonials = TestimonialsList;
   ) { }
   ngOnInit() {
   this.title.setTitle(
-    'Trademark Registration in India @ ₹6399 | Trademarx'
+    'Create Your Account | Intellectual Property Experts | Trademarx'
   );
 
   this.meta.updateTag({
