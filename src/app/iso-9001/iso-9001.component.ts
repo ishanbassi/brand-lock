@@ -58,7 +58,7 @@ export class Iso9001Component {
   ngOnInit() {
     
 
-    this.title.setTitle('ISO 9001:2015 At Lowest Price | ISO 9001:2015 at Just ₹1499');
+    this.title.setTitle('ISO 9001:2015 At Lowest Price | ISO 9001:2015 at Just ₹999');
     this.meta.updateTag({ name: 'description', content: 'Get ISO Certifications at affordable prices,certifications valid in government tenders' });
     this.meta.updateTag({ name: 'keywords', content: 'iso certifications, iso 9001:2015, quality standards' });
 

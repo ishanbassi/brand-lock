@@ -170,7 +170,7 @@ export const routes: Routes = [
     {
         path:"iso/iso-9001-2015",
         component:Iso9001Component,
-        title:"ISO 9001:2015 at Just ₹1499",
+        title:"ISO 9001:2015 at Just ₹999",
         canActivate: [AuthGuard],       
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },
