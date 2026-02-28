@@ -149,7 +149,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     // Check initial scroll position
     this.checkScrollPosition();
 
-    this.title.setTitle('Trademark At Lowest Price | Trademark filing at Just ₹6399');
+    this.title.setTitle('Trademark At Lowest Price | Trademark filing at Just ₹999');
     this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
 
