@@ -87,7 +87,29 @@ export class TrademarkService {
   return this.http
     .patch<RestTrademark>(`${this.resourceUrl}/onboarding/${this.getTrademarkIdentifier(trademarkWithLogo.trademark)}`, trademarkWithLogo, { observe: 'response' })
     .pipe(map(res => this.convertResponseFromServer(res)));
-}
+  }
+  
+  liveSearch(query:string): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestTrademark[]>(`${this.resourceUrl}/live-search`, { observe: 'response',params:{trademark:query} })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+  deepSearch(query:string): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestTrademark[]>(`${this.resourceUrl}/search`, { observe: 'response',params:{trademark:query} })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+  quickSearch(query:string): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params:{trademark:query} })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+  
+  findBySlug(slug: string): Observable<EntityResponseType> {
+    return this.http
+      .get<RestTrademark>(`${this.resourceUrl}/slug/${slug}`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
 
 
   getTrademarkIdentifier(trademark: Pick<ITrademark, 'id'>): number {
@@ -97,6 +119,8 @@ export class TrademarkService {
   compareTrademark(o1: Pick<ITrademark, 'id'> | null, o2: Pick<ITrademark, 'id'> | null): boolean {
     return o1 && o2 ? this.getTrademarkIdentifier(o1) === this.getTrademarkIdentifier(o2) : o1 === o2;
   }
+
+  
 
   public convertDateFromClient<T extends ITrademark | NewTrademark | PartialUpdateTrademark>(trademark: T): RestOf<T> {
     return {

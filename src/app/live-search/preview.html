@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Search — Angular Component Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0f1117;
+      --surface:     #181c26;
+      --border:      #2a2f3d;
+      --border-focus:#5b6af0;
+      --text:        #e8eaf2;
+      --muted:       #6b7394;
+      --accent:      #5b6af0;
+      --accent-soft: rgba(91,106,240,.12);
+      --mark-bg:     rgba(91,106,240,.25);
+      --mark-color:  #a5afff;
+      --hover:       #1e2333;
+      --r-sm: 8px;
+      --r-md: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px 100px;
+    }
+
+    .page-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* ── Component shell ─────────────────────────── */
+    .search-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .search-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 0 14px;
+      height: 52px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .search-field:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91,106,240,.18);
+    }
+
+    .search-field.is-active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91,106,240,.18);
+    }
+
+    .search-icon { color: var(--muted); display:flex; align-items:center; flex-shrink:0; transition: color .2s; }
+    .search-field:focus-within .search-icon { color: var(--accent); }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      caret-color: var(--accent);
+      min-width: 0;
+    }
+    .search-input::placeholder { color: var(--muted); font-size: 14px; }
+
+    .spinner { display:none; width:20px;height:20px;align-items:center;justify-content:center;flex-shrink:0; }
+    .spinner span { display:block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite; }
+    .spinner.visible { display:flex; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .clear-btn {
+      display: none;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border: none;
+      background: var(--border);
+      color: var(--muted);
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      transition: background .15s, color .15s;
+    }
+    .clear-btn:hover { background: var(--accent); color: #fff; }
+    .clear-btn.visible { display: flex; }
+
+    /* Results */
+    .results-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      z-index: 1000;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,.4), 0 20px 40px -8px rgba(0,0,0,.5);
+      animation: dropIn .18s cubic-bezier(.16,1,.3,1) both;
+    }
+    .results-panel.visible { display: block; }
+    @keyframes dropIn {
+      from { opacity:0; transform: translateY(-6px) scale(.98); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    .results-list { list-style: none; padding: 6px; }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .result-item:hover,
+    .result-item.active {
+      background: var(--hover);
+    }
+    .result-item:hover .result-icon,
+    .result-item.active .result-icon {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .result-icon {
+      display: flex; align-items:center; justify-content:center;
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: #1e2333;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 16px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      transition: background .12s, color .12s;
+    }
+
+    .result-body { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+
+    .result-name {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .result-name mark {
+      background: var(--mark-bg); color: var(--mark-color);
+      border-radius: 2px; padding: 0 1px;
+    }
+
+    .result-desc {
+      font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .result-desc mark {
+      background: var(--mark-bg); color: var(--mark-color);
+      border-radius: 2px; padding: 0 1px;
+    }
+
+    .result-category {
+      flex-shrink: 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(91,106,240,.2);
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+
+    .results-footer {
+      padding: 7px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    .results-empty {
+      display: none; /* shown via JS */
+      align-items: center; gap: 10px;
+      padding: 18px 16px;
+      font-size: 14px; color: var(--muted);
+      animation: dropIn .18s cubic-bezier(.16,1,.3,1) both;
+    }
+    .results-empty.visible { display: flex; }
+    .results-empty strong { color: var(--text); }
+    .empty-icon { font-size: 20px; opacity: .4; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .search-field { height: 46px; padding: 0 12px; gap: 8px; }
+      .search-input { font-size: 14px; }
+      .search-input::placeholder { font-size: 13px; }
+      .result-item { padding: 9px 8px; gap: 10px; }
+      .result-icon { width: 32px; height: 32px; font-size: 14px; }
+      .result-category { display: none; }
+    }
+    @media (max-width: 400px) {
+      .result-desc { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <p class="page-label">Angular Component · Preview</p>
+  <h1>Live Search</h1>
+  <p class="subtitle">Type to search — results appear instantly below</p>
+
+  <div class="search-wrapper" id="searchWrapper">
+    <div class="search-field" id="searchField">
+      <span class="search-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="Search technologies, tools, languages…"
+        autocomplete="off" spellcheck="false" />
+      <span class="spinner" id="spinner"><span></span></span>
+      <button class="clear-btn" id="clearBtn" type="button" aria-label="Clear">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="results-panel" id="resultsPanel">
+      <ul class="results-list" id="resultsList"></ul>
+      <div class="results-footer" id="resultsFooter"></div>
+    </div>
+
+    <div class="results-empty" id="emptyState">
+      <span class="empty-icon">⊘</span>
+      <span>No results for <strong id="emptyQuery"></strong></span>
+    </div>
+  </div>
+
+  <script>
+    const DATA = [
+      { id:1,  name:'Angular',       category:'Framework', description:'Platform for building web applications',     icon:'⬡' },
+      { id:2,  name:'React',         category:'Library',   description:'UI library for building interfaces',         icon:'⚛' },
+      { id:3,  name:'Vue.js',        category:'Framework', description:'Progressive JavaScript framework',           icon:'◈' },
+      { id:4,  name:'TypeScript',    category:'Language',  description:'Typed superset of JavaScript',               icon:'TS'},
+      { id:5,  name:'Node.js',       category:'Runtime',   description:'JavaScript runtime built on V8',             icon:'⬡' },
+      { id:6,  name:'Tailwind CSS',  category:'Styling',   description:'Utility-first CSS framework',                icon:'◎' },
+      { id:7,  name:'GraphQL',       category:'API',       description:'Query language for your API',                icon:'◆' },
+      { id:8,  name:'Docker',        category:'DevOps',    description:'Containerisation platform',                  icon:'◻' },
+      { id:9,  name:'Kubernetes',    category:'DevOps',    description:'Container orchestration system',             icon:'◼' },
+      { id:10, name:'PostgreSQL',    category:'Database',  description:'Advanced open-source relational DB',         icon:'🐘'},
+      { id:11, name:'MongoDB',       category:'Database',  description:'NoSQL document database',                    icon:'◉' },
+      { id:12, name:'Redis',         category:'Database',  description:'In-memory data structure store',             icon:'◈' },
+      { id:13, name:'Webpack',       category:'Tooling',   description:'Static module bundler',                      icon:'⬟' },
+      { id:14, name:'Vite',          category:'Tooling',   description:'Lightning-fast build tool',                  icon:'⚡'},
+      { id:15, name:'Jest',          category:'Testing',   description:'Delightful JavaScript testing framework',    icon:'◎' },
+      { id:16, name:'Cypress',       category:'Testing',   description:'End-to-end testing framework',               icon:'◆' },
+      { id:17, name:'RxJS',          category:'Library',   description:'Reactive Extensions for JavaScript',         icon:'∞' },
+      { id:18, name:'NgRx',          category:'State',     description:'Reactive state management for Angular',      icon:'⬡' },
+      { id:19, name:'Storybook',     category:'Tooling',   description:'UI component workshop and docs',             icon:'◉' },
+      { id:20, name:'Figma',         category:'Design',    description:'Collaborative interface design tool',        icon:'◈' },
+    ];
+
+    const input       = document.getElementById('searchInput');
+    const field       = document.getElementById('searchField');
+    const panel       = document.getElementById('resultsPanel');
+    const list        = document.getElementById('resultsList');
+    const footer      = document.getElementById('resultsFooter');
+    const spinner     = document.getElementById('spinner');
+    const clearBtn    = document.getElementById('clearBtn');
+    const emptyState  = document.getElementById('emptyState');
+    const emptyQuery  = document.getElementById('emptyQuery');
+    const wrapper     = document.getElementById('searchWrapper');
+
+    let activeIdx = -1;
+    let debounceTimer = null;
+    let currentResults = [];
+
+    function esc(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function highlight(text, query) {
+      if (!query) return esc(text);
+      const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+      return esc(text).replace(re, '<mark>$1</mark>');
+    }
+
+    function showResults(results, query) {
+      list.innerHTML = '';
+      panel.classList.remove('visible');
+      emptyState.classList.remove('visible');
+      field.classList.remove('is-active');
+
+      if (!query.trim()) return;
+
+      if (results.length === 0) {
+        emptyState.classList.add('visible');
+        emptyQuery.textContent = `"${query}"`;
+        field.classList.add('is-active');
+        return;
+      }
+
+      currentResults = results;
+      activeIdx = -1;
+
+      results.forEach((r, i) => {
+        const li = document.createElement('li');
+        li.className = 'result-item';
+        li.setAttribute('role', 'option');
+        li.innerHTML = `
+          <span class="result-icon">${r.icon}</span>
+          <span class="result-body">
+            <span class="result-name">${highlight(r.name, query)}</span>
+            <span class="result-desc">${highlight(r.description, query)}</span>
+          </span>
+          <span class="result-category">${r.category}</span>
+        `;
+        li.addEventListener('mouseenter', () => { activeIdx = i; updateActive(); });
+        li.addEventListener('click', () => selectItem(r));
+        list.appendChild(li);
+      });
+
+      footer.textContent = `${results.length} result${results.length !== 1 ? 's' : ''} · ↑↓ navigate · ↵ select · esc close`;
+      panel.classList.add('visible');
+      field.classList.add('is-active');
+    }
+
+    function updateActive() {
+      const items = list.querySelectorAll('.result-item');
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+    }
+
+    function selectItem(r) {
+      input.value = r.name;
+      close();
+    }
+
+    function close() {
+      panel.classList.remove('visible');
+      emptyState.classList.remove('visible');
+      field.classList.remove('is-active');
+      activeIdx = -1;
+    }
+
+    function search(query) {
+      const q = query.trim().toLowerCase();
+      clearBtn.classList.toggle('visible', !!query);
+
+      if (!q) { close(); return; }
+
+      spinner.classList.add('visible');
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const results = DATA.filter(d =>
+          d.name.toLowerCase().includes(q) ||
+          d.category.toLowerCase().includes(q) ||
+          d.description.toLowerCase().includes(q)
+        ).slice(0, 7);
+        spinner.classList.remove('visible');
+        showResults(results, query.trim());
+      }, 150);
+    }
+
+    input.addEventListener('input', e => search(e.target.value));
+
+    input.addEventListener('keydown', e => {
+      const items = list.querySelectorAll('.result-item');
+      if (!panel.classList.contains('visible')) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, currentResults.length-1); updateActive(); }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); activeIdx = Math.max(activeIdx-1, -1); updateActive(); }
+      if (e.key === 'Enter' && activeIdx >= 0) selectItem(currentResults[activeIdx]);
+      if (e.key === 'Escape') close();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      clearBtn.classList.remove('visible');
+      close();
+      input.focus();
+    });
+
+    document.addEventListener('click', e => {
+      if (!wrapper.contains(e.target)) close();
+    });
+  </script>
+</body>
+</html>

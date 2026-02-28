@@ -1,0 +1,440 @@
+// ─── Design tokens ───────────────────────────────────────────────────────────
+$primary:       #2563eb;
+$secondary:     #1e40af;
+$accent:        #f59e0b;
+$text:          #1f2937;
+$text-light:    #6b7280;
+$text-lighter:  #9ca3af;
+$bg:            #ffffff;
+$surface:       #f8fafc;
+$border:        #e5e7eb;
+$border-light:  #f3f4f6;
+$success:       #10b981;
+$warning:       #f59e0b;
+$error:         #ef4444;
+$shadow-sm:     0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md:     0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg:     0 10px 30px rgba(0, 0, 0, 0.1);
+$shadow-hover:  0 20px 40px rgba(0, 0, 0, 0.15);
+$radius-sm:     6px;
+$radius-md:     10px;
+$radius-lg:     14px;
+$section-bg: #f8fafc;
+$mark-bg:     rgba(37, 99, 235, 0.12);
+$mark-color:  #1e40af;
+
+.cta-sticky {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cta-card {
+  background: $bg;
+  border: 1.5px solid $border;
+  border-radius: $radius-lg;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  &.cta-report{
+    &:hover{
+        border-color: $accent;    
+        &::before{
+            opacity: 0;
+        }
+    }
+  }
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+// Call Section
+.cta-call {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.03) 0%, rgba(30, 64, 175, 0.05) 100%);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.cta-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: $bg;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+  }
+}
+
+.cta-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  text-align: center;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.cta-title-sm {
+  font-size: 18px;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.cta-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: $text-light;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.cta-report .cta-description {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.cta-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+
+  &:hover:not(:disabled)::before {
+    transform: translateX(100%);
+  }
+}
+
+.cta-button-primary {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: $bg;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.cta-button-secondary {
+  background: $accent;
+  color: $bg;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+
+  &:hover:not(:disabled) {
+    background: darken($accent, 8%);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    animation: none;
+  }
+
+  &:disabled svg {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.cta-features {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid $border-light;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: $text;
+  font-weight: 500;
+
+  svg {
+    flex-shrink: 0;
+    color: $success;
+  }
+}
+
+// Report Form Section
+.cta-report {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.03) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.cta-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: $accent;
+  color: $bg;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition: all 0.2s;
+
+  &:focus-within {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  }
+}
+
+.input-prefix {
+  padding: 12px 0 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: $text-light;
+  background: transparent;
+}
+
+.form-input {
+  flex: 1;
+  padding: 12px 14px 12px 4px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: $text;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $text-lighter;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+
+  svg {
+    color: $success;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: 600;
+    color: $success;
+    margin: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.report-benefits {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid $border-light;
+}
+
+.benefits-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 10px 0;
+}
+
+.benefits-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    font-size: 13px;
+    color: $text-light;
+    padding-left: 20px;
+    position: relative;
+
+    &::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: $accent;
+      font-weight: 700;
+    }
+  }
+}
+
+// Trust Card
+.trust-card {
+  background: linear-gradient(135deg, $surface 0%, rgba(248, 250, 252, 0.5) 100%);
+  border: 1.5px solid $border;
+  border-radius: $radius-lg;
+  padding: 20px;
+}
+
+.trust-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid $border;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow:hidden;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: $text-light;
+  font-weight: 500;
+}
+
+.trust-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+
+  svg {
+    flex-shrink: 0;
+    color: $success;
+  }
+}
+.placeholder-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-lighter;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

@@ -26,7 +26,7 @@ export interface ITrademark {
   deleted?: boolean | null;
   usage?: string | null;
   associatedTms?: string | null;
-  trademarkStatus?: TrademarkStatus | null;
+  trademarkStatus?: string | null;
   createdDate?: dayjs.Dayjs | null;
   modifiedDate?: dayjs.Dayjs | null;
   renewalDate?: dayjs.Dayjs | null;
@@ -41,6 +41,9 @@ export interface ITrademark {
   trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
   trademarkPlan?: Pick<ITrademarkPlan, 'id' | 'name'> | null;
   documents?: Pick<IDocuments, 'id'| 'documentType'>[] | null;
+  url?:string;
+  faqs?:{question:string;answer:string;opened:boolean}[];
+  slug?:string
   
 
 

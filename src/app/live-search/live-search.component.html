@@ -1,0 +1,84 @@
+<div class="search-wrapper" #searchWrapper>
+  <div class="search-container">
+    <!-- Search input row -->
+    <div class="search-field" [class.is-active]="isOpen">
+      <span class="search-icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </span>
+
+      <input type="text" class="search-input" placeholder="Search Your Trademark here eg. Nike" autocomplete="off"
+        id="trademarkSearchBar"
+        spellcheck="false" role="combobox" aria-haspopup="listbox" [attr.aria-expanded]="isOpen"
+        [attr.aria-activedescendant]="activeIndex >= 0 ? 'result-' + activeIndex : null" [formControl]="searchControl"
+        (keydown)="onKeydown($event)" />
+
+      <!-- Spinner -->
+      <span class="spinner" *ngIf="isLoading" aria-label="Searching…">
+        <span></span>
+      </span>
+
+      <!-- Clear button -->
+      <button *ngIf="searchControl.value && !isLoading" class="clear-btn" type="button" aria-label="Clear search"
+        (click)="clearSearch()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <!-- Search button -->
+    <button class="search-btn" type="button" aria-label="Search" (click)="onSearchClick()" [disabled]="!query">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <span>Search</span>
+    </button>
+
+  </div>
+
+
+  <!-- Results dropdown -->
+  <div class="results-panel" role="listbox" *ngIf="isOpen && results.length" [@dropIn]>
+    <ul>
+      <li *ngFor="let result of results; trackBy: trackById; let i = index" [id]="'result-' + i" role="option"
+        [class.is-active]="activeIndex === i" (mouseenter)="activeIndex = i" (click)="selectResult(result)">
+        <a [routerLink]="result.url" class="result-item">
+          <span class="result-icon">
+            <img [src]="result.imgUrl ? baseUrl + 'files/files/' + result.imgUrl : '/assets/images/trademark.png'"
+              alt="">
+          </span>
+
+          <span class="result-body">
+            <span class="result-name" [innerHTML]="highlight(result.name)">
+            </span>
+            <span class="result-description" [innerHTML]="highlight(result.details)">
+            </span>
+          </span>
+
+        </a>
+
+
+        <!-- <span class="result-category">{{ result.category }}</span> -->
+      </li>
+    </ul>
+
+    <div class="results-footer">
+      {{ results.length }} result{{ results.length !== 1 ? 's' : '' }}
+      &nbsp;·&nbsp; ↑↓ navigate &nbsp;·&nbsp; ↵ select &nbsp;·&nbsp; esc close
+    </div>
+  </div>
+
+  <!-- No results state -->
+  <div class="results-panel results-empty" *ngIf="isOpen && !results.length && !isLoading">
+    <span class="empty-icon">⊘</span>
+    <span>No results for <strong>"{{ searchControl.value }}"</strong></span>
+  </div>
+
+</div>

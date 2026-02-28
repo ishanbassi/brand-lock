@@ -1,0 +1,127 @@
+<div class="cta-sticky">
+          
+          <!-- Call Now Section -->
+          <div class="cta-card cta-call">
+            <div class="cta-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <h3 class="cta-title">File Trademark at Just ₹999 + Govt Fees</h3>
+            <p class="cta-description">Get your trademark registered with expert guidance. Limited time offer!</p>
+            <a class="cta-button cta-button-primary" type="button"  href="tel:+919878987497">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span>Call Now</span>
+            </a>
+            <div class="cta-features">
+              <div class="feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Expert Consultation</span>
+              </div>
+              <div class="feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Quick Processing</span>
+              </div>
+              <div class="feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>100% Support</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Get Detailed Report Section -->
+          <div class="cta-card cta-report">
+            <div class="cta-badge">Free Report</div>
+            <h3 class="cta-title cta-title-sm">Get Detailed Trademark Report</h3>
+            <p class="cta-description">Comprehensive analysis of your trademark search delivered to your phone</p>
+            
+            <form class="report-form" (ngSubmit)="submit()" *ngIf="!phoneSubmitted"  [formGroup]="leadForm">
+              <div class="form-group">
+                <label for="phoneInput" class="form-label">Phone Number</label>
+                <div class="input-wrapper">
+                  <span class="input-prefix">+91</span>
+                  <input
+                    type="tel"
+                    id="phoneInput"
+                    class="form-input"
+                    placeholder="9876543210"
+                    name="phoneNumber"
+                    formControlName="phoneNumber"
+                    />
+                </div>
+              </div>
+              <button 
+                class="cta-button cta-button-secondary" 
+                type="submit"
+                [disabled]="isSubmitting"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="!isSubmitting">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="isSubmitting">
+                  <circle cx="12" cy="12" r="10"/>
+                </svg>
+                <span *ngIf="!isSubmitting">Get Free Report</span>
+                <span *ngIf="isSubmitting">Sending...</span>
+              </button>
+            </form>
+
+            <div class="success-message" *ngIf="phoneSubmitted">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <p>Report sent successfully!</p>
+            </div>
+
+            <div class="report-benefits">
+              <p class="benefits-title">What you'll get:</p>
+              <ul class="benefits-list">
+                <li>Complete trademark analysis</li>
+                <li>Conflict assessment</li>
+                <li>Registration guidance</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Trust Indicators -->
+          <div class="trust-card">
+            <div class="trust-stats">
+              <div class="stat-item">
+                <span class="stat-number">15,000+</span>
+                <span class="stat-label">Trademarks Filed</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">98%</span>
+                <span class="stat-label">Success Rate</span>
+              </div>
+            </div>
+            <div class="trust-badges">
+              <div class="badge-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+                <span>Govt Authorized</span>
+              </div>
+              <div class="badge-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="7"/>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                </svg>
+                <span>ISO Certified</span>
+              </div>
+            </div>
+          </div>
+
+        </div>

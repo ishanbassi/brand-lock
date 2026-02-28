@@ -1,0 +1,729 @@
+// ─── Design tokens ───────────────────────────────────────────────────────────
+$primary:       #2563eb;
+$secondary:     #1e40af;
+$accent:        #f59e0b;
+$text:          #1f2937;
+$text-light:    #6b7280;
+$text-lighter:  #9ca3af;
+$bg:            #ffffff;
+$surface:       #f8fafc;
+$border:        #e5e7eb;
+$success:       #10b981;
+$radius-sm:     8px;
+$radius-md:     12px;
+$radius-lg:     16px;
+
+// ─── Base ────────────────────────────────────────────────────────────────────
+:host {
+  display: block;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+}
+
+.seo-content {
+  background: $bg;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+section {
+  padding: 80px 0;
+  position: relative;
+
+  &:nth-child(even) {
+    background: $surface;
+  }
+}
+
+// ─── Section Headers ─────────────────────────────────────────────────────────
+.section-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 60px;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(37, 99, 235, 0.1);
+  color: $primary;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  display: block;
+}
+
+.section-description {
+  font-size: 18px;
+  line-height: 1.7;
+  color: $text-light;
+  margin: 0 auto;
+}
+
+// ─── Benefits Section ────────────────────────────────────────────────────────
+.benefits-section {
+  background: linear-gradient(
+    180deg,
+    rgba(37, 99, 235, 0.02) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+.benefit-card {
+  background: $bg;
+  border: 2px solid $border;
+  border-radius: $radius-lg;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.12);
+    transform: translateY(-8px);
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .benefit-icon {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+    }
+  }
+}
+
+.benefit-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: $surface;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: $primary;
+  transition: all 0.3s;
+
+  svg {
+    stroke-width: 2;
+  }
+}
+
+.benefit-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 12px 0;
+}
+
+.benefit-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: $text-light;
+  margin: 0;
+}
+
+// ─── Process Section ─────────────────────────────────────────────────────────
+.process-section {
+  background: $bg;
+}
+
+.process-timeline {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(
+      180deg,
+      $primary 0%,
+      $secondary 50%,
+      $accent 100%
+    );
+    opacity: 0.2;
+  }
+}
+
+.process-step {
+  display: flex;
+  gap: 24px;
+  position: relative;
+  animation: fadeInUp 0.6s ease backwards;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: $bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.step-content {
+  flex: 1;
+  background: $bg;
+  border: 2px solid $border;
+  border-radius: $radius-lg;
+  padding: 28px;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.1);
+    transform: translateX(8px);
+  }
+}
+
+.step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: $radius-md;
+  background: rgba(37, 99, 235, 0.08);
+  color: $primary;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 10px 0;
+}
+
+.step-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: $text-light;
+  margin: 0;
+}
+
+.step-connector {
+  display: none; // Handled by ::before on timeline
+}
+
+// ─── Why Choose Section ──────────────────────────────────────────────────────
+.why-choose-section {
+  background: linear-gradient(
+    180deg,
+    $surface 0%,
+    rgba(248, 250, 252, 0.5) 100%
+  );
+}
+
+.why-choose-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+.why-card {
+  background: $bg;
+  border: 2px solid $border;
+  border-radius: $radius-lg;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(37, 99, 235, 0.05) 0%,
+      transparent 70%
+    );
+    transform: scale(0);
+    transition: transform 0.5s;
+  }
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.15);
+    transform: translateY(-4px);
+
+    &::after {
+      transform: scale(1);
+    }
+
+    .metric-value {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.why-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.metric-value {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  transition: transform 0.3s;
+}
+
+.metric-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-light;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.why-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 10px 0;
+}
+
+.why-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: $text-light;
+  margin: 0;
+}
+
+// ─── CTA Banner ──────────────────────────────────────────────────────────────
+.cta-banner {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  border-radius: $radius-lg;
+  padding: 48px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+  }
+}
+
+.cta-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $bg;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+
+.cta-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.cta-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: $bg;
+  color: $primary;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  svg {
+    transition: transform 0.3s;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+
+    svg {
+      transform: translateX(4px);
+    }
+  }
+}
+
+// ─── FAQ Section ─────────────────────────────────────────────────────────────
+.faq-section {
+  background: $bg;
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background: $bg;
+  border: 2px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &.is-open {
+    border-color: $primary;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
+
+    .faq-icon {
+      transform: rotate(180deg);
+      color: $primary;
+    }
+  }
+
+  &:hover {
+    border-color: lighten($primary, 20%);
+  }
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 28px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  color: $text;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  color: $text-light;
+  transition: all 0.3s;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+
+  &.is-visible {
+    max-height: 500px;
+    padding: 0 28px 24px;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: $text-light;
+    margin: 0;
+  }
+}
+
+// ─── Final CTA Section ───────────────────────────────────────────────────────
+.final-cta-section {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.05) 0%,
+    rgba(30, 64, 175, 0.08) 100%
+  );
+  padding: 100px 0;
+}
+
+.final-cta-content {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.final-cta-title {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.final-cta-text {
+  font-size: 18px;
+  line-height: 1.7;
+  color: $text-light;
+  margin: 0 0 40px 0;
+}
+
+.final-cta-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 16px 32px;
+  border: 2px solid;
+  border-radius: $radius-md;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  border-color: transparent;
+  color: $bg;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+.btn-secondary {
+  background: $bg;
+  border-color: $border;
+  color: $text;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+  }
+}
+
+.trust-indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-light;
+
+  svg {
+    color: $success;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  section {
+    padding: 60px 0;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .process-timeline {
+    &::before {
+      display: none;
+    }
+  }
+
+  .process-step {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .step-number {
+    align-self: flex-start;
+  }
+
+  .step-content {
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .why-choose-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cta-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 36px 28px;
+  }
+
+  .final-cta-section {
+    padding: 60px 0;
+  }
+
+  .final-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+    }
+  }
+
+  .trust-indicators {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  section {
+    padding: 48px 0;
+  }
+
+  .benefit-card,
+  .step-content,
+  .why-card {
+    padding: 24px 20px;
+  }
+
+  .faq-question {
+    padding: 20px;
+    font-size: 16px;
+  }
+
+  .faq-answer.is-visible {
+    padding: 0 20px 20px;
+  }
+}

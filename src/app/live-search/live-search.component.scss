@@ -1,0 +1,378 @@
+// ─── Design tokens ───────────────────────────────────────────────────────────
+$bg:          #ffffff;
+$surface:     #f8fafc;
+$border:      #e5e7eb;
+$border-focus:#2563eb;
+$text-primary:#1f2937;
+$text-muted:  #6b7280;
+$accent:      #2563eb;
+$accent-soft: rgba(37, 99, 235, 0.08);
+$mark-bg:     rgba(37, 99, 235, 0.12);
+$mark-color:  #1e40af;
+$hover-bg:    #f8fafc;
+$radius-sm:   8px;
+$radius-md:   12px;
+$font-ui:     'DM Mono', 'Fira Code', 'Consolas', monospace;
+$font-body:   'DM Sans', 'Segoe UI', sans-serif;
+
+// ─── Host / wrapper ──────────────────────────────────────────────────────────
+:host {
+  display: block;
+  font-family: $font-body;
+  color: $text-primary;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.search-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+// ─── Input field ─────────────────────────────────────────────────────────────
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  padding: 0 14px;
+  height: 52px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within,
+  &.is-active {
+    border-color: $accent;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.search-icon {
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.2s;
+
+  .search-field:focus-within & {
+    color: $accent;
+  }
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: $font-body;
+  font-size: 15px;
+  color: $text-primary;
+  caret-color: $accent;
+  min-width: 0;
+
+  &::placeholder {
+    color: $text-muted;
+    font-size: 14px;
+  }
+}
+
+// ─── Spinner ─────────────────────────────────────────────────────────────────
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+
+  span {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid $border;
+    border-top-color: $accent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Clear button ─────────────────────────────────────────────────────────────
+.clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: $border;
+  color: $text-muted;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $accent;
+    color: #fff;
+  }
+}
+
+// ─── Search button ────────────────────────────────────────────────────────────
+.search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 52px;
+  padding: 0 24px;
+  background: $accent;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-family: $font-body;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: darken($accent, 8%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// ─── Results panel ────────────────────────────────────────────────────────────
+.results-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: dropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+  }
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ─── Individual result ────────────────────────────────────────────────────────
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover,
+  &.is-active {
+    background: $accent-soft;
+
+    .result-icon {
+      background: $accent-soft;
+      color: $accent;
+    }
+  }
+}
+
+.result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-radius: $radius-sm;
+  font-size: 16px;
+  font-family: $font-ui;
+  color: $text-muted;
+  border: 1px solid $border;
+  transition: background 0.12s, color 0.12s;
+}
+
+.result-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.result-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ::ng-deep mark {
+    background: $mark-bg;
+    color: $mark-color;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+}
+
+.result-description {
+  font-size: 12px;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ::ng-deep mark {
+    background: $mark-bg;
+    color: $mark-color;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+}
+
+.result-category {
+  flex-shrink: 0;
+  font-family: $font-ui;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $accent;
+  background: $accent-soft;
+  border: 1px solid rgba(91, 106, 240, 0.2);
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+// ─── Footer bar ───────────────────────────────────────────────────────────────
+.results-footer {
+  padding: 7px 14px;
+  font-family: $font-ui;
+  font-size: 10.5px;
+  color: $text-muted;
+  border-top: 1px solid $border;
+  letter-spacing: 0.03em;
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+.results-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  font-size: 14px;
+  color: $text-muted;
+  animation: dropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  strong {
+    color: $text-primary;
+  }
+}
+
+.empty-icon {
+  font-size: 20px;
+  opacity: 0.4;
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  .search-container {
+    gap: 8px;
+  }
+
+  .search-field {
+    height: 46px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .search-input {
+    font-size: 14px;
+
+    &::placeholder {
+      font-size: 13px;
+    }
+  }
+
+  .search-btn {
+    height: 46px;
+    padding: 0 16px;
+    font-size: 14px;
+    gap: 6px;
+
+    span {
+      display: none; // Hide text, show icon only
+    }
+  }
+
+  .result-item {
+    padding: 9px 8px;
+    gap: 10px;
+  }
+
+  .result-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .result-category {
+    display: none; // hide on very small screens to save space
+  }
+
+  .results-footer {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .result-description {
+    display: none;
+  }
+}

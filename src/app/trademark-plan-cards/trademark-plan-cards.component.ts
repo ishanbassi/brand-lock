@@ -30,6 +30,7 @@ export class TrademarkPlanCardsComponent {
   }
 
   navigate(planPrice: number) {
+    console.log(planPrice)
     this.onPlanSelect.emit(planPrice);
   }
 

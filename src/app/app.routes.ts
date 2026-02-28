@@ -19,6 +19,8 @@ import { BlogDetailComponent } from './blog-detail/blog-detail.component';
 import { BlogListComponent } from './blog-list/blog-list.component';
 import { HomeV2Component } from './home-v2/home-v2.component';
 import { Iso9001Component } from './iso-9001/iso-9001.component';
+import { TrademarkSearchComponent } from './trademark-search/trademark-search.component';
+import { TradmarkDetailComponent } from './tradmark-detail/tradmark-detail.component';
 
 export const routes: Routes = [
     
@@ -171,6 +173,20 @@ export const routes: Routes = [
         path:"iso/iso-9001-2015",
         component:Iso9001Component,
         title:"ISO 9001:2015 at Just ₹999",
+        canActivate: [AuthGuard],       
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path:"search",
+        component:TrademarkSearchComponent,
+        title:"Trademark Search In India| Check brand availability online",
+        canActivate: [AuthGuard],       
+        data:{ roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path:"trademarks/:url",
+        component:TradmarkDetailComponent,
+        title:"Trademark Search In India| Check brand availability online",
         canActivate: [AuthGuard],       
         data:{ roles: ['ROLE_ANONYMOUS'] }
     },

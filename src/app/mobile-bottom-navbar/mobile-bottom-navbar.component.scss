@@ -1,0 +1,268 @@
+// ─── Design tokens ───────────────────────────────────────────────────────────
+$primary:     #2563eb;
+$secondary:   #1e40af;
+$accent:      #f59e0b;
+$whatsapp:    #25D366;
+$text:        #1f2937;
+$text-light:  #6b7280;
+$bg:          #ffffff;
+$surface:     #f8fafc;
+$border:      #e5e7eb;
+
+// ─── Mobile Navbar ───────────────────────────────────────────────────────────
+:host {
+  display: block;
+}
+
+.mobile-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $bg;
+  border-top: 1px solid $border;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  display: none; // Hidden by default, shown on mobile
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 6px;
+  }
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 70px;
+
+  // Ripple effect background
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: $surface;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  &:active::before {
+    opacity: 1;
+  }
+
+  // Hover/Active state
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.nav-icon {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+// ─── Individual button styles ────────────────────────────────────────────────
+.nav-call {
+  .nav-icon {
+    color: $primary;
+  }
+
+  .nav-label {
+    color: $text;
+  }
+
+  &:hover,
+  &:active {
+    background: rgba(37, 99, 235, 0.08);
+
+    .nav-icon {
+      color: $secondary;
+      transform: rotate(-15deg) scale(1.1);
+    }
+
+    .nav-label {
+      color: $primary;
+    }
+  }
+}
+
+.nav-whatsapp {
+  .nav-icon {
+    color: $whatsapp;
+  }
+
+  .nav-label {
+    color: $text;
+  }
+
+  &:hover,
+  &:active {
+    background: rgba(37, 211, 102, 0.08);
+
+    .nav-icon {
+      color: darken($whatsapp, 10%);
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    .nav-label {
+      color: $whatsapp;
+    }
+  }
+}
+
+.nav-email {
+  .nav-icon {
+    color: $text-light;
+  }
+
+  .nav-label {
+    color: $text;
+  }
+
+  &:hover,
+  &:active {
+    background: $surface;
+
+    .nav-icon {
+      color: $text;
+      transform: translateY(-2px);
+    }
+
+    .nav-label {
+      color: $text;
+    }
+  }
+}
+
+.nav-report-highlight {
+  background: linear-gradient(135deg, $accent 0%, darken($accent, 8%) 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite;
+
+  .nav-icon {
+    color: $bg;
+  }
+
+  .nav-label {
+    color: $bg;
+    font-weight: 700;
+  }
+
+  &::before {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &:hover,
+  &:active {
+    background: linear-gradient(135deg, darken($accent, 8%) 0%, darken($accent, 15%) 100%);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px);
+
+    .nav-icon {
+      transform: scale(1.15);
+    }
+  }
+
+  // Badge indicator
+  &::after {
+    content: 'FREE';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: $bg;
+    color: $accent;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    z-index: 2;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.5);
+  }
+}
+
+// ─── Compact mode for small screens ──────────────────────────────────────────
+@media (max-width: 380px) {
+  .nav-item {
+    min-width: 60px;
+    padding: 10px 6px;
+    gap: 3px;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+  }
+
+  .nav-report-highlight::after {
+    font-size: 7px;
+    padding: 1px 3px;
+  }
+}
+
+// ─── Safe area adjustments for notched devices ───────────────────────────────
+@supports (padding: env(safe-area-inset-bottom)) {
+  .mobile-navbar {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
+
+// ─── Accessibility ───────────────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navbar,
+  .nav-item,
+  .nav-icon,
+  .nav-label {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .nav-report-highlight {
+    animation: none !important;
+  }
+}
+
+// Focus states for keyboard navigation
+.nav-item:focus-visible {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
+}

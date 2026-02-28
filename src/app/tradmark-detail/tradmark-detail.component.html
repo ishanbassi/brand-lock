@@ -1,0 +1,131 @@
+<app-navbar-v2></app-navbar-v2>
+<div class="tm-page">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a [routerLink]="'/home'">Home</a>
+    <span class="sep">›</span>
+    <a [routerLink]="'/search'" >Search</a>
+    <span class="sep">›</span>
+    <span class="current">{{trademark?.slug}}</span>
+  </div>
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1 >{{trademark?.name || 'Application Number ' + (trademark?.applicationNo || '') }} (Class {{trademark?.tmClass || ''}})</h1>
+    <div *ngIf="trademark?.name" class="app-no">#{{trademark?.applicationNo}}</div>
+  </div>
+
+  <div class="content-grid">
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+      <div class="row card flex-row">
+        <div class="col-12 col-sm-12 col-md-4   logo-card">
+          <img [src]="trademark?.imgUrl ? baseUrl + 'files/files/' + trademark?.imgUrl : '/assets/images/trademark.png'"
+            alt="Trademark Logo" />
+        </div>
+        <div class="col-12  col-sm-12 col-md-8 quick-info">
+          <div class="info-row">
+            <span>Application Number:</span>
+            <strong>{{trademark?.applicationNo}}</strong>
+          </div>
+          <div class="info-row">
+            <span>Status:</span>
+            <strong class="status registered">{{trademark?.trademarkStatus || 'Unknown'}}</strong>
+          </div>
+          <div class="info-row">
+            <span>Class:</span>
+            <strong>{{trademark?.tmClass}}</strong>
+          </div>
+          <div class="info-row" *ngIf="trademark?.proprietorName">
+            <span>Applicant:</span>
+            <strong>{{trademark?.proprietorName}}</strong>
+          </div>
+          <div class="info-row">
+            <span>Filing Date:</span>
+            <strong>{{ trademark?.applicationDate?.format('ddd, DD MMM YYYY') }}</strong>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="card details-table">
+        <h3>Trademark Information</h3>
+
+        <table>
+          <tbody>
+            <tr>
+              <td>Trademark</td>
+              <td>{{trademark?.name}}</td>
+            </tr>
+            <tr>
+              <td>Trademark Type</td>
+              <td>{{trademark?.type == 'IMAGEMARK'? 'Image (Device)' : 'Wordmark' }}</td>
+            </tr>
+            <tr>
+              <td>Class</td>
+              <td>{{trademark?.tmClass}}</td>
+            </tr>
+            <tr>
+              <td>Application Number</td>
+              <td>{{trademark?.applicationNo}}</td>
+            </tr>
+            <tr>
+              <td>Nature/Scope of business</td>
+              <td>{{trademark?.details}}</td>
+            </tr>
+            <tr>
+              <td>Publication</td>
+              <td>In Journal No. {{trademark?.journalNo}}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td>{{trademark?.trademarkStatus || 'Unknown'}}</td>
+            </tr>
+            <tr *ngIf="trademark?.proprietorName">
+              <td>Applicant:</td>
+              <td>{{trademark?.proprietorName}}</td>
+            </tr>
+            <tr *ngIf="trademark?.proprietorAddress">
+              <td>Applicant Address</td>
+              <td>{{trademark?.proprietorAddress}}</td>
+            </tr>
+            <tr *ngIf="trademark?.headOffice">
+              <td>Jurisdiction</td>
+              <td>{{trademark?.headOffice}}</td>
+            </tr>
+            <tr *ngIf="trademark?.agentName">
+              <td>Agent</td>
+              <td>{{trademark?.agentName}}</td>
+            </tr>
+            <tr *ngIf="trademark?.agentAddress">
+              <td>Agent Address</td>
+              <td>{{trademark?.agentAddress}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card faq-card" *ngIf="trademark?.faqs">
+        <h3>Frequently Asked Questions</h3>
+
+        <div class="faq-item" *ngFor="let faq of trademark?.faqs; let i = index">
+          <div class="faq-question" (click)="toggleFaq(i)">
+            {{ faq.question }}
+            <span class="arrow" [class.open]="faq.opened">▾</span>
+          </div>
+
+          <div class="faq-answer" *ngIf="faq.opened">
+            {{ faq.answer }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN (FAQ) -->
+    <div class="right-col">
+      <app-search-cta-section [query]="whatsappQuery"></app-search-cta-section>
+    </div>
+  </div>
+</div>
+<app-mobile-bottom-navbar [showReportButton]="true"></app-mobile-bottom-navbar>
+<app-footer-v2></app-footer-v2>
