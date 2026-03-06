@@ -204,10 +204,10 @@
 
 
             <div class="banner-section d-flex align-items-center gap-3">
-                <a href="https://razorpay.com/" target="_blank"> <img referrerpolicy="origin"
+                <a href="https://razorpay.com/" target="_blank"> <img loading="lazy" referrerpolicy="origin"
                         src="https://badges.razorpay.com/badge-dark.png " style="height: 45px; width: 113px;"
                         alt="Razorpay | Payment Gateway | Neobank"></a>
-                <img class="money-back-img" src="/assets/images/money-back-guarantee.png" alt="">
+                <img loading="lazy" class="money-back-img" src="/assets/images/money-back-guarantee.png" alt="">
             </div>
         </div>
         <div class="col-xl-4">
@@ -233,12 +233,12 @@
                             <tbody>
                                 <tr *ngFor="let item of trademarkOrderSummary?.orderSummaries">
                                     <th scope="row">
-                                        <img *ngIf="trademarkOrderSummary?.documentsDTO?.fileName; else placeholderTmImg"
+                                        <img loading="lazy" *ngIf="trademarkOrderSummary?.documentsDTO?.fileName; else placeholderTmImg"
                                          [src]="`${environment.BaseApiUrl}files/${trademarkOrderSummary?.documentsDTO?.fileUrl}`"
                                          [alt]="trademarkOrderSummary?.documentsDTO?.fileName" class="logo-img avatar-lg rounded">
 
                                          <ng-template #placeholderTmImg>
-                                            <img src="/assets/images/trademark.png" alt="Trademark" class="logo-img avatar-lg rounded">
+                                            <img loading="lazy" src="/assets/images/trademark.png" alt="Trademark" class="logo-img avatar-lg rounded">
                                          </ng-template>
 
                                         </th>

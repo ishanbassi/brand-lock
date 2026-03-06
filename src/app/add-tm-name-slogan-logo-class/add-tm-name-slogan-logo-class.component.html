@@ -29,7 +29,7 @@
                                     <div>
                                         <div *ngIf="trademarkDetailsForm.get('file')?.value">
                                             <div class="img-wrap">
-                                                <img  alt="logo" [src]="'data:' + trademarkDetailsForm.get('document')?.get('fileContentType')?.value + ';base64,' + trademarkDetailsForm.get('file')?.value"
+                                                <img  loading="lazy" alt="logo" [src]="'data:' + trademarkDetailsForm.get('document')?.get('fileContentType')?.value + ';base64,' + trademarkDetailsForm.get('file')?.value"
                                             class="logo-img"   />
                                             <button type="button" (click)="clearInputImage('file', 'fileContentType', 'fileInput')"
                                                     class="btn btn-secondary btn-xs pull-end clear-btn">

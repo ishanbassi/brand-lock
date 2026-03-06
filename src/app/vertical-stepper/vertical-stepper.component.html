@@ -12,7 +12,7 @@
           [@fadeInOut]="i <= activeStep ? 'visible' : 'hidden'"
           >
             <div class="step-img-wrapper">
-              <img class="step-img" [src]="'/assets/images/'+step.imgSrc" [alt]="step.heading">
+              <img loading="lazy" class="step-img" [src]="'/assets/images/'+step.imgSrc" [alt]="step.heading">
             </div>
             <div class="content-wrapper">
               <div class="step-title">{{ step.heading }}</div>
