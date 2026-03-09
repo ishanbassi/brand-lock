@@ -25,7 +25,7 @@ export class BlogListComponent implements OnInit{
     blogs?: Blog;
     blogBaseUrl = `${environment.BaseBlogUrl}`;
     currentPage = 1;
-    pageSize = 6;
+    pageSize = 20;
     totalPages = 0;
     pages: number[] = [];
 
