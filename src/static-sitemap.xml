@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+
+<url>
+  <loc>https://trademarx.in/</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/home</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/search</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/trademark</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/iso/iso-9001-2015</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/blogs</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/about-us</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/login</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+<url>
+  <loc>https://trademarx.in/create-account</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+<url>
+  <loc>https://trademarx.in/forgot-password</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/terms-and-conditions</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://trademarx.in/privacy-policy</loc>
+  <lastmod>2026-03-18T13:47:58+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>

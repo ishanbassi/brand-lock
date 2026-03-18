@@ -18,6 +18,9 @@ let staticUrls: string[] = []
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
+const __dirname = path.dirname(serverDistFolder);
+const distFolder = resolve(process.cwd(), 'dist/brand-lock/browser');
+
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
@@ -72,8 +75,8 @@ app.get('/sitemap.xml', async (req, res) => {
     const response = (await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`));
     const json: Blog = await response.json();
     staticUrls = [];
-    walk(browserDistFolder);
-
+    walk(distFolder);
+    
     const urls = json.data.map(blog => `
     <url>
       <loc>${SITE_URL}/blogs/${blog.slug}</loc>

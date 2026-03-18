@@ -11,11 +11,16 @@ export const serverRoutes: ServerRoute[] = [
 
   },
   {
+    path: 'trademarks/**',
+    renderMode: RenderMode.Server,
+  },
+
+  {
     path: 'portal/**',
     renderMode: RenderMode.Client
   },
   {
     path: '**',
-    renderMode: RenderMode.Server
+    renderMode: RenderMode.Prerender
   }
 ];
