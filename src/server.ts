@@ -89,7 +89,7 @@ app.get('/sitemap.xml', async (req, res) => {
       <url>
         <loc>${url}</loc>
         <changefreq>weekly</changefreq>
-        <priority>${url.includes('/blogs/') ? '0.8' : '0.6'}</priority>
+        <priority>${url.includes('/blogs/') ? '0.8' : url.includes('/search') ? '1':  '0.6'}</priority>
       </url>
     `);
     const urlString = urls.concat(staticUrlsList).join('');
