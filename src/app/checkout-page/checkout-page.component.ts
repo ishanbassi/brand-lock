@@ -30,6 +30,7 @@ import { IUserProfile } from '../../models/user-profile.model';
 import { AuthService } from '../../models/auth.services';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
+import { ScriptLoaderService } from '../shared/services/script-loader.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -69,7 +70,8 @@ environment = environment;
     private readonly dialog:MatDialog,
     private readonly localstorageService:LocalStorageService,
     private readonly authservice:AuthService,
-    private readonly googleConversionTrackingService:GoogleConversionTrackingService
+    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
+    private readonly scriptLoaderService:ScriptLoaderService
 
 
     
@@ -86,6 +88,7 @@ environment = environment;
 
 
   ngOnInit() {
+    this.scriptLoaderService.load('https://checkout.razorpay.com/v1/checkout.js');
     this.isAuthorizedUser = this.authservice.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
 
     this.route.queryParams.subscribe(params => {

@@ -294,7 +294,7 @@ $mark-color: #1e40af;
 // ─── Base layout ─────────────────────────────────────────────────────────────
 :host {
   display: block;
-  font-family: 'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: Inter;
   color: $text;
 }
 

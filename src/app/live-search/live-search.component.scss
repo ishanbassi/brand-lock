@@ -12,13 +12,10 @@ $mark-color:  #1e40af;
 $hover-bg:    #f8fafc;
 $radius-sm:   8px;
 $radius-md:   12px;
-$font-ui:     'DM Mono', 'Fira Code', 'Consolas', monospace;
-$font-body:   'DM Sans', 'Segoe UI', sans-serif;
 
 // ─── Host / wrapper ──────────────────────────────────────────────────────────
 :host {
   display: block;
-  font-family: $font-body;
   color: $text-primary;
 }
 
@@ -72,7 +69,6 @@ $font-body:   'DM Sans', 'Segoe UI', sans-serif;
   background: transparent;
   border: none;
   outline: none;
-  font-family: $font-body;
   font-size: 15px;
   color: $text-primary;
   caret-color: $accent;
@@ -143,7 +139,6 @@ $font-body:   'DM Sans', 'Segoe UI', sans-serif;
   color: #ffffff;
   border: none;
   border-radius: $radius-md;
-  font-family: $font-body;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -227,7 +222,6 @@ $font-body:   'DM Sans', 'Segoe UI', sans-serif;
   background: #ffffff;
   border-radius: $radius-sm;
   font-size: 16px;
-  font-family: $font-ui;
   color: $text-muted;
   border: 1px solid $border;
   transition: background 0.12s, color 0.12s;
@@ -274,7 +268,6 @@ $font-body:   'DM Sans', 'Segoe UI', sans-serif;
 
 .result-category {
   flex-shrink: 0;
-  font-family: $font-ui;
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -288,7 +281,6 @@ $font-body:   'DM Sans', 'Segoe UI', sans-serif;
 // ─── Footer bar ───────────────────────────────────────────────────────────────
 .results-footer {
   padding: 7px 14px;
-  font-family: $font-ui;
   font-size: 10.5px;
   color: $text-muted;
   border-top: 1px solid $border;

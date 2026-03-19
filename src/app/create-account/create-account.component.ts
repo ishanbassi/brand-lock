@@ -38,13 +38,14 @@ import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.c
 import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { TopHeaderComponent } from '../top-header/top-header.component';
 import { FooterV2Component } from '../footer-v2/footer-v2.component';
+import { ScriptLoaderService } from '../shared/services/script-loader.service';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent,CommonRegisterLoginMobileSectionComponent,NgxIntlTelInputModule,NgxMaskDirective, PhoneInputComponent,
+  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, DashboardHeaderComponent, CommonRegisterLoginMobileSectionComponent, NgxIntlTelInputModule, NgxMaskDirective, PhoneInputComponent,
     ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
-        VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
-        NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component
+    VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component
 
   ],
   templateUrl: './create-account.component.html',
@@ -70,13 +71,13 @@ import { FooterV2Component } from '../footer-v2/footer-v2.component';
   ]
 })
 
-export class CreateAccountComponent  implements OnInit{
+export class CreateAccountComponent implements OnInit {
   animationState = 'hidden';
   loginForm: any;
-fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
-testimonials = TestimonialsList;
+  fullNamePattern = `^[A-Za-z0-9_,.&()/\\'" ]*$`;
+  testimonials = TestimonialsList;
   documents = RequiredDocumentsList;
-  
+
   onClickValidation: boolean = false;
   passwordFieldType: string = "password";
   confirmPasswordFieldType: string = "password";
@@ -119,30 +120,34 @@ testimonials = TestimonialsList;
   constructor(private readonly toastService: ToastrService,
     private readonly router: Router, private readonly localStorageService: LocalStorageService,
     private readonly loadingService: LoadingService,
-    private  readonly recaptchaV3Service: ReCaptchaV3Service,
+    private readonly recaptchaV3Service: ReCaptchaV3Service,
     private readonly dataService: DataService,
-    private readonly sessionStorageService:SessionStorageService,
-    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
+    private readonly sessionStorageService: SessionStorageService,
+    private readonly googleConversionTrackingService: GoogleConversionTrackingService,
     private meta: Meta,
-    private title: Title
+    private title: Title,
+    private readonly scriptLoaderService: ScriptLoaderService,
 
   ) { }
   ngOnInit() {
-  this.title.setTitle(
-    'Trademark Registration in India @ ₹999 | Trademarx'
-  );
+    this.scriptLoaderService.load(
+      'https://www.google.com/recaptcha/api.js?render=6LcTLeYrAAAAACoTM9NIteBSX7ucj0ZRqDmQJF82'
+    );
+    this.title.setTitle(
+      'Trademark Registration in India @ ₹999 | Trademarx'
+    );
 
-  this.meta.updateTag({
-    name: 'description',
-    content: 'Low-cost trademark registration in India. Govt fees included. Affordable and fast services by experts.'
-  });
+    this.meta.updateTag({
+      name: 'description',
+      content: 'Low-cost trademark registration in India. Govt fees included. Affordable and fast services by experts.'
+    });
 
-  this.meta.updateTag({
-    name: 'robots',
-    content: 'index, follow'
-  });
-  this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
-}
+    this.meta.updateTag({
+      name: 'robots',
+      content: 'index, follow'
+    });
+    this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
+  }
 
 
   executeRecaptchaAndRegister(form: FormGroup<any>) {
@@ -176,8 +181,8 @@ testimonials = TestimonialsList;
               this.toastService.error(error?.detail);
             }
           }
-          
-        );
+
+          );
       })
 
   }
@@ -186,16 +191,16 @@ testimonials = TestimonialsList;
     input.username = this.data.email;
     input.password = this.data.password;
     this.dataService.login(input.forRequest())
-    .pipe(finalize(() => this.loadingService.hide()))
+      .pipe(finalize(() => this.loadingService.hide()))
       .subscribe({
         next: (response) => {
           this.localStorageService.storeAuthenticationToken(response.body!.id_token);
           this.sessionStorageService.set("initial-onboarding", true);
           this.googleConversionTrackingService.reportSignupConversion("trademark-registration/step-2");
           // this.router.navigateByUrl("trademark-registration/step-2");
-          
 
-        }, error: (error: any) =>   {
+
+        }, error: (error: any) => {
           this.toastService.error("Failed to sign in! Please check your credentials and try again.");
         }
       });
@@ -211,9 +216,9 @@ testimonials = TestimonialsList;
   }
 
 
-trackCallToActionEvent(){
-  this.googleConversionTrackingService.reportClickToCall();
-}
+  trackCallToActionEvent() {
+    this.googleConversionTrackingService.reportClickToCall();
+  }
 
 }
 
