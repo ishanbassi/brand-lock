@@ -1,24 +1,24 @@
 import { Component, ElementRef, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatError, MatInputModule } from '@angular/material/input';
-import { SharedModule } from '../shared/shared.module';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
-import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
-import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
+import { MatError, MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TrademarkType, TrademarkTypeList } from '../enumerations/trademark-type.model';
-import { PartialUpdateTrademarkWithLogo, TrademarkService } from '../shared/services/trademark.service';
-import { LocalStorageService } from '../shared/services/local-storage.service';
-import { ITrademark } from '../../models/trademark.model';
-import { DataUtils, FileLoadError } from '../shared/services/data-util.service';
-import { TrademarkFormGroup, TrademarkFormService, TrademarkWithLogoFormGroup } from '../shared/services/trademark-form.service';
-import { LoadingService } from '../common/loading.service';
-import { SessionStorageService } from '../shared/services/session-storage.service';
-import { DocumentsFormService } from '../shared/services/documents-form.service';
-import { IDocuments } from '../../models/documents.model';
-import { DocumentType } from '../enumerations/document-type.model';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../models/auth.services';
+import { IDocuments } from '../../models/documents.model';
+import { ITrademark } from '../../models/trademark.model';
+import { LoadingService } from '../common/loading.service';
+import { DocumentType } from '../enumerations/document-type.model';
+import { TrademarkType } from '../enumerations/trademark-type.model';
+import { DataUtils, FileLoadError } from '../shared/services/data-util.service';
+import { DocumentsFormService } from '../shared/services/documents-form.service';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { SessionStorageService } from '../shared/services/session-storage.service';
+import { TrademarkFormService, TrademarkWithLogoFormGroup } from '../shared/services/trademark-form.service';
+import { PartialUpdateTrademarkWithLogo, TrademarkService } from '../shared/services/trademark.service';
+import { SharedModule } from '../shared/shared.module';
+import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 
 
 

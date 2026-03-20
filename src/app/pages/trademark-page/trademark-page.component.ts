@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,22 +13,26 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { BlogData } from '../../../models/blog.model';
 import { LeadFormService } from '../../../models/lead-form.service';
 import { NewLead } from '../../../models/lead.model';
+import { BlogMarkdownComponent } from '../../blog-markdown/blog-markdown.component';
 import { LoadingService } from '../../common/loading.service';
+import { RegistrationProcessList } from '../../enums/RegistrationProcessList';
 import { RequiredDocumentsList } from '../../enums/RequiredDocumentsList';
 import { TestimonialsList } from '../../enums/TestimonialsList';
 import { FaqComponent } from '../../faq/faq.component';
 import { FooterV2Component } from '../../footer-v2/footer-v2.component';
-import { FooterComponent } from '../../footer/footer.component';
+import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
 import { NavbarV2Component } from '../../navbar-v2/navbar-v2.component';
-import { PricingSectionComponent } from '../../pricing-section/pricing-section.component';
 import { RatingReviewComponent } from '../../rating-review/rating-review.component';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
 import { BlogService } from '../../shared/services/blog-service.service';
+import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
 import { LeadService } from '../../shared/services/lead.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
@@ -37,13 +41,6 @@ import { TopHeaderComponent } from '../../top-header/top-header.component';
 import { TrademarkPlanCardsComponent } from '../../trademark-plan-cards/trademark-plan-cards.component';
 import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
 import { HomeService } from './home.service';
-import { BlogData } from '../../../models/blog.model';
-import { BlogMarkdownComponent } from '../../blog-markdown/blog-markdown.component';
-import { environment } from '../../../environments/environment';
-import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
-import { LeadFormComponent } from '../../lead-form/lead-form.component';
-import { RegistrationProcessList } from '../../enums/RegistrationProcessList';
-import { Subject } from 'rxjs';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -51,8 +48,8 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
 
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, SlickCarouselModule, MatStepperModule,
-    VerticalStepperComponent, MatCardModule, PricingSectionComponent, MatToolbarModule, MatButtonModule, MatIconModule, FooterComponent,
+  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
+    VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
     NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent,RatingReviewComponent,TrademarkPlanCardsComponent, FooterV2Component,
     BlogMarkdownComponent,LeadFormComponent
   ],

@@ -1,36 +1,35 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { SharedModule } from '../shared/shared.module';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { MatStepperModule } from '@angular/material/stepper';
-import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
-import { MatCardModule } from '@angular/material/card';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { NgxMaskDirective } from 'ngx-mask';
+import { MatCardModule } from '@angular/material/card';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CountUpDirective } from '../shared/directives/count-up.directive';
-import { FaqComponent } from '../faq/faq.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { TopHeaderComponent } from '../top-header/top-header.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
-import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
-import { LeadFormComponent } from '../lead-form/lead-form.component';
-import { RatingReviewComponent } from '../rating-review/rating-review.component';
-import { BlogService } from '../shared/services/blog-service.service';
-import { BlogData } from '../../models/blog.model';
-import { environment } from '../../environments/environment';
-import { IsoCertificationProcessList } from '../enums/IsoCertificationProcessList';
-import { isoFaqs } from '../enums/isoFaq';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { BlogData } from '../../models/blog.model';
+import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
+import { IsoCertificationProcessList } from '../enums/IsoCertificationProcessList';
+import { isoFaqs } from '../enums/isoFaq';
+import { FaqComponent } from '../faq/faq.component';
+import { FooterV2Component } from '../footer-v2/footer-v2.component';
+import { LeadFormComponent } from '../lead-form/lead-form.component';
+import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { RatingReviewComponent } from '../rating-review/rating-review.component';
+import { CountUpDirective } from '../shared/directives/count-up.directive';
+import { BlogService } from '../shared/services/blog-service.service';
+import { SharedModule } from '../shared/shared.module';
+import { TopHeaderComponent } from '../top-header/top-header.component';
+import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
 
 @Component({
   selector: 'app-iso-9001',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component,
+    MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component,
     BlogMarkdownComponent, LeadFormComponent, RatingReviewComponent
   ],
   templateUrl: './iso-9001.component.html',

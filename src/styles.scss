@@ -112,8 +112,6 @@ $my-theme: mat.m2-define-light-theme(
 @include mat.core-theme($my-theme);
 
 
-/* Importing Bootstrap SCSS file. */
-@import "bootstrap/scss/bootstrap";
 @import "../public/assets/scss/common.scss";
 
 html, body { height: 100%; }
@@ -135,4 +133,25 @@ body { margin: 0}
 
 
 /* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
+// Replace @import 'bootstrap/scss/bootstrap'; with only what you use:
+
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/root';
+
+// Layout — you use col-*, row, container
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/containers';
+
+
+
+// Components you actually use
+@import 'bootstrap/scss/buttons';   // btn-primary, btn-sm, btn-lg etc.
+@import 'bootstrap/scss/badge';     // badge-soft-success
+@import 'bootstrap/scss/card';      // card, card-title
+
+// Reboot (basic reset — optional but recommended)
+@import 'bootstrap/scss/reboot';

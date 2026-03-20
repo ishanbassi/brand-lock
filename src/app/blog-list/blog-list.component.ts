@@ -1,22 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { BlogService } from '../shared/services/blog-service.service';
 import { Meta, Title } from '@angular/platform-browser';
-import { Blog } from '../../models/blog.model';
-import { SharedModule } from '../shared/shared.module';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { FooterComponent } from '../footer/footer.component';
-import { environment } from '../../environments/environment';
 import dayjs from 'dayjs/esm';
-import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
+import { environment } from '../../environments/environment';
+import { Blog } from '../../models/blog.model';
 import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
+import { BlogService } from '../shared/services/blog-service.service';
+import { SharedModule } from '../shared/shared.module';
 import { TopHeaderComponent } from '../top-header/top-header.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule, DashboardHeaderComponent, FooterComponent,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component],
+  imports: [SharedModule,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })

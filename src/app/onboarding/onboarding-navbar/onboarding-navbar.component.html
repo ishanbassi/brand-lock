@@ -1,10 +1,10 @@
 <mat-toolbar class="app-toolbar">
   <span class="brand-logo" routerLink="/">Trademarx</span>
-  <div class="navbar-menu-actions d-none d-lg-block">
+  <div class="navbar-menu-actions hidden lg:block">
     <!-- <a class="nav-bar-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
           [routerLink]="['/about-us']">About Us </a> -->
   </div>
-    <button mat-icon-button class="mobile-view-menu-icon d-block d-lg-none" aria-label="Menu" (click)="toggle()">
+    <button mat-icon-button class="mobile-view-menu-icon block lg:hidden" aria-label="Menu" (click)="toggle()">
         <mat-icon class="ham-menu">menu</mat-icon>
     </button>
 </mat-toolbar>

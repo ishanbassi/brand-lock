@@ -1,29 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { PricingSectionComponent } from '../pricing-section/pricing-section.component';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { MatButton, MatButtonModule } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { TmGovtFeesPopupComponent } from '../tm-govt-fees-popup/tm-govt-fees-popup.component';
-import { SessionStorageService } from '../shared/services/session-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PaymentService } from '../shared/services/payment.service';
+import { ToastrService } from 'ngx-toastr';
+import { finalize, switchMap } from 'rxjs';
+import { IPayment } from '../../models/payment.model';
+import { ITrademarkPlan } from '../../models/trademark-plan.model';
 import { ITrademark } from '../../models/trademark.model';
+import { LoadingService } from '../common/loading.service';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { PaymentService } from '../shared/services/payment.service';
+import { SessionStorageService } from '../shared/services/session-storage.service';
 import { TrademarkService } from '../shared/services/trademark.service';
-import { ITrademarkPlan, NewTrademarkPlan } from '../../models/trademark-plan.model';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkPlanService } from '../shared/trademark-plan.service';
-import { filter, finalize, map, switchMap, tap } from 'rxjs';
-import { LoadingService } from '../common/loading.service';
-import { ToastrService } from 'ngx-toastr';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { IPayment } from '../../models/payment.model';
-import { HttpErrorResponse } from '@angular/common/http';
+import { TmGovtFeesPopupComponent } from '../tm-govt-fees-popup/tm-govt-fees-popup.component';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 
 @Component({
   selector: 'app-trademark-plans-page',
-  imports: [DashboardHeaderComponent,MatButtonModule,MatIcon,SharedModule, TrademarkPlanCardsComponent],
+  imports: [DashboardHeaderComponent,MatButtonModule,SharedModule, TrademarkPlanCardsComponent],
   templateUrl: './trademark-plans-page.component.html',
   styleUrl: './trademark-plans-page.component.scss'
 })

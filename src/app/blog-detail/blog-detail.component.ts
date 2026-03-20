@@ -1,24 +1,20 @@
-import { AfterViewInit, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MarkdownComponent } from 'ngx-markdown';
-import { BlogService } from '../shared/services/blog-service.service';
-import { Meta, Title } from '@angular/platform-browser';
-import { Blog, BlogData, CampaignBlock } from '../../models/blog.model';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { FooterComponent } from '../footer/footer.component';
-import { environment } from '../../environments/environment';
-import dayjs from 'dayjs/esm';
-import { SharedModule } from '../shared/shared.module';
-import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import dayjs from 'dayjs/esm';
+import { environment } from '../../environments/environment';
+import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
 import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
+import { BlogService } from '../shared/services/blog-service.service';
+import { SharedModule } from '../shared/shared.module';
 import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [DashboardHeaderComponent, FooterComponent, RouterLink, SharedModule, RecentPostsComponent, BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
+  imports: [RouterLink, SharedModule,  BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })

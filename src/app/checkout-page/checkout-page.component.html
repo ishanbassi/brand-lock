@@ -99,13 +99,13 @@
                                                         <input type="radio" name="address" id="info-address1"
                                                             class="card-radio-input" checked="">
                                                         <div class="card-radio text-truncate p-3">
-                                                            <span class="fs-14 mb-4 d-block">Address 1</span>
-                                                            <span class="fs-14 mb-2 d-block">Bradley McMillian</span>
+                                                            <span class="fs-14 mb-4 block">Address 1</span>
+                                                            <span class="fs-14 mb-2 block">Bradley McMillian</span>
                                                             <span
-                                                                class="text-muted fw-normal text-wrap mb-1 d-block">109
+                                                                class="text-muted fw-normal text-wrap mb-1 block">109
                                                                 Clarksburg Park Road Show Low, AZ 85901</span>
 
-                                                            <span class="text-muted fw-normal d-block">Mo.
+                                                            <span class="text-muted fw-normal block">Mo.
                                                                 012-345-6789</span>
                                                         </div>
                                                     </label>
@@ -145,7 +145,7 @@
                 <div class="card-body">
                     <div class="row ">
                         <div class="col col-12 col-sm-12">
-                            <div class="d-flex align-items-center justify-content-start gap-3">
+                            <div class="flex items-center justify-content-start gap-3">
                                 <div class="custom-icon">
                                     <mat-icon>account_balance</mat-icon>
 
@@ -164,7 +164,7 @@
                     <div class="row ">
                         <div class="col col-12 col-sm-12">
                             <div>
-                                <div class="d-flex align-items-center gap-3">
+                                <div class="flex items-center gap-3">
                                     <div class="custom-icon">
                                         <mat-icon>access_time</mat-icon>
                                     </div>
@@ -184,7 +184,7 @@
                     <div class="row ">
                         <div class="col col-12 col-sm-12">
                             <div>
-                                <div class="d-flex align-items-center gap-3">
+                                <div class="flex items-center gap-3">
                                     <div class="custom-icon">
                                         <mat-icon> attach_money</mat-icon>
 
@@ -203,7 +203,7 @@
             </div>
 
 
-            <div class="banner-section d-flex align-items-center gap-3">
+            <div class="banner-section flex items-center gap-3">
                 <a href="https://razorpay.com/" target="_blank"> <img loading="lazy" referrerpolicy="origin"
                         src="https://badges.razorpay.com/badge-dark.png " style="height: 45px; width: 113px;"
                         alt="Razorpay | Payment Gateway | Neobank"></a>
@@ -214,7 +214,7 @@
             <div class="card checkout-order-summary">
                 <div class="card-body">
                     <div class="p-3 bg-light mb-3">
-                        <div class="d-flex align-items-center justify-content-between">
+                        <div class="flex items-center justify-between">
                             <h5 class="font-size-16 mb-0">Trademark Fees Summary</h5>
                             <span class="float-end ms-2">#{{trademarkOrderSummary?.paymentDTO?.id}}</span>
                         </div>
@@ -288,7 +288,7 @@
 
                 <div class="col col-12 col-sm-12">
                     <div class="text-end mt-2 mt-sm-0">
-                        <a (click)="createRzpayOrder()" class="btn btn-success w-100">
+                        <a (click)="createRzpayOrder()" class="btn btn-success w-full">
                             Pay ₹{{trademarkOrderSummary?.totalFees}}</a>
                     </div>
                 </div> <!-- end col -->

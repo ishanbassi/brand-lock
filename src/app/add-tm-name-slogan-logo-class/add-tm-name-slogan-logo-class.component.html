@@ -14,7 +14,7 @@
                             >
                             <div formGroupName="trademark" class=" form-input-container  mat-density-3" *ngIf="this.trademark?.type === TrademarkTypeEnum.TRADEMARK || this.trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE || this.trademark?.type === TrademarkTypeEnum.ALL">
                                 <label for="trademark">Enter your brand name you want to protect:</label>
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
                                     <input matInput placeholder="Enter brand name" name="name" #trademark
                                         formControlName="name" >
                                     <mat-error *ngIf="trademarkDetailsForm.get('trademark')?.hasError('required') && onClickValidation">
@@ -61,7 +61,7 @@
                             </div>
                             <div class=" form-input-container mat-density-3 " *ngIf="this.trademark?.type === TrademarkTypeEnum.SLOGAN|| this.trademark?.type === TrademarkTypeEnum.ALL">
                                 <label for="trademarkSlogan">Enter the slogan you want to protect:</label>
-                                <mat-form-field appearance="outline" class="w-100" [hideRequiredMarker]="true">
+                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
                                     <input matInput placeholder="Enter slogan name" name="trademarkSlogan" #trademarkSlogan
                                         formControlName="trademarkSlogan" required>
                                     <mat-error *ngIf="trademarkDetailsForm.get('trademarkSlogan')?.hasError('required') && onClickValidation">

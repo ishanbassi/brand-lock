@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelDescription, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { trademarkFaqs } from '../enums/faqList';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 
 @Component({
   selector: 'app-faq',
-  imports: [MatAccordion,MatExpansionPanel,MatExpansionPanelHeader,CommonModule,MatExpansionPanelTitle, DashboardHeaderComponent],
+  imports: [MatAccordion,MatExpansionPanel,MatExpansionPanelHeader,CommonModule,MatExpansionPanelTitle],
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.scss'
 })

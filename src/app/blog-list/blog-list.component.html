@@ -2,7 +2,7 @@
 <app-navbar-v2></app-navbar-v2>
 <section class="blog-listing gray-bg">
     <div class="container">
-        <div class="row align-items-start">
+        <div class="row items-start">
             <div class="col-lg-8 m-15px-tb">
                 <div class="row">
                     <div class="col-sm-12" *ngFor="let blog of blogs?.data">
@@ -37,7 +37,7 @@
                     </div>
 
                     <div class="col-12">
-                        <ul class="pagination justify-content-center" *ngIf="totalPages > 1">
+                        <ul class="pagination justify-center" *ngIf="totalPages > 1">
 
                             <!-- Previous -->
                             <li class="page-item" [class.disabled]="currentPage === 1">
