@@ -170,6 +170,10 @@ export class TrademarkSearchComponent implements OnInit {
       property: 'og:description',
       content: `Run a free trademark search in India. Instantly check brand name availability, phonetic matches, and class-wise conflicts before trademark filing.`
     });
+    this.meta.updateTag({
+        property: 'og:image',
+        content: 'https://cms.trademarx.in/uploads/Chat_GPT_Image_Mar_9_2026_10_00_37_AM_66fd097b9a.jpg'
+      });
 
 
     if (isPlatformBrowser(this.platformId)) {

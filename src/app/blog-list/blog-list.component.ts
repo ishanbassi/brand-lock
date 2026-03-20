@@ -9,6 +9,7 @@ import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
 import { TopHeaderComponent } from '../top-header/top-header.component';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -33,12 +34,16 @@ export class BlogListComponent implements OnInit{
   constructor(
     private blogService: BlogService,
     private title:Title,
-    private meta:Meta
+    private meta:Meta,
+    private route: ActivatedRoute
   ) {}
 
 
    ngOnInit() {
-      this.loadBlogsByPage(1);
+    this.route.queryParams.subscribe(params => {
+    const page = params['page'] ? +params['page'] : 1;
+      this.loadBlogsByPage(page);
+    });
   }
      convertDateFromServer(blog: Blog): Blog {
       blog.data = blog.data.map(d => {

@@ -200,6 +200,7 @@ $radius-md:   12px;
   border-radius: $radius-sm;
   cursor: pointer;
   transition: background 0.12s;
+  text-decoration: none;
 
   &:hover,
   &.is-active {

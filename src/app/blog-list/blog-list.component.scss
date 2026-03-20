@@ -38,13 +38,13 @@
   position: absolute;
   background: #fc5356;
   color: #ffffff;
-  padding: 8px 15px;
+  padding: 4px 8px;
   left: 10px;
   top: 10px;
   border-radius: 4px;
 }
 .blog-grid .blog-img .date span {
-  font-size: 22px;
+  font-size: 18px;
   display: block;
   line-height: 22px;
   font-weight: 700;
@@ -60,7 +60,7 @@
   }
 }
 .blog-grid .blog-info h5 {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   margin: 0 0 10px;
 }
@@ -69,6 +69,9 @@
 }
 .blog-grid .blog-info p {
   margin: 0;
+  height:140px;
+  overflow-y: hidden;
+
 }
 .blog-grid .blog-info .btn-bar {
   margin-top: 20px;

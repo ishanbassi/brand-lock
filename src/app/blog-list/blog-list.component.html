@@ -5,7 +5,7 @@
         <div class="row items-start">
             <div class="col-lg-8 m-15px-tb">
                 <div class="row">
-                    <div class="col-sm-12" *ngFor="let blog of blogs?.data">
+                    <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let blog of blogs?.data">
                         <div class="blog-grid">
                             <div class="blog-img">
                                 <div class="date">
@@ -20,9 +20,9 @@
                                 <h5><a [routerLink]="'/blogs/'+blog.slug">{{blog.title}}</a></h5>
                                 <div class="blog-meta">
                                     <span class="author">{{blog.author}}</span>
-                                      <span class="divider">•</span>
+                                    <span class="divider">•</span>
                                     <span class="date">{{blog.createdAt?.format("DD MM YYYY")}}</span>
-                                      <span class="divider">•</span>
+                                    <span class="divider">•</span>
                                     <span class="category">{{blog.category}}</span>
                                 </div>
                                 <p>{{blog.excerpt}}</p>
@@ -37,28 +37,32 @@
                     </div>
 
                     <div class="col-12">
-                        <ul class="pagination justify-center" *ngIf="totalPages > 1">
+                        <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
 
                             <!-- Previous -->
-                            <li class="page-item" [class.disabled]="currentPage === 1">
-                                <a class="page-link" href="javascript:void(0)"
-                                    (click)="currentPage > 1 && loadBlogsByPage(currentPage - 1)">
-                                    <i class="fas fa-chevron-left"></i>
+                            <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
+                                <a [routerLink]="['/blogs']" [queryParams]="{ page: currentPage - 1 }"
+                                    class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-chevron-left text-sm"></i>
                                 </a>
                             </li>
 
                             <!-- Page numbers -->
-                            <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
-                                <a class="page-link" href="javascript:void(0)" (click)="loadBlogsByPage(page)">
+                            <li *ngFor="let page of pages">
+                                <a [routerLink]="['/blogs']" [queryParams]="{ page: page }"
+                                    [class]="page === currentPage 
+         ? 'flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white font-medium text-sm'
+         : 'flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm transition-colors'">
                                     {{ page }}
                                 </a>
                             </li>
 
                             <!-- Next -->
-                            <li class="page-item" [class.disabled]="currentPage === totalPages">
-                                <a class="page-link" href="javascript:void(0)"
-                                    (click)="currentPage < totalPages && loadBlogsByPage(currentPage + 1)">
-                                    <i class="fas fa-chevron-right"></i>
+                            <li [class.opacity-50]="currentPage === totalPages"
+                                [class.pointer-events-none]="currentPage === totalPages">
+                                <a [routerLink]="['/blogs']" [queryParams]="{ page: currentPage + 1 }"
+                                    class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-chevron-right text-sm"></i>
                                 </a>
                             </li>
 
@@ -73,8 +77,8 @@
 
 
                 <!-- Latest Post -->
-                 <app-recent-posts></app-recent-posts>
-                
+                <app-recent-posts></app-recent-posts>
+
                 <!-- End Latest Post -->
 
                 <!-- widget Tags -->
