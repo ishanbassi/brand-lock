@@ -166,6 +166,13 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
+
+    {
+        path: "submit-otp",
+        loadComponent: () => import('./submit-otp/submit-otp.component').then(m => m.SubmitOtpComponent),
+        title: "Submit OTP",
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
     {
         path: "**",
         redirectTo: "not-found"

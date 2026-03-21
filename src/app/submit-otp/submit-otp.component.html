@@ -1,0 +1,81 @@
+<div class="page">
+
+  <div class="card">
+
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="brand-text">OTP Portal</span>
+    </div>
+
+    <ng-container [ngSwitch]="status()">
+
+      <!-- IDLE / ERROR STATE — show form -->
+      <ng-container *ngSwitchDefault>
+        <p class="heading">Submit OTP</p>
+        <p class="sub">Enter the phone number and the OTP you received.</p>
+
+        <div class="field">
+          <label class="label">Phone number</label>
+          <input
+            class="input"
+            type="tel"
+            placeholder="9876543210"
+            [value]="phoneNumber()"
+            (input)="onPhoneInput($event)"
+            maxlength="10"
+          />
+        </div>
+
+        <div class="field">
+          <label class="label">OTP</label>
+          <input
+            class="input otp-input"
+            type="text"
+            inputmode="numeric"
+            placeholder="— — — — — —"
+            [value]="otp()"
+            (input)="onOtpInput($event)"
+            maxlength="6"
+            autocomplete="one-time-code"
+          />
+        </div>
+
+        <p class="error-msg" *ngIf="status() === 'error'">{{ message() }}</p>
+
+        <button
+          class="btn"
+          [class.btn-disabled]="!canSubmit"
+          [disabled]="!canSubmit"
+          (click)="submit()"
+        >
+          Submit OTP
+        </button>
+      </ng-container>
+
+      <!-- LOADING STATE -->
+      <ng-container *ngSwitchCase="'loading'">
+        <div class="state-block">
+          <div class="spinner"></div>
+          <p class="state-label">Submitting&hellip;</p>
+        </div>
+      </ng-container>
+
+      <!-- SUCCESS STATE -->
+      <ng-container *ngSwitchCase="'success'">
+        <div class="state-block">
+          <div class="tick-wrap">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polyline points="5,14 11,20 23,8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="state-label">{{ message() }}</p>
+          <p class="state-sub">Automation is continuing in the background.</p>
+          <button class="btn-ghost" (click)="reset()">Submit another</button>
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+  </div>
+
+</div>

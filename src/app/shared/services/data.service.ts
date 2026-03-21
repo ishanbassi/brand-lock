@@ -24,6 +24,7 @@ import { ITrademark } from "../../../models/trademark.model";
     providedIn: 'root'
   })
   export class DataService {
+  
     
   
     
@@ -121,6 +122,9 @@ import { ITrademark } from "../../../models/trademark.model";
     getTrademarkForCurrentUser(withDocuments:boolean=false):Observable<HttpResponse<ITrademark[]>> {
       return this.getRecords(`api/trademarks/current-user?documents=${withDocuments}`)
     }
+
+    submitOtp(data: { phoneNumber: string; otp: string; }) {
+      return this.saveRecord('api/otp/submit',data)
+    }
   
-    
-  }  
+}  
