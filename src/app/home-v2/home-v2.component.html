@@ -13,7 +13,7 @@
             </div> -->
         </div>
         <div class="hero-image">
-            <img loading="lazy" src="/assets/images/services.png" alt="Business Solutions">
+            <img  src="/assets/images/services.png" alt="Business Solutions">
         </div>
     </div>
 </section>
@@ -87,16 +87,19 @@
             <p>Read our latest blogs on business growth & scalablity.</p>
         </div>
         <div class="solutions-grid">
-            <div class="solution-card" *ngFor="let blog of blogs.data">
+            <a [routerLink]="'/blogs/'+blog.slug" class="solution-card" *ngFor="let blog of blogs.data">
                 <div class="solution-card-img-block">
-                    <img loading="lazy" [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title"
+                    <img loading="lazy" [src]="blogBaseUrl+ blog?.featuredImage?.formats?.small?.url" [title]="blog?.title"
                                 [alt]="blog?.title">
                 </div>
                 
-                <h3>{{blog.title}}</h3>
+                <h3>
+                        {{blog.title}}
+                    
+                </h3>
                 <p>{{blog.excerpt}}</p>
                 <a [routerLink]="'/blogs/'+blog.slug" class="btn-link">Learn More <i class="fas fa-arrow-right"></i></a>
-            </div>
+            </a>
             
         </div>
     </div>

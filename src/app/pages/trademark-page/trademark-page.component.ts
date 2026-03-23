@@ -16,7 +16,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BlogData } from '../../../models/blog.model';
+import { Blog, BlogData } from '../../../models/blog.model';
 import { LeadFormService } from '../../../models/lead-form.service';
 import { NewLead } from '../../../models/lead.model';
 import { BlogMarkdownComponent } from '../../blog-markdown/blog-markdown.component';
@@ -41,6 +41,7 @@ import { TopHeaderComponent } from '../../top-header/top-header.component';
 import { TrademarkPlanCardsComponent } from '../../trademark-plan-cards/trademark-plan-cards.component';
 import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
 import { HomeService } from './home.service';
+import dayjs from 'dayjs/esm';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -99,6 +100,8 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   
   private isBrowser: boolean;
   blog?: BlogData;
+  blogs?: Blog;
+
   blogBaseUrl = `${environment.BaseBlogUrl}`;
   planTypeSubject = new Subject();
 
@@ -157,12 +160,12 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
       this.utmTerm = params['utm_term'];
       this.utmContent = params['utm_content'];
     })
+    this.blogService.getLatestBlogsByCategory(3,"Trademark Registration").subscribe(res => this.blogs = res);
 
     this.blogService.getBlogBySlug("online-trademark-registration-process-in-india").subscribe(res => {
       this.blog = res?.data[0];
       if (!this.blog) return;
-    })
-; 
+    }); 
   }
   
   @HostListener('window:scroll', [])
@@ -335,6 +338,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
   showLimitedOfferDialog() {
     this.dialog.open(LimitedOfferDialogComponent, {hasBackdrop:true})
   }
+  
 
 
 }

@@ -13,7 +13,7 @@
                                     <label>{{blog.createdAt?.format('MMM')}}</label>
                                 </div>
                                 <a [routerLink]="'/blogs/'+blog.slug">
-                                    <img loading="lazy" [src]="blogBaseUrl+ blog.featuredImage?.url" title="" alt="">
+                                    <img  [src]="blogBaseUrl+ blog.featuredImage?.formats?.thumbnail?.url" title="" alt="">
                                 </a>
                             </div>
                             <div class="blog-info">

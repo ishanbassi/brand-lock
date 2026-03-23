@@ -765,6 +765,9 @@ body {
 .solution-card h3 {
     padding: 2rem 2rem 0.5rem;
     font-size: 1.5rem;
+    color: initial;
+
+    
 }
 
 .solution-card p {
@@ -776,7 +779,7 @@ body {
     display: inline-block;
     padding: 0 2rem 2rem;
     color: var(--primary-color);
-    text-decoration: none;
+    text-decoration: none !important;
     font-weight: 500;
     transition: var(--transition);
 }

@@ -10,7 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { BlogData } from '../../models/blog.model';
+import { Blog, BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
 import { IsoCertificationProcessList } from '../enums/IsoCertificationProcessList';
 import { isoFaqs } from '../enums/isoFaq';
@@ -41,6 +41,8 @@ export class Iso9001Component {
   blogBaseUrl = `${environment.BaseBlogUrl}`;
   isoCertificationProcessList = IsoCertificationProcessList;
   faqs = isoFaqs;
+  blogs?: Blog;
+  
   private utmSource:string = '';
   private utmMedium:string = '';
   private utmCampaign: string = '';
@@ -68,6 +70,8 @@ export class Iso9001Component {
       this.utmTerm = params['utm_term'];
       this.utmContent = params['utm_content'];
     })
+
+    this.blogService.getLatestBlogsByCategory(3,"ISO certifications").subscribe(res => this.blogs = res);
 
     this.blogService.getBlogBySlug("iso-9001-2015-certification-complete-guide-for-businesses-in-india").subscribe(res => {
       this.blog = res?.data[0];

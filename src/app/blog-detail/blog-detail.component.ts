@@ -51,6 +51,7 @@ export class BlogDetailComponent implements OnInit {
       if (!this.blog) return;
       this.blog = this.convertDateFromServer(this.blog);
       // SEO
+      console.log(this.blogBaseUrl+this.blog.featuredImage.url)
       this.title.setTitle(this.blog.title);
       this.meta.updateTag({ name: 'description', content: this.blog.excerpt });
       this.meta.updateTag({
@@ -67,6 +68,13 @@ export class BlogDetailComponent implements OnInit {
         property: 'og:image',
         content: this.blogBaseUrl+this.blog.featuredImage.url
       });
+      this.meta.updateTag({
+        property: 'og:image:secure_url',
+        content: this.blogBaseUrl+this.blog.featuredImage.url
+      });
+      
+      
+      
 
       this.meta.updateTag({
         property: 'og:type',
