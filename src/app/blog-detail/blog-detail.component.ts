@@ -14,7 +14,7 @@ import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [RouterLink, SharedModule,  BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
+  imports: [RouterLink, SharedModule, BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })
@@ -22,7 +22,7 @@ export class BlogDetailComponent implements OnInit {
 
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
-  collapsed=false;
+  collapsed = false;
   previewCount = 4;
   showAll = false;
   private isBrowser = false;
@@ -40,7 +40,7 @@ export class BlogDetailComponent implements OnInit {
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) { 
+  ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
@@ -51,7 +51,6 @@ export class BlogDetailComponent implements OnInit {
       if (!this.blog) return;
       this.blog = this.convertDateFromServer(this.blog);
       // SEO
-      console.log(this.blogBaseUrl+this.blog.featuredImage.url)
       this.title.setTitle(this.blog.title);
       this.meta.updateTag({ name: 'description', content: this.blog.excerpt });
       this.meta.updateTag({
@@ -63,26 +62,41 @@ export class BlogDetailComponent implements OnInit {
         property: 'og:description',
         content: this.blog.excerpt
       });
-      
+
+
       this.meta.updateTag({
         property: 'og:image',
-        content: this.blogBaseUrl+this.blog.featuredImage.url
+        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.url
+      });
+      this.meta.updateTag({
+        property: 'og:image:type',
+        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.mime
       });
       this.meta.updateTag({
         property: 'og:image:secure_url',
-        content: this.blogBaseUrl+this.blog.featuredImage.url
+        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.url
       });
-      
-      
-      
+      if (this.blog.featuredImage.formats.small?.width) {
+        this.meta.updateTag({
+          property: 'og:image:width',
+          content: this.blog.featuredImage.formats.small.width.toString()
+        });
+      }
+      if (this.blog.featuredImage.formats.small?.height) {
+        this.meta.updateTag({
+          property: 'og:image:height',
+          content: this.blog.featuredImage.formats.small.height.toString()
+        });
+
+      }
 
       this.meta.updateTag({
         property: 'og:type',
         content: 'article'
       });
-      if (isPlatformBrowser(this.platformId)){
-          const url = this.document.location.href;
-          this.meta.updateTag({
+      if (isPlatformBrowser(this.platformId)) {
+        const url = this.document.location.href;
+        this.meta.updateTag({
           property: 'og:url',
           content: url
         });
@@ -108,49 +122,49 @@ export class BlogDetailComponent implements OnInit {
       .replace(/\s+/g, '-');
   }
 
-  toc: { id: string; text: string; level: number, active?: boolean, expanded:boolean; children:any[] }[] = [];
+  toc: { id: string; text: string; level: number, active?: boolean, expanded: boolean; children: any[] }[] = [];
 
   buildTOC() {
-  this.toc = [];
+    this.toc = [];
 
-  const headings = document.querySelectorAll(
-    '.blog-content h2, .blog-content h3'
-  );
+    const headings = document.querySelectorAll(
+      '.blog-content h2, .blog-content h3'
+    );
 
-  let currentParent: any = null;
+    let currentParent: any = null;
 
-  headings.forEach((heading: Element) => {
-    const text = heading.textContent?.trim() || '';
-    if (!text) return;
+    headings.forEach((heading: Element) => {
+      const text = heading.textContent?.trim() || '';
+      if (!text) return;
 
-    const id = this.slugify(text);
-    heading.setAttribute('id', id);
+      const id = this.slugify(text);
+      heading.setAttribute('id', id);
 
-    const level = heading.tagName === 'H2' ? 2 : 3;
+      const level = heading.tagName === 'H2' ? 2 : 3;
 
-    if (level === 2) {
-      // New parent item
-      currentParent = {
-        id,
-        text,
-        level: 2,
-        expanded: true,
-        children: []
-      };
+      if (level === 2) {
+        // New parent item
+        currentParent = {
+          id,
+          text,
+          level: 2,
+          expanded: true,
+          children: []
+        };
 
-      this.toc.push(currentParent);
-    }
+        this.toc.push(currentParent);
+      }
 
-    if (level === 3 && currentParent) {
-      // Child of last H2
-      currentParent.children.push({
-        id,
-        text,
-        level: 3
-      });
-    }
-  });
-}
+      if (level === 3 && currentParent) {
+        // Child of last H2
+        currentParent.children.push({
+          id,
+          text,
+          level: 3
+        });
+      }
+    });
+  }
 
   @HostListener('window:scroll')
   onScroll() {
@@ -167,7 +181,7 @@ export class BlogDetailComponent implements OnInit {
   onMarkdownReady() {
     if (!isPlatformBrowser(this.platformId)) return;
     this.buildTOC();
-}
+  }
 
 
 

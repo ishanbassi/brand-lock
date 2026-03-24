@@ -44,6 +44,48 @@ export class BlogListComponent implements OnInit{
     const page = params['page'] ? +params['page'] : 1;
       this.loadBlogsByPage(page);
     });
+
+          // SEO
+      this.title.setTitle("Trademark Blog | ISO, Trademark Search Tips, Brand Protection & Legal Guides");
+      this.meta.updateTag({ name: 'description', content: "Explore expert guides on trademark search, brand name availability, trademark registration, and IP protection. Learn how to avoid conflicts and secure your brand with Trademarx." });
+      this.meta.updateTag({
+        property: 'og:title',
+        content: "Trademark Blog | ISO, Trademark Search Tips, Brand Protection & Legal Guides"
+      });
+
+      this.meta.updateTag({
+        property: 'og:description',
+        content: "Explore expert guides on trademark search, brand name availability, trademark registration, and IP protection. Learn how to avoid conflicts and secure your brand with Trademarx."
+      });
+
+
+      this.meta.updateTag({
+        property: 'og:image',
+        content: '/assets/images/services.jpg'
+      });
+      
+      this.meta.updateTag({
+        property: 'og:image:secure_url',
+        content: '/assets/images/services.jpg'
+      });
+      this.meta.updateTag({
+          property: 'og:image:width',
+          content: '1536'
+        });
+        this.meta.updateTag({
+          property: 'og:image:height',
+          content: '1024`'
+        });
+      
+      
+        
+
+      
+
+      this.meta.updateTag({
+        property: 'og:type',
+        content: 'article'
+      });
   }
      convertDateFromServer(blog: Blog): Blog {
       blog.data = blog.data.map(d => {
