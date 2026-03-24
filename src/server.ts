@@ -11,6 +11,10 @@ import { environment } from './environments/environment';
 import { Blog } from './models/blog.model';
 import path from 'path';
 import fs from 'fs';
+import { createProxyMiddleware } from 'http-proxy-middleware'; // option A
+import * as https from 'https';
+import * as http from 'http';
+
 let staticUrls: string[] = []
 
 
@@ -115,7 +119,39 @@ Allow: /
 Sitemap: https://trademarx.in/sitemap.xml
 `);
 });
+app.get('/og-image-proxy', (req, res) => {
+  const imageUrl = req.query['src'] as string;
+  if (!imageUrl) {
+     res.status(400).send('Missing src parameter');
+  }
 
+  // Security: only allow your CMS subdomain
+  const allowedHosts = [environment.BaseBlogUrl];
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(imageUrl);
+  } catch {
+     res.status(400).send('Invalid URL');
+     return;
+  }
+  console.log(allowedHosts, parsedUrl)
+  if (!allowedHosts.some(host => host.includes(host))) {
+     res.status(403).send('Forbidden host');
+  }
+
+  const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+  protocol.get(imageUrl, (imageRes) => {
+    // Forward content-type and cache headers
+    res.setHeader('Content-Type', imageRes.headers['content-type'] || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // cache 1 day
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    imageRes.pipe(res);
+  }).on('error', () => {
+    res.status(500).send('Failed to fetch image');
+  });
+});
 
 
 /**

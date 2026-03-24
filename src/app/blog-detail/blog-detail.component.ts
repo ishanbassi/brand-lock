@@ -22,6 +22,7 @@ export class BlogDetailComponent implements OnInit {
 
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
+  baseUrl = `${environment.BaseUrl}`;
   collapsed = false;
   previewCount = 4;
   showAll = false;
@@ -48,6 +49,22 @@ export class BlogDetailComponent implements OnInit {
     const slug = this.route.snapshot.paramMap.get('slug')!;
     this.blogService.getBlogBySlug(slug).subscribe(res => {
       this.blog = res?.data[0];
+
+      const cmsImageUrl = this.blogBaseUrl + this.blog!.featuredImage.formats.small?.url;
+      if (cmsImageUrl) {
+        const proxiedUrl = `${this.baseUrl}/og-image-proxy?src=${encodeURIComponent(cmsImageUrl)}`;
+        this.meta.updateTag({
+          property: 'og:image',
+          content: proxiedUrl
+        });
+
+        this.meta.updateTag({
+          property: 'og:image:secure_url',
+          content: proxiedUrl
+        });
+      }
+
+
       if (!this.blog) return;
       this.blog = this.convertDateFromServer(this.blog);
       // SEO
@@ -64,18 +81,13 @@ export class BlogDetailComponent implements OnInit {
       });
 
 
-      this.meta.updateTag({
-        property: 'og:image',
-        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.url
-      });
-      this.meta.updateTag({
-        property: 'og:image:type',
-        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.mime
-      });
-      this.meta.updateTag({
-        property: 'og:image:secure_url',
-        content: this.blogBaseUrl + this.blog.featuredImage.formats.small?.url
-      });
+
+      if (this.blog.featuredImage.formats.small?.mime) {
+        this.meta.updateTag({
+          property: 'og:image:type',
+          content: this.blog.featuredImage.formats.small?.mime
+        });
+      }
       if (this.blog.featuredImage.formats.small?.width) {
         this.meta.updateTag({
           property: 'og:image:width',

@@ -74,7 +74,7 @@ export class BlogListComponent implements OnInit{
         });
         this.meta.updateTag({
           property: 'og:image:height',
-          content: '1024`'
+          content: '1024'
         });
       
       
