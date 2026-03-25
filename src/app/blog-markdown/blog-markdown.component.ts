@@ -42,9 +42,7 @@ export class BlogMarkdownComponent {
     
     // Define strategic positions
     const positions = [
-        Math.floor(totalParagraphs * 0.33), // After 1/3 of content
         Math.floor(totalParagraphs * 0.66), // After 2/3 of content
-        Math.floor(totalParagraphs * 0.9)  // Near the end
     ];
     
     positions.forEach(position => {
