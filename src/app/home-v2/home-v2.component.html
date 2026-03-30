@@ -7,10 +7,12 @@
         <div class="hero-content">
             <h1>One Platform for All Your Business</h1>
             <p>We simplify trademarks, ISO certifications, MSME registration, and import–export compliance—so you can focus on scaling your business without legal hassles.</p>
-            <!-- <div class="cta-buttons">
-                <a href="#contact" class="btn primary">Get Started</a>
-                <a href="#services" class="btn secondary">Learn More</a>
-            </div> -->
+            <div class="cta-buttons">
+                <a routerLink="/search" class="btn primary">Find your Trademark</a>
+                <a routerLink="/trademark" class="btn secondary">Apply Trademark</a>
+                <!-- <a routerLink="/search" class="btn primary">Trademark Search</a> -->
+
+            </div>
         </div>
         <div class="hero-image">
             <img  src="/assets/images/services.jpg" alt="Business Solutions">
@@ -149,33 +151,25 @@
                     <i class="fas fa-phone"></i>
                     <div>
                         <h3>Phone</h3>
-                        <p>+91 987-898-7497</p>
-                        <p>+91 623-977-1006</p> 
+                        <a href="tel:+919878987497">+91 98789-87497</a>
+                        <a href="tel:+916239771006">+91 62397-71006</a> 
                     </div>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-envelope"></i>
                     <div>
                         <h3>Email</h3>
-                        <p>support&#64;trademarx.in</p>
+                        <a href="mailto:suppport@trademarx.in">support&#64;trademarx.in</a>
                     </div>
                 </div>
             </div>
-            <form class="contact-form">
-                <div class="form-group">
-                    <input type="text" placeholder="Your Name" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" placeholder="Your Email" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" placeholder="Company Name">
-                </div>
-                <div class="form-group">
-                    <textarea placeholder="Your Message" required></textarea>
-                </div>
-                <button type="submit" class="btn primary">Send Message</button>
-            </form>
+            <app-lead-form
+            [heading]="'Have any Questions?'"
+            [showTextArea]="true"
+            [cta]="'Send Message'"
+            >
+
+            </app-lead-form>
         </div>
     </div>
 </section>

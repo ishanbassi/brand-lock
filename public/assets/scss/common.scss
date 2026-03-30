@@ -298,19 +298,20 @@ body {
 }
 
 .contact-info a {
-    color: white;
+    color: initial;
+
     text-decoration: none;
     margin-right: 2rem;
     transition: var(--transition);
 }
 
 .contact-info a:hover {
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 
 .contact-info i {
     margin-right: 0.5rem;
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 
 .social-links a {
@@ -322,7 +323,7 @@ body {
 }
 
 .social-links a:hover {
-    color: var(--accent-color);
+    color: var(--primary-color);
     transform: translateY(-2px);
 }
 
@@ -887,10 +888,11 @@ body {
 
 .contact-content {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
     gap: 5rem;
     position: relative;
     z-index: 1;
+    align-items: center;
 }
 
 .contact-info {

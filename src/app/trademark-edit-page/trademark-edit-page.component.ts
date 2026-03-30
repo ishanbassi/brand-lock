@@ -9,26 +9,25 @@ import { Form, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { DocumentsFormService } from '../shared/services/documents-form.service';
 import { IDocuments, NewFormDocument } from '../../models/documents.model';
 import { DataUtils } from '../shared/services/data-util.service';
 import { MatOption } from '@angular/material/autocomplete';
-import { DocumentType, DocumentTypeValues } from '../enumerations/document-type.model';
+import { DocumentType } from '../enumerations/document-type.model';
 import { MatSelect } from '@angular/material/select';
 import { UploadDocumentComponent } from '../upload-document/upload-document.component';
 import { TrademarkType } from '../enumerations/trademark-type.model';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { OrganizationTypeValues } from '../enumerations/organization-type.model';
-import { NgxMaskDirective } from 'ngx-mask';
 import { PhoneInputComponent } from '../phone-input/phone-input.component';
 
 @Component({
   selector: 'app-trademark-edit-page',
-  imports: [ReactiveFormsModule,MatFormField, SharedModule, MatInputModule, MatInputModule, MatIcon, MatIconModule ,MatOption,MatSelect,UploadDocumentComponent,MatButton,
-    PhoneInputComponent,
-    NgxMaskDirective],
+  imports: [ReactiveFormsModule,MatFormField, SharedModule, MatInputModule, MatInputModule, MatIconModule ,MatOption,MatSelect,UploadDocumentComponent,MatButton,
+    PhoneInputComponent
+    ],
   templateUrl: './trademark-edit-page.component.html',
   styleUrl: './trademark-edit-page.component.scss'
 })

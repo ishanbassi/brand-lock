@@ -16,7 +16,7 @@ import { finalize, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-lead-form',
-  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon,MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatProgressSpinnerModule,PhoneInputComponent,MatIcon],
   templateUrl: './lead-form.component.html',
   styleUrl: './lead-form.component.scss'
 })
@@ -25,24 +25,25 @@ export class LeadFormComponent implements OnInit {
   onClickValidation: boolean = false;
   isSubmitting: boolean = false;
   isNavSubmitting: boolean = false;
-  @Input() heading:string = 'Apply Now';
-  @Input() cta:string = 'Apply Now';
+  @Input() heading: string = 'Apply Now';
+  @Input() cta: string = 'Apply Now';
   @Input() comments = "";
-  @Input() planTypeSubject?:Subject<any>;
+  @Input() showTextArea = false;
+  @Input() planTypeSubject?: Subject<any>;
   @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
 
   constructor(
     private readonly leadFormService: LeadFormService,
     private readonly toastService: ToastrService,
-    private readonly loadingService:LoadingService,
+    private readonly loadingService: LoadingService,
     private readonly leadService: LeadService,
     private readonly localStorageService: LocalStorageService,
     private readonly sessionStorageService: SessionStorageService,
-    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
-    
-  ){}
+    private readonly googleConversionTrackingService: GoogleConversionTrackingService,
+
+  ) { }
   ngOnInit(): void {
-      this.planTypeSubject?.subscribe(planType => {
+    this.planTypeSubject?.subscribe(planType => {
       this.ctaForm.get('selectedPackage')?.setValue(planType);
       this.focusOnCtaForm();
     })
@@ -65,18 +66,25 @@ export class LeadFormComponent implements OnInit {
   }
 
   saveLead(form: FormGroup) {
-      this.addValidationsToFormAndValidate(form);
-      if (!form.valid) {
-        this.isSubmitting = false;
-        this.isNavSubmitting = false;
-        return;
-      }
+    this.addValidationsToFormAndValidate(form);
+    if (!form.valid) {
+      this.isSubmitting = false;
+      this.isNavSubmitting = false;
+      return;
+    }
+    // setting phone number
       form.patchValue({
-        "comments":this.comments
+        "phoneNumber":form.value['phoneNumber']?.number
       })
-      const lead = this.leadFormService.getLead(form) as NewLead;
-      this.loadingService.show();
-      this.leadService.create(lead)
+    if (!this.showTextArea && this.comments?.slice() != "") {
+      form.patchValue({
+        "comments": this.comments
+      })
+    }
+
+    const lead = this.leadFormService.getLead(form) as NewLead;
+    this.loadingService.show();
+    this.leadService.create(lead)
       .pipe(finalize(() => {
         this.isSubmitting = false;
         this.isNavSubmitting = false;
@@ -85,44 +93,48 @@ export class LeadFormComponent implements OnInit {
       }))
       .subscribe({
         next: (newLead) => {
-            this.sessionStorageService.setObject('lead', newLead.body);
-            this.toastService.success("Thank you for your submission! One of our team members will contact you soon.");
-            console.log("Form successfully submitted");
-            this.trackConversion();
-            // this.router.navigateByUrl("trademark-registration/step-2");
-            
-            
-          },  
-          error: (err) => {
-            this.toastService.error("There were some issues while submitting the detils. Please try later.");
-          }
+          this.sessionStorageService.setObject('lead', newLead.body);
+          this.toastService.success("Thank you for your submission! One of our team members will contact you soon.");
+          console.log("Form successfully submitted");
+          this.trackConversion();
+          // this.router.navigateByUrl("trademark-registration/step-2");
+
+
+        },
+        error: (err) => {
+          this.toastService.error("There were some issues while submitting the details. Please try later.");
+        }
       });
-    }
-    addValidationsToFormAndValidate(form: FormGroup<any>) {
+  }
+  addValidationsToFormAndValidate(form: FormGroup<any>) {
     form.get('fullName')?.setValidators([Validators.required]);
     form.get('email')?.setValidators([Validators.required, Validators.pattern("[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$")]);
-    form.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern("[0-9]{10}")]);
-
+    form.get('phoneNumber')?.setValidators([Validators.required]);
+    
     // Recalculate validity with new validators
     form.get('fullName')?.updateValueAndValidity();
     form.get('email')?.updateValueAndValidity();
     form.get('phoneNumber')?.updateValueAndValidity();
+    if(this.showTextArea){
+      form.get('comments')?.setValidators([Validators.required]);
+      form.get('comments')?.updateValueAndValidity();
+    }
     form.markAllAsTouched();
 
   }
   trackConversion() {
-    this.googleConversionTrackingService.reportLeadFormSubmit(); 
+    this.googleConversionTrackingService.reportLeadFormSubmit();
   }
 
   resetFormValidations(formGroup: FormGroup<any>) {
-      formGroup.reset();
-      Object.keys(formGroup.controls).forEach(controlName => {
-        formGroup.get(controlName)?.clearValidators();
-        formGroup.get(controlName)?.updateValueAndValidity();
-      });
-    }
+    formGroup.reset();
+    Object.keys(formGroup.controls).forEach(controlName => {
+      formGroup.get(controlName)?.clearValidators();
+      formGroup.get(controlName)?.updateValueAndValidity();
+    });
+  }
 
-    
+
   focusOnCtaForm() {
     if (this.ctaFormElement) {
       const firstInput = this.ctaFormElement.nativeElement.querySelector('input');

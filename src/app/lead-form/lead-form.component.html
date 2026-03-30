@@ -11,10 +11,9 @@
                                 </h1>
                             </div>
                             <div class=" form-input-container">
-                                <label for="name" class="form-labels">Name</label>
 
                                 <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Full Name" name="fullName" #fullName id="name"
+                                    <input matInput placeholder="Your Name" name="fullName" #fullName id="name"
                                         formControlName="fullName">
                                         <mat-icon matPrefix>person</mat-icon>
                                 </mat-form-field>
@@ -22,10 +21,9 @@
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <div class=" form-input-container">
-                                <label for="email" class="form-labels">Email</label>
         
                                 <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Email" name="email" #email id="email"
+                                    <input matInput placeholder="Your Email" name="email" #email id="email"
                                         formControlName="email">
                                         <mat-icon matPrefix>email</mat-icon>
                                 </mat-form-field>
@@ -33,19 +31,22 @@
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <div class=" form-input-container">
-                                <label for="phoneNumber" class="form-labels">Phone Number</label>
+                                <app-phone-input [control]="ctaForm.controls['phoneNumber']"></app-phone-input>
+                                
+                                <app-validation-message [field]="ctaForm.get('phoneNumber')"
+                                    [onClickValidation]="onClickValidation"></app-validation-message>
+                            </div>
+                            <div class=" form-input-container" *ngIf="showTextArea">
                                 <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Phone Number" name="phoneNumber" #phoneNumber id="phoneNumber"
-                                        formControlName="phoneNumber" mask="0000000000">
-                                        <mat-icon matPrefix>phone</mat-icon>
+                                    <textarea matInput placeholder="Your Message" name="comments" #comments id="comments"
+                                        formControlName="comments" ></textarea>
                                         
                                 </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('phoneNumber')"
+                                <app-validation-message [field]="ctaForm.get('comments')"
                                     [onClickValidation]="onClickValidation"></app-validation-message>
                             </div>
                             <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
                                 <span>{{cta}}</span>
-                                <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
                             </button>
         
                         </form>

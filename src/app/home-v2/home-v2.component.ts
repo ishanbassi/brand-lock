@@ -9,15 +9,14 @@ import { Blog } from '../../models/blog.model';
 import { environment } from '../../environments/environment';
 import { BlogService } from '../shared/services/blog-service.service';
 import { Meta, Title } from '@angular/platform-browser';
-import { LeadFormService } from '../../models/lead-form.service';
-import { ToastrService } from 'ngx-toastr';
 import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
+import { LeadFormComponent } from '../lead-form/lead-form.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component,RatingReviewComponent,DashboardHeaderComponent, SharedModule,CountUpDirective],
+  imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component,RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })
