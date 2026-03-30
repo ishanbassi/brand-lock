@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { NewLead } from '../../models/lead.model';
 import { finalize, Subject } from 'rxjs';
+import { PhoneInputComponent } from '../phone-input/phone-input.component';
 
 @Component({
   selector: 'app-lead-form',
