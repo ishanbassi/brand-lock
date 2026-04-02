@@ -1,0 +1,106 @@
+<div class="">
+  <div class="pulse-bar">
+
+    <div class="pulse-stat">
+      <span class="pulse-label">
+        <span class="live-dot" aria-hidden="true"></span>
+        Filed Today
+      </span>
+      <span class="pulse-value">
+        {{ stats?.applicationsFiled| number }}
+      </span>
+      <span class="pulse-sub">Updated {{timeLabel(stats?.lastUpdated)}}</span>
+    </div>
+
+    <div class="pulse-divider" aria-hidden="true"></div>
+    <!-- 
+  <div class="pulse-stat">
+    <span class="pulse-label">In Our Database</span>
+    <span class="pulse-value">{{ stats.inDatabase | number }}</span>
+    <span class="pulse-sub">fetched today · most recent first</span>
+  </div> -->
+
+
+    <div class="pulse-stat">
+      <span class="pulse-label">Total</span>
+      <span class="pulse-value">{{ stats?.totalTrademarks?.toLocaleString('en-IN') }}</span>
+      <span class="pulse-sub">trademarks across all classes</span>
+    </div>
+
+  </div>
+
+
+  <!-- ── 2. Latest Applications ────────────────────────────── -->
+  <div class="section-header">
+    <h2 class="section-title">Latest Applications</h2>
+    
+    <!-- <a class="section-link" [routerLink]="['/recent-trademarks']">View all →</a> -->
+  </div>
+
+  <div class="tm-grid">
+    <a class="tm-card" *ngFor="let tm of stats?.recentFilings; let i = index" [routerLink]="tm.url"
+      [style.animation-delay]="(i * 60) + 'ms'">
+      <div class="tm-app-no">App #{{ tm.applicationNo }}</div>
+      <div class="tm-name">{{ tm.name }}</div>
+      <div class="tm-meta">
+        <span class="tag tag--class">{{classLabel(tm.tmClass) }}</span>
+        <span class="tag" [ngClass]="statusClass(tm.trademarkStatus)">{{ tm.trademarkStatus }}</span>
+        <span class="tm-time">{{ timeLabel(tm.createdDate) }}</span>
+      </div>
+    </a>
+  </div>
+
+
+  <!-- ── 3. Today's Breakdown ──────────────────────────────── -->
+  <!-- <div class="section-header">
+  <h2 class="section-title">Today's Breakdown</h2>
+</div> -->
+
+  <!-- <div class="stats-row">
+
+  <div class="stat-card">
+    <div class="stat-card-value">{{ stats.topClass }}</div>
+    <div class="stat-card-label">Top class today</div>
+    <div class="stat-card-sub">{{ stats.topClassName }}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-value">{{ stats.acceptanceRate }}%</div>
+    <div class="stat-card-label">Acceptance rate</div>
+    <div class="stat-card-sub">of fetched applications</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-value">{{ stats.topState }}</div>
+    <div class="stat-card-label">Top filing state</div>
+    <div class="stat-card-sub">Maharashtra</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-value">Wk {{ stats.journalWeek }}</div>
+    <div class="stat-card-label">Current journal</div>
+    <div class="stat-card-sub">{{ stats.journalYear }}</div>
+  </div>
+
+</div> -->
+
+
+  <!-- ── 4. Journal Banner ──────────────────────────────────── -->
+  <!-- <a
+  class="journal-banner"
+  [routerLink]="['/trademark-journal', 'week-' + stats.journalWeek + '-' + stats.journalYear]"
+>
+  <div class="journal-banner-left">
+    <div class="journal-eyebrow">Latest Publication</div>
+    <div class="journal-title">
+      Trademark Journal — {{ stats.currentJournal }}
+    </div>
+    <div class="journal-sub">
+      {{ stats.journalCount }} trademarks published ·
+      Opposition deadline: {{ stats.oppositionDeadline }}
+    </div>
+  </div>
+  <span class="journal-cta" aria-hidden="true">Browse Journal →</span>
+</a> -->
+
+</div>

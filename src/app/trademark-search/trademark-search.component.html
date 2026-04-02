@@ -43,7 +43,7 @@
             <div class="card-header">
               <div class="trademark-image">
                 <img
-                  [src]="trademark.imgUrl ? baseUrl + 'files/files/' + trademark.imgUrl : '/assets/images/trademark.png'"
+                  [src]="trademark.imgUrl ? baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png'"
                   alt="">
               </div>
 
@@ -231,15 +231,15 @@
 <!-- <app-footer-v2></app-footer-v2> -->
 <ng-template #elseBlock>
   <div class="main-search-page">
-    <div class="search-page">
+    <div class="">
+      <div class="search-page">
       <div class="search-page-overlay"></div>
 
       <div class="search-page-content">
         <div class="search-header">
           <h1 class="search-title">Free Trademark Search in India</h1>
           <p class="search-subtitle">
-            Instantly check if your brand name is available. Get detailed report and file your trademark on the same
-            day!
+            Latest trademark applications for accurate trademark search, updated every hour.
           </p>
         </div>
 
@@ -247,7 +247,7 @@
           <app-live-search></app-live-search>
         </div>
         <!-- Statistics Bar -->
-        <section class="stats-section">
+        <!-- <section class="stats-section">
           <div class="container">
             <div class="stats-grid">
               <div class="stat-card" *ngFor="let stat of statistics; trackBy: trackByIndex"
@@ -279,17 +279,14 @@
               </div>
             </div>
           </div>
-        </section>
+        </section> -->
+        <app-trademark-pulse></app-trademark-pulse>
 
-        <!-- <div class="search-suggestions">
-        <span class="suggestion-label">Popular searches:</span>
-        <button class="suggestion-chip" type="button">Angular</button>
-        <button class="suggestion-chip" type="button">React</button>
-        <button class="suggestion-chip" type="button">TypeScript</button>
-        <button class="suggestion-chip" type="button">Node.js</button>
-      </div> -->
+        
       </div>
     </div>
+    </div>
+    
 
   </div>
 

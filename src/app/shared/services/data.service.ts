@@ -16,9 +16,10 @@ import { ILead } from "../../../models/lead.model";
 import { Account } from "../../../models/account.model";
 import { JwtToken } from "../../../models/jwt.token";
 import { IUserProfile } from "../../../models/user-profile.model";
-import { DashboardStats } from "../../../models/dashboard-stats.model";
+import { DashboardStats, StatsDTO } from "../../../models/dashboard-stats.model";
 import { ResetPassword } from "./reset.password";
 import { ITrademark } from "../../../models/trademark.model";
+import { TrademarkStats } from "../../../models/trademark-stats.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -125,6 +126,10 @@ import { ITrademark } from "../../../models/trademark.model";
 
     submitOtp(data: { phoneNumber: string; otp: string; }) {
       return this.saveRecord('api/otp/submit',data)
+    }
+
+    getTrademarkDailyStats():Observable<HttpResponse<TrademarkStats>>{
+      return this.getRecords("api/trademarks/daily-stats");
     }
   
 }  

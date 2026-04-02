@@ -26,7 +26,7 @@ export interface FAQ {
   styleUrl: './trademark-search-content.component.scss'
 })
 export class TrademarkSearchContentComponent {
-  @Output() searchTrademark:EventEmitter<boolean> = new EventEmitter()
+  @Output() searchTrademark: EventEmitter<boolean> = new EventEmitter()
   benefits: Benefit[] = [
     {
       icon: 'shield',
@@ -97,11 +97,11 @@ export class TrademarkSearchContentComponent {
       label: 'Available',
     },
     {
-      title: 'Affordable Pricing',
-      description: 'Professional trademark services starting at just ₹999.',
-      metric: '₹999',
-      label: 'Starting at',
-    },
+      title: 'Real-Time Trademark Updates',
+      description: 'We update the latest trademarks every hour to keep you ahead.',
+      metric: '1 Hr',
+      label: 'Update Frequency',
+    }
   ];
 
   faqs: FAQ[] = [
@@ -135,10 +135,10 @@ export class TrademarkSearchContentComponent {
     return index;
   }
 
-  onSearchTrademark(){
-      this.searchTrademark.emit(true);
+  onSearchTrademark() {
+    this.searchTrademark.emit(true);
   }
 
-  
+
 
 }

@@ -43,7 +43,8 @@ export interface ITrademark {
   documents?: Pick<IDocuments, 'id'| 'documentType'>[] | null;
   url?:string;
   faqs?:{question:string;answer:string;opened:boolean}[];
-  slug?:string
+  slug?:string;
+
   
 
 

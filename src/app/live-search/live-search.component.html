@@ -51,7 +51,7 @@
         [class.is-active]="activeIndex === i" (mouseenter)="activeIndex = i" (click)="selectResult(result)">
         <a [routerLink]="result.url" class="result-item">
           <span class="result-icon">
-            <img loading="lazy" [src]="result.imgUrl ? baseUrl + 'files/files/' + result.imgUrl : '/assets/images/trademark.png'"
+            <img loading="lazy" [src]="result.imgUrl ? baseUrl + 'files/' + result.imgUrl : '/assets/images/trademark.png'"
               alt="">
           </span>
 

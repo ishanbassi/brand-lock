@@ -140,6 +140,15 @@ export class TrademarkService {
       renewalDate: restTrademark.renewalDate ? dayjs(restTrademark.renewalDate) : undefined,
     };
   }
+  public convertDate(restTrademark: ITrademark): ITrademark {
+    return {
+      ...restTrademark,
+      applicationDate: restTrademark.applicationDate ? dayjs(restTrademark.applicationDate) : undefined,
+      createdDate: restTrademark.createdDate ? dayjs(restTrademark.createdDate) : undefined,
+      modifiedDate: restTrademark.modifiedDate ? dayjs(restTrademark.modifiedDate) : undefined,
+      renewalDate: restTrademark.renewalDate ? dayjs(restTrademark.renewalDate) : undefined,
+    };
+  }
 
   protected convertResponseFromServer(res: HttpResponse<RestTrademark>): HttpResponse<ITrademark> {
     return res.clone({

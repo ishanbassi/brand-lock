@@ -22,6 +22,7 @@ import { TrademarkSearchContentComponent } from '../trademark-search-content/tra
 import { Meta, Title } from '@angular/platform-browser';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
+import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 
 export interface Statistic {
   value: string;
@@ -31,7 +32,7 @@ export interface Statistic {
 
 @Component({
   selector: 'app-trademark-search',
-  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,SearchCtaSectionComponent],
+  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,SearchCtaSectionComponent,TrademarkPulseComponent],
   templateUrl: './trademark-search.component.html',
   styleUrl: './trademark-search.component.scss'
 })

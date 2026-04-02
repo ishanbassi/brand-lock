@@ -1,0 +1,355 @@
+// ─── Design tokens ───────────────────────────────────────────────────────────
+$primary: #2563eb;
+$secondary: #1e40af;
+$accent: #f59e0b;
+$text: #1f2937;
+$text-light: #6b7280;
+$text-lighter: #9ca3af;
+$bg: #ffffff;
+$surface: #f8fafc;
+$border: #e5e7eb;
+$border-light: #f3f4f6;
+$success: #10b981;
+$warning: #f59e0b;
+$error: #ef4444;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+$shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 14px;
+$section-bg: #f8fafc;
+$mark-bg: rgba(37, 99, 235, 0.12);
+$mark-color: #1e40af;
+
+// ── Animations ──────────────────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+// ── Pulse Bar ────────────────────────────────────────────────────────────
+// Uses $primary as background — fits the blue theme perfectly
+.pulse-bar {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  background: $primary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: $shadow-md;
+  animation: fadeUp 0.4s ease both;
+}
+
+.pulse-divider {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pulse-stat {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pulse-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pulse-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.pulse-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: $accent;  // amber dot — matches your $accent token
+  border-radius: 50%;
+  animation: blink 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+// ── Section Header ───────────────────────────────────────────────────────
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  animation: fadeUp 0.4s 0.08s ease both;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: $text;
+  letter-spacing: -0.01em;
+}
+
+.section-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: $primary;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover { color: $secondary; }
+}
+
+// ── TM Card Grid ─────────────────────────────────────────────────────────
+.tm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.tm-card {
+  display: block;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.18s, box-shadow 0.2s;
+  box-shadow: $shadow-sm;
+  animation: fadeUp 0.4s ease both;
+  opacity: 0;
+  animation-fill-mode: forwards;
+
+  // Left accent bar using $primary
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: $primary;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover {
+    border-color: $primary;
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+
+    &::before { opacity: 1; }
+  }
+}
+
+.tm-app-no {
+  font-size: 10px;
+  font-weight: 500;
+  color: $text-lighter;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.tm-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: $text;
+}
+
+.tm-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tm-time {
+  font-size: 11px;
+  color: $text-lighter;
+  margin-left: auto;
+}
+
+// ── Tags ─────────────────────────────────────────────────────────────────
+.tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+
+  // Class tag uses your $mark-bg / $mark-color tokens
+  &--class    { background: $mark-bg;                    color: $mark-color; }
+  &--accepted { background: rgba(16, 185, 129, 0.1);     color: #065f46; }
+  &--objected { background: rgba(245, 158, 11, 0.12);    color: #92400e; }
+  &--opposed  { background: rgba(239, 68, 68, 0.1);      color: #991b1b; }
+  &--pending  { background: $surface;                    color: $text-light; border: 1px solid $border; }
+}
+
+// ── Stats Row ────────────────────────────────────────────────────────────
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+  animation: fadeUp 0.4s 0.16s ease both;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.stat-card {
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 16px;
+  text-align: center;
+  box-shadow: $shadow-sm;
+  transition: box-shadow 0.2s, transform 0.18s;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
+}
+
+.stat-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card-label {
+  font-size: 11px;
+  color: $text-light;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+.stat-card-sub {
+  font-size: 10px;
+  color: $text-lighter;
+}
+
+// ── Journal Banner ───────────────────────────────────────────────────────
+// Uses $secondary as bg — darker blue, still in theme family
+.journal-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: $secondary;
+  border-radius: $radius-lg;
+  padding: 22px 28px;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.2s;
+  box-shadow: $shadow-md;
+  animation: fadeUp 0.4s 0.22s ease both;
+  opacity: 0;
+  animation-fill-mode: forwards;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  }
+}
+
+.journal-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.journal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.journal-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.journal-cta {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: $radius-sm;
+  white-space: nowrap;
+  transition: background 0.18s;
+
+  .journal-banner:hover & {
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .pulse-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .pulse-divider {
+    height: 1px;
+    width: auto;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .journal-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tm-grid {
+    grid-template-columns: 1fr;
+  }
+}
+::ng-deep{
+    app-trademark-pulse{
+      width: 100%;
+      max-width: 700px;
+    }
+}
