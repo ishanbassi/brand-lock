@@ -4,6 +4,7 @@ export const environment = {
   production: false,
   BaseApiUrl: 'http://localhost:8080/',
   BaseBlogUrl: 'http://localhost:1337',
+  BaseUrl:"http://localhost:4200",
   AppHeaders: new HttpHeaders({
     'Content-Type': 'application/json',
     Accept: 'application/json'
