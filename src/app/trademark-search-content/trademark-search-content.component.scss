@@ -1,17 +1,17 @@
 // ─── Design tokens ───────────────────────────────────────────────────────────
-$primary:       #2563eb;
-$secondary:     #1e40af;
-$accent:        #f59e0b;
-$text:          #1f2937;
-$text-light:    #6b7280;
-$text-lighter:  #9ca3af;
-$bg:            #ffffff;
-$surface:       #f8fafc;
-$border:        #e5e7eb;
-$success:       #10b981;
-$radius-sm:     8px;
-$radius-md:     12px;
-$radius-lg:     16px;
+$primary: #2563eb;
+$secondary: #1e40af;
+$accent: #f59e0b;
+$text: #1f2937;
+$text-light: #6b7280;
+$text-lighter: #9ca3af;
+$bg: #ffffff;
+$surface: #f8fafc;
+$border: #e5e7eb;
+$success: #10b981;
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
 
 // ─── Base ────────────────────────────────────────────────────────────────────
 :host {
@@ -77,11 +77,9 @@ section {
 
 // ─── Benefits Section ────────────────────────────────────────────────────────
 .benefits-section {
-  background: linear-gradient(
-    180deg,
-    rgba(37, 99, 235, 0.02) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(37, 99, 235, 0.02) 0%,
+      rgba(255, 255, 255, 0) 100%);
 }
 
 .benefits-grid {
@@ -180,12 +178,10 @@ section {
     top: 40px;
     bottom: 40px;
     width: 2px;
-    background: linear-gradient(
-      180deg,
-      $primary 0%,
-      $secondary 50%,
-      $accent 100%
-    );
+    background: linear-gradient(180deg,
+        $primary 0%,
+        $secondary 50%,
+        $accent 100%);
     opacity: 0.2;
   }
 }
@@ -208,6 +204,7 @@ section {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -278,11 +275,9 @@ section {
 
 // ─── Why Choose Section ──────────────────────────────────────────────────────
 .why-choose-section {
-  background: linear-gradient(
-    180deg,
-    $surface 0%,
-    rgba(248, 250, 252, 0.5) 100%
-  );
+  background: linear-gradient(180deg,
+      $surface 0%,
+      rgba(248, 250, 252, 0.5) 100%);
 }
 
 .why-choose-grid {
@@ -309,11 +304,9 @@ section {
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(
-      circle,
-      rgba(37, 99, 235, 0.05) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(circle,
+        rgba(37, 99, 235, 0.05) 0%,
+        transparent 70%);
     transform: scale(0);
     transition: transform 0.5s;
   }
@@ -396,11 +389,9 @@ section {
     right: -10%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.1) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 70%);
     border-radius: 50%;
   }
 }
@@ -458,93 +449,144 @@ section {
   }
 }
 
-// ─── FAQ Section ─────────────────────────────────────────────────────────────
 .faq-section {
-  background: $bg;
+  max-width: 780px;
+  margin: 0 auto;
+  background-color: transparent !important;
+}
+
+.faq-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.faq-heading {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 600;
+  color: #0f0f0d;
+  line-height: 1.25;
+  margin-bottom: 0.6rem;
+}
+
+.faq-subhead {
+  font-size: 15px;
+  color: #5a5a52;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
 }
 
 .faq-list {
-  max-width: 800px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
+  border: 1px solid #e2e0d8;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
 }
 
 .faq-item {
-  background: $bg;
-  border: 2px solid $border;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  transition: all 0.3s;
+  border-bottom: 1px solid #e2e0d8;
+}
 
-  &.is-open {
-    border-color: $primary;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
-
-    .faq-icon {
-      transform: rotate(180deg);
-      color: $primary;
-    }
-  }
-
-  &:hover {
-    border-color: lighten($primary, 20%);
-  }
+.faq-item:last-child {
+  border-bottom: none;
 }
 
 .faq-question {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 24px 28px;
-  background: transparent;
+  background: none;
   border: none;
-  font-size: 18px;
-  font-weight: 600;
-  color: $text;
-  text-align: left;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  text-align: left;
+  transition: background 0.15s;
+}
 
-  &:hover {
-    color: $primary;
-  }
+.faq-question:hover {
+  background: #faf9f5;
+}
+
+.faq-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 22px;
+  padding-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+.faq-q-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0f0f0d;
+  line-height: 1.45;
 }
 
 .faq-icon {
-  flex-shrink: 0;
-  color: $text-light;
-  transition: all 0.3s;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #c8c6be;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: background 0.2s, border-color 0.2s, transform 0.25s;
+}
+
+.faq-icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: #6b6b62;
+  transition: stroke 0.2s, transform 0.25s;
+}
+
+.faq-item.open .faq-icon {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: rotate(45deg);
+}
+
+.faq-item.open .faq-icon svg {
+  stroke: #fff;
 }
 
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.4s ease;
-
-  &.is-visible {
-    max-height: 500px;
-    padding: 0 28px 24px;
-  }
-
-  p {
-    font-size: 16px;
-    line-height: 1.7;
-    color: $text-light;
-    margin: 0;
-  }
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.faq-answer-inner {
+  padding: 0 1.4rem 1.4rem 3.2rem;
+  font-size: 14.5px;
+  color: #3d3d38;
+  line-height: 1.72;
+}
+
+.faq-answer-inner strong {
+  color: #0f0f0d;
+  font-weight: 500;
+}
+
+
+
 
 // ─── Final CTA Section ───────────────────────────────────────────────────────
 .final-cta-section {
-  background: linear-gradient(
-    135deg,
-    rgba(37, 99, 235, 0.05) 0%,
-    rgba(30, 64, 175, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(37, 99, 235, 0.05) 0%,
+      rgba(30, 64, 175, 0.08) 100%);
   padding: 100px 0;
 }
 

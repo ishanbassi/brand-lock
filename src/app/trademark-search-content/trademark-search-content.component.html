@@ -15,20 +15,24 @@
       <div class="benefits-grid">
         <div class="benefit-card" *ngFor="let benefit of benefits; trackBy: trackByIndex">
           <div class="benefit-icon" [attr.data-icon]="benefit.icon">
-            <svg *ngIf="benefit.icon === 'shield'" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <svg *ngIf="benefit.icon === 'shield'" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <svg *ngIf="benefit.icon === 'search'" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <svg *ngIf="benefit.icon === 'search'" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <svg *ngIf="benefit.icon === 'check-circle'" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
+            <svg *ngIf="benefit.icon === 'check-circle'" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-            <svg *ngIf="benefit.icon === 'trending-up'" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-              <polyline points="17 6 23 6 23 12"/>
+            <svg *ngIf="benefit.icon === 'trending-up'" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
             </svg>
           </div>
           <h3 class="benefit-title">{{ benefit.title }}</h3>
@@ -55,34 +59,38 @@
           <div class="step-number">{{ step.stepNumber }}</div>
           <div class="step-content">
             <div class="step-icon" [attr.data-icon]="step.icon">
-              <svg *ngIf="step.icon === 'edit'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              <svg *ngIf="step.icon === 'edit'" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
               </svg>
-              <svg *ngIf="step.icon === 'cpu'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
-                <rect x="9" y="9" width="6" height="6"/>
-                <line x1="9" y1="1" x2="9" y2="4"/>
-                <line x1="15" y1="1" x2="15" y2="4"/>
-                <line x1="9" y1="20" x2="9" y2="23"/>
-                <line x1="15" y1="20" x2="15" y2="23"/>
-                <line x1="20" y1="9" x2="23" y2="9"/>
-                <line x1="20" y1="14" x2="23" y2="14"/>
-                <line x1="1" y1="9" x2="4" y2="9"/>
-                <line x1="1" y1="14" x2="4" y2="14"/>
+              <svg *ngIf="step.icon === 'cpu'" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+                <rect x="9" y="9" width="6" height="6" />
+                <line x1="9" y1="1" x2="9" y2="4" />
+                <line x1="15" y1="1" x2="15" y2="4" />
+                <line x1="9" y1="20" x2="9" y2="23" />
+                <line x1="15" y1="20" x2="15" y2="23" />
+                <line x1="20" y1="9" x2="23" y2="9" />
+                <line x1="20" y1="14" x2="23" y2="14" />
+                <line x1="1" y1="9" x2="4" y2="9" />
+                <line x1="1" y1="14" x2="4" y2="14" />
               </svg>
-              <svg *ngIf="step.icon === 'file-text'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
+              <svg *ngIf="step.icon === 'file-text'" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
               </svg>
-              <svg *ngIf="step.icon === 'users'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              <svg *ngIf="step.icon === 'users'" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
             <h3 class="step-title">{{ step.title }}</h3>
@@ -125,45 +133,258 @@
         <button class="cta-button" type="button">
           <span>Get Started Now</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
           </svg>
         </button>
       </div>
     </div>
   </section>
 
-  <!-- FAQ Section -->
   <section class="faq-section">
     <div class="container">
-      <div class="section-header">
-        <span class="section-badge">Got Questions?</span>
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <p class="section-description">
-          Find answers to common questions about trademark search and registration process.
-        </p>
-      </div>
+      <p class="faq-eyebrow">Trademark Search India</p>
+      <h2 class="faq-heading">Frequently Asked Questions</h2>
+      <p class="faq-subhead">Everything you need to know before searching and filing your trademark in India.</p>
 
-      <div class="faq-list">
-        <div 
-          class="faq-item" 
-          *ngFor="let faq of faqs; let i = index; trackBy: trackByIndex"
-          [class.is-open]="faq.isOpen"
-        >
-          <button class="faq-question" type="button" (click)="toggleFAQ(i)">
-            <span>{{ faq.question }}</span>
-            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="6 9 12 15 18 9"/>
-            </svg>
+      <div class="faq-list" id="faqList">
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">01</span>
+            <span class="faq-q-text">Is a trademark search mandatory before filing an application in India?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
           </button>
-          <div class="faq-answer" [class.is-visible]="faq.isOpen">
-            <p>{{ faq.answer }}</p>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              A trademark search is <strong>not legally mandatory</strong> under the Trade Marks Act, 1999 — but it is
+              strongly recommended before filing. Without a prior search, your application risks rejection by the Trade
+              Marks Registry if a similar or identical mark already exists, causing delays, wasted government fees
+              (₹4,500–₹9,000 per class), and potential legal disputes. A thorough search before filing significantly
+              improves your chances of smooth registration.
+            </div>
           </div>
         </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">02</span>
+            <span class="faq-q-text">What is the difference between an exact match search and a phonetic search?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              An <strong>exact match search</strong> finds trademarks that are spelled identically or near-identically
+              to your proposed name. A <strong>phonetic search</strong> (also called a "sounds-like" search) identifies
+              marks that sound similar even if spelled differently — for example, "Kwikr" and "Quicker", or "Zomato" and
+              "Zomatto". The Trade Marks Registry considers phonetically similar marks as potential conflicts, so
+              running both types of search is essential before filing your application in India.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">03</span>
+            <span class="faq-q-text">How do trademark classes work in India, and which class do I need?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              India follows the <strong>NICE Classification system</strong>, which divides all goods and services into
+              45 classes — Classes 1 to 34 cover physical goods, and Classes 35 to 45 cover services. Your trademark is
+              only protected in the class(es) under which it is registered. For example, a clothing brand registers
+              under Class 25, while a software company would register under Class 42. If you sell both products and
+              services, you may need multiple class registrations. Trademarx lets you check availability across specific
+              classes or all 45 at once.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">04</span>
+            <span class="faq-q-text">What does each trademark status mean — Registered, Pending, Objected,
+              Opposed?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Each trademark status in India has a specific meaning:<br><br>
+              <strong>Registered</strong> — fully protected; the owner has exclusive rights.<br>
+              <strong>Pending / Filed</strong> — submitted but not yet examined. May still become a conflict.<br>
+              <strong>Objected</strong> — the Examiner has raised concerns; the applicant must respond.<br>
+              <strong>Advertised</strong> — passed examination, published for a 4-month public opposition window.<br>
+              <strong>Opposed</strong> — a third party has filed a challenge against registration.<br>
+              <strong>Refused / Abandoned</strong> — the application failed.<br><br>
+              Even Pending and Advertised marks can block your application — never ignore them in your search results.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">05</span>
+            <span class="faq-q-text">Can I trademark a name already registered in a different class?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Yes, in most cases you can register a trademark in a different class from an existing registration —
+              trademark protection in India is class-specific. For example, "Apple" in Class 31 (fresh fruits) could
+              coexist with "Apple" in Class 9 (electronics), unless there is a likelihood of confusion about origin.
+              However, <strong>well-known or famous trademarks</strong> enjoy trans-class protection and cannot be used
+              or registered in any class by others. Trademarx search results flag potential well-known mark conflicts so
+              you are aware before filing.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">06</span>
+            <span class="faq-q-text">What should I do if my desired brand name is already taken?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              If an identical or similar mark exists in your class, you have several options:<br><br>
+              1. <strong>Modify the name</strong> — add a distinctive word, change spelling, or pair it with a unique
+              logo.<br>
+              2. <strong>Check the mark's status</strong> — if it is Abandoned or Refused, you may be able to apply for
+              the same name.<br>
+              3. <strong>Conduct a prior-use investigation</strong> — if the existing mark has not been commercially
+              used, a prior-use claim may be possible.<br>
+              4. <strong>Negotiate a co-existence agreement</strong> with the existing owner.<br>
+              5. <strong>Consider filing in a different class</strong> if your goods or services can be legitimately
+              classified elsewhere.<br><br>
+              Our trademark experts can assess your specific situation and recommend the best path forward after your
+              search.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">07</span>
+            <span class="faq-q-text">How long does the trademark registration process take in India?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              The trademark registration timeline in India currently ranges from <strong>18 to 36 months</strong> for a
+              smooth application, and longer if objections or oppositions arise. The key stages are:<br><br>
+              • <strong>Filing</strong> — Day 1, application number issued immediately.<br>
+              • <strong>Examination</strong> — 6–12 months for the Registry to review.<br>
+              • <strong>Response to objection</strong> (if raised) — 2–3 months to respond.<br>
+              • <strong>Advertisement</strong> — published in the Trademark Journal after approval.<br>
+              • <strong>Opposition period</strong> — 4 months for third parties to challenge.<br>
+              • <strong>Registration certificate</strong> — issued after the opposition period closes.<br><br>
+              Filing under the <strong>expedited route</strong> (at higher fees) can reduce examination time to
+              approximately 1–3 months.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">08</span>
+            <span class="faq-q-text">Is the Trademarx database the same as the IP India public search portal?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Our database is sourced from the official IP India trademark registry and is updated regularly. However,
+              Trademarx offers significant advantages over the raw IP India portal:<br><br>
+              • <strong>Phonetic and fuzzy matching</strong> — the government portal does not offer this.<br>
+              • <strong>Class-wise conflict scoring</strong> — highest-risk results are highlighted first.<br>
+              • <strong>Faster, cleaner interface</strong> — no Java requirement or browser compatibility issues.<br>
+              • <strong>Expert review in 10 minutes</strong> — our attorneys review your results and flag non-obvious
+              conflicts.<br><br>
+              We recommend using Trademarx for your primary search, then corroborating on the IP India portal before
+              filing.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">09</span>
+            <span class="faq-q-text">Can a common English word or descriptive term be trademarked in India?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Purely descriptive or generic words — those that directly describe the goods or services — <strong>cannot
+                be trademarked</strong> in India under Section 9 of the Trade Marks Act, 1999. For example, "Fresh" for
+              a vegetable brand or "Fast" for a courier service would be refused. However, words that are
+              <strong>suggestive, arbitrary, or fanciful</strong> can be registered — think "Swiggy" for food delivery
+              or "Dunzo" for quick commerce. A word that has acquired distinctiveness through long and extensive
+              commercial use can sometimes overcome this bar. Our experts can assess the registrability of your proposed
+              name before you invest in filing.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" (click)="toggleFaq($event)">
+            <span class="faq-num">10</span>
+            <span class="faq-q-text">What documents are required to file a trademark in India after the search?</span>
+            <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              To file a trademark application in India (Form TM-A), you will need:<br><br>
+              1. <strong>Applicant details</strong> — full legal name and address (individual, LLP, or company).<br>
+              2. <strong>The trademark</strong> — word, logo, or combination. Logos must be in JPG format, 8×8 cm.<br>
+              3. <strong>Description of goods/services</strong> and the relevant trademark class(es).<br>
+              4. <strong>Date of first use</strong> in commerce, if claiming prior use.<br>
+              5. <strong>Power of Attorney (Form TM-48)</strong> if filing through an attorney — highly recommended.<br>
+              6. <strong>MSME or Startup India certificate</strong>, if applicable, to claim the concessional fee of
+              ₹4,500 instead of ₹9,000 per class.<br><br>
+              Trademarx can prepare and file all documents on the same day as your search.
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-  </section>
 
+
+
+
+
+  </section>
   <!-- Final CTA Section -->
   <section class="final-cta-section">
     <div class="container">
@@ -183,19 +404,19 @@
         <div class="trust-indicators">
           <div class="trust-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             <span>Government Authorized</span>
           </div>
           <div class="trust-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             <span>ISO Certified</span>
           </div>
           <div class="trust-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             <span>100% Secure</span>
           </div>

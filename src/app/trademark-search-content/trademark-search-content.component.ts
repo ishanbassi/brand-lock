@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
+import { TrademarkSearchFAQSchema } from '../enums/trademark-search-faq';
 export interface Benefit {
   icon: string;
   title: string;
@@ -25,7 +26,13 @@ export interface FAQ {
   templateUrl: './trademark-search-content.component.html',
   styleUrl: './trademark-search-content.component.scss'
 })
-export class TrademarkSearchContentComponent {
+export class TrademarkSearchContentComponent implements OnInit {
+  ngOnInit(): void {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(TrademarkSearchFAQSchema);
+    document.head.appendChild(script);
+  }
   @Output() searchTrademark: EventEmitter<boolean> = new EventEmitter()
   benefits: Benefit[] = [
     {
@@ -48,6 +55,114 @@ export class TrademarkSearchContentComponent {
       title: 'Build Brand Value',
       description: 'Establish a strong brand foundation and increase your business market value.',
     },
+  ];
+
+  steps = [
+    {
+      stepNumber: 1,
+      title: 'Enter Your Trademark Keyword',
+      description: 'Type your brand name, company name, or keyword into the trademark search tool to begin checking availability.',
+      icon: 'edit',
+      keywords: ['trademark search', 'brand name search', 'check trademark availability', 'trademark name search']
+    },
+    {
+      stepNumber: 2,
+      title: 'Select Search Type',
+      description: 'Choose between Wordmark Search, Phonetic Search, or Logo (Vienna Code) Search depending on your trademark type.',
+      icon: 'filter_alt',
+      keywords: ['wordmark search', 'phonetic trademark search', 'logo trademark search', 'vienna code search']
+    },
+    {
+      stepNumber: 3,
+      title: 'Apply Search Filters',
+      description: 'Use filters like “Starts With”, “Contains”, or “Exact Match” to refine your trademark search results.',
+      icon: 'tune',
+      keywords: ['trademark search filter', 'exact match trademark', 'starts with search', 'contains keyword search']
+    },
+    {
+      stepNumber: 4,
+      title: 'Choose Trademark Class',
+      description: 'Select the correct trademark class (1–45) based on your business category to ensure accurate results.',
+      icon: 'category',
+      keywords: ['trademark class search', 'nice classification', 'class 35 trademark', 'class 25 trademark']
+    },
+    {
+      stepNumber: 5,
+      title: 'Search Multiple Variations',
+      description: 'Try different spellings, synonyms, prefixes, and suffixes to identify similar or conflicting trademarks.',
+      icon: 'shuffle',
+      keywords: ['similar trademark search', 'alternate spelling trademark', 'brand variation search', 'name variations']
+    },
+    {
+      stepNumber: 6,
+      title: 'Run Phonetic Search',
+      description: 'Check for similar-sounding trademarks to avoid conflicts due to pronunciation similarities.',
+      icon: 'record_voice_over',
+      keywords: ['phonetic trademark search', 'sound alike trademark', 'similar sounding brand names']
+    },
+    {
+      stepNumber: 7,
+      title: 'Review Trademark Results',
+      description: 'Analyze the list of existing trademarks including registered, objected, and pending applications.',
+      icon: 'list',
+      keywords: ['trademark registry search', 'tm status check', 'trademark database india', 'ipindia public search']
+    },
+    {
+      stepNumber: 8,
+      title: 'Check Trademark Status',
+      description: 'Verify the status of similar trademarks such as Registered, Objected, Opposed, or Abandoned.',
+      icon: 'fact_check',
+      keywords: ['trademark status check', 'tm application status', 'registered trademark search']
+    },
+    {
+      stepNumber: 9,
+      title: 'Analyze Similarity Risk',
+      description: 'Evaluate visual, phonetic, and conceptual similarity to determine chances of rejection or objection.',
+      icon: 'warning',
+      keywords: ['trademark conflict check', 'similar trademark risk', 'likelihood of confusion trademark']
+    },
+    {
+      stepNumber: 10,
+      title: 'Search Across Relevant Classes',
+      description: 'Check additional related classes to ensure broader protection and avoid hidden conflicts.',
+      icon: 'layers',
+      keywords: ['multi class trademark search', 'cross class trademark', 'related class search']
+    },
+    {
+      stepNumber: 11,
+      title: 'Check Global Trademark Databases',
+      description: 'Search international databases to ensure your brand name is globally available if needed.',
+      icon: 'public',
+      keywords: ['global trademark search', 'wipo trademark search', 'international brand database']
+    },
+    {
+      stepNumber: 12,
+      title: 'Perform Logo Search (if applicable)',
+      description: 'Use Vienna Classification codes to search for similar logos or graphical trademarks.',
+      icon: 'image',
+      keywords: ['logo trademark search', 'device mark search', 'vienna classification trademark']
+    },
+    {
+      stepNumber: 13,
+      title: 'Avoid Generic or Descriptive Names',
+      description: 'Ensure your trademark is unique and not generic to improve chances of approval.',
+      icon: 'block',
+      keywords: ['distinctive trademark', 'generic trademark rejection', 'descriptive trademark issue']
+    },
+    {
+      stepNumber: 14,
+      title: 'Interpret Search Results Carefully',
+      description: 'Do not rely only on exact matches—evaluate similar and confusingly similar trademarks.',
+      icon: 'psychology',
+      keywords: ['interpret trademark results', 'similarity analysis trademark', 'tm search analysis']
+    },
+    {
+      stepNumber: 15,
+      title: 'Make a Final Availability Decision',
+      description: 'Based on your search, decide whether your trademark is safe to use or needs modification.',
+      icon: 'check_circle',
+      keywords: ['trademark availability check', 'brand name approval', 'tm clearance search']
+    }
   ];
 
   processSteps: ProcessStep[] = [
@@ -137,6 +252,25 @@ export class TrademarkSearchContentComponent {
 
   onSearchTrademark() {
     this.searchTrademark.emit(true);
+  }
+
+
+  toggleFaq(event: any) {
+    const btn = event.target;
+    console.log(btn)
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = item.classList.contains('open');
+
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+      el.classList.remove('open');
+      (el.querySelector('.faq-answer') as any)!.style.maxHeight = '0';
+    });
+
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
   }
 
 
