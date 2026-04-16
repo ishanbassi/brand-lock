@@ -1,6 +1,9 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkSearchFAQSchema } from '../enums/trademark-search-faq';
+import { BlogService } from '../shared/services/blog-service.service';
+import { BlogData } from '../../models/blog.model';
+import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
 export interface Benefit {
   icon: string;
   title: string;
@@ -22,16 +25,25 @@ export interface FAQ {
 
 @Component({
   selector: 'app-trademark-search-content',
-  imports: [SharedModule],
+  imports: [SharedModule, BlogMarkdownComponent],
   templateUrl: './trademark-search-content.component.html',
   styleUrl: './trademark-search-content.component.scss'
 })
 export class TrademarkSearchContentComponent implements OnInit {
+  blog?: BlogData;
+  constructor(
+    private blogService: BlogService,
+  ) { }
+
   ngOnInit(): void {
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.text = JSON.stringify(TrademarkSearchFAQSchema);
     document.head.appendChild(script);
+    this.blogService.getBlogBySlug("complete-guide-to-trademark-search-in-india").subscribe(res => {
+      this.blog = res?.data[0];
+      if (!this.blog) return;
+    });
   }
   @Output() searchTrademark: EventEmitter<boolean> = new EventEmitter()
   benefits: Benefit[] = [
