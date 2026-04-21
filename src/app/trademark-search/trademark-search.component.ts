@@ -157,7 +157,7 @@ export class TrademarkSearchComponent implements OnInit {
 
   }
   setSeoTags() {
-    this.title.setTitle('Free Trademark Search India - Find a trademark');
+    this.title.setTitle('New Trademark Search India - Find a trademark');
     this.meta.updateTag({
       name: 'description',
       content: `Run a free trademark search in India. Instantly check brand name availability, phonetic matches, and class-wise conflicts before trademark filing.`
