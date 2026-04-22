@@ -438,7 +438,7 @@ body {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
+    font-size: 2rem;
     line-height: 1.2;
     margin-bottom: 1.5rem;
     color: var(--text-color);
@@ -542,28 +542,40 @@ body {
     text-align: center;
     margin-bottom: 5rem;
     position: relative;
+    padding: 28px 32px;
 }
 
-.section-header h2 {
-    font-size: 3rem;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-    font-weight: 700;
-    position: relative;
-    display: inline-block;
+.section-header {
+
+    h2,
+    h3 {
+        font-size: 3rem;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+
+        }
+    }
+
+    h3 {
+        font-size: 2rem;
+    }
+
 }
 
-.section-header h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--gradient);
-    border-radius: 2px;
-}
 
 .section-header p {
     color: var(--light-text);

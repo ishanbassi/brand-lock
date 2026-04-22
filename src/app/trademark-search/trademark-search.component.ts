@@ -18,6 +18,8 @@ import { SharedModule } from '../shared/shared.module';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
+import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
+import { RatingReviewComponent } from '../rating-review/rating-review.component';
 
 export interface Statistic {
   value: string;
@@ -27,7 +29,7 @@ export interface Statistic {
 
 @Component({
   selector: 'app-trademark-search',
-  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,SearchCtaSectionComponent,TrademarkPulseComponent],
+  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,SearchCtaSectionComponent,TrademarkPulseComponent, FirmBannerComponent,RatingReviewComponent],
   templateUrl: './trademark-search.component.html',
   styleUrl: './trademark-search.component.scss'
 })
@@ -35,7 +37,7 @@ export class TrademarkSearchComponent implements OnInit {
 
   protected leadFormService = inject(LeadFormService);
   leadForm = this.leadFormService.createLeadFormGroup();
-
+  // In parent component
   constructor(
     private readonly route: ActivatedRoute,
     private readonly trademarkService: TrademarkService,
@@ -50,7 +52,7 @@ export class TrademarkSearchComponent implements OnInit {
 
   }
 
-  query?: string;
+  query?: string | null;
   results: ITrademark[] | null = [];
   baseUrl = environment.BaseApiUrl;
   private isBrowser = false;
@@ -106,6 +108,9 @@ export class TrademarkSearchComponent implements OnInit {
             this.results = res.body
             this.totalResults = this.results?.length || 0;
           })
+      }
+      else{
+        this.query = null;
       }
     });
     this.setSeoTags();

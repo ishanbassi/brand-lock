@@ -1,83 +1,105 @@
 export interface Review {
-  profileImg: string;
-  author: string;
-  designation: string;
-  stars?: number;
-  quote: string;
-  location?:string;
+  name: string;
+  rating: number;
+  date: string;
+  text: string;
+  link: string;
 }
+
 
 export const TestimonialsList:Review[] = [
     {
-        quote: "This is the ideal destination for unbeatable prices and exceptional service.",
-        author: "Rhythm kumar",
-        location: "Mullanpur, Punjab",
-        designation: "Lawyer",
-        profileImg:""
-    },
-    {
-        quote: "Best service providers & help for Good suggestions regarding to the customers requirement with Reasonable price.",
-        author: "Harbhajan Singh",
-        location: "Punjab,India",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "They are very transparent, clear cut and very corporates associates.",
-        author: "Ashok Kumar",
-        location: "Jalandhar, Punjab",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "Very good services . all staff very helpful",
-        author: "Pardeep Kumar",
-        location: "Ludhiana, Punjab",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "Professional and Excellent Services. Quick turnaround with a lot of experience in the field. Best in Business.",
-        author: "Viplov Raina",
-        location: "New Delhi,India",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "Very very good nyc person good knowledge great experience humble personally very good experience great job ❤️❤️😊",
-        author: "White Hawk Music",
-        location: "Ludhiana, Punjab",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "Very professional and Honest ... Must visit for any kind of query",
-        author: "Vinay Rajput",
-        location: "Ludhiana, India",
-        designation: "ASM",
-        profileImg:""
-    },
-    {
-        quote: "Very Good service",
-        author: "Jyoti Batra",
-        location: "Jalandhar, Punjab",
-        designation: "Entrepreneur",
-        profileImg:""
-    },
-    {
-        quote: "Excellent service . Guiding as well as I  need.",
-        author: "Rohit Baweja",
-        location: "New Delhi,India",
-        designation: "Entrepreneur",
-        profileImg:""
+        text: "This is the ideal destination for unbeatable prices and exceptional service.",
+        name: "Rhythm kumar",
+        date: '2 years ago',
+        
+        link: 'https://share.google/kWMid7h8iOVd5OQLo',
+        rating:5
+
+        
 
     },
     {
-        quote: "Best service ever.",
-        author: "Nitin Bhatnagar",
-        location: "Ludhiana,Punjab",
-        designation: "Entrepreneur",
-        profileImg:""
+        text: "Bassi and associates is Known as best service providers & help for Good suggestions regarding to the customers requirement with Reasonable price our company associates with Bassi last 20 years Really good person I personally meet several times for their best services",
+        name: "Harbhajan Singh",
+        date: '2 years ago',
+        
+        link: 'https://share.google/LcuODA9NTkhXtPYnU',
+        rating:5
+        
+    },
+    {
+        text: "Bassi associates is very transparent, clear cut and very corporates associates They always guide person very properly and charging very genuine without any misleading I always recommended to Bassi Associates for any kind of trade mark",
+        name: "Ashok Kumar",
+        date: '2 years ago',
+        
+        link: 'https://share.google/SGupGUFi0xk6gA3Wn',
+        rating:5
+        
+    },
+    {
+        text: "Very good services . all sataf very helpful Bassi association thanks",
+        name: "Pardeep Kumar",
+        date: '2 years ago',
+        
+        link: 'https://share.google/ZyT9eDQn1BHSVI5jI',
+        rating:5
+        
+    },
+    {
+        text: "Professional and Excellent Services. Quick turnaround with a lot of experience in the field. Best in Business.",
+        name: "Viplov Raina",
+        date: '2 years ago',
+        
+        link: 'https://share.google/Z48fy8wUTuRtYf3IU',
+        rating:5
+        
+    },
+    {
+        text: "Very very good nyc person good knowledge great experience humble personally very good experience great job ❤️❤️😊",
+        name: "White Hawk Music",
+        date: '2 years ago',
+        
+        link: 'https://share.google/RTZwGWLmXTqzsMFFD',
+        rating:5
+        
+    },
+    {
+        text: "Very professional and Honest ... Must visit for any kind of query",
+        name: "Vinay Rajput",
+        date: '1 month ago',
+        
+        link: 'https://g.co/your-review-link',
+        rating:5
+        
+    },
+    {
+        text: "Very Good service",
+        name: "Jyoti Batra",
+        date: '1 month ago',
+        
+        link: 'https://share.google/ctYPK1lfm3owNOkUC',
+        rating:5
+        
+    },
+    {
+        text: "Excellent service . Guiding as well as I  need.",
+        name: "Rohit Baweja",
+        date: '1 month ago',
+        
+        link: 'https://share.google/d91Z9HOJOGcr2BkDz',
+        rating:5
+        
+
+    },
+    {
+        text: "Best service ever.",
+        name: "Nitin Bhatnagar",
+        date: '1 month ago',
+        
+        link: 'https://share.google/QSUEDx6x5ntAmPqBJ',
+        rating:5
+        
     },
 ];
 

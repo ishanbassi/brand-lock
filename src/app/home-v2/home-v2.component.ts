@@ -13,10 +13,11 @@ import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
+import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component,RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent],
+  imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component,RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent, FirmBannerComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })

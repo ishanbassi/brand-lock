@@ -10,11 +10,12 @@ import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
 import { TopHeaderComponent } from '../top-header/top-header.component';
 import { ActivatedRoute } from '@angular/router';
+import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component],
+  imports: [SharedModule,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component, FirmBannerComponent],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })

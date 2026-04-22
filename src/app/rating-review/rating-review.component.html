@@ -1,46 +1,100 @@
-<div class="bg-gray-950 text-white flex items-center justify-center min-h-screen px-4 py-16">
+<div class="reviews-widget">
+    <div class="section-header">
+        <h3>What our client Says</h3>
+        <p>Hear from our hundreds of happy customers who trust us for trademark search, trademark registration &
+            Certifications.</p>
+    </div>
 
-    <div class="container mx-auto max-w-7xl group">
-        <div class="text-center mb-16">
-            <h1
-                class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                What Our Customers Say
-            </h1>
-            <p class="text-lg md:text-xl text-gray-400">
-                Hear from thousands of happy users who trust our service.
-            </p>
+    <!-- HEADER -->
+    <div class="reviews-header">
+
+        <div class="business-info">
+            <div class="business-name">Reviews for Bassi & Associates — the firm behind Trademarx.in</div>
+            <div class="business-category">Intellectual Property Lawyers · India</div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div class="rating-block">
+            <div class="rating-number">{{ CONFIG.averageRating }}</div>
 
-            <div
-                class="overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)] md:col-span-1 lg:col-span-1">
-                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-t2b">
-                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
-                        <app-review-card [review]="r"></app-review-card>
-                    </ng-container>
+            <!-- Stars -->
+            <div class="stars-row">
+                <ng-container *ngFor="let filled of getStars(CONFIG.averageRating)">
+                    <span class="star">
+                        <svg viewBox="0 0 24 24">
+                            <path [attr.fill]="filled ? '#fbbc04' : '#dadce0'"
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    </span>
+                </ng-container>
+            </div>
+
+            <div class="review-count">
+                Based on {{ CONFIG.totalReviews }} reviews
+            </div>
+
+            <div class="google-badge">
+                Reviews on Google
+            </div>
+        </div>
+
+        <!-- Rating Bars -->
+        <div class="rating-bars">
+            <div class="bar-row" *ngFor="let key of ratingKeys">
+                <span class="bar-label">{{ key }}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" [style.width.%]="CONFIG.distribution[key] || 0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://g.page/r/CXcgwnXZ52F1EBE/review" target="_blank" class="write-review-btn">
+            Write a Review
+        </a>
+    </div>
+
+    <!-- REVIEWS GRID -->
+    <div class="reviews-grid">
+
+        <div class="review-card" *ngFor="let r of CONFIG.reviews; let i = index">
+
+            <div class="reviewer-row">
+                <div class="avatar" [style.background]="getAvatarColor(i)">
+                    {{ r.name.charAt(0) }}
+                </div>
+
+                <div class="reviewer-details">
+                    <div class="reviewer-name">{{ r.name }}</div>
+                    <div class="review-meta">{{ r.date }}</div>
                 </div>
             </div>
 
-            <div
-                class="hidden md:block overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_top,transparent,white_20%,white_80%,transparent)]">
-                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-b2t">
-                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
-                        <app-review-card [review]="r"></app-review-card>
-                    </ng-container>
-                    
-                </div>
+            <!-- Stars -->
+            <div class="card-stars">
+                <ng-container *ngFor="let filled of getStars(r.rating)">
+                    <span class="card-star">
+                        <svg viewBox="0 0 24 24">
+                            <path [attr.fill]="filled ? '#fbbc04' : '#dadce0'"
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    </span>
+                </ng-container>
             </div>
 
-            <div
-                class="hidden lg:block overflow-hidden h-[40rem] rounded-3xl [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)]">
-                <div class="flex flex-col gap-6 group-hover-pause animate-scroll-t2b">
-                    <ng-container *ngFor="let r of loopedReviews; trackBy: trackByIndex">
-                        <app-review-card [review]="r"></app-review-card>
-                    </ng-container>
-                </div>
-            </div>
+            <p class="review-text">{{ r.text }}</p>
+
+            <a class="review-link" [href]="r.link" target="_blank">
+                View on Google
+            </a>
 
         </div>
     </div>
+
+    <!-- SEE ALL -->
+    <div class="see-all-wrap">
+        <a href="https://share.google/ZSxYZC1J917c6vaHz" target="_blank" class="see-all-btn">
+            See all reviews on Google
+        </a>
+    </div>
+
 </div>

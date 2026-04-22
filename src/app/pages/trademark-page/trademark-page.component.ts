@@ -42,6 +42,7 @@ import { TrademarkPlanCardsComponent } from '../../trademark-plan-cards/trademar
 import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
 import { HomeService } from './home.service';
 import dayjs from 'dayjs/esm';
+import { FirmBannerComponent } from '../../firm-banner/firm-banner.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -52,7 +53,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
     NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent,RatingReviewComponent,TrademarkPlanCardsComponent, FooterV2Component,
-    BlogMarkdownComponent,LeadFormComponent
+    BlogMarkdownComponent,LeadFormComponent, FirmBannerComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',
