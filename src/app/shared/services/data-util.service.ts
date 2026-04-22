@@ -21,7 +21,7 @@ export interface FileLoadError {
 })
 export class DataUtils {
 
-  constructor(private readonly http: HttpClient){
+  constructor(private readonly http: HttpClient) {
 
   }
 
@@ -66,7 +66,7 @@ export class DataUtils {
    * @returns an observable that loads file to form field and completes if sussessful
    *      or returns error as FileLoadError on failure
    */
-  loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean, fileForm =editForm): Observable<void> {
+  loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean, fileForm = editForm): Observable<void> {
     return new Observable((observer: Observer<void>) => {
       const eventTarget: HTMLInputElement | null = event.target as HTMLInputElement | null;
       if (eventTarget?.files?.[0]) {
@@ -141,14 +141,14 @@ export class DataUtils {
     return size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' bytes'; // NOSONAR
   }
 
-  downloadIcon(filePath:string) {
+  downloadIcon(filePath: string) {
     const url = 'files/'.concat(filePath);
-    return this.http.get(environment.BaseApiUrl+url, {responseType:'blob'})
-    .pipe(switchMap(v => this.blobToBase64(v)))      
+    return this.http.get(environment.BaseApiUrl + url, { responseType: 'blob' })
+      .pipe(switchMap(v => this.blobToBase64(v)))
   }
-  blobToBase64(blob: Blob):Observable<string> {
+  blobToBase64(blob: Blob): Observable<string> {
     return new Observable((subscriber) => {
-      let  reader  = new FileReader();
+      let reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.addEventListener("load", () => {
         const base64 = reader.result?.toString().split(',')[1] || '';
@@ -156,5 +156,32 @@ export class DataUtils {
       })
       reader.onerror = () => subscriber.error();
     })
+  }
+
+  generateFaqSchema(faqData: { question: string; answer: string }[]) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqData.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    };
+  }
+  generateHowToSchema(steps:any[]) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to do a Trademark Search in India",
+      "step": steps.map(step => ({
+        "@type": "HowToStep",
+        "name": step,
+        "text": step
+      }))
+    };
   }
 }

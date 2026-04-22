@@ -22,7 +22,9 @@ export interface BlogData{
     createdAt?:dayjs.Dayjs | null;
     updatedAt?:dayjs.Dayjs | null
     campaignBlock?:CampaignBlock
-    backgroundColor?:string
+    backgroundColor?:string;
+    faqs:Faq[];
+    howTo:HowTo[]
 
 
 }
@@ -91,3 +93,14 @@ export interface CampaignBlock{
     campaignImage?:string
 }
 
+export interface Faq{
+    id:number;
+    question:string;
+    answer:string;
+}
+
+export interface HowTo{
+    id:number;
+    stepTitle:string;
+    stepDescription:string;
+}

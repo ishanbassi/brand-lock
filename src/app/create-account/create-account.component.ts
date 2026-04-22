@@ -126,7 +126,7 @@ export class CreateAccountComponent implements OnInit {
       'https://www.google.com/recaptcha/api.js?render=6LcTLeYrAAAAACoTM9NIteBSX7ucj0ZRqDmQJF82'
     );
     this.title.setTitle(
-      'Trademark Registration in India @ ₹999 | Trademarx'
+      'Trademark Registration in India @ ₹1,499 | Trademarx'
     );
 
     this.meta.updateTag({

@@ -1,91 +1,153 @@
-<section class="plans__container">
-  <div class="plans">
-    <div class="plansHero">
-      <h3 class="plansHero__title">Choose the Right Plan for Your Trademark Journey</h3>
-      <p class="plansHero__subtitle">Select a plan that fits your needs — from quick application filing to complete
-        end-to-end trademark protection.</p>
-    </div>
-    <div class="planItem__container">
-      <!--pro plan starts -->
-      <div class="planItem planItem--pro">
-        <div class="card">
-          <div class="card__header">
-            <!-- <div class="card__icon symbol"></div> -->
-            <h2>Trademark Filing</h2>
-            <!-- <div class="card__label label">Best Value</div> -->
-          </div>
-          <div class="card__desc">Best for individuals who just want to secure an application number quickly.</div>
-        </div>
-
-        <div class="price">₹999
-          <span class="govt-fees">
-            <span>+</span>
-            <a class="govt-fees-popup-link" (click)="openGovtFeesPopup(999)">
-              <span>Govt. Fees</span>
-            </a>
-            <mat-icon class="fees-info-icon">help_outline</mat-icon>
-          </span>
-
-        </div>
-
-
-        <ul class="featureList">
-          <li>Trademark Application Filing</li>
-          <li>Support via Call, Chat & Email</li>
-          <li>Trademark Certificate</li>
-          <li>Regular follow-ups until Trademark is Published in Journal</li>
-          <li>Continuous updates on your application status</li>
-          <li class="disabled">Reply to Examination Report</li>
-          <li class="disabled">Handling of Hearings</li>
-        </ul>
-
-        <button (click)="navigate(999)" class="button button--pink button--theme">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}
-        </button>
-        <div class="text-center mt-2">
-          <a *ngIf="showPayLater"  class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
-        </div>
-      </div>
-      <!--pro plan ends -->
-
-      <!--entp plan starts -->
-      <div class="planItem planItem--entp">
-        <div class="card">
-          <div class="card__header">
-            <!-- <div class="card__icon"></div> -->
-            <h2>Trademark Filing + Complete Process till Publication</h2>
-          </div>
-          <div class="card__desc">Ideal for businesses who want end-to-end support until publication.</div>
-        </div>
-
-        <div class="price">₹2999
-          <span>
-            <span>+</span>
-            <a class="govt-fees-popup-link" (click)="openGovtFeesPopup(2999)">
-              <span>Govt. Fees</span>
-            </a>
-            <mat-icon class="fees-info-icon">help_outline</mat-icon>
-          </span>
-
-        </div>
-
-
-        <ul class="featureList">
-          <li>Trademark Application Filing</li>
-          <li>Support via Call, Chat & Email</li>
-          <li>Trademark Certificate</li>
-          <li>Regular follow-ups until Trademark is Published in Journal</li>
-          <li>Continuous updates on your application status</li>
-          <li>Reply to Examination Report</li>
-          <li>Handling of Hearings</li>
-        </ul>
-
-        <button (click)="navigate(2999)" class="button button--white">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}} </button>
-        <div class="text-center mt-2">
-          <a  *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
-        </div>
-      </div>
-      <!--entp plan ends -->
-
-    </div>
+<div class="section">
+  <div class="header">
+    <h3>Choose the Right Plan for Your Trademark Journey</h3>
+    <p>Select a plan that fits your needs — from quick application filing to complete end-to-end trademark protection.
+    </p>
   </div>
-</section>
+
+  <div class="plans">
+
+    <!-- Plan 1 -->
+    <div class="card">
+      <div class="plan-name">Trademark Filing</div>
+      <div class="plan-desc">Best for individuals who want to secure an application number quickly.</div>
+      <div class="price">
+        <span class="price-main">₹1,499</span>
+        <span class="price-sub" (click)="openGovtFeesPopup(1499)">+ Govt. Fees</span>
+      </div>
+      <div class="govt">One-time professional fee</div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Application Filing</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Support via Call, Chat &amp; Email</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Certificate</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Regular follow-ups until Published in Journal</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Continuous application status updates</li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Reply to Examination Report</li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Handling of Hearings</li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Free Business Website</li>
+      </ul>
+      <button (click)="navigate(1499)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
+      <div class="text-center mt-2">
+        <a *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
+      </div>
+    </div>
+
+    <!-- Plan 2 (Featured) -->
+    <div class="card featured">
+      <span class="badge">⭐ Most Popular</span>
+      <div class="plan-name">Trademark + Website</div>
+      <div class="plan-desc">Perfect for new businesses wanting a professional online presence alongside trademark
+        protection.</div>
+      <div class="price">
+        <span class="price-main">₹1,999</span>
+        <a class="price-sub" (click)="openGovtFeesPopup(1999)">+ Govt. Fees</a>
+
+      </div>
+      <div class="govt">One-time professional fee</div>
+      <div class="website-tag">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="6" cy="6" r="5" />
+          <path d="M6 1c-1.5 1.5-2 3-2 5s.5 3.5 2 5" />
+          <path d="M6 1c1.5 1.5 2 3 2 5s-.5 3.5-2 5" />
+          <line x1="1" y1="6" x2="11" y2="6" />
+        </svg>
+        Includes Free Business Website
+      </div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Application Filing</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Support via Call, Chat &amp; Email</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Certificate</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Regular follow-ups until Published in Journal</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Continuous application status updates</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> <strong>Free Business Website</strong></li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Reply to Examination Report</li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Handling of Hearings</li>
+      </ul>
+      <button (click)="navigate(1999)" class="btn btn-primary">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
+      <div class="text-center mt-2">
+        <a *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
+      </div>
+    </div>
+
+    <!-- Plan 3 -->
+    <div class="card">
+      <span class="badge accent">Complete Protection</span>
+      <div class="plan-name">Filing + Full Process</div>
+      <div class="plan-desc">Ideal for businesses who want end-to-end support all the way until publication.</div>
+      <div class="price">
+        <span class="price-main">₹2,999</span>
+        <a class="price-sub" (click)="openGovtFeesPopup(2999)">+ Govt. Fees</a>
+      </div>
+      <div class="govt">One-time professional fee</div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Application Filing</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Support via Call, Chat &amp; Email</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Trademark Certificate</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Regular follow-ups until Published in Journal</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> Continuous application status updates</li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> <strong>Reply to Examination Report</strong></li>
+        <li><span class="check"><svg viewBox="0 0 12 12">
+              <polyline points="2,6 5,9 10,3" />
+            </svg></span> <strong>Handling of Hearings</strong></li>
+        <li class="off"><span class="cross"><svg viewBox="0 0 12 12">
+              <line x1="3" y1="3" x2="9" y2="9" />
+              <line x1="9" y1="3" x2="3" y2="9" />
+            </svg></span> Free Business Website</li>
+      </ul>
+      <button (click)="navigate(2999)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
+      <div class="text-center mt-2">
+        <a *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
+      </div>
+    </div>
+
+  </div>
+</div>
