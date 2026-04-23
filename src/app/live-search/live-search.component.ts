@@ -153,7 +153,6 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   selectResult(result: ITrademark): void {
     result.name && this.searchControl.setValue(result.name, { emitEvent: false });
     this.close();
-    console.log('Selected:', result); // replace with your navigation / action
   }
 
   highlight(text?: string|null): string {
@@ -196,7 +195,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   }
 
   onSearchClick() {
-    this.router.navigate(['/search'], {queryParams:{trademark:this.query}})
+    this.router.navigate(['/search/results'], {queryParams:{trademark:this.query}})
     this.isOpen  = false;
 
   }

@@ -1,25 +1,18 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, inject, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { finalize } from 'rxjs';
+import { RouterModule } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { LeadFormService } from '../../models/lead-form.service';
 import { ITrademark } from '../../models/trademark.model';
-import { LoadingService } from '../common/loading.service';
+import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
-import { TrademarkService } from '../shared/services/trademark.service';
-import { SharedModule } from '../shared/shared.module';
+import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
-import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
-import { RatingReviewComponent } from '../rating-review/rating-review.component';
 
 export interface Statistic {
   value: string;
@@ -29,33 +22,26 @@ export interface Statistic {
 
 @Component({
   selector: 'app-trademark-search',
-  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,SearchCtaSectionComponent,TrademarkPulseComponent, FirmBannerComponent,RatingReviewComponent],
+  imports: [NavbarV2Component, LiveSearchComponent, CommonModule, RouterModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,TrademarkPulseComponent, FirmBannerComponent,RatingReviewComponent],
   templateUrl: './trademark-search.component.html',
   styleUrl: './trademark-search.component.scss'
 })
 export class TrademarkSearchComponent implements OnInit {
-
-  protected leadFormService = inject(LeadFormService);
-  leadForm = this.leadFormService.createLeadFormGroup();
-  // In parent component
+  
   constructor(
-    private readonly route: ActivatedRoute,
-    private readonly trademarkService: TrademarkService,
-    private readonly loadingService: LoadingService,
+
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(DOCUMENT) private document: Document,
     private title: Title,
     private meta: Meta,
 
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
 
   }
 
   query?: string | null;
   results: ITrademark[] | null = [];
   baseUrl = environment.BaseApiUrl;
-  private isBrowser = false;
   isLoading = false;
   totalResults = 0;
   @ViewChild('searchBoxWrapper') searchBoxWrapper!: ElementRef;
@@ -79,40 +65,8 @@ export class TrademarkSearchComponent implements OnInit {
   ];
 
 
-
-
-
-
-
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
-      const q = params.get('trademark');
-      if (q) {
-
-        if (this.isBrowser) {
-          this.loadingService.show();
-        }
-        this.isLoading = true;
-        this.query = q;
-        this.trademarkService.quickSearch(this.query)
-          .pipe(
-            finalize(() => {
-              if (this.isBrowser) {
-                this.loadingService.hide();
-              }
-              this.isLoading = false;
-            })
-          )
-          .subscribe(res => {
-            console.log(res.body)
-            this.results = res.body
-            this.totalResults = this.results?.length || 0;
-          })
-      }
-      else{
-        this.query = null;
-      }
-    });
+    
     this.setSeoTags();
   }
 
@@ -145,7 +99,6 @@ export class TrademarkSearchComponent implements OnInit {
   }
 
   focusOnSearchBar() {
-    console.log(this.searchBoxWrapper)
     if (this.searchBoxWrapper) {
       const firstInput = this.searchBoxWrapper.nativeElement.querySelector('input#trademarkSearchBar');
       if (firstInput) {
@@ -187,9 +140,7 @@ export class TrademarkSearchComponent implements OnInit {
     };
   }
 
-  trackByIndex(index: number): number {
-    return index;
-  }
+  
 
 
 

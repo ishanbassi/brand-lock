@@ -27,7 +27,6 @@ export class TrademarkPulseComponent implements OnInit {
     this.dataService.getTrademarkDailyStats()
     .pipe(
       map(data => {
-        console.log(data)
         if(data.body?.recentFilings){
           data.body.recentFilings = data.body?.recentFilings.map(tm => this.trademarkService.convertDate(tm))
         }

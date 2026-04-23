@@ -254,10 +254,25 @@ label {
     --section-bg: #f8fafc;
     --card-bg: #ffffff;
     --border-color: #e5e7eb;
+    --border-light: #f3f4f6;
     --gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     --hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --success: #10b981;
+    --warning:#f59e0b;
+    --error: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --section-bg: #f8fafc;
+    --mark-bg: rgba(37, 99, 235, 0.12);
+    --mark-color: #1e40af;
+    
 }
 
 html {
@@ -342,7 +357,7 @@ body {
     padding: 1rem 0;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 999999999;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95);
@@ -1505,4 +1520,19 @@ body {
 
 .flex-row {
     flex-direction: row !important;
+}
+.search-box-wrapper {
+  width: 100%;
+  max-width: 720px;
+  animation-delay: 0.2s;
+  margin: 0 auto 32px;
+
+  // Add subtle elevation to make it stand out
+  app-live-search {
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+    position: relative;
+    z-index: 99999;
+    overflow: visible;
+  }
 }

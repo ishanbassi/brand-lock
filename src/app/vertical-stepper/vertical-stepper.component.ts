@@ -53,6 +53,7 @@ export class VerticalStepperComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:scroll')
   onWindowScroll() {
+    if(!this.isBrowser) return;
     this.checkScrollPosition();
   }
 

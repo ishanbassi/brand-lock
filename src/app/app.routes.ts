@@ -160,6 +160,13 @@ export const routes: Routes = [
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
+        path: "search/results",
+        loadComponent: () => import('./trademark-search-result/trademark-search-result.component').then(m => m.TrademarkSearchResultComponent),
+        title: "Trademark Search In India| Check brand availability online",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
         path: "trademarks/:url",
         loadComponent: () => import('./tradmark-detail/tradmark-detail.component').then(m => m.TradmarkDetailComponent),
         title: "Trademark Search In India| Check brand availability online",

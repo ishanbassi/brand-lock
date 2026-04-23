@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkSearchFAQSchema } from '../enums/trademark-search-faq';
 import { BlogService } from '../shared/services/blog-service.service';
 import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
+import { isPlatformBrowser } from '@angular/common';
 export interface Benefit {
   icon: string;
   title: string;
@@ -31,15 +32,23 @@ export interface FAQ {
 })
 export class TrademarkSearchContentComponent implements OnInit {
   blog?: BlogData;
+  private isBrowser = false;
+
   constructor(
     private blogService: BlogService,
-  ) { }
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(TrademarkSearchFAQSchema);
-    document.head.appendChild(script);
+    if (this.isBrowser) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(TrademarkSearchFAQSchema);
+      document.head.appendChild(script);
+    }
+
     this.blogService.getBlogBySlug("complete-guide-to-trademark-search-in-india").subscribe(res => {
       this.blog = res?.data[0];
       if (!this.blog) return;
@@ -269,7 +278,6 @@ export class TrademarkSearchContentComponent implements OnInit {
 
   toggleFaq(event: any) {
     const btn = event.target;
-    console.log(btn)
     const item = btn.closest('.faq-item');
     const answer = item.querySelector('.faq-answer');
     const isOpen = item.classList.contains('open');
