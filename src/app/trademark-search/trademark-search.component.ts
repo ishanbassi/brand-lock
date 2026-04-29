@@ -110,14 +110,14 @@ export class TrademarkSearchComponent implements OnInit {
 
   }
   setSeoTags() {
-    this.title.setTitle('New Trademark Search India - Find a trademark');
+    this.title.setTitle('Check Trademark Availability | Free Trademark Search Report | Trademarx');
     this.meta.updateTag({
       name: 'description',
       content: `Run a free trademark search in India. Instantly check brand name availability, phonetic matches, and class-wise conflicts before trademark filing.`
     });
     this.meta.updateTag({
       property: 'og:title',
-      content: 'Free Trademark Search India - Check Brand Name Availability'
+      content: 'Check Trademark Availability | Free Trademark Search Report | Trademarx'
     });
 
     this.meta.updateTag({
