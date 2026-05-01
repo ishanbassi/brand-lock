@@ -9,8 +9,8 @@ import { SharedModule } from '../shared/shared.module';
 })
 export class MobileBottomNavbarComponent {
   // Replace with your actual contact details
-  phoneNumber = '+919878987497';
-  whatsappNumber = '+919878987497';
+  phoneNumber = '+916239771006';
+  whatsappNumber = '+916239771006';
 
   @Input() showReportButton = false;
   
