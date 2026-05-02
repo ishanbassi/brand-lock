@@ -1,2 +1,25 @@
 <markdown class="blog-content" [data]="blog?.content" (ready)="onMarkdownReady()">
-                        </markdown>
+</markdown>
+<section class="faq-section">
+    <div class="container">
+        <h2 class="faq-heading">Frequently Asked Questions</h2>
+        <div class="faq-list" id="faqList">
+
+            <div class="faq-item" *ngFor="let faq of blog?.faqs; index as i">
+                <button class="faq-question" (click)="toggleFaq($event)">
+                    <span class="faq-num">{{i+1}}</span>
+                    <span class="faq-q-text">{{faq.question}}</span>
+                    <span class="faq-icon"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round">
+                            <line x1="6" y1="1" x2="6" y2="11" />
+                            <line x1="1" y1="6" x2="11" y2="6" />
+                        </svg></span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        {{faq.answer}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

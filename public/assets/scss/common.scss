@@ -1536,3 +1536,134 @@ body {
     overflow: visible;
   }
 }
+
+.faq-section {
+  max-width: 780px;
+  margin: 0 auto;
+  background-color: transparent !important;
+}
+
+.faq-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.faq-heading {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 600;
+  color: #0f0f0d;
+  line-height: 1.25;
+  margin-bottom: 0.6rem;
+}
+
+.faq-subhead {
+  font-size: 15px;
+  color: #5a5a52;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e2e0d8;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.faq-item {
+  border-bottom: 1px solid #e2e0d8;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.faq-question:hover {
+  background: #faf9f5;
+}
+
+.faq-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 22px;
+  padding-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+.faq-q-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0f0f0d;
+  line-height: 1.45;
+}
+
+.faq-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #c8c6be;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: background 0.2s, border-color 0.2s, transform 0.25s;
+}
+
+.faq-icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: #6b6b62;
+  transition: stroke 0.2s, transform 0.25s;
+}
+
+.faq-item.open .faq-icon {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: rotate(45deg);
+}
+
+.faq-item.open .faq-icon svg {
+  stroke: #fff;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer-inner {
+  padding: 0 1.4rem 1.4rem 3.2rem;
+  font-size: 14.5px;
+  color: #3d3d38;
+  line-height: 1.72;
+}
+
+.faq-answer-inner strong {
+  color: #0f0f0d;
+  font-weight: 500;
+}
+
