@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output, PLATFORM_ID } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
 import { BlogData, CampaignBlock } from '../../models/blog.model';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -10,10 +10,11 @@ import { DataUtils } from '../shared/services/data-util.service';
     templateUrl: './blog-markdown.component.html',
     styleUrl: './blog-markdown.component.scss'
 })
-export class BlogMarkdownComponent implements OnInit {
+export class BlogMarkdownComponent implements OnInit , OnDestroy{
 
     @Input()
     blog?: BlogData;
+  private faqSchemaScript!: HTMLScriptElement;
 
     @Output()
     markdownReady: EventEmitter<boolean> = new EventEmitter();
@@ -27,12 +28,17 @@ export class BlogMarkdownComponent implements OnInit {
         this.isBrowser = isPlatformBrowser(platformId);
 
     }
+    ngOnDestroy(): void {
+    if(this.isBrowser && this.faqSchemaScript){
+      document.head.removeChild(this.faqSchemaScript);
+    }
+  }
     ngOnInit() {
         if (!this.isBrowser || !this.blog?.faqs) return;
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.blog?.faqs));
-        document.head.appendChild(script);
+        this.faqSchemaScript = document.createElement('script');
+        this.faqSchemaScript.type = 'application/ld+json';
+        this.faqSchemaScript.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.blog?.faqs));
+        document.head.appendChild(this.faqSchemaScript);
     }
 
     onMarkdownReady() {

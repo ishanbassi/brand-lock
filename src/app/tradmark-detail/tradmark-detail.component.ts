@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { FooterV2Component } from '../footer-v2/footer-v2.component';
@@ -22,11 +22,13 @@ import { DataUtils } from '../shared/services/data-util.service';
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })
-export class TradmarkDetailComponent {
+export class TradmarkDetailComponent implements OnInit, OnDestroy {
   trademark?: ITrademark | null;
   private isBrowser = false;
   baseUrl = environment.BaseApiUrl;
   whatsappQuery:string = '';
+  private faqSchemaScript!: HTMLScriptElement;
+
 
 
   constructor(
@@ -42,6 +44,12 @@ export class TradmarkDetailComponent {
 
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+
+  }
+  ngOnDestroy(): void {
+    if(this.isBrowser && this.faqSchemaScript){
+      document.head.removeChild(this.faqSchemaScript);
+    }
 
   }
   ngOnInit(): void {
@@ -64,10 +72,10 @@ export class TradmarkDetailComponent {
       .subscribe(res => {
          this.trademark = res.body;
          if(this.isBrowser && this.trademark?.faqs){
-          const script = document.createElement('script');
-          script.type = 'application/ld+json';
-          script.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.trademark.faqs));
-          document.head.appendChild(script);
+          this.faqSchemaScript = document.createElement('script');
+          this.faqSchemaScript.type = 'application/ld+json';
+          this.faqSchemaScript.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.trademark.faqs));
+          document.head.appendChild(this.faqSchemaScript);
          }
 
         })

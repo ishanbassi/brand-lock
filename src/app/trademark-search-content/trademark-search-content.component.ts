@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output, PLATFORM_ID } from '@angular/core';
+import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkSearchFAQSchema } from '../enums/trademark-search-faq';
 import { BlogService } from '../shared/services/blog-service.service';
@@ -30,9 +30,11 @@ export interface FAQ {
   templateUrl: './trademark-search-content.component.html',
   styleUrl: './trademark-search-content.component.scss'
 })
-export class TrademarkSearchContentComponent implements OnInit {
+export class TrademarkSearchContentComponent implements OnInit, OnDestroy {
   blog?: BlogData;
   private isBrowser = false;
+  private faqSchemaScript!: HTMLScriptElement;
+
 
   constructor(
     private blogService: BlogService,
@@ -40,13 +42,18 @@ export class TrademarkSearchContentComponent implements OnInit {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
+  ngOnDestroy(): void {
+    if(this.isBrowser && this.faqSchemaScript){
+      document.head.removeChild(this.faqSchemaScript);
+    }
+  }
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.text = JSON.stringify(TrademarkSearchFAQSchema);
-      document.head.appendChild(script);
+      this.faqSchemaScript = document.createElement('script');
+      this.faqSchemaScript.type = 'application/ld+json';
+      this.faqSchemaScript.text = JSON.stringify(TrademarkSearchFAQSchema);
+      document.head.appendChild(this.faqSchemaScript);
     }
 
     this.blogService.getBlogBySlug("complete-guide-to-trademark-search-in-india").subscribe(res => {
