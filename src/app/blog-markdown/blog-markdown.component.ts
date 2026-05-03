@@ -33,7 +33,6 @@ export class BlogMarkdownComponent implements OnInit {
         script.type = 'application/ld+json';
         script.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.blog?.faqs));
         document.head.appendChild(script);
-        console.log(document.head)
     }
 
     onMarkdownReady() {

@@ -13,6 +13,7 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
+import { DataUtils } from '../shared/services/data-util.service';
 
 
 @Component({
@@ -32,12 +33,12 @@ export class TradmarkDetailComponent {
     private route: ActivatedRoute,
     private title: Title,
     private meta: Meta,
-    private router: Router,
     private trademarkService: TrademarkService,
     private loadingService: LoadingService,
     private toastService: ToastrService,
     @Inject(DOCUMENT) private document: Document,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private dataUtils:DataUtils
 
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -62,6 +63,12 @@ export class TradmarkDetailComponent {
       )
       .subscribe(res => {
          this.trademark = res.body;
+         if(this.isBrowser && this.trademark?.faqs){
+          const script = document.createElement('script');
+          script.type = 'application/ld+json';
+          script.text = JSON.stringify(this.dataUtils.generateFaqSchema(this.trademark.faqs));
+          document.head.appendChild(script);
+         }
 
         })
   }
