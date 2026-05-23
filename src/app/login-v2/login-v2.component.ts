@@ -15,9 +15,6 @@ import { FormsModule } from '@angular/forms';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { MatIcon } from '@angular/material/icon';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
-import { TopHeaderComponent } from '../top-header/top-header.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 
 
 @Component({
@@ -25,7 +22,7 @@ import { FooterV2Component } from '../footer-v2/footer-v2.component';
   templateUrl: './login-v2.component.html',
   styleUrl: './login-v2.component.scss',
   imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,
-    MatIcon,CommonRegisterLoginMobileSectionComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component]
+    MatIcon,CommonRegisterLoginMobileSectionComponent]
 })
 export class LoginV2Component implements OnInit{
  onClickValidation: boolean = false;

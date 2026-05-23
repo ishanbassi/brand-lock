@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { TestimonialsList } from '../enums/TestimonialsList';
+import { TeamSectionComponent } from '../team-section/team-section.component';
 
 @Component({
   selector: 'app-rating-review',
   templateUrl: './rating-review.component.html',
   styleUrl: './rating-review.component.scss',
-  imports:[CommonModule]
+  imports:[CommonModule,TeamSectionComponent]
 })
 export class RatingReviewComponent implements OnInit {
 

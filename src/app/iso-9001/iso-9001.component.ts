@@ -15,14 +15,11 @@ import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component'
 import { IsoCertificationProcessList } from '../enums/IsoCertificationProcessList';
 import { isoFaqs } from '../enums/isoFaq';
 import { FaqComponent } from '../faq/faq.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
-import { TopHeaderComponent } from '../top-header/top-header.component';
 import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 
@@ -30,7 +27,7 @@ import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
   selector: 'app-iso-9001',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent, FooterV2Component,
+    MatProgressSpinnerModule, CountUpDirective, FaqComponent, 
     BlogMarkdownComponent, LeadFormComponent, RatingReviewComponent,FirmBannerComponent
   ],
   templateUrl: './iso-9001.component.html',

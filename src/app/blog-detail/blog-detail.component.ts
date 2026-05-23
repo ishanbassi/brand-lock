@@ -6,15 +6,12 @@ import dayjs from 'dayjs/esm';
 import { environment } from '../../environments/environment';
 import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
-import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [RouterLink, SharedModule, BlogMarkdownComponent, TopHeaderComponent, NavbarV2Component, FooterV2Component],
+  imports: [RouterLink, SharedModule, BlogMarkdownComponent],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })

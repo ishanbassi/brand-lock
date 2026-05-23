@@ -25,10 +25,7 @@ import { RegistrationProcessList } from '../../enums/RegistrationProcessList';
 import { RequiredDocumentsList } from '../../enums/RequiredDocumentsList';
 import { TestimonialsList } from '../../enums/TestimonialsList';
 import { FaqComponent } from '../../faq/faq.component';
-import { FooterV2Component } from '../../footer-v2/footer-v2.component';
-import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
-import { NavbarV2Component } from '../../navbar-v2/navbar-v2.component';
 import { RatingReviewComponent } from '../../rating-review/rating-review.component';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
 import { BlogService } from '../../shared/services/blog-service.service';
@@ -37,12 +34,12 @@ import { LeadService } from '../../shared/services/lead.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
 import { SharedModule } from '../../shared/shared.module';
-import { TopHeaderComponent } from '../../top-header/top-header.component';
 import { TrademarkPlanCardsComponent } from '../../trademark-plan-cards/trademark-plan-cards.component';
 import { VerticalStepperComponent } from '../../vertical-stepper/vertical-stepper.component';
 import { HomeService } from './home.service';
 import dayjs from 'dayjs/esm';
 import { FirmBannerComponent } from '../../firm-banner/firm-banner.component';
+import { LeadFormComponent } from '../../lead-form/lead-form.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -52,8 +49,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent, NavbarV2Component, TopHeaderComponent,RatingReviewComponent,TrademarkPlanCardsComponent, FooterV2Component,
-    BlogMarkdownComponent,LeadFormComponent, FirmBannerComponent
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',

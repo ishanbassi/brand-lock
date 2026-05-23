@@ -121,6 +121,20 @@ body { margin: 0}
         font-size: 14px;
     }
 }
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
 
 .mat-density-2 {
   @include mat.all-component-densities(-2);
@@ -155,3 +169,8 @@ body { margin: 0}
 
 // Reboot (basic reset — optional but recommended)
 @import 'bootstrap/scss/reboot';
+
+
+.toast-top-center, .toast-top-right, .toast-top-left, .toast-top-full-width{
+  z-index: 999999999 !important;
+}

@@ -370,9 +370,8 @@ body {
 }
 
 .logo img {
-    height: 45px;
     transition: var(--transition);
-    width: 110px;
+    width: 150px;
 }
 
 .logo img:hover {
@@ -383,6 +382,7 @@ body {
     display: flex;
     list-style: none;
     gap: 2.5rem;
+    margin-bottom: 0;
 }
 
 .nav-links a {

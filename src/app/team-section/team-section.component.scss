@@ -1,0 +1,208 @@
+  .team-section {
+    background: #f8fafc;
+    padding: 4rem 2rem;
+    font-family: var(--font-sans);
+  }
+  .section-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2563eb;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 0.75rem;
+    line-height: 1.3;
+  }
+  .section-desc {
+    font-size: 15px;
+    color: #6b7280;
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .team-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 0.5px solid #e5e7eb;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .team-card:hover {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+  }
+  .card-photo {
+    width: 100%;
+    height: 240px;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .team-member-img{
+    max-height: 100%;
+  }
+  .photo-placeholder {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: 1px;
+  }
+  .photo-label {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-size: 11px;
+    color: #93c5fd;
+    background: rgba(37,99,235,0.15);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .bar-accent {
+    height: 3px;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+  .member-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0 0 2px;
+  }
+  .member-role {
+    font-size: 13px;
+    color: #2563eb;
+    font-weight: 500;
+    margin: 0 0 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+    &a:hover {
+      color: #2563eb;
+
+    }
+  }
+  .contact-row i {
+    font-size: 15px;
+    color: #2563eb;
+    width: 16px;
+    flex-shrink: 0;
+  }
+  .contact-row a {
+    color: #6b7280;
+    text-decoration: none;
+  }
+  .contact-row a:hover { color: #2563eb; }
+  .divider {
+    border: none;
+    border-top: 0.5px solid #f3f4f6;
+    margin: 1rem 0;
+  }
+  .expertise-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin: 0 0 0.6rem;
+  }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 0.5px solid #bfdbfe;
+  }
+  .badge.accent {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+  }
+  .stat-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .stat {
+    flex: 1;
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #1f2937;
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: #9ca3af;
+    display: block;
+    margin-top: 1px;
+  }
+  .trust-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 860px;
+    margin: 2.5rem auto 0;
+    padding: 1.25rem 2rem;
+    background: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #e5e7eb;
+    flex-wrap: wrap;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .trust-item i {
+    font-size: 16px;
+    color: #2563eb;
+  }

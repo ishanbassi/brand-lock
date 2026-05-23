@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
 import { DefaultTopSectionComponent } from '../deafult-top-section/default-top-section.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-about-us',
-  imports: [DefaultTopSectionComponent,NavbarV2Component, TopHeaderComponent, FooterV2Component],
+  imports: [DefaultTopSectionComponent],
   templateUrl: './about-us.component.html',
   styleUrl: './about-us.component.scss'
 })

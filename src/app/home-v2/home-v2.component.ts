@@ -1,7 +1,4 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { TopHeaderComponent } from '../top-header/top-header.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { isPlatformBrowser } from '@angular/common';
@@ -13,11 +10,10 @@ import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
-import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component,RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent, FirmBannerComponent],
+  imports: [RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })

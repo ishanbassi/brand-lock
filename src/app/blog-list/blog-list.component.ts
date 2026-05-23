@@ -3,19 +3,16 @@ import { Meta, Title } from '@angular/platform-browser';
 import dayjs from 'dayjs/esm';
 import { environment } from '../../environments/environment';
 import { Blog } from '../../models/blog.model';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { RecentPostsComponent } from '../recent-posts/recent-posts.component';
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
-import { TopHeaderComponent } from '../top-header/top-header.component';
 import { ActivatedRoute } from '@angular/router';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule,RecentPostsComponent,TopHeaderComponent, NavbarV2Component, FooterV2Component, FirmBannerComponent],
+  imports: [SharedModule,RecentPostsComponent, FirmBannerComponent],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })

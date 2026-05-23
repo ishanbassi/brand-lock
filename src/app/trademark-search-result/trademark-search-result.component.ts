@@ -1,14 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
-import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
@@ -20,7 +17,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-trademark-search-result',
-  imports: [NavbarV2Component, LiveSearchComponent, SharedModule, ReactiveFormsModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, SearchCtaSectionComponent, FirmBannerComponent],
+  imports: [LiveSearchComponent, SharedModule, ReactiveFormsModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, SearchCtaSectionComponent, FirmBannerComponent],
   templateUrl: './trademark-search-result.component.html',
   styleUrl: './trademark-search-result.component.scss'
 })
@@ -92,7 +89,7 @@ export class TrademarkSearchResultComponent implements OnInit {
 
     if (!this.query) return text;
     const regex = new RegExp(`(${this.query})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
+    return text.substring(0,100).replace(regex, '<mark>$1</mark>');
   }
 
   getStatusClass(status?: string): string {

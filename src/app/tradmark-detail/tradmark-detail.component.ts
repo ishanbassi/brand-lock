@@ -1,7 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { TrademarkService } from '../shared/services/trademark.service';
@@ -18,7 +16,7 @@ import { DataUtils } from '../shared/services/data-util.service';
 
 @Component({
   selector: 'app-tradmark-detail',
-  imports: [SharedModule, NavbarV2Component, FooterV2Component,MobileBottomNavbarComponent, SearchCtaSectionComponent],
+  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent],
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })

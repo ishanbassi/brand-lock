@@ -44,9 +44,11 @@ export class LeadFormComponent implements OnInit {
 
   ) { }
   ngOnInit(): void {
+
     this.planTypeSubject?.subscribe(planType => {
       this.ctaForm.get('selectedPackage')?.setValue(planType);
       this.focusOnCtaForm();
+
     })
   }
 

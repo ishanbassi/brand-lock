@@ -4,11 +4,8 @@ import { Meta, Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ITrademark } from '../../models/trademark.model';
-import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
@@ -22,7 +19,7 @@ export interface Statistic {
 
 @Component({
   selector: 'app-trademark-search',
-  imports: [NavbarV2Component, LiveSearchComponent, CommonModule, RouterModule, FooterV2Component, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,TrademarkPulseComponent, FirmBannerComponent,RatingReviewComponent],
+  imports: [LiveSearchComponent, CommonModule, RouterModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,TrademarkPulseComponent,RatingReviewComponent],
   templateUrl: './trademark-search.component.html',
   styleUrl: './trademark-search.component.scss'
 })

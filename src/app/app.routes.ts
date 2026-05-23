@@ -4,6 +4,10 @@ import { AuthGuard } from './guards/auth.guard';
 export const routes: Routes = [
     {
         path: "",
+        loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
+        children:[
+    {
+        path: "",
         loadComponent: () => import('./home-v2/home-v2.component').then(m => m.HomeV2Component),
         title: "Trademarx",
         canActivate: [AuthGuard],
@@ -184,4 +188,6 @@ export const routes: Routes = [
         path: "**",
         redirectTo: "not-found"
     }
-];
+]
+    }
+]

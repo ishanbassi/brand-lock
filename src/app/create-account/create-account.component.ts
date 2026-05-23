@@ -22,22 +22,19 @@ import { LoadingService } from '../common/loading.service';
 import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
 import { TestimonialsList } from '../enums/TestimonialsList';
 import { FeaturesComponent } from '../features/features.component';
-import { FooterV2Component } from '../footer-v2/footer-v2.component';
-import { NavbarV2Component } from '../navbar-v2/navbar-v2.component';
 import { DataService } from '../shared/services/data.service';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ScriptLoaderService } from '../shared/services/script-loader.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { SharedModule } from '../shared/shared.module';
-import { TopHeaderComponent } from '../top-header/top-header.component';
 
 @Component({
   selector: 'app-create-account',
   imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, CommonRegisterLoginMobileSectionComponent, NgxIntlTelInputModule, NgxMaskDirective,
     ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
      MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule,  NavbarV2Component, TopHeaderComponent, FooterV2Component
+    NgxMaskDirective, MatProgressSpinnerModule
 
   ],
   templateUrl: './create-account.component.html',
