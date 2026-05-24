@@ -361,12 +361,14 @@ body {
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95);
+    min-height: 70px;
 }
 
 .navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 100%;
 }
 
 .logo img {
@@ -429,7 +431,6 @@ body {
     padding: 8rem 0;
     background: var(--section-bg);
     position: relative;
-    overflow: hidden;
 }
 
 .hero::before {
@@ -443,13 +444,14 @@ body {
     clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
-.hero .container {
+.hero .hero-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
     position: relative;
     z-index: 1;
+    margin-bottom: 30px;
 }
 
 .hero-content h1 {
@@ -1210,9 +1212,12 @@ body {
         transform: rotate(-45deg) translate(7px, -7px);
     }
 
-    .hero .container {
+    .hero .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
+        .hero-image{
+            display: none;
+        }
     }
 
     .hero-content h1 {

@@ -13,7 +13,7 @@ export class MobileBottomNavbarComponent {
   whatsappNumber = '+916239771006';
 
   @Input() showReportButton = false;
-  
+
   onCallClick(): void {
     window.location.href = `tel:${this.phoneNumber}`;
   }
@@ -28,15 +28,19 @@ export class MobileBottomNavbarComponent {
   }
 
   onGetReportClick(): void {
-  const currentUrl = window.location.href;
-  const message = encodeURIComponent(
-    `Hi! Can you send a detailed trademark report for ${currentUrl}?`
-  );
-  
-  window.open(
-    `https://wa.me/${this.whatsappNumber.replace(/\+/g, '')}?text=${message}`,
-    '_blank'
-  );
-}
+    const currentUrl = window.location.href;
+    let message = `Hi! Can you send a detailed trademark report. `
+    if (window.location.search) {
+      message = encodeURIComponent(
+        `Hi! Can you send a detailed trademark report for ${currentUrl}?`
+      );
+    }
+
+
+    window.open(
+      `https://wa.me/${this.whatsappNumber.replace(/\+/g, '')}?text=${message}`,
+      '_blank'
+    );
+  }
 
 }

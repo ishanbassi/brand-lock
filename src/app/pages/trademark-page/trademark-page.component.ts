@@ -40,6 +40,7 @@ import { HomeService } from './home.service';
 import dayjs from 'dayjs/esm';
 import { FirmBannerComponent } from '../../firm-banner/firm-banner.component';
 import { LeadFormComponent } from '../../lead-form/lead-form.component';
+import { LiveSearchComponent } from '../../live-search/live-search.component';
 declare let gtag: Function; // Add this at the top of your TypeScript file
 
 
@@ -49,7 +50,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent,LiveSearchComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',

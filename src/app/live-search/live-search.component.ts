@@ -143,6 +143,9 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
         if (this.activeIndex >= 0) {
           this.selectResult(this.results[this.activeIndex]);
         }
+        else{
+          this.onSearchClick();
+        }
         break;
       case 'Escape':
         this.close();

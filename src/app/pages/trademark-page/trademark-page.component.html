@@ -1,7 +1,5 @@
 
 
-<app-firm-banner></app-firm-banner>
-
 
 <div class="home-page" >
     <div class="top-section" [@fadeInOut]="animationState">
@@ -14,8 +12,7 @@
                             <div class="headings">
                                 <h1 class="main-heading">Trademark Registration in Just
 
-                                    <span class="tm-offer-price">₹1,499</span>
-                                </h1>
+                                    <span class="tm-offer-price">₹1,499</span> + govt. fees</h1>
                                 <p class="main-sub-heading">We simply trademark registration process for you. Completely
                                     online process. 20+ years of experience.</p>
                             </div>
@@ -23,7 +20,7 @@
 
                                 <div class="feature">
                                     <mat-icon>check_circle_outline</mat-icon>
-                                    <span>Instant Filing</span>
+                                    <span>One Filing</span>
                                 </div>
                                 <div class="feature">
                                     <mat-icon>check_circle_outline</mat-icon>
@@ -36,13 +33,7 @@
                                 </div>
 
                             </div>
-                            <section class="trust-section">
-                                <div class="stars">
-                                    <img loading="lazy" src="/assets/images/star-icon.png" class="star-icons" alt="star"
-                                        *ngFor="let _ of [].constructor(5)">
-                                </div>
-                                <div class="content">Trusted by 3,000+ Startups & Entrepreneurs</div>
-                            </section>
+
                         </div>
 
 
@@ -53,46 +44,14 @@
                     </div>
 
                 </div>
+
+            </div>
+            <div class="container search-container">
+                <app-live-search></app-live-search>
             </div>
 
         </div>
-        <div class="benefits-section-wrapper">
-            <div class="container-xxl">
-                <div class="row">
-                    <section class="benefits-section col-lg-7 row" [@fadeInOut]="animationState">
 
-                        <div class="benefit col-12 col-sm-12 col-lg-4">
-                            <mat-icon>lock</mat-icon>
-                            <div class="content">
-                                <span>
-                                    100%
-                                </span>
-                                <span>Secure</span>
-                            </div>
-                        </div>
-                        <div class="benefit col-12 col-sm-12 col-lg-4">
-                            <mat-icon>verified_user</mat-icon>
-                            <div class="content">
-                                <span>
-                                    Government
-                                </span>
-                                <span>Certified Agent</span>
-                            </div>
-                        </div>
-                        <div class="benefit col-12 col-sm-12 col-lg-4">
-                            <mat-icon>access_time</mat-icon>
-                            <div class="content">
-                                <span>
-                                    10-minutes
-                                </span>
-                                <span>Response Time</span>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-
-        </div>
         <div class="stats-banner" [@fadeInOut]="animationState">
             <div class="container-xxl">
                 <div class="row content">

@@ -10,10 +10,11 @@ import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
+import { LiveSearchComponent } from '../live-search/live-search.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent],
+  imports: [RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent, LiveSearchComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })
@@ -178,7 +179,7 @@ ngOnDestroy(): void {
 
   ngOnInit(): void {
       this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
-      this.title.setTitle('Trademark Registration, ISO Certification & Business Registrations in India');
+      this.title.setTitle('Trademark Registration, Trademark Search & ISO Certification | Trademarx');
       this.meta.updateTag({ name: 'description', content: 'Get trademark registration, ISO certification, MSME registration, and import export code services in India. Fast process, affordable pricing, expert support.' });
       this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
 
