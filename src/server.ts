@@ -8,7 +8,6 @@ import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { environment } from './environments/environment';
-import { Blog } from './models/blog.model';
 import path from 'path';
 import fs from 'fs';
 import { createProxyMiddleware } from 'http-proxy-middleware'; // option A
@@ -23,12 +22,25 @@ let staticUrls: string[] = []
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 const __dirname = path.dirname(serverDistFolder);
-const distFolder = resolve(process.cwd(), 'dist/brand-lock/browser');
 
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 const SITE_URL = 'https://trademarx.in';
+
+// Security headers
+app.use((_req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://cms.trademarx.in https://api.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com; frame-src https://www.google.com; object-src 'none'; base-uri 'self';");
+  next();
+});
+
+// Permanent redirects for previously indexed/shared dead URLs
+app.get('/articles', (_req, res) => res.redirect(301, '/blogs'));
+app.get('/iso', (_req, res) => res.redirect(301, '/iso/iso-9001-2015'));
 
 
 export function walk(dir: string, urlPath = '') {
@@ -73,34 +85,42 @@ app.use(
   }),
 );
 
-app.get('/sitemap.xml', async (req, res) => {
+const STATIC_PAGES = [
+  { loc: `${SITE_URL}/`,                    lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/trademark`,           lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/search`,              lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/iso/iso-9001-2015`,   lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/about-us`,            lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/blogs`,               lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/contact`,             lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/privacy-policy`,      lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/terms-and-conditions`,lastmod: '2026-06-01' },
+];
+
+interface RawBlogEntry { slug: string; updatedAt: string; }
+
+app.get('/sitemap.xml', async (_req, res) => {
   try {
-    const SITE_URL = 'https://trademarx.in';
-    const response = (await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`));
-    const json: Blog = await response.json();
-    staticUrls = [];
-    walk(distFolder);
-    
-    const urls = json.data.map(blog => `
+    const response = await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`);
+    const json: { data: RawBlogEntry[] } = await response.json();
+
+    const blogUrls = json.data.map(blog => `
     <url>
       <loc>${SITE_URL}/blogs/${blog.slug}</loc>
-      <lastmod>${blog.updatedAt}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.7</priority>
-    </url>
-  `);
-    const staticUrlsList = staticUrls.map(url => `
-      <url>
-        <loc>${url}</loc>
-        <changefreq>weekly</changefreq>
-        <priority>${url.includes('/blogs/') ? '0.8' : url.includes('/search') ? '1':  '0.6'}</priority>
-      </url>
-    `);
-    const urlString = urls.concat(staticUrlsList).join('');
+      <lastmod>${new Date(blog.updatedAt).toISOString().split('T')[0]}</lastmod>
+    </url>`);
+
+    const staticUrlEntries = STATIC_PAGES.map(p => `
+    <url>
+      <loc>${p.loc}</loc>
+      <lastmod>${p.lastmod}</lastmod>
+    </url>`);
+
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    ${urlString}
-  </urlset>`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${staticUrlEntries.join('')}
+${blogUrls.join('')}
+</urlset>`;
 
     res.header('Content-Type', 'application/xml');
     res.send(sitemap);
@@ -108,7 +128,6 @@ app.get('/sitemap.xml', async (req, res) => {
     console.error('❌ Blog sitemap error:', err);
     res.status(500).send('Sitemap error');
   }
-
 });
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');

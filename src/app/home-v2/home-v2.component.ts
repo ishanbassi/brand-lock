@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Blog } from '../../models/blog.model';
 import { environment } from '../../environments/environment';
 import { BlogService } from '../shared/services/blog-service.service';
@@ -23,21 +23,20 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
 
   private observer!: IntersectionObserver;
   private unlisteners: Array<() => void> = [];
+  private schemaScript?: HTMLScriptElement;
   blogs?: Blog;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
-  
 
   constructor(
     private blogService: BlogService,
-    private title:Title,
-    private meta:Meta,
+    private title: Title,
+    private meta: Meta,
     private el: ElementRef,
     private renderer: Renderer2,
-
     @Inject(PLATFORM_ID) private platformId: Object,
-
+    @Inject(DOCUMENT) private document: Document,
   ) {
-      this.isBrowser = isPlatformBrowser(platformId);
+    this.isBrowser = isPlatformBrowser(platformId);
   }
 
   ngAfterViewInit(): void {
@@ -52,13 +51,10 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
   private isBrowser = false;
 
 
-ngOnDestroy(): void {
-    if (!this.isBrowser) return;
+  ngOnDestroy(): void {
     this.unlisteners.forEach(unlisten => unlisten());
-    
-    if (this.observer) {
-      this.observer.disconnect();
-    }
+    if (this.observer) this.observer.disconnect();
+    this.schemaScript?.remove();
   }
 
   /* ---------------- Mobile Navigation ---------------- */
@@ -178,12 +174,84 @@ ngOnDestroy(): void {
   }
 
   ngOnInit(): void {
-      this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
-      this.title.setTitle('Trademark Registration, Trademark Search & ISO Certification | Trademarx');
-      this.meta.updateTag({ name: 'description', content: 'Get trademark registration, ISO certification, MSME registration, and import export code services in India. Fast process, affordable pricing, expert support.' });
-      this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
+    this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
+    this.title.setTitle('Trademark Registration, Trademark Search & ISO Certification | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'Get trademark registration, ISO certification, MSME registration, and import export code services in India. Fast process, affordable pricing, expert support.' });
+    this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
+    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration, Trademark Search & ISO Certification | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Get trademark registration, ISO certification, MSME registration, and import export code services in India. Fast process, affordable pricing, expert support.' });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/' });
+    this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
+    this.injectJsonLd();
+  }
 
-    }
+  private injectJsonLd(): void {
+    if (this.document.querySelector('script[data-schema="homepage"]')) return;
+    const schema = [
+      {
+        '@context': 'https://schema.org',
+        '@type': ['LegalService', 'ProfessionalService'],
+        '@id': 'https://trademarx.in/#organization',
+        'name': 'Trademarx - Bassi & Associates',
+        'description': 'Trademark registration, ISO certification, and IP legal services in India. Authorised trademark agents registered with IP India, based in Ludhiana, Punjab.',
+        'url': 'https://trademarx.in',
+        'telephone': '+916239771006',
+        'email': 'support@trademarx.in',
+        'priceRange': '₹₹',
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': '38 Hambran Road, Near South City',
+          'addressLocality': 'Ludhiana',
+          'addressRegion': 'Punjab',
+          'postalCode': '141001',
+          'addressCountry': 'IN'
+        },
+        'geo': {
+          '@type': 'GeoCoordinates',
+          'latitude': 30.8852,
+          'longitude': 75.8310
+        },
+        'aggregateRating': {
+          '@type': 'AggregateRating',
+          'ratingValue': '4.9',
+          'reviewCount': '77',
+          'bestRating': '5',
+          'worstRating': '1'
+        },
+        'areaServed': [
+          { '@type': 'State', 'name': 'Punjab' },
+          { '@type': 'Country', 'name': 'India' }
+        ],
+        'openingHoursSpecification': [{
+          '@type': 'OpeningHoursSpecification',
+          'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+          'opens': '10:00',
+          'closes': '19:00'
+        }]
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'url': 'https://trademarx.in',
+        'name': 'Trademarx',
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': {
+            '@type': 'EntryPoint',
+            'urlTemplate': 'https://trademarx.in/search?q={search_term_string}'
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      }
+    ];
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-schema', 'homepage');
+    script.text = JSON.stringify(schema);
+    this.document.head.appendChild(script);
+    this.schemaScript = script;
+  }
   
     convertDateFromServer(blog: Blog): Blog {
       blog.data = blog.data.map(d => {

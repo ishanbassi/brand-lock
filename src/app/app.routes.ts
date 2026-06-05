@@ -43,6 +43,11 @@ export const routes: Routes = [
         title: "About Us"
     },
     {
+        path: "contact",
+        loadComponent: () => import('./contact/contact.component').then(m => m.ContactComponent),
+        title: "Contact Us | Trademarx"
+    },
+    {
         path: "thank-you",
         loadComponent: () => import('./thank-you/thank-you.component').then(m => m.ThankYouComponent),
         title: "Thank You"
