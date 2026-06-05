@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -41,7 +41,8 @@ import dayjs from 'dayjs/esm';
 import { FirmBannerComponent } from '../../firm-banner/firm-banner.component';
 import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../../live-search/live-search.component';
-declare let gtag: Function; // Add this at the top of your TypeScript file
+import { SeoService } from '../../shared/services/seo.service';
+declare let gtag: Function;
 
 
 
@@ -76,7 +77,7 @@ declare let gtag: Function; // Add this at the top of your TypeScript file
   ],
   providers: [provideNgxMask()]
 })
-export class TrademarkPageComponent implements OnInit, AfterViewInit{
+export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   testimonials = TestimonialsList;
   documents = RequiredDocumentsList;
@@ -108,21 +109,24 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     private readonly leadFormService: LeadFormService,
     private readonly toastService: ToastrService,
     private readonly title: Title, private readonly meta: Meta,
-    private readonly route:ActivatedRoute,
-    private readonly router:Router,
-    private readonly dialog:MatDialog,
-    private readonly loadingService:LoadingService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly dialog: MatDialog,
+    private readonly loadingService: LoadingService,
     private readonly leadService: LeadService,
     private readonly localStorageService: LocalStorageService,
     private readonly sessionStorageService: SessionStorageService,
     private blogService: BlogService,
-    private readonly googleConversionTrackingService:GoogleConversionTrackingService,
-    
-    
+    private readonly googleConversionTrackingService: GoogleConversionTrackingService,
+    private readonly seo: SeoService,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+  }
 
+  ngOnDestroy(): void {
+    this.seo.removeJsonLd('trademark-page');
+    this.seo.removeCanonical();
   }
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
@@ -147,9 +151,43 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit{
     // Check initial scroll position
     this.checkScrollPosition();
 
-    this.title.setTitle('Trademark At Lowest Price | Trademark filing at Just ₹1,499');
-    this.meta.updateTag({ name: 'description', content: 'Register your trademark with ease and protect your brand. Affordable and fast services by experts.' });
-    this.meta.updateTag({ name: 'keywords', content: 'trademark, registration, India, brand, TM services, trademarx' });
+    this.title.setTitle('Trademark Registration in Ludhiana, Punjab — ₹1,499 + Govt. Fees | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,499. Expert filing by IP India authorised agents in Ludhiana, Punjab. Free search report, 5,000+ marks filed, 98% success rate.' });
+    this.meta.updateTag({ name: 'keywords', content: 'trademark registration, trademark registration ludhiana, trademark registration punjab, trademark filing india, ip india, trademarx' });
+    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in Ludhiana, Punjab — ₹1,499 | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark from ₹1,499 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/trademark' });
+    this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
+    this.seo.setCanonical('https://trademarx.in/trademark');
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trademarx.in/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Trademark Registration', 'item': 'https://trademarx.in/trademark' }
+        ]
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        'name': 'Trademark Registration',
+        'description': 'Professional trademark registration service in India by IP India authorised agents. Includes free trademark search, application filing, and follow-ups until publication.',
+        'provider': { '@id': 'https://trademarx.in/#organization' },
+        'areaServed': [
+          { '@type': 'State', 'name': 'Punjab' },
+          { '@type': 'Country', 'name': 'India' }
+        ],
+        'offers': {
+          '@type': 'Offer',
+          'price': '1499',
+          'priceCurrency': 'INR',
+          'description': 'Professional fee. Government filing fees of ₹4,500–₹9,000 additional.',
+          'url': 'https://trademarx.in/trademark'
+        }
+      }
+    ], 'trademark-page');
 
     this.route.queryParams.subscribe(params => {
       this.utmSource = params['utm_source'];

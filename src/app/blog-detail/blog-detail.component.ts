@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import dayjs from 'dayjs/esm';
@@ -8,6 +8,7 @@ import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
+import { SeoService } from '../shared/services/seo.service';
 
 @Component({
   selector: 'app-blog-detail',
@@ -15,7 +16,7 @@ import { SharedModule } from '../shared/shared.module';
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })
-export class BlogDetailComponent implements OnInit {
+export class BlogDetailComponent implements OnInit, OnDestroy {
 
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
@@ -36,10 +37,16 @@ export class BlogDetailComponent implements OnInit {
     private title: Title,
     private meta: Meta,
     private router: Router,
+    private seo: SeoService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnDestroy(): void {
+    this.seo.removeJsonLd('blog-post');
+    this.seo.removeCanonical();
   }
 
   ngOnInit() {
@@ -103,14 +110,38 @@ export class BlogDetailComponent implements OnInit {
         property: 'og:type',
         content: 'article'
       });
-      if (isPlatformBrowser(this.platformId)) {
-        const url = this.document.location.href;
-        this.meta.updateTag({
-          property: 'og:url',
-          content: url
-        });
 
-      };
+      const slug = this.route.snapshot.paramMap.get('slug')!;
+      const canonicalUrl = `https://trademarx.in/blogs/${slug}`;
+      this.seo.setCanonical(canonicalUrl);
+      this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+
+      const imageUrl = this.blogBaseUrl + (this.blog.featuredImage?.url ?? '');
+      this.seo.injectJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        'headline': this.blog.title,
+        'description': this.blog.excerpt,
+        'image': imageUrl,
+        'url': canonicalUrl,
+        'datePublished': this.blog.createdAt?.toISOString(),
+        'dateModified': this.blog.updatedAt?.toISOString(),
+        'author': {
+          '@type': 'Person',
+          'name': this.blog.author || 'Trademarx',
+          'url': 'https://trademarx.in/about-us'
+        },
+        'publisher': {
+          '@type': 'Organization',
+          '@id': 'https://trademarx.in/#organization',
+          'name': 'Trademarx - Bassi & Associates',
+          'logo': {
+            '@type': 'ImageObject',
+            'url': 'https://trademarx.in/assets/images/trademarx.png'
+          }
+        },
+        'mainEntityOfPage': { '@type': 'WebPage', '@id': canonicalUrl }
+      }, 'blog-post');
 
     });
   }

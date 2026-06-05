@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { Blog } from '../../models/blog.model';
 import { environment } from '../../environments/environment';
 import { BlogService } from '../shared/services/blog-service.service';
@@ -14,7 +14,7 @@ import { LiveSearchComponent } from '../live-search/live-search.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule,CountUpDirective, LeadFormComponent, LiveSearchComponent],
+  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, NgOptimizedImage],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })

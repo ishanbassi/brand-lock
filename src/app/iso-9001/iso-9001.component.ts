@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +22,7 @@ import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
 import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
+import { SeoService } from '../shared/services/seo.service';
 
 @Component({
   selector: 'app-iso-9001',
@@ -33,7 +34,7 @@ import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
   templateUrl: './iso-9001.component.html',
   styleUrl: './iso-9001.component.scss'
 })
-export class Iso9001Component {
+export class Iso9001Component implements OnInit, OnDestroy {
 
   blog?: BlogData;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
@@ -49,17 +50,57 @@ export class Iso9001Component {
 
   constructor(
     private blogService: BlogService,
-    private readonly title: Title, private readonly meta: Meta,
-    private readonly route:ActivatedRoute,
-    
-  ){}
+    private readonly title: Title,
+    private readonly meta: Meta,
+    private readonly route: ActivatedRoute,
+    private readonly seo: SeoService,
+  ) {}
+
+  ngOnDestroy(): void {
+    this.seo.removeJsonLd('iso-page');
+    this.seo.removeCanonical();
+  }
 
   ngOnInit() {
     
 
-    this.title.setTitle('ISO 9001:2015 At Lowest Price | ISO 9001:2015 at Just ₹1,499');
-    this.meta.updateTag({ name: 'description', content: 'Get ISO Certifications at affordable prices,certifications valid in government tenders' });
-    this.meta.updateTag({ name: 'keywords', content: 'iso certifications, iso 9001:2015, quality standards' });
+    this.title.setTitle('ISO 9001:2015 Certification in Ludhiana, Punjab — ₹1,499 | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'ISO 9001:2015 certification for Indian businesses from ₹1,499. Fast processing, government-recognised, valid in tenders. IP India authorised agents in Ludhiana, Punjab.' });
+    this.meta.updateTag({ name: 'keywords', content: 'iso 9001 certification, iso certification ludhiana, iso certification punjab, iso 9001:2015 india, quality management system' });
+    this.meta.updateTag({ property: 'og:title', content: 'ISO 9001:2015 Certification in Ludhiana, Punjab — ₹1,499 | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Get ISO 9001:2015 certified from ₹1,499. Valid in government tenders. Fast processing by authorised agents.' });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/iso/iso-9001-2015' });
+    this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
+    this.seo.setCanonical('https://trademarx.in/iso/iso-9001-2015');
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trademarx.in/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'ISO Certification', 'item': 'https://trademarx.in/iso/iso-9001-2015' }
+        ]
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        'name': 'ISO 9001:2015 Certification',
+        'description': 'ISO 9001:2015 Quality Management System certification for Indian businesses. Certificate valid in government tenders. Fast processing by authorised agents.',
+        'provider': { '@id': 'https://trademarx.in/#organization' },
+        'areaServed': [
+          { '@type': 'State', 'name': 'Punjab' },
+          { '@type': 'Country', 'name': 'India' }
+        ],
+        'offers': {
+          '@type': 'Offer',
+          'price': '1499',
+          'priceCurrency': 'INR',
+          'description': 'Professional fee. All-inclusive, no hidden charges.',
+          'url': 'https://trademarx.in/iso/iso-9001-2015'
+        }
+      }
+    ], 'iso-page');
 
     this.route.queryParams.subscribe(params => {
       this.utmSource = params['utm_source'];
