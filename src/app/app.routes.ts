@@ -155,11 +155,35 @@ export const routes: Routes = [
         loadComponent: () => import('./blog-detail/blog-detail.component').then(m => m.BlogDetailComponent),
     },
     {
+        path: "iso",
+        loadComponent: () => import('./pages/iso-hub/iso-hub.component').then(m => m.IsoHubComponent),
+        title: "ISO Certification in India — All Standards | Trademarx",
+    },
+    {
         path: "iso/iso-9001-2015",
         loadComponent: () => import('./iso-9001/iso-9001.component').then(m => m.Iso9001Component),
         title: "ISO 9001:2015 at Just ₹1,499",
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: "msme-registration",
+        loadComponent: () => import('./pages/msme-registration/msme-registration.component').then(m => m.MsmeRegistrationComponent),
+        title: "MSME / Udyam Registration — ₹499 | Trademarx",
+    },
+    {
+        path: "iec-registration",
+        loadComponent: () => import('./pages/iec-registration/iec-registration.component').then(m => m.IecRegistrationComponent),
+        title: "IEC Registration — ₹1,499 | Trademarx",
+    },
+    {
+        path: "trademark-classes",
+        loadComponent: () => import('./pages/trademark-classes/trademark-classes.component').then(m => m.TrademarkClassesComponent),
+        title: "Trademark Classes in India — All 45 Classes | Trademarx",
+    },
+    {
+        path: "trademark/:city",
+        loadComponent: () => import('./pages/trademark-city-page/trademark-city-page.component').then(m => m.TrademarkCityPageComponent),
     },
     {
         path: "search",

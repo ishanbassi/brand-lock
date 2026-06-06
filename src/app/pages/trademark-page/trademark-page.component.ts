@@ -42,6 +42,7 @@ import { FirmBannerComponent } from '../../firm-banner/firm-banner.component';
 import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../../live-search/live-search.component';
 import { SeoService } from '../../shared/services/seo.service';
+import { trademarkFaqs } from '../../enums/faqList';
 declare let gtag: Function;
 
 
@@ -151,11 +152,11 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
     // Check initial scroll position
     this.checkScrollPosition();
 
-    this.title.setTitle('Trademark Registration in Ludhiana, Punjab — ₹1,499 + Govt. Fees | Trademarx');
-    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,499. Expert filing by IP India authorised agents in Ludhiana, Punjab. Free search report, 5,000+ marks filed, 98% success rate.' });
-    this.meta.updateTag({ name: 'keywords', content: 'trademark registration, trademark registration ludhiana, trademark registration punjab, trademark filing india, ip india, trademarx' });
-    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in Ludhiana, Punjab — ₹1,499 | Trademarx' });
-    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark from ₹1,499 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
+    this.title.setTitle('Trademark Registration in India — ₹1,499 + Govt. Fees | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,499. Expert filing by IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.' });
+    this.meta.updateTag({ name: 'keywords', content: 'trademark registration india, trademark registration, trademark filing india, ip india trademark, online trademark registration, trademarx' });
+    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in India — ₹1,499 + Govt. Fees | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark in India from ₹1,499 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/trademark' });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
@@ -175,10 +176,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
         'name': 'Trademark Registration',
         'description': 'Professional trademark registration service in India by IP India authorised agents. Includes free trademark search, application filing, and follow-ups until publication.',
         'provider': { '@id': 'https://trademarx.in/#organization' },
-        'areaServed': [
-          { '@type': 'State', 'name': 'Punjab' },
-          { '@type': 'Country', 'name': 'India' }
-        ],
+        'areaServed': { '@type': 'Country', 'name': 'India' },
         'offers': {
           '@type': 'Offer',
           'price': '1499',
@@ -186,6 +184,15 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
           'description': 'Professional fee. Government filing fees of ₹4,500–₹9,000 additional.',
           'url': 'https://trademarx.in/trademark'
         }
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': trademarkFaqs.slice(0, 10).map(f => ({
+          '@type': 'Question',
+          'name': f.question,
+          'acceptedAnswer': { '@type': 'Answer', 'text': f.answer }
+        }))
       }
     ], 'trademark-page');
 

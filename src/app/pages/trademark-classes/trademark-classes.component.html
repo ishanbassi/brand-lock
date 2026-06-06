@@ -1,0 +1,154 @@
+<div class="classes-page">
+
+  <!-- Hero -->
+  <section class="classes-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo;
+        <a routerLink="/trademark">Trademark Registration</a> &rsaquo;
+        <span>Trademark Classes</span>
+      </div>
+      <h1>Trademark Classes in India — All 45 Classes Explained</h1>
+      <p class="hero-sub">India uses the Nice Classification system for trademark registration. All 45 classes are
+        grouped into <strong>34 classes for goods</strong> and <strong>11 classes for services</strong>.
+        Choosing the correct class is critical — filing in the wrong class means your brand has no
+        protection in the right market.</p>
+      <div class="hero-cta">
+        <a routerLink="/trademark" class="btn-primary">Register Your Trademark — ₹1,499</a>
+        <a routerLink="/search" class="btn-secondary">Free Trademark Search</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guide box -->
+  <section class="guide-box-section">
+    <div class="container">
+      <div class="guide-box">
+        <div class="guide-box-icon"><i class="fas fa-lightbulb"></i></div>
+        <div>
+          <h2>How to Choose the Right Trademark Class</h2>
+          <p>Your trademark is only protected in the classes you file under. A clothing brand filing only under Class 25 (clothing) has no protection if a competitor sells bags under Class 18 using the same name.</p>
+          <ul>
+            <li>File in every class that covers your current products or services</li>
+            <li>Consider adjacent classes if you plan to expand (e.g., clothing brand also filing Class 35 for retail)</li>
+            <li>Each class requires a separate government fee: ₹4,500 for individuals/MSMEs, ₹9,000 for companies</li>
+            <li>Use our free <a routerLink="/search">trademark search tool</a> to check availability before filing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Goods classes -->
+  <section class="classes-section">
+    <div class="container">
+      <h2>Classes 1–34: Goods</h2>
+      <p class="section-note">These classes cover physical products — from raw materials to finished consumer goods.</p>
+      <div class="classes-table">
+        @for (cls of goodsClasses; track cls.num) {
+          <div class="class-row">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-detail">
+              <div class="class-name">{{ cls.name }}</div>
+              <div class="class-examples">{{ cls.examples }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Services classes -->
+  <section class="classes-section alt">
+    <div class="container">
+      <h2>Classes 35–45: Services</h2>
+      <p class="section-note">These classes cover service-based businesses — from IT to hospitality to legal services.</p>
+      <div class="classes-table">
+        @for (cls of servicesClasses; track cls.num) {
+          <div class="class-row">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-detail">
+              <div class="class-name">{{ cls.name }}</div>
+              <div class="class-examples">{{ cls.examples }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular combos -->
+  <section class="combos-section">
+    <div class="container">
+      <h2>Common Multi-Class Filing Combinations</h2>
+      <p class="section-sub">Most businesses need protection in more than one class. Here are the most common combinations we file:</p>
+      <div class="combos-grid">
+        <div class="combo-card">
+          <h3>E-commerce / D2C Brand</h3>
+          <div class="combo-classes">
+            <span>Class 25</span><span>Class 35</span>
+          </div>
+          <p>Clothing or products (Class 25/relevant goods class) + retail and e-commerce services (Class 35)</p>
+        </div>
+        <div class="combo-card">
+          <h3>Software / SaaS Company</h3>
+          <div class="combo-classes">
+            <span>Class 9</span><span>Class 42</span>
+          </div>
+          <p>Software products (Class 9) + software development and IT services (Class 42)</p>
+        </div>
+        <div class="combo-card">
+          <h3>Food Brand / Restaurant Chain</h3>
+          <div class="combo-classes">
+            <span>Class 30</span><span>Class 43</span>
+          </div>
+          <p>Food products (Class 30) + restaurant and food service activities (Class 43)</p>
+        </div>
+        <div class="combo-card">
+          <h3>Pharma / Healthcare</h3>
+          <div class="combo-classes">
+            <span>Class 5</span><span>Class 44</span>
+          </div>
+          <p>Pharmaceutical products (Class 5) + medical and healthcare services (Class 44)</p>
+        </div>
+        <div class="combo-card">
+          <h3>Education / EdTech</h3>
+          <div class="combo-classes">
+            <span>Class 9</span><span>Class 41</span>
+          </div>
+          <p>Software/apps (Class 9) + education and training services (Class 41)</p>
+        </div>
+        <div class="combo-card">
+          <h3>Fashion Brand</h3>
+          <div class="combo-classes">
+            <span>Class 14</span><span>Class 18</span><span>Class 25</span>
+          </div>
+          <p>Jewellery (Class 14) + leather goods/bags (Class 18) + clothing/footwear (Class 25)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bottom-cta">
+    <div class="container">
+      <h2>Not Sure Which Class to File?</h2>
+      <p>Our trademark agents will analyse your business and recommend the exact classes to file — for free.</p>
+      <div class="cta-buttons">
+        <a routerLink="/trademark" class="btn-primary-light">Register Your Trademark — ₹1,499</a>
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Which%20trademark%20class%20do%20I%20need"
+           class="btn-whatsapp" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Ask on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=I%20need%20trademark%20class%20guidance"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>

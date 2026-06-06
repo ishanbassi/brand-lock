@@ -1,0 +1,112 @@
+<div class="iso-hub-page">
+
+  <!-- Hero -->
+  <section class="hub-hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="breadcrumb">
+          <a routerLink="/">Home</a> &rsaquo; <span>ISO Certification</span>
+        </div>
+        <h1>ISO Certification in India</h1>
+        <p class="hero-sub">ISO certification signals quality, credibility, and compliance to customers, government bodies, and international buyers. We help Indian businesses get certified across all major ISO standards — fast, affordable, and fully online.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><span>1,000+</span><p>ISO Certificates Issued</p></div>
+          <div class="hero-stat"><span>20+</span><p>Years Experience</p></div>
+          <div class="hero-stat"><span>₹1,499</span><p>Starting Price</p></div>
+        </div>
+      </div>
+      <div class="hero-form">
+        <app-lead-form [heading]="'Get ISO Certified'" [cta]="'Get Started'" [comments]="'ISO CERTIFICATION'">
+        </app-lead-form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Which ISO section -->
+  <section class="guide-section">
+    <div class="container">
+      <h2>Which ISO Certification Do You Need?</h2>
+      <p class="section-sub">Different industries and business goals require different ISO standards. Here's a quick guide to the most commonly required certifications in India.</p>
+      <div class="iso-grid">
+        @for (iso of isoTypes; track iso.code) {
+          <div class="iso-card" [class.available]="iso.route !== null">
+            <div class="iso-card-header">
+              <i [class]="iso.icon"></i>
+              <div>
+                <div class="iso-code">{{ iso.code }}</div>
+                <div class="iso-name">{{ iso.name }}</div>
+              </div>
+            </div>
+            <p class="iso-desc">{{ iso.desc }}</p>
+            <div class="iso-industries">
+              <strong>Industries:</strong> {{ iso.industries }}
+            </div>
+            <div class="iso-footer">
+              <span class="iso-price">{{ iso.price }}</span>
+              @if (iso.route) {
+                <a [routerLink]="iso.route" class="iso-cta">Get Certified &rarr;</a>
+              } @else {
+                <a href="https://api.whatsapp.com/send?phone=916239771006&text=I%20need%20{{ iso.code }}%20certification"
+                   target="_blank" rel="noopener" class="iso-cta-secondary">Enquire &rarr;</a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Why ISO -->
+  <section class="why-section">
+    <div class="container">
+      <h2>Why ISO Certification Matters for Indian Businesses</h2>
+      <div class="why-grid">
+        <div class="why-card">
+          <i class="fas fa-file-contract"></i>
+          <h3>Mandatory for Many Tenders</h3>
+          <p>Central and state government tenders, CPWD, railways, defence, and PSU procurement increasingly require ISO 9001 as a qualifying criterion.</p>
+        </div>
+        <div class="why-card">
+          <i class="fas fa-globe-asia"></i>
+          <h3>Trusted by International Buyers</h3>
+          <p>If you export to Europe, the USA, or the Middle East, ISO certification is often a prerequisite before a buyer places their first order.</p>
+        </div>
+        <div class="why-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Improves Business Processes</h3>
+          <p>ISO implementation reduces rework, customer complaints, and operational waste. Companies typically see measurable improvements within 6 months.</p>
+        </div>
+        <div class="why-card">
+          <i class="fas fa-star"></i>
+          <h3>Signals Quality to Customers</h3>
+          <p>Displaying an ISO certificate on your website, packaging, and proposals builds trust with B2B and B2G customers before the first meeting.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bottom-cta">
+    <div class="container">
+      <h2>Not Sure Which ISO You Need?</h2>
+      <p>Talk to our consultants for free. We'll recommend the right certification based on your industry, tender requirements, and customer demands.</p>
+      <div class="cta-buttons">
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Which%20ISO%20certification%20do%20I%20need"
+           class="btn-whatsapp" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Ask on WhatsApp
+        </a>
+        <a href="tel:+916239771006" class="btn-call">
+          <i class="fas fa-phone"></i> Call +91 62397-71006
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=I%20need%20ISO%20certification"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>

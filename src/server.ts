@@ -34,13 +34,12 @@ app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://cms.trademarx.in https://api.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net ; frame-src https://www.google.com; object-src 'none'; base-uri 'self';");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net ; frame-src https://www.google.com; object-src 'none'; base-uri 'self';");
   next();
 });
 
-// Permanent redirects for previously indexed/shared dead URLs
+// Permanent redirect for previously indexed dead URL
 app.get('/articles', (_req, res) => res.redirect(301, '/blogs'));
-app.get('/iso', (_req, res) => res.redirect(301, '/iso/iso-9001-2015'));
 
 
 export function walk(dir: string, urlPath = '') {
@@ -86,15 +85,29 @@ app.use(
 );
 
 const STATIC_PAGES = [
-  { loc: `${SITE_URL}/`,                    lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/trademark`,           lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/search`,              lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/iso/iso-9001-2015`,   lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/about-us`,            lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/blogs`,               lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/contact`,             lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/privacy-policy`,      lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/terms-and-conditions`,lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/`,                              lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark`,                     lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark-classes`,             lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/ludhiana`,            lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/delhi`,               lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/mumbai`,              lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/bangalore`,           lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/hyderabad`,           lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/pune`,                lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/ahmedabad`,           lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/chennai`,             lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/jaipur`,              lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/trademark/chandigarh`,          lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/msme-registration`,             lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/iec-registration`,              lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/iso`,                           lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/iso/iso-9001-2015`,             lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/search`,                        lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/about-us`,                      lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/blogs`,                         lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/contact`,                       lastmod: '2026-06-06' },
+  { loc: `${SITE_URL}/privacy-policy`,                lastmod: '2026-06-01' },
+  { loc: `${SITE_URL}/terms-and-conditions`,          lastmod: '2026-06-01' },
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }

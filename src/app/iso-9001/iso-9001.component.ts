@@ -99,6 +99,15 @@ export class Iso9001Component implements OnInit, OnDestroy {
           'description': 'Professional fee. All-inclusive, no hidden charges.',
           'url': 'https://trademarx.in/iso/iso-9001-2015'
         }
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': isoFaqs.slice(0, 10).map(f => ({
+          '@type': 'Question',
+          'name': f.question,
+          'acceptedAnswer': { '@type': 'Answer', 'text': f.answer }
+        }))
       }
     ], 'iso-page');
 
