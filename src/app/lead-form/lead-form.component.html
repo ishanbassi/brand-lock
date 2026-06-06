@@ -1,55 +1,51 @@
 <section class="cta-form-section">
-                        <div>
-                        <p class="cta-form-call-now">Call Now: 
-                            <a type="button" class="call-now" href="tel:+916239771006">6239771006</a></p>
-                        <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
-                        [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement
-                        >
-                            <div class="form-heading-section">
-                                <h2 class="form-heading">
-                                    {{heading}}
-                                </h2>
-                            </div>
-                            <div class=" form-input-container">
+  <div>
+    <p class="cta-form-call-now">Call Now:
+      <a type="button" class="call-now" href="tel:+916239771006">6239771006</a></p>
+    <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
+      [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement>
+      <div class="form-heading-section">
+        <h2 class="form-heading">{{heading}}</h2>
+      </div>
 
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Your Name" name="fullName" #fullName id="name"
-                                        formControlName="fullName">
-                                        <mat-icon matPrefix>person</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('fullName')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container">
-        
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Your Email" name="email" #email id="email"
-                                        formControlName="email">
-                                        <mat-icon matPrefix>email</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('email')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container">
-                                <app-phone-input [control]="ctaForm.controls['phoneNumber']"></app-phone-input>
-                                
-                                <app-validation-message [field]="ctaForm.get('phoneNumber')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <div class=" form-input-container" *ngIf="showTextArea">
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <textarea matInput placeholder="Your Message" name="comments" #comments id="comments"
-                                        formControlName="comments" ></textarea>
-                                        
-                                </mat-form-field>
-                                <app-validation-message [field]="ctaForm.get('comments')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            <button mat-raised-button type="submit" color="primary" class="cta-submit-btn" [disabled]="isSubmitting">
-                                <span>{{cta}}</span>
-                            </button>
-        
-                        </form>
-                        </div>
-                        
-                    </section>
+      <div class="form-input-container">
+        <div class="input-wrapper">
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" placeholder="Your Name" name="fullName" id="name"
+            formControlName="fullName" class="form-input">
+        </div>
+        <app-validation-message [field]="ctaForm.get('fullName')"
+          [onClickValidation]="onClickValidation"></app-validation-message>
+      </div>
+
+      <div class="form-input-container">
+        <div class="input-wrapper">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" placeholder="Your Email" name="email" id="email"
+            formControlName="email" class="form-input">
+        </div>
+        <app-validation-message [field]="ctaForm.get('email')"
+          [onClickValidation]="onClickValidation"></app-validation-message>
+      </div>
+
+      <div class="form-input-container">
+        <app-phone-input [control]="ctaForm.controls['phoneNumber']"></app-phone-input>
+        <app-validation-message [field]="ctaForm.get('phoneNumber')"
+          [onClickValidation]="onClickValidation"></app-validation-message>
+      </div>
+
+      @if (showTextArea) {
+        <div class="form-input-container">
+          <textarea placeholder="Your Message" name="comments" id="comments"
+            formControlName="comments" class="form-input form-textarea"></textarea>
+          <app-validation-message [field]="ctaForm.get('comments')"
+            [onClickValidation]="onClickValidation"></app-validation-message>
+        </div>
+      }
+
+      <button type="submit" class="cta-submit-btn" [disabled]="isSubmitting">
+        <span>{{cta}}</span>
+      </button>
+    </form>
+  </div>
+</section>

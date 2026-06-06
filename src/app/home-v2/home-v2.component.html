@@ -60,28 +60,54 @@
                 </div>
             </a>
 
-            <a routerLink="/iso/iso-9001-2015">
+            <a routerLink="/iso">
                 <div class="service-card">
                     <img loading="lazy" src="/assets/images/icons/iso-icon.svg" alt="ISO Icon" width="48" height="48">
                     <h3>ISO Certifications</h3>
                     <p>ISO Standards starting at just ₹1,499</p>
-
                 </div>
-
             </a>
-            <div class="service-card">
-                <img loading="lazy" src="/assets/images/icons/import-export-icon.svg" alt="Aeroplane Icon" width="48" height="48">
-                <h3>Import Export Code (IEC)</h3>
-                <p>IEC Code Certificate at just ₹1,499</p>
-            </div>
-            <div class="service-card">
-                <img loading="lazy" src="/assets/images/icons/msme-icon.svg" alt="MSME Icon" width="48" height="48">
-                <h3>MSME Registration</h3>
-                <p>Udyam/MSME Certificate at just ₹499</p>
-            </div>
+            <a routerLink="/iec-registration">
+                <div class="service-card">
+                    <img loading="lazy" src="/assets/images/icons/import-export-icon.svg" alt="Aeroplane Icon" width="48" height="48">
+                    <h3>Import Export Code (IEC)</h3>
+                    <p>IEC Code Certificate at just ₹1,499</p>
+                </div>
+            </a>
+            <a routerLink="/msme-registration">
+                <div class="service-card">
+                    <img loading="lazy" src="/assets/images/icons/msme-icon.svg" alt="MSME Icon" width="48" height="48">
+                    <h3>MSME Registration</h3>
+                    <p>Udyam/MSME Certificate at just ₹499</p>
+                </div>
+            </a>
         </div>
     </div>
 </section>
+
+<!-- Cities We Serve -->
+<section class="cities-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Trademark Registration Across India</h2>
+            <p>We serve businesses in all major cities — 100% online, IP India authorised agents</p>
+        </div>
+        <div class="cities-grid">
+            <a routerLink="/trademark/ludhiana" class="city-pill">Ludhiana</a>
+            <a routerLink="/trademark/delhi" class="city-pill">Delhi</a>
+            <a routerLink="/trademark/mumbai" class="city-pill">Mumbai</a>
+            <a routerLink="/trademark/bangalore" class="city-pill">Bangalore</a>
+            <a routerLink="/trademark/hyderabad" class="city-pill">Hyderabad</a>
+            <a routerLink="/trademark/pune" class="city-pill">Pune</a>
+            <a routerLink="/trademark/ahmedabad" class="city-pill">Ahmedabad</a>
+            <a routerLink="/trademark/chennai" class="city-pill">Chennai</a>
+            <a routerLink="/trademark/jaipur" class="city-pill">Jaipur</a>
+            <a routerLink="/trademark/chandigarh" class="city-pill">Chandigarh</a>
+        </div>
+        <p class="classes-link-note">Not sure which class to file? Read our <a routerLink="/trademark-classes">complete guide to all 45 trademark classes →</a></p>
+    </div>
+</section>
+
 <app-rating-review></app-rating-review>
 <!-- Solutions Section (using it for blogs)-->
 <section id="solutions" class="solutions" *ngIf="blogs">

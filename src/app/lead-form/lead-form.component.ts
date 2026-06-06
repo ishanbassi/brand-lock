@@ -1,15 +1,12 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
 import { SharedModule } from '../shared/shared.module';
-import { MatIcon } from '@angular/material/icon';
 import { LeadFormService } from '../../models/lead-form.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../common/loading.service';
 import { LeadService } from '../shared/services/lead.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { NewLead } from '../../models/lead.model';
 import { finalize, Subject } from 'rxjs';
@@ -17,7 +14,7 @@ import { PhoneInputComponent } from '../phone-input/phone-input.component';
 
 @Component({
   selector: 'app-lead-form',
-  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatProgressSpinnerModule,PhoneInputComponent,MatIcon],
+  imports: [ReactiveFormsModule, SharedModule, PhoneInputComponent],
   templateUrl: './lead-form.component.html',
   styleUrl: './lead-form.component.scss'
 })

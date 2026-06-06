@@ -574,3 +574,69 @@
 50%{opacity: .5;}
 100%{opacity: 1;}
 }
+
+// Related services section
+.iso-related-section {
+    padding: 5rem 0;
+    background: var(--section-bg);
+
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 2rem;
+    }
+}
+
+.iso-related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.iso-related-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: var(--card-shadow);
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: rgba(37, 99, 235, 0.1);
+        padding: 0.7rem;
+        border-radius: 50%;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        font-size: 0.85rem;
+        color: var(--light-text);
+        line-height: 1.6;
+        margin: 0;
+    }
+}
+
+@media (max-width: 992px) {
+    .iso-related-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 576px) {
+    .iso-related-grid { grid-template-columns: 1fr; }
+}

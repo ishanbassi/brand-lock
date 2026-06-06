@@ -1,5 +1,4 @@
 .cta-form-section {
-    // background-image: url('/assets/images/cta-form-bg-img.png');
     background-size: contain;
     background-repeat: no-repeat;
     display: flex;
@@ -7,7 +6,6 @@
     position: relative;
 
     >div {
-
         flex-grow: 1;
 
         .cta-form-call-now {
@@ -24,8 +22,6 @@
                     transform: translateY(-1px);
                     text-decoration: underline;
                 }
-
-
             }
         }
     }
@@ -34,27 +30,74 @@
         background-color: #fff;
         border-radius: 1.6rem;
         height: max-content;
-        padding: 1.25rem 1.875rem;
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        padding: 1.75rem 2rem;
         text-align: center;
         overflow: hidden;
-
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
         .form-input-container {
-            margin-bottom: 2rem;
-
-            textarea {
-                height: 150px;
-            }
+            margin-bottom: 1.25rem;
         }
 
         .form-heading-section {
             color: #273653;
             text-align: center;
+            margin-bottom: 1.5rem;
 
             .form-heading {
                 font-size: 1.75rem;
                 font-weight: 700;
+            }
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            .input-icon {
+                position: absolute;
+                left: 0.875rem;
+                color: var(--light-text);
+                font-size: 0.875rem;
+                pointer-events: none;
+            }
+
+            .form-input {
+                padding-left: 2.5rem;
+            }
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+
+            &::placeholder {
+                color: #9e9e9e;
+            }
+
+            &:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            &.form-textarea {
+                height: 150px;
+                resize: vertical;
+                padding-left: 0.875rem;
+                display: block;
             }
         }
 
@@ -64,15 +107,26 @@
             justify-content: center;
             min-width: 7.5rem;
             border-radius: 0.625rem;
-            font-size: 1.25rem;
-            padding: 1.25rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            padding: 0.875rem 1.25rem;
             text-align: center;
             width: 100%;
             background: var(--gradient);
             color: white;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
 
-            mat-spinner {
-                margin: 0 auto;
+            &:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+            }
+
+            &:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
             }
 
             span {
@@ -93,33 +147,7 @@
     }
 }
 
-::ng-deep {
-    .cta-form-section {
-        .mat-mdc-form-field-subscript-wrapper {
-            display: none;
-        }
-    }
-    // change color of placeholder
-    .mat-mdc-form-field-input-control::placeholder{    
-        color:#9e9e9e !important;
-    }
-
-    .mat-mdc-form-field .mdc-notched-outline__leading,
-    .mat-mdc-form-field .mdc-notched-outline__notch,
-    .mat-mdc-form-field .mdc-notched-outline__trailing {
-        border-color: var(--border-color);
-
-    }
-
-    .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-    .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-    .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-        border-color: #2563eb !important;
-    }
-}
-
-@media (max-width:576px) {
-
+@media (max-width: 576px) {
     .cta-form-section {
         justify-content: center;
         background-image: none;
@@ -142,9 +170,8 @@
     }
 }
 
-@media (max-width:768px) {
+@media (max-width: 768px) {
     .cta-form-section>div {
         position: static !important;
-
     }
 }
