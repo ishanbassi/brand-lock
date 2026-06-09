@@ -1,0 +1,191 @@
+@if (industry) {
+<div class="industry-page">
+
+  <!-- Hero -->
+  <section class="ind-hero">
+    <div class="container">
+      <div class="ind-hero-content">
+        <div class="breadcrumb">
+          <a routerLink="/">Home</a> &rsaquo;
+          <a routerLink="/trademark">Trademark Registration</a> &rsaquo;
+          <span>{{ industry.name }}</span>
+        </div>
+        <h1>Trademark Registration for <span class="highlight">{{ industry.displayName }}</span> in India</h1>
+        <p class="hero-sub">{{ industry.context }}</p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Starting at just ₹1,499 — Govt. fees included</li>
+          <li><i class="fas fa-check-circle"></i> IP India Authorised Agents</li>
+          <li><i class="fas fa-check-circle"></i> Filing in 24 hours, TM No. same day</li>
+          <li><i class="fas fa-check-circle"></i> Protect your brand in the correct trademark class</li>
+          <li><i class="fas fa-check-circle"></i> Trusted by 3,000+ businesses across India</li>
+        </ul>
+        <div class="hero-trust">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <span>4.9/5 · Trusted by 3,000+ businesses</span>
+        </div>
+      </div>
+      <div class="ind-hero-form">
+        <app-lead-form
+          [heading]="'Trademark for ' + industry.name"
+          [cta]="'Protect My Brand'"
+          [comments]="'Industry TM - ' + industry.name.toUpperCase()">
+        </app-lead-form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Trademark Matters -->
+  <section class="why-section">
+    <div class="container">
+      <div class="why-inner">
+        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="why-text">
+          <h2>Why {{ industry.name }} Businesses Need Trademark Protection</h2>
+          <p>{{ industry.whyMatters }}</p>
+          <div class="examples-row">
+            @for (ex of industry.examples; track ex) {
+              <span class="example-tag">{{ ex }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trademark Classes -->
+  <section class="classes-section">
+    <div class="container">
+      <h2>Trademark Classes for {{ industry.name }} Businesses</h2>
+      <p class="classes-sub">Filing in the correct class is critical — wrong class = no legal protection for your core business.</p>
+      <div class="classes-grid">
+        @for (cls of industry.classes; track cls.num) {
+          <div class="class-card">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-name">{{ cls.name }}</div>
+            <p class="class-why">{{ cls.why }}</p>
+          </div>
+        }
+      </div>
+      <p class="classes-note">
+        Not sure which class applies to you?
+        <a routerLink="/trademark-classes">See all 45 Nice Classes</a> or
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20need%20help%20choosing%20trademark%20class%20for%20my%20{{ industry.name }}%20business" target="_blank" rel="noopener">ask our experts on WhatsApp</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process-section">
+    <div class="container">
+      <h2>How to Register Your {{ industry.name }} Trademark</h2>
+      <div class="process-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Trademark Search</h3>
+            <p>We check for existing similar marks in your industry class to ensure your brand name is available for registration.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Document Collection</h3>
+            <p>Submit your business name, logo, address, and identity proof. The process is 100% online — no physical visit needed.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Filing with IP India</h3>
+            <p>We file your application with the correct trademark class for your {{ industry.name }} business. You receive your Trademark Application Number (TM No.) the same day.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>TM™ Symbol + Certificate</h3>
+            <p>You can legally use the ™ symbol immediately after filing. The registration certificate follows after examination (6–24 months).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="container">
+      <div class="pricing-card">
+        <div class="price-block">
+          <div class="price-label">Trademark Registration — {{ industry.name }}</div>
+          <div class="price-amount">₹1,499</div>
+          <div class="price-note">Govt. fees included · All India protection</div>
+        </div>
+        <div class="price-cta">
+          <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20want%20to%20register%20a%20trademark%20for%20my%20{{ industry.name }}%20business"
+             class="btn-whatsapp" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> WhatsApp to Start
+          </a>
+          <a href="tel:+916239771006" class="btn-call">
+            <i class="fas fa-phone"></i> Call +91-6239771006
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-wrapper">
+    <div class="container">
+      <h2>FAQs — Trademark for {{ industry.name }} Businesses</h2>
+      <app-faq [faqs]="industry.faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related Industries -->
+  <section class="related-industries">
+    <div class="container">
+      <h2>Trademark for Other Industries</h2>
+      <p class="related-sub">We handle trademark registrations across all major industries in India.</p>
+      <div class="industries-grid">
+        @for (ind of otherIndustries; track ind.slug) {
+          <a [routerLink]="'/trademark/industry/' + ind.slug" class="industry-card">
+            <span class="industry-name">{{ ind.name }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- City CTA -->
+  <section class="city-cta-section">
+    <div class="container">
+      <div class="city-cta-inner">
+        <h2>Register a Trademark in Your City</h2>
+        <p>We serve businesses from Ludhiana, Delhi, Mumbai, Bangalore and 45+ other cities across India.</p>
+        <div class="city-pills">
+          <a routerLink="/trademark/ludhiana" class="city-pill">Ludhiana</a>
+          <a routerLink="/trademark/delhi" class="city-pill">Delhi</a>
+          <a routerLink="/trademark/mumbai" class="city-pill">Mumbai</a>
+          <a routerLink="/trademark/bangalore" class="city-pill">Bangalore</a>
+          <a routerLink="/trademark/chennai" class="city-pill">Chennai</a>
+          <a routerLink="/trademark/hyderabad" class="city-pill">Hyderabad</a>
+          <a routerLink="/trademark/pune" class="city-pill">Pune</a>
+          <a routerLink="/trademark/ahmedabad" class="city-pill">Ahmedabad</a>
+          <a routerLink="/trademark/surat" class="city-pill">Surat</a>
+          <a routerLink="/trademark/kolkata" class="city-pill">Kolkata</a>
+          <a routerLink="/trademark" class="city-pill city-pill--more">View All Cities</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=Hi%2C%20I%20want%20trademark%20registration%20for%20my%20business"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>
+}

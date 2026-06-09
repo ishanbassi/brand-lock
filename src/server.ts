@@ -13,6 +13,8 @@ import fs from 'fs';
 import { createProxyMiddleware } from 'http-proxy-middleware'; // option A
 import * as https from 'https';
 import * as http from 'http';
+import { ALL_CITY_SLUGS } from './app/pages/trademark-city-page/city-data';
+import { ALL_INDUSTRY_SLUGS } from './app/pages/trademark-industry-page/industry-data';
 
 let staticUrls: string[] = []
 
@@ -84,30 +86,31 @@ app.use(
   }),
 );
 
+const TODAY = '2026-06-08';
+
+const CORE_PAGES = [
+  { loc: `${SITE_URL}/`,                   lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark`,          lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark-classes`,  lastmod: TODAY },
+  { loc: `${SITE_URL}/msme-registration`,  lastmod: TODAY },
+  { loc: `${SITE_URL}/iec-registration`,   lastmod: TODAY },
+  { loc: `${SITE_URL}/iso`,               lastmod: TODAY },
+  { loc: `${SITE_URL}/iso/iso-9001-2015`, lastmod: TODAY },
+  { loc: `${SITE_URL}/search`,            lastmod: TODAY },
+  { loc: `${SITE_URL}/about-us`,          lastmod: TODAY },
+  { loc: `${SITE_URL}/blogs`,             lastmod: TODAY },
+  { loc: `${SITE_URL}/contact`,           lastmod: TODAY },
+  { loc: `${SITE_URL}/privacy-policy`,    lastmod: TODAY },
+  { loc: `${SITE_URL}/terms-and-conditions`, lastmod: TODAY },
+];
+
 const STATIC_PAGES = [
-  { loc: `${SITE_URL}/`,                              lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark`,                     lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark-classes`,             lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/ludhiana`,            lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/delhi`,               lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/mumbai`,              lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/bangalore`,           lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/hyderabad`,           lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/pune`,                lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/ahmedabad`,           lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/chennai`,             lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/jaipur`,              lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/trademark/chandigarh`,          lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/msme-registration`,             lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/iec-registration`,              lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/iso`,                           lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/iso/iso-9001-2015`,             lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/search`,                        lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/about-us`,                      lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/blogs`,                         lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/contact`,                       lastmod: '2026-06-06' },
-  { loc: `${SITE_URL}/privacy-policy`,                lastmod: '2026-06-01' },
-  { loc: `${SITE_URL}/terms-and-conditions`,          lastmod: '2026-06-01' },
+  ...CORE_PAGES,
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/${s}`,         lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/msme-registration/${s}`, lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iec-registration/${s}`,  lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iso/${s}`,               lastmod: TODAY })),
+  ...ALL_INDUSTRY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/industry/${s}`, lastmod: TODAY })),
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }

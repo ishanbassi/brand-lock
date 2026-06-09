@@ -182,8 +182,27 @@ export const routes: Routes = [
         title: "Trademark Classes in India — All 45 Classes | Trademarx",
     },
     {
+        path: "trademark/industry/:industry",
+        loadComponent: () => import('./pages/trademark-industry-page/trademark-industry-page.component').then(m => m.TrademarkIndustryPageComponent),
+    },
+    {
         path: "trademark/:city",
         loadComponent: () => import('./pages/trademark-city-page/trademark-city-page.component').then(m => m.TrademarkCityPageComponent),
+    },
+    {
+        path: "msme-registration/:city",
+        loadComponent: () => import('./pages/service-city-page/service-city-page.component').then(m => m.ServiceCityPageComponent),
+        data: { serviceSlug: 'msme-registration' },
+    },
+    {
+        path: "iec-registration/:city",
+        loadComponent: () => import('./pages/service-city-page/service-city-page.component').then(m => m.ServiceCityPageComponent),
+        data: { serviceSlug: 'iec-registration' },
+    },
+    {
+        path: "iso/:city",
+        loadComponent: () => import('./pages/service-city-page/service-city-page.component').then(m => m.ServiceCityPageComponent),
+        data: { serviceSlug: 'iso-9001' },
     },
     {
         path: "search",
