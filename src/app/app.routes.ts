@@ -182,6 +182,15 @@ export const routes: Routes = [
         title: "Trademark Classes in India — All 45 Classes | Trademarx",
     },
     {
+        path: "compare",
+        loadComponent: () => import('./pages/compare-hub/compare-hub.component').then(m => m.CompareHubComponent),
+        title: "IP & Legal Comparison Guides | Trademarx",
+    },
+    {
+        path: "compare/:slug",
+        loadComponent: () => import('./pages/comparison-page/comparison-page.component').then(m => m.ComparisonPageComponent),
+    },
+    {
         path: "trademark/industry/:industry",
         loadComponent: () => import('./pages/trademark-industry-page/trademark-industry-page.component').then(m => m.TrademarkIndustryPageComponent),
     },

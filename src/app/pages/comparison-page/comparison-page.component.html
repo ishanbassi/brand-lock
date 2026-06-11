@@ -1,0 +1,196 @@
+@if (page) {
+<div class="compare-page">
+
+  <!-- Hero -->
+  <section class="cmp-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo;
+        <a routerLink="/compare">Comparisons</a> &rsaquo;
+        <span>{{ page.title }}</span>
+      </div>
+      <div class="category-badge">{{ page.category }}</div>
+      <h1>{{ page.title }} — <span class="hero-sub-title">Key Differences Explained</span></h1>
+
+      <!-- Quick Answer Box — optimised for AI Overviews -->
+      <div class="quick-answer-box">
+        <div class="qa-label"><i class="fas fa-bolt"></i> Quick Answer</div>
+        <p>{{ page.quickAnswer }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="intro-section">
+    <div class="container">
+      <p class="intro-text">{{ page.intro }}</p>
+    </div>
+  </section>
+
+  <!-- Item Cards — What is each thing? -->
+  <section class="items-section">
+    <div class="container">
+      <h2>Understanding Each Term</h2>
+      <div class="items-grid" [class.items-grid--3]="page.items.length === 3">
+        @for (item of page.items; track item.name) {
+          <div class="item-card">
+            <div class="item-icon-wrap">
+              <i [class]="item.icon"></i>
+            </div>
+            <h3>What is {{ item.name }}?</h3>
+            <p class="item-def">{{ item.definition }}</p>
+            <ul class="item-details">
+              <li><span class="detail-label">Covers</span><span class="detail-val">{{ item.covers }}</span></li>
+              <li><span class="detail-label">Authority</span><span class="detail-val">{{ item.authority }}</span></li>
+              <li><span class="detail-label">Validity</span><span class="detail-val">{{ item.validity }}</span></li>
+              <li><span class="detail-label">Cost</span><span class="detail-val">{{ item.cost }}</span></li>
+              <li><span class="detail-label">Time</span><span class="detail-val">{{ item.timeToGet }}</span></li>
+            </ul>
+            <div class="key-fact"><i class="fas fa-lightbulb"></i> {{ item.keyFact }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="table-section">
+    <div class="container">
+      <h2>{{ page.title }} — Key Differences at a Glance</h2>
+      <div class="table-wrapper">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th class="aspect-col">Aspect</th>
+              @for (item of page.items; track item.name) {
+                <th>{{ item.name }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of page.tableRows; track row.aspect) {
+              <tr>
+                <td class="aspect-col">{{ row.aspect }}</td>
+                @for (val of row.values; track $index) {
+                  <td>{{ val }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Decision Guide -->
+  <section class="decision-section">
+    <div class="container">
+      <h2>{{ page.decisionGuide.heading }}</h2>
+      <p class="decision-intro">{{ page.decisionGuide.intro }}</p>
+      <div class="scenarios">
+        @for (s of page.decisionGuide.scenarios; track s.if) {
+          <div class="scenario-card">
+            <div class="scenario-if"><i class="fas fa-question-circle"></i> <strong>If:</strong> {{ s.if }}</div>
+            <div class="scenario-then"><i class="fas fa-arrow-right"></i> <strong>Choose:</strong> {{ s.then }}</div>
+            <div class="scenario-why">{{ s.why }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Verdict -->
+  <section class="verdict-section">
+    <div class="container">
+      <div class="verdict-box">
+        <div class="verdict-label"><i class="fas fa-check-double"></i> Bottom Line</div>
+        <p>{{ page.verdict }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead Form CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-text">
+          <h2>Still Not Sure Which Registration You Need?</h2>
+          <p>Our IP experts will assess your business and tell you exactly what to file — trademark, MSME, IEC, or ISO. Free consultation, 100% online.</p>
+          <ul class="cta-list">
+            <li><i class="fas fa-check-circle"></i> Free eligibility check</li>
+            <li><i class="fas fa-check-circle"></i> Filing from ₹1,499</li>
+            <li><i class="fas fa-check-circle"></i> IP India authorised agents</li>
+          </ul>
+        </div>
+        <div class="cta-form-wrap">
+          <app-lead-form
+            [heading]="'Get Expert Advice'"
+            [cta]="'Talk to an Expert'"
+            [comments]="'Compare page inquiry - ' + page.title">
+          </app-lead-form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="container">
+      <h2>Frequently Asked Questions — {{ page.title }}</h2>
+      <app-faq [faqs]="page.faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related Services -->
+  <section class="related-section">
+    <div class="container">
+      <h2>Related Services</h2>
+      <div class="related-grid">
+        @for (r of page.relatedLinks; track r.route) {
+          <a [routerLink]="r.route" class="related-card">
+            <i [class]="r.icon"></i>
+            <h3>{{ r.title }}</h3>
+            <p>{{ r.desc }}</p>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Other Comparisons in Same Category -->
+  @if (relatedComparisons.length > 0) {
+    <section class="more-comparisons">
+      <div class="container">
+        <h2>More {{ page.category }} Comparisons</h2>
+        <div class="comp-links">
+          @for (c of relatedComparisons; track c.slug) {
+            <a [routerLink]="'/compare/' + c.slug" class="comp-link-card">
+              <span class="comp-title">{{ c.title }}</span>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- All Comparisons Hub link -->
+  <section class="hub-link-section">
+    <div class="container">
+      <p class="hub-note">
+        Looking for another comparison?
+        <a routerLink="/compare">Browse all IP &amp; Legal Comparison Guides</a>
+      </p>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=Hi%2C%20I%20need%20help%20choosing%20the%20right%20registration%20for%20my%20business"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+
+</div>
+}

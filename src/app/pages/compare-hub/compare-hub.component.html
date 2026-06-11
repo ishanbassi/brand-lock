@@ -1,0 +1,53 @@
+<div class="hub-page">
+
+  <section class="hub-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo; <span>Comparison Guides</span>
+      </div>
+      <h1>IP &amp; Legal Comparison Guides for Indian Businesses</h1>
+      <p class="hub-sub">Confused about trademarks, registrations, and certifications? These guides explain the exact differences — written by IP professionals, optimised for clarity.</p>
+      <div class="hub-stats">
+        <div class="stat"><strong>15</strong> comparison guides</div>
+        <div class="stat-sep">·</div>
+        <div class="stat">Covers trademark, MSME, IEC, ISO</div>
+        <div class="stat-sep">·</div>
+        <div class="stat">Updated 2025</div>
+      </div>
+    </div>
+  </section>
+
+  @for (group of groups; track group.category) {
+    <section class="group-section">
+      <div class="container">
+        <div class="group-header">
+          <div class="group-icon"><i [class]="group.icon"></i></div>
+          <h2>{{ group.category }}</h2>
+        </div>
+        <div class="cards-grid">
+          @for (page of group.pages; track page.slug) {
+            <a [routerLink]="'/compare/' + page.slug" class="compare-card">
+              <h3>{{ page.title }}</h3>
+              <p class="card-answer">{{ page.quickAnswer | slice:0:120 }}…</p>
+              <span class="read-more">Read guide <i class="fas fa-arrow-right"></i></span>
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <section class="services-cta">
+    <div class="container">
+      <h2>Ready to Register?</h2>
+      <p>Once you know what you need — we'll handle the filing. 100% online, expert-assisted.</p>
+      <div class="cta-pills">
+        <a routerLink="/trademark" class="cta-pill"><i class="fas fa-trademark"></i> Trademark — ₹1,499</a>
+        <a routerLink="/msme-registration" class="cta-pill"><i class="fas fa-certificate"></i> MSME — ₹499</a>
+        <a routerLink="/iec-registration" class="cta-pill"><i class="fas fa-ship"></i> IEC — ₹1,499</a>
+        <a routerLink="/iso" class="cta-pill"><i class="fas fa-award"></i> ISO — ₹1,499</a>
+      </div>
+    </div>
+  </section>
+
+</div>

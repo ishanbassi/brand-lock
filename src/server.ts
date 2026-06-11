@@ -15,6 +15,7 @@ import * as https from 'https';
 import * as http from 'http';
 import { ALL_CITY_SLUGS } from './app/pages/trademark-city-page/city-data';
 import { ALL_INDUSTRY_SLUGS } from './app/pages/trademark-industry-page/industry-data';
+import { ALL_COMPARISON_SLUGS } from './app/pages/comparison-page/comparison-data';
 
 let staticUrls: string[] = []
 
@@ -111,6 +112,8 @@ const STATIC_PAGES = [
   ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iec-registration/${s}`,  lastmod: TODAY })),
   ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iso/${s}`,               lastmod: TODAY })),
   ...ALL_INDUSTRY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/industry/${s}`, lastmod: TODAY })),
+  { loc: `${SITE_URL}/compare`, lastmod: TODAY },
+  ...ALL_COMPARISON_SLUGS.map(s => ({ loc: `${SITE_URL}/compare/${s}`, lastmod: TODAY })),
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }

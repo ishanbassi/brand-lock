@@ -115,3 +115,17 @@
   .why-grid { grid-template-columns: 1fr; }
   .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
 }
+
+.compare-links-section {
+  padding: 4rem 0; background: var(--background);
+  h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; }
+}
+.compare-links-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.compare-link-card {
+  background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 14px;
+  padding: 1.5rem; text-decoration: none; display: block; transition: var(--transition);
+  &:hover { border-color: var(--primary-color); transform: translateY(-3px); box-shadow: var(--hover-shadow); }
+  i { font-size: 1.3rem; color: var(--primary-color); margin-bottom: 0.75rem; display: block; }
+  h3 { font-size: 0.95rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.4rem; }
+  p { font-size: 0.83rem; color: var(--light-text); margin: 0; line-height: 1.5; }
+}

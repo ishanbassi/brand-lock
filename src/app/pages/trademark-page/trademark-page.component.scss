@@ -702,3 +702,26 @@
     .tm-related-grid { grid-template-columns: 1fr; }
     .city-links-section h2 { font-size: 1.4rem; }
 }
+.tm-compare-section {
+  padding: 4rem 0; background: var(--background);
+  .container { }
+  h2 { font-size: 1.7rem; font-weight: 700; margin-bottom: 0.5rem; }
+}
+.tm-compare-sub { font-size: 0.95rem; color: var(--light-text); margin-bottom: 2rem; }
+.tm-compare-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem;
+}
+.tm-compare-card {
+  background: var(--card-bg); border: 1.5px solid var(--border-color); border-radius: 12px;
+  padding: 1.25rem; text-decoration: none; display: block; transition: var(--transition);
+  &:hover { border-color: var(--primary-color); transform: translateY(-3px); box-shadow: var(--hover-shadow); }
+  i { font-size: 1.2rem; color: var(--primary-color); margin-bottom: 0.75rem; display: block; }
+  h3 { font-size: 0.9rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.4rem; line-height: 1.3; }
+  p { font-size: 0.8rem; color: var(--light-text); margin: 0; line-height: 1.5; }
+}
+.tm-compare-all {
+  font-size: 0.9rem; margin: 0;
+  a { color: var(--primary-color); font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+}
+@media (max-width: 992px) { .tm-compare-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 576px) { .tm-compare-grid { grid-template-columns: 1fr; } }

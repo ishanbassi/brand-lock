@@ -453,3 +453,16 @@
   .pricing-row.header { display: none; }
   .related-grid { grid-template-columns: 1fr; }
 }
+
+.city-compare-section {
+  padding: 3rem 0; background: var(--section-bg);
+  h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.25rem; }
+}
+.city-compare-pills { display: flex; flex-wrap: wrap; gap: 0.625rem; }
+.city-compare-pill {
+  padding: 0.45rem 1rem; background: var(--card-bg); border: 1.5px solid var(--border-color);
+  border-radius: 30px; font-size: 0.82rem; font-weight: 500; color: var(--text-color);
+  text-decoration: none; transition: var(--transition);
+  &:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(37,99,235,0.04); }
+  &--more { background: rgba(37,99,235,0.08); color: var(--primary-color); border-color: rgba(37,99,235,0.2); font-weight: 600; }
+}
