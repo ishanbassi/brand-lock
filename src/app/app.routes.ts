@@ -71,6 +71,21 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_USER'] }
     },
+    // {
+    //     path: 'agent-portal',
+    //     loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
+    //     loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
+    //     title: "Agent Portal",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_AGENT'] }
+    // },
+    // {
+    //     path: 'create-agent-account',
+    //     loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
+    //     title: "Join as IP Agent | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
     {
         path: 'create-account',
         loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
@@ -106,13 +121,60 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
+    // {
+    //     path: 'trademark-renewal',
+    //     loadComponent: () => import('./trademark-renewal/trademark-renewal.component').then(m => m.TrademarkRenewalComponent),
+    //     title: "Trademark Renewal — ₹4,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'trademark-objection-reply',
+    //     loadComponent: () => import('./trademark-objection-reply/trademark-objection-reply.component').then(m => m.TrademarkObjectionReplyComponent),
+    //     title: "Trademark Objection Reply — ₹2,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'trademark-watch',
+    //     loadComponent: () => import('./trademark-watch/trademark-watch.component').then(m => m.TrademarkWatchComponent),
+    //     title: "Trademark Watch Service — ₹1,499/year | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'trademark-assignment',
+    //     loadComponent: () => import('./trademark-assignment/trademark-assignment.component').then(m => m.TrademarkAssignmentComponent),
+    //     title: "Trademark Assignment / Transfer — ₹4,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'trademark-opposition',
+    //     loadComponent: () => import('./trademark-opposition/trademark-opposition.component').then(m => m.TrademarkOppositionComponent),
+    //     title: "Trademark Opposition — ₹3,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'trademark-hearing',
+    //     loadComponent: () => import('./trademark-hearing/trademark-hearing.component').then(m => m.TrademarkHearingComponent),
+    //     title: "Trademark Hearing Assistance — ₹3,499 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
     {
-        path: 'trademark-renewal',
-        loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
-        title: "Trademark Renewal",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
+        path: 'trademark-registration-for-auto-parts',
+        loadComponent: () => import('./trademark-auto-parts/trademark-auto-parts.component').then(m => m.TrademarkAutoPartsComponent),
+        title: "Trademark Registration for Auto Parts Manufacturers — ₹1,499 | Trademarx",
     },
+    // {
+    //     path: 'service-checkout',
+    //     loadComponent: () => import('./service-checkout/service-checkout-page.component').then(m => m.ServiceCheckoutPageComponent),
+    //     title: "Secure Checkout | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
     {
         path: 'trademark-process',
         loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
@@ -166,6 +228,34 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
+    // {
+    //     path: "iso/iso-14001",
+    //     loadComponent: () => import('./iso-14001/iso-14001.component').then(m => m.Iso14001Component),
+    //     title: "ISO 14001:2015 Environmental Certification — ₹1,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: "iso/iso-45001",
+    //     loadComponent: () => import('./iso-45001/iso-45001.component').then(m => m.Iso45001Component),
+    //     title: "ISO 45001:2018 OHS Certification — ₹1,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: "iso/iso-27001",
+    //     loadComponent: () => import('./iso-27001/iso-27001.component').then(m => m.Iso27001Component),
+    //     title: "ISO 27001:2022 Information Security Certification — ₹2,499 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: "iso/iso-22000",
+    //     loadComponent: () => import('./iso-22000/iso-22000.component').then(m => m.Iso22000Component),
+    //     title: "ISO 22000:2018 Food Safety Certification — ₹1,999 | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
     {
         path: "msme-registration",
         loadComponent: () => import('./pages/msme-registration/msme-registration.component').then(m => m.MsmeRegistrationComponent),

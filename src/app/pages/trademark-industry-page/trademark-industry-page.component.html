@@ -72,6 +72,12 @@
         <a routerLink="/trademark-classes">See all 45 Nice Classes</a> or
         <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20need%20help%20choosing%20trademark%20class%20for%20my%20{{ industry.name }}%20business" target="_blank" rel="noopener">ask our experts on WhatsApp</a>.
       </p>
+      @if (industry.slug === 'automotive') {
+        <p class="classes-note">
+          Run an auto parts, spare parts, or components manufacturing unit?
+          <a routerLink="/trademark-registration-for-auto-parts">See our dedicated guide for Auto Parts Manufacturers</a>.
+        </p>
+      }
     </div>
   </section>
 
