@@ -1,0 +1,107 @@
+<div class="service-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo; <a routerLink="/iso">ISO Certification</a> &rsaquo; <span>ISO 14001:2015</span>
+      </div>
+      <h1>ISO 14001:2015 Certification — <span class="price-highlight">₹1,999</span></h1>
+      <p class="sub">Get your Environmental Management System (EMS) certified. Required by many government tenders and global clients.</p>
+    </div>
+
+    <div class="service-grid">
+
+      <div class="info-column">
+
+        <div class="info-card">
+          <h3>Why Get ISO 14001:2015 Certified?</h3>
+          <ul class="benefit-list">
+            <li><i class="fas fa-check-circle"></i> Demonstrates your commitment to environmental responsibility</li>
+            <li><i class="fas fa-check-circle"></i> Mandatory requirement for many government tenders and MNCs</li>
+            <li><i class="fas fa-check-circle"></i> Reduces waste, energy consumption, and operational costs</li>
+            <li><i class="fas fa-check-circle"></i> Improves brand reputation with eco-conscious customers</li>
+            <li><i class="fas fa-check-circle"></i> Certificate valid across India and internationally recognised</li>
+          </ul>
+        </div>
+
+        <div class="process-card">
+          <h3>How It Works</h3>
+          <div class="process-step">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Apply & Pay</strong>
+              <p>Fill in your business details and complete the payment to initiate the process.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">2</div>
+            <div>
+              <strong>Document Verification</strong>
+              <p>Our team collects and reviews the required business documents with you over a call.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">3</div>
+            <div>
+              <strong>Certificate Issued</strong>
+              <p>Your ISO 14001:2015 certificate is issued within 5–7 working days and emailed to you.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-column">
+        <div class="form-card">
+          <h2>Get ISO 14001 Certified</h2>
+          <p class="form-sub">Fill in your details and we'll get started right away.</p>
+
+          <form [formGroup]="form" [ngClass]="{'submitted': onClickValidation}" (ngSubmit)="submit()">
+
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input id="fullName" type="text" class="form-input" placeholder="Your full name" formControlName="fullName">
+              <span class="field-error" *ngIf="form.get('fullName')?.invalid && onClickValidation">Full name is required</span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="email">Email Address *</label>
+                  <input id="email" type="email" class="form-input" placeholder="your@email.com" formControlName="email">
+                  <span class="field-error" *ngIf="form.get('email')?.invalid && onClickValidation">Valid email is required</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <app-phone-input [control]="form.controls['phoneNumber']"></app-phone-input>
+                  <span class="field-error" *ngIf="form.get('phoneNumber')?.invalid && onClickValidation">Phone number is required</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="businessName">Business / Organisation Name *</label>
+              <input id="businessName" type="text" class="form-input" placeholder="e.g. Acme Industries Pvt. Ltd." formControlName="businessName">
+              <span class="field-error" *ngIf="form.get('businessName')?.invalid && onClickValidation">Business name is required</span>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input id="city" type="text" class="form-input" placeholder="Your city" formControlName="city">
+              <span class="field-error" *ngIf="form.get('city')?.invalid && onClickValidation">City is required</span>
+            </div>
+
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Proceed to Payment →</span>
+              <span *ngIf="isSubmitting">Please wait…</span>
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

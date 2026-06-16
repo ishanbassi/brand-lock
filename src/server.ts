@@ -32,12 +32,13 @@ const angularApp = new AngularNodeAppEngine();
 const SITE_URL = 'https://trademarx.in';
 
 // Security headers
+const devOrigins = environment.production ? '' : ' http://localhost:8080 http://localhost:4200';
 app.use((_req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net ; frame-src https://www.google.com; object-src 'none'; base-uri 'self';");
+  res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in https://checkout.razorpay.com ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self'${devOrigins} https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.google-analytics.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://api.razorpay.com https://checkout.razorpay.com https://lumberjack.razorpay.com ; frame-src https://www.google.com https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';`);
   next();
 });
 

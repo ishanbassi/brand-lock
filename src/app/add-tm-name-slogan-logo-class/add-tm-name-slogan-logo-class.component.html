@@ -1,84 +1,97 @@
-<section class="add-tm-name-slogan-logo-class-section">
-    <div class="container-xxl">
-        <div class="row">
-            <div class="col col-12 col-sm-12 col-lg-7">
-                <section>
-                    <div class="add-tm-name-slogan-logo-class-heading-content">
-                        <h1>Brand Details</h1>
-                        <p>Details about your trademark</p>
-                    </div>
-                </section>
-                <section class="form-section">
-                    <form (ngSubmit)="submit()" [formGroup]="trademarkDetailsForm"
-                            [ngClass]="{'submitted': onClickValidation}"
-                            >
-                            <div formGroupName="trademark" class=" form-input-container  mat-density-3" *ngIf="this.trademark?.type === TrademarkTypeEnum.TRADEMARK || this.trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE || this.trademark?.type === TrademarkTypeEnum.ALL">
-                                <label for="trademark">Enter your brand name you want to protect:</label>
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter brand name" name="name" #trademark
-                                        formControlName="name" >
-                                    <mat-error *ngIf="trademarkDetailsForm.get('trademark')?.hasError('required') && onClickValidation">
-                                        Brand name is required
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                            <div class="form-input-container" *ngIf="this.trademark?.type === TrademarkTypeEnum.IMAGEMARK || this.trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE|| this.trademark?.type === TrademarkTypeEnum.ALL">
-                                <div class="upload-logo-section">
-                                    <label for="file">Upload the logo you want to trademark:
-                                    </label>
-                                    <div>
-                                        <div *ngIf="trademarkDetailsForm.get('file')?.value">
-                                            <div class="img-wrap">
-                                                <img  loading="lazy" alt="logo" [src]="'data:' + trademarkDetailsForm.get('document')?.get('fileContentType')?.value + ';base64,' + trademarkDetailsForm.get('file')?.value"
-                                            class="logo-img"   />
-                                            <button type="button" (click)="clearInputImage('file', 'fileContentType', 'fileInput')"
-                                                    class="btn btn-secondary btn-xs pull-end clear-btn">
-                                                    <mat-icon class="close-icon">close</mat-icon>
-                                                </button>
-                                            </div>
-                                            <div  class="form-text  clearfix">
-                                                File Name: <span class="pull-start  text-danger">{{ trademarkDetailsForm.get('document')?.get('fileName')?.value }}</span>
-                                                
-                                        </div>
-                                        </div>
-                                        <input *ngIf="!trademarkDetailsForm.get('file')?.value" type="file" id="fileInput"  accept=".png, .jpg, .jpeg, .svg" (change)="setFileData($event,'file' , true)" required>
-                                    
-            
-                                    <input type="hidden" class="form-control" name="file" formControlName="file" />
-                                    <div  formGroupName="document">
-                                        <input type="hidden" class="form-control" name="fileContentType" formControlName="fileContentType" />
-                                        <input type="hidden" class="form-control" name="fileName" formControlName="fileName" />
-                                        <input type="hidden" class="form-control" name="documentType" formControlName="documentType" value="LOGO"/>
-                                    </div>
-                                    
-                                   
-                                    <div class="text-danger" *ngIf="trademarkDetailsForm.get('file')?.hasError('required') && onClickValidation">
-                                        Logo is required
-                                    </div>
-                                    </div>
-                                </div>
+<section class="add-tm-section">
+  <div class="container-xxl">
+    <div class="row">
+      <div class="col col-12 col-sm-12 col-lg-7">
 
-                            </div>
-                            <div class=" form-input-container mat-density-3 " *ngIf="this.trademark?.type === TrademarkTypeEnum.SLOGAN|| this.trademark?.type === TrademarkTypeEnum.ALL">
-                                <label for="trademarkSlogan">Enter the slogan you want to protect:</label>
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter slogan name" name="trademarkSlogan" #trademarkSlogan
-                                        formControlName="trademarkSlogan" required>
-                                    <mat-error *ngIf="trademarkDetailsForm.get('trademarkSlogan')?.hasError('required') && onClickValidation">
-                                        Slogan is required
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                        </form>
-                        <app-trademark-onboarding-btn-section
-                        (backEvent)="back()" 
-                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>                
-                        
-                </section>
-            </div>
-            <div class="col col-12 col-sm-12  col-lg-5"></div>
-
+        <div class="step-heading">
+          <h1>Brand Details</h1>
+          <p>Tell us about the trademark you want to protect.</p>
         </div>
+
+        <section class="form-section">
+          <form (ngSubmit)="submit()" [formGroup]="trademarkDetailsForm"
+                [ngClass]="{'submitted': onClickValidation}">
+
+            <!-- Brand Name -->
+            <div class="form-group" formGroupName="trademark"
+                 *ngIf="trademark?.type === TrademarkTypeEnum.TRADEMARK
+                      || trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE
+                      || trademark?.type === TrademarkTypeEnum.ALL">
+              <label for="name">Brand name you want to protect</label>
+              <input id="name" type="text" class="form-input"
+                     placeholder="Enter your brand name"
+                     formControlName="name">
+              <div class="field-error"
+                   *ngIf="trademarkDetailsForm.get('trademark')?.get('name')?.hasError('required') && onClickValidation">
+                Brand name is required
+              </div>
+            </div>
+
+            <!-- Logo Upload -->
+            <div class="form-group"
+                 *ngIf="trademark?.type === TrademarkTypeEnum.IMAGEMARK
+                      || trademark?.type === TrademarkTypeEnum.TRADEMARK_WITH_IMAGE
+                      || trademark?.type === TrademarkTypeEnum.ALL">
+              <label>Logo you want to trademark</label>
+
+              <div *ngIf="trademarkDetailsForm.get('file')?.value" class="logo-preview">
+                <div class="img-wrap">
+                  <img loading="lazy" alt="logo"
+                       [src]="'data:' + trademarkDetailsForm.get('document')?.get('fileContentType')?.value
+                              + ';base64,' + trademarkDetailsForm.get('file')?.value"
+                       class="logo-img">
+                  <button type="button" class="clear-img-btn"
+                          (click)="clearInputImage('file', 'fileContentType', 'fileInput')">
+                    ✕
+                  </button>
+                </div>
+                <div class="file-name-note">
+                  File: <span>{{ trademarkDetailsForm.get('document')?.get('fileName')?.value }}</span>
+                </div>
+              </div>
+
+              <input *ngIf="!trademarkDetailsForm.get('file')?.value"
+                     type="file" id="fileInput" class="file-input"
+                     accept=".png, .jpg, .jpeg, .svg"
+                     (change)="setFileData($event, 'file', true)">
+
+              <input type="hidden" formControlName="file">
+              <div formGroupName="document">
+                <input type="hidden" formControlName="fileContentType">
+                <input type="hidden" formControlName="fileName">
+                <input type="hidden" formControlName="documentType" value="LOGO">
+              </div>
+
+              <div class="field-error"
+                   *ngIf="trademarkDetailsForm.get('file')?.hasError('required') && onClickValidation">
+                Logo is required
+              </div>
+            </div>
+
+            <!-- Slogan -->
+            <div class="form-group"
+                 *ngIf="trademark?.type === TrademarkTypeEnum.SLOGAN
+                      || trademark?.type === TrademarkTypeEnum.ALL">
+              <label for="trademarkSlogan">Slogan you want to protect</label>
+              <input id="trademarkSlogan" type="text" class="form-input"
+                     placeholder="Enter your slogan"
+                     formControlName="trademarkSlogan" required>
+              <div class="field-error"
+                   *ngIf="trademarkDetailsForm.get('trademarkSlogan')?.hasError('required') && onClickValidation">
+                Slogan is required
+              </div>
+            </div>
+
+          </form>
+
+          <app-trademark-onboarding-btn-section
+            (backEvent)="back()"
+            [isSubmitting]="isSubmitting"
+            (buttonClick)="submit()">
+          </app-trademark-onboarding-btn-section>
+        </section>
+
+      </div>
     </div>
-    
+  </div>
 </section>

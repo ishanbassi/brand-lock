@@ -1,51 +1,85 @@
+.custom-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 0;
+}
 
-    .onboarding-stepper-section{
-        pointer-events: none !important;
-        .onboarding-stepper{
-            max-width: 1040px;
-            margin:0 auto;
-        }
+.step {
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+}
+
+.step-connector {
+    width: 2px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    margin-left: 16px;
+}
+
+.step-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.step-indicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.step-text {
+    flex: 1;
+}
+
+.step-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+.step-description {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.step.active {
+    .step-indicator {
+        background: #fff;
+        color: #001F4D;
+        border-color: #fff;
     }
-
-    ::ng-deep{
-      .mat-stepper-vertical{
-        background-color: #001F4D !important;
-        .mat-step-header{
-              
-        }
-        .mat-step-text-label{
-            color: #fff !important;
-        }
-        .mat-step-icon{
-            color:#001F4D !important;
-            background-color: #fff !important;
-        }
-        .mat-stepper-vertical-line::before{
-            border-left-color:#ffffff25 !important
-        }
-      }
-      .mat-step-header[ng-reflect-state="done"]{
-        .mat-step-icon{
-            background-color: #28a745 !important;
-            color:#fff !important;
-        }
-        .mat-step-text-label{
-            
-         opacity: 0.4;
-        transition: opacity 0.3s ease;
-        }
-      } 
-
+    .step-label {
+        color: #fff;
+        font-weight: 600;
     }
+}
 
-
-
-@media screen and  (max-width:991px) {
-    
-    .onboarding-stepper-section{
-        padding:10px 12px !important;
-        border-bottom: none  !important;
-        box-shadow: none !important;
+.step.completed {
+    .step-indicator {
+        background: #22c55e;
+        color: #fff;
+        border-color: #22c55e;
     }
-
+    .step-label {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    .step-connector {
+        background: rgba(34, 197, 94, 0.4);
+    }
 }

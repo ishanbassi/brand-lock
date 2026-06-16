@@ -1,0 +1,108 @@
+<div class="service-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo; <a routerLink="/trademark">Trademark</a> &rsaquo; <span>Objection Reply</span>
+      </div>
+      <h1>Trademark Objection Reply — <span class="price-highlight">₹2,999</span></h1>
+      <p class="sub">Received an examination report? Our experts draft a compelling objection reply to protect your trademark application.</p>
+    </div>
+
+    <div class="service-grid">
+
+      <div class="info-column">
+
+        <div class="info-card">
+          <h3>What Is a Trademark Objection?</h3>
+          <ul class="benefit-list">
+            <li><i class="fas fa-check-circle"></i> After filing, the Examiner issues a report citing objections to your mark</li>
+            <li><i class="fas fa-check-circle"></i> You have 30 days to file a written reply countering the objections</li>
+            <li><i class="fas fa-check-circle"></i> Failing to reply leads to automatic abandonment of your application</li>
+            <li><i class="fas fa-check-circle"></i> A strong reply can clear objections without a hearing</li>
+            <li><i class="fas fa-check-circle"></i> Common objections: similarity, descriptiveness, non-distinctiveness</li>
+          </ul>
+        </div>
+
+        <div class="process-card">
+          <h3>How It Works</h3>
+          <div class="process-step">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Share Your Details</strong>
+              <p>Provide your trademark number and contact information. We'll retrieve your examination report.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">2</div>
+            <div>
+              <strong>Expert Review</strong>
+              <p>Our trademark attorneys analyse the objections and prepare a tailored, point-by-point reply.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">3</div>
+            <div>
+              <strong>Reply Filed Within 48 Hours</strong>
+              <p>We file the reply on IP India and send you the acknowledgement receipt immediately.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-column">
+        <div class="form-card">
+          <h2>Get Your Objection Replied</h2>
+          <p class="form-sub">Fill in your details so we can draft and file your reply.</p>
+
+          <form [formGroup]="form" [ngClass]="{'submitted': onClickValidation}" (ngSubmit)="submit()">
+
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input id="fullName" type="text" class="form-input" placeholder="Your full name" formControlName="fullName">
+              <span class="field-error" *ngIf="form.get('fullName')?.invalid && onClickValidation">Full name is required</span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="email">Email Address *</label>
+                  <input id="email" type="email" class="form-input" placeholder="your@email.com" formControlName="email">
+                  <span class="field-error" *ngIf="form.get('email')?.invalid && onClickValidation">Valid email is required</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <app-phone-input [control]="form.controls['phoneNumber']"></app-phone-input>
+                  <span class="field-error" *ngIf="form.get('phoneNumber')?.invalid && onClickValidation">Phone number is required</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input id="city" type="text" class="form-input" placeholder="Your city" formControlName="city">
+              <span class="field-error" *ngIf="form.get('city')?.invalid && onClickValidation">City is required</span>
+            </div>
+
+            <div class="form-group">
+              <label for="trademarkNumber">Trademark Application Number *</label>
+              <input id="trademarkNumber" type="text" class="form-input" placeholder="e.g. 1234567" formControlName="trademarkNumber">
+              <span class="field-error" *ngIf="form.get('trademarkNumber')?.invalid && onClickValidation">Application number is required</span>
+              <small class="field-hint">Find this on your trademark filing receipt or via <a href="https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx" target="_blank" rel="noopener">IP India search</a>.</small>
+            </div>
+
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Proceed to Payment →</span>
+              <span *ngIf="isSubmitting">Please wait…</span>
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

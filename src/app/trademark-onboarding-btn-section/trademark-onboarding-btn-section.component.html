@@ -1,11 +1,10 @@
 <section class="btn-section">
-    <!-- <button *ngIf="showBackBtn" mat-raised-button (click)="back()" class="previous-btn">Back</button> -->
-    <button *ngIf="showNextBtn" mat-raised-button type="submit" color="primary" class="next-btn"
-    [disabled]="isSubmitting" (click)="submit()"
-    >
-        <span>NEXT</span>
-        
-
+    <button *ngIf="showBackBtn" type="button" class="btn-back" (click)="back()">
+        ← Back
     </button>
-
+    <button *ngIf="showNextBtn" type="button" class="btn-continue"
+        [disabled]="isSubmitting" (click)="submit()">
+        <span *ngIf="!isSubmitting">Continue →</span>
+        <span *ngIf="isSubmitting">Please wait…</span>
+    </button>
 </section>

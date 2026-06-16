@@ -2,24 +2,33 @@
 <section id="home" class="hero">
     <div class="container hero-container">
         <div class="hero-content">
-            <h1>Protect your brand with Trademark Registration, Trademark Search and ISO Certifications</h1>
-            <p>We simplify trademarks, ISO certifications, MSME registration, and import–export compliance—so you can
-                focus on scaling your business without legal hassles.</p>
+            <div class="trust-badges">
+                <span class="trust-badge"><i class="fas fa-star"></i> 4.9/5 · 77 Google Reviews</span>
+                <span class="trust-badge"><i class="fas fa-shield-alt"></i> IP India Authorised Agents</span>
+            </div>
+            <h1>Trademark Registration Online in India — Protect Your Brand Before Someone Else Does</h1>
+            <p>Free trademark search, expert filing at ₹1,499 + govt. fees, and support until registration.
+                ISO certification, MSME and IEC registration under one roof.</p>
+            <ul class="hero-ticks">
+                <li><i class="fas fa-check-circle"></i> 7,000+ filings · 20+ years experience</li>
+                <li><i class="fas fa-check-circle"></i> Use ™ from the day of filing</li>
+                <li><i class="fas fa-check-circle"></i> 100% online — no office visits</li>
+                <li><i class="fas fa-check-circle"></i> Transparent pricing, no hidden fees</li>
+            </ul>
             <div class="cta-buttons">
-                <!-- <a routerLink="/search" class="btn primary">Find your Trademark</a> -->
-                <!-- <a routerLink="/trademark" class="btn secondary">Apply Trademark</a> -->
-                <!-- <a routerLink="/search" class="btn primary">Trademark Search</a> -->
-
+                <a routerLink="/trademark" class="btn primary">Register My Trademark</a>
+                <a href="tel:+916239771006" class="btn secondary"><i class="fas fa-phone"></i> +91 62397-71006</a>
+            </div>
+            <div class="hero-search">
+                <p class="search-label">Step 1 — check if your brand name is available, free:</p>
+                <app-live-search></app-live-search>
             </div>
         </div>
-        <div class="hero-image">
-            <img ngSrc="/assets/images/services.jpg" alt="Business Solutions" width="600" height="400" priority>
+        <div class="hero-form-col">
+            <app-lead-form [heading]="'File Trademark for ₹1,499'" [showTextArea]="false"
+                [cta]="'Continue'" [serviceType]="'TRADEMARK_REGISTRATION'"></app-lead-form>
         </div>
     </div>
-    <div class="container">
-        <app-live-search></app-live-search>
-    </div>
-
 </section>
 
 <!-- Stats Section -->
@@ -30,8 +39,8 @@
             <p>Clients Served</p>
         </div>
         <div class="stat-item">
-            <h3 appCountUp [endValue]="100" [suffix]="'%'">100%</h3>
-            <p>Client Satisfaction</p>
+            <h3 appCountUp [endValue]="4.9" [suffix]="'★'">4.9★</h3>
+            <p>Google Rating · 77 Reviews</p>
         </div>
         <div class="stat-item">
             <h3 appCountUp [endValue]="7000" [suffix]="'+'">7000+</h3>
@@ -53,10 +62,12 @@
         </div>
         <div class="services-grid">
             <a routerLink="/trademark">
-                <div class="service-card">
+                <div class="service-card has-badge">
+                    <span class="popular-badge">Most Popular</span>
                     <img loading="lazy" src="/assets/images/icons/trademark-icon.svg" alt="Trademark Icon" width="48" height="48">
                     <h3>Trademark Filing</h3>
                     <p>Affordable Trademark Filing At just ₹1,499 + govt. fees.</p>
+                    <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
                 </div>
             </a>
 
@@ -65,6 +76,7 @@
                     <img loading="lazy" src="/assets/images/icons/iso-icon.svg" alt="ISO Icon" width="48" height="48">
                     <h3>ISO Certifications</h3>
                     <p>ISO Standards starting at just ₹1,499</p>
+                    <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
                 </div>
             </a>
             <a routerLink="/iec-registration">
@@ -72,6 +84,7 @@
                     <img loading="lazy" src="/assets/images/icons/import-export-icon.svg" alt="Aeroplane Icon" width="48" height="48">
                     <h3>Import Export Code (IEC)</h3>
                     <p>IEC Code Certificate at just ₹1,499</p>
+                    <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
                 </div>
             </a>
             <a routerLink="/msme-registration">
@@ -79,9 +92,69 @@
                     <img loading="lazy" src="/assets/images/icons/msme-icon.svg" alt="MSME Icon" width="48" height="48">
                     <h3>MSME Registration</h3>
                     <p>Udyam/MSME Certificate at just ₹499</p>
+                    <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
                 </div>
             </a>
         </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <h2>Registered in 3 Simple Steps</h2>
+            <p>100% online — no paperwork hassle, no office visits.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <span class="step-num">1</span>
+                <h3>Free Search &amp; Consultation</h3>
+                <p>We check your brand name's availability and identify the right trademark class — free, no
+                    obligation.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num">2</span>
+                <h3>We Prepare &amp; File</h3>
+                <p>Share basic documents and our IP India authorised agents draft and file your application with the
+                    registry.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num">3</span>
+                <h3>Use ™ Immediately, Track to ®</h3>
+                <p>Start using ™ from the day of filing. We handle objections and follow your application until
+                    registration.</p>
+            </div>
+        </div>
+        <div class="steps-cta">
+            <a routerLink="/trademark" class="btn primary">Start Step 1 — It's Free</a>
+        </div>
+    </div>
+</section>
+
+<app-rating-review></app-rating-review>
+
+<!-- Talk to an Expert CTA Band -->
+<section class="cta-band">
+    <div class="container cta-band-inner">
+        <div class="cta-band-text">
+            <h2>Not sure where to start?</h2>
+            <p>Talk to a trademark expert — free consultation, no obligation.</p>
+        </div>
+        <div class="cta-band-actions">
+            <a href="tel:+916239771006" class="band-btn band-btn-call"><i class="fas fa-phone"></i> Call +91
+                62397-71006</a>
+            <a href="https://wa.me/916239771006?text=Hi%21%20I%20need%20help%20with%20trademark%20registration."
+                target="_blank" rel="noopener" class="band-btn band-btn-whatsapp"><i class="fab fa-whatsapp"></i>
+                WhatsApp Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="home-faq">
+    <div class="container">
+        <app-faq [faqs]="homeFaqs"></app-faq>
     </div>
 </section>
 
@@ -140,7 +213,6 @@
     </div>
 </section>
 
-<app-rating-review></app-rating-review>
 <!-- Solutions Section (using it for blogs)-->
 <section id="solutions" class="solutions" *ngIf="blogs">
     <div class="container">
@@ -206,3 +278,5 @@
         </div>
     </div>
 </section>
+
+<app-mobile-bottom-navbar></app-mobile-bottom-navbar>

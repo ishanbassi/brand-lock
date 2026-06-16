@@ -29,7 +29,11 @@
       </div>
 
       <div class="form-input-container">
-        <app-phone-input [control]="ctaForm.controls['phoneNumber']"></app-phone-input>
+        <div class="input-wrapper">
+          <i class="fas fa-phone input-icon"></i>
+          <input type="phoneNumber" placeholder="Your Phone Number" name="phoneNumber" id="phoneNumber"
+            formControlName="phoneNumber" class="form-input">
+        </div>
         <app-validation-message [field]="ctaForm.get('phoneNumber')"
           [onClickValidation]="onClickValidation"></app-validation-message>
       </div>

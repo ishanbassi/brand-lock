@@ -1,7 +1,5 @@
 import { Component, ElementRef, inject, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
-import { MatError, MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { ToastrService } from 'ngx-toastr';
@@ -26,7 +24,7 @@ import { TrademarkOnboardingBtnSectionComponent } from '../trademark-onboarding-
 
 @Component({
   selector: 'app-add-tm-name-slogan-logo-class',
-  imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, NgxFileDropModule, TrademarkOnboardingBtnSectionComponent,MatError],
+  imports: [ReactiveFormsModule, SharedModule, NgxFileDropModule, TrademarkOnboardingBtnSectionComponent],
   templateUrl: './add-tm-name-slogan-logo-class.component.html',
   styleUrl: './add-tm-name-slogan-logo-class.component.scss'
 })

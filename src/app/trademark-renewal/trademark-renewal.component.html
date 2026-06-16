@@ -1,0 +1,136 @@
+<div class="renewal-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo; <span>Trademark Renewal</span>
+      </div>
+      <h1>Trademark Renewal — <span class="price-highlight">₹4,999</span></h1>
+      <p class="sub">Renew your registered trademark before it lapses. We handle the entire filing process so you can stay protected.</p>
+    </div>
+
+    <div class="renewal-grid">
+
+      <!-- Info column -->
+      <div class="info-column">
+
+        <div class="info-card">
+          <h3>Why Renew Your Trademark?</h3>
+          <ul class="benefit-list">
+            <li><i class="fas fa-check-circle"></i> Trademarks must be renewed every 10 years</li>
+            <li><i class="fas fa-check-circle"></i> Failure to renew leads to trademark lapse</li>
+            <li><i class="fas fa-check-circle"></i> Competitors can file for your brand name after lapse</li>
+            <li><i class="fas fa-check-circle"></i> Renewal keeps your exclusive rights active</li>
+          </ul>
+        </div>
+
+        <div class="process-card">
+          <h3>How It Works</h3>
+          <div class="process-step">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Submit Your Details</strong>
+              <p>Provide your trademark number and contact information below.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">2</div>
+            <div>
+              <strong>Pay Securely</strong>
+              <p>Complete payment via Razorpay (UPI, Cards, Net Banking).</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">3</div>
+            <div>
+              <strong>We File Within 24 Hours</strong>
+              <p>Our team files the TM-12 renewal application and sends you the acknowledgement.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Form column -->
+      <div class="form-column">
+        <div class="form-card">
+          <h2>Renewal Details</h2>
+          <p class="form-sub">Fill in your details and trademark number to proceed to payment.</p>
+
+          <form [formGroup]="renewalForm" [ngClass]="{'submitted': onClickValidation}" (ngSubmit)="submit()">
+
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input id="fullName" type="text" class="form-input"
+                     placeholder="Your full name"
+                     formControlName="fullName">
+              <span class="field-error"
+                    *ngIf="renewalForm.get('fullName')?.invalid && onClickValidation">
+                Full name is required
+              </span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="email">Email Address *</label>
+                  <input id="email" type="email" class="form-input"
+                         placeholder="your@email.com"
+                         formControlName="email">
+                  <span class="field-error"
+                        *ngIf="renewalForm.get('email')?.invalid && onClickValidation">
+                    Valid email is required
+                  </span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <app-phone-input [control]="renewalForm.controls['phoneNumber']"></app-phone-input>
+                  <span class="field-error"
+                        *ngIf="renewalForm.get('phoneNumber')?.invalid && onClickValidation">
+                    Phone number is required
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input id="city" type="text" class="form-input"
+                     placeholder="Your city"
+                     formControlName="city">
+              <span class="field-error"
+                    *ngIf="renewalForm.get('city')?.invalid && onClickValidation">
+                City is required
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="trademarkNumber">Trademark Registration Number *</label>
+              <input id="trademarkNumber" type="text" class="form-input"
+                     placeholder="e.g. 1234567"
+                     formControlName="trademarkNumber">
+              <span class="field-error"
+                    *ngIf="renewalForm.get('trademarkNumber')?.invalid && onClickValidation">
+                Trademark number is required
+              </span>
+              <small class="field-hint">
+                Find this on your trademark registration certificate or via
+                <a href="https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx" target="_blank" rel="noopener">IP India search</a>.
+              </small>
+            </div>
+
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Proceed to Payment →</span>
+              <span *ngIf="isSubmitting">Please wait…</span>
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+

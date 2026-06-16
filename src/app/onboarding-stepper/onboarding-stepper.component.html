@@ -1,25 +1,20 @@
-<div class="onboarding-stepper-section">
-  <div class="onboarding-stepper">
-    <mat-stepper #stepper   orientation="vertical" animationDuration="500" [selectedIndex]="currentStepIndex">
+<div class="custom-stepper">
+  <div class="step" *ngFor="let step of steps; let i = index"
+       [class.completed]="currentStepIndex > i"
+       [class.active]="currentStepIndex === i">
 
-        <mat-step  editable="false"   label="Person Detail"
-        
-        [attr.currentIndex]="currentStepIndex"
-         [completed]="currentStepIndex > 0">
-        </mat-step>
+    <div class="step-connector" *ngIf="i > 0"></div>
 
-        <mat-step  editable="false"  label="Trademark Type"
-         [completed]="currentStepIndex > 1"
-          >
-    
-        </mat-step>
-        <mat-step editable="false" label="Trademark Detail"
-         [completed]="currentStepIndex > 2"
-          >
+    <div class="step-row">
+      <div class="step-indicator">
+        <span *ngIf="currentStepIndex > i" class="check-icon">✓</span>
+        <span *ngIf="currentStepIndex <= i">{{ i + 1 }}</span>
+      </div>
+      <div class="step-text">
+        <div class="step-label">{{ step.label }}</div>
+        <div class="step-description">{{ step.description }}</div>
+      </div>
+    </div>
 
-        
-        </mat-step>
-      </mat-stepper>
   </div>
-
 </div>

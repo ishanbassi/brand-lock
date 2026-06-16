@@ -1,6 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TrademarkOnboardingBtnSectionComponent } from '../../trademark-onboarding-btn-section/trademark-onboarding-btn-section.component';
 import { SharedModule } from '../../shared/shared.module';
 import { Router } from '@angular/router';
@@ -22,7 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-trademark-type',
-  imports: [MatIconModule,MatButton, TrademarkOnboardingBtnSectionComponent,SharedModule, FormsModule, ReactiveFormsModule],
+  imports: [TrademarkOnboardingBtnSectionComponent, SharedModule, FormsModule, ReactiveFormsModule],
   templateUrl: './add-trademark-type.component.html',
   styleUrl: './add-trademark-type.component.scss'
 })

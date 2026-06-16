@@ -90,9 +90,10 @@ export class LoginV2Component implements OnInit{
         next: (response) => {
           this.loadingService.hide();
           this.localStorageService.setObject('user', response.body?.user);
-          
+          const isAgent = this.authService.hasRole(['ROLE_AGENT']);
+          const destination = isAgent ? '/agent-portal/dashboard' : (this.returnUrl || '/portal/dashboard');
           setTimeout(() => {
-          this.router.navigate(['/portal/dashboard']);
+          this.router.navigate([destination]);
           }, 200);
         }, error: (error: any) => {
           this.loadingService.hide();

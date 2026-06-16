@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, input, Output } from '@angular/core';
-import { MatButton } from '@angular/material/button';
 import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: 'app-trademark-onboarding-btn-section',
-  imports: [MatButton,SharedModule],
+  imports: [SharedModule],
   templateUrl: './trademark-onboarding-btn-section.component.html',
   styleUrl: './trademark-onboarding-btn-section.component.scss'
 })

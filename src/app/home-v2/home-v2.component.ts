@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { DOCUMENT, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Blog } from '../../models/blog.model';
 import { environment } from '../../environments/environment';
 import { BlogService } from '../shared/services/blog-service.service';
@@ -11,10 +11,12 @@ import { SharedModule } from '../shared/shared.module';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
+import { FaqComponent } from '../faq/faq.component';
+import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, NgOptimizedImage],
+  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })
@@ -26,6 +28,29 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
   private schemaScript?: HTMLScriptElement;
   blogs?: Blog;
   blogBaseUrl = `${environment.BaseBlogUrl}`;
+
+  homeFaqs = [
+    {
+      question: 'How much does trademark registration cost in India?',
+      answer: 'Our professional fee is ₹1,499. Government filing fees are additional — ₹4,500 per class for individuals, startups and MSMEs, and ₹9,000 per class for other entities.'
+    },
+    {
+      question: 'Can I use the ™ symbol before registration is complete?',
+      answer: 'Yes. You can use the ™ symbol as soon as your application is filed. The ® symbol can be used only after the registry grants registration.'
+    },
+    {
+      question: 'How long does trademark registration take?',
+      answer: 'The process usually takes 6–18 months in India depending on objections or oppositions, but your brand gets protection from the date of application. We track and manage the application throughout.'
+    },
+    {
+      question: 'What happens if my application receives an objection?',
+      answer: 'Objections are common and manageable. Our team drafts and files the reply to the examination report and follows up with the registry until the process completes.'
+    },
+    {
+      question: 'Do I need to visit your office?',
+      answer: 'No. The entire process — search, consultation, document collection and filing — is 100% online. We serve businesses across all of India.'
+    }
+  ];
 
   constructor(
     private blogService: BlogService,
@@ -229,6 +254,15 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
           'opens': '10:00',
           'closes': '19:00'
         }]
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': this.homeFaqs.map(f => ({
+          '@type': 'Question',
+          'name': f.question,
+          'acceptedAnswer': { '@type': 'Answer', 'text': f.answer }
+        }))
       },
       {
         '@context': 'https://schema.org',

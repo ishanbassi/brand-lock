@@ -1,21 +1,95 @@
 <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <img src="/assets/images/trademarx.png" alt="Company Logo" width="160" height="40">
-            </div>
-            <ul class="nav-links">
-                <li><a routerLink="/home">Home</a></li>
-                <li><a routerLink="/search">Search</a></li>
-                <li><a routerLink="/trademark">Trademark</a></li>
-                <li><a routerLink="/iso/iso-9001-2015">ISO</a></li> 
-                <li><a routerLink="/blogs">Articles</a></li>
-                <!-- <li><a routerLink="/about-us">About</a></li> -->
-                <!-- <li><a routerLink="/login">Login</a></li> -->
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+    <div class="container">
+        <div class="logo">
+            <a routerLink="/home">
+                <img src="/assets/images/trademarx.png" alt="Trademarx" width="160" height="40">
+            </a>
         </div>
-    </nav>
+
+        <ul class="nav-links">
+            <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
+            <li><a routerLink="/search" routerLinkActive="active">Search</a></li>
+
+            <!-- Trademark Dropdown -->
+            <li class="has-dropdown"
+                (mouseenter)="openDropdown('trademark')"
+                (mouseleave)="closeDropdown('trademark')">
+                <a routerLink="/trademark" routerLinkActive="active"
+                   (click)="toggleMobileDropdown('trademark', $event)">
+                    Trademark
+                    <svg class="chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <ul class="dropdown" [class.open]="openDropdowns['trademark']"
+                    (mouseenter)="openDropdown('trademark')"
+                    (mouseleave)="closeDropdown('trademark')">
+                    <li><a routerLink="/trademark" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Overview</a></li>
+                    <li class="dropdown-divider-label">Registration & Renewal</li>
+                    <li><a routerLink="/trademark-registration" routerLinkActive="active">Trademark Registration</a></li>
+                    <li><a routerLink="/trademark-renewal" routerLinkActive="active">Trademark Renewal</a></li>
+                    <li class="dropdown-divider-label">Post-Registration</li>
+                    <li><a routerLink="/trademark-objection-reply" routerLinkActive="active">Objection Reply</a></li>
+                    <li><a routerLink="/trademark-opposition" routerLinkActive="active">Opposition</a></li>
+                    <li><a routerLink="/trademark-hearing" routerLinkActive="active">Hearing Assistance</a></li>
+                    <li><a routerLink="/trademark-assignment" routerLinkActive="active">Assignment / Transfer</a></li>
+                    <li><a routerLink="/trademark-watch" routerLinkActive="active">Watch Service</a></li>
+                </ul>
+            </li>
+
+            <!-- ISO Dropdown -->
+            <li class="has-dropdown"
+                (mouseenter)="openDropdown('iso')"
+                (mouseleave)="closeDropdown('iso')">
+                <a routerLink="/iso" routerLinkActive="active"
+                   (click)="toggleMobileDropdown('iso', $event)">
+                    ISO
+                    <svg class="chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <ul class="dropdown" [class.open]="openDropdowns['iso']"
+                    (mouseenter)="openDropdown('iso')"
+                    (mouseleave)="closeDropdown('iso')">
+                    <li><a routerLink="/iso" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">All ISO Standards</a></li>
+                    <li class="dropdown-divider-label">Quality & Safety</li>
+                    <li><a routerLink="/iso/iso-9001-2015" routerLinkActive="active">ISO 9001:2015 — Quality</a></li>
+                    <li><a routerLink="/iso/iso-14001" routerLinkActive="active">ISO 14001:2015 — Environmental</a></li>
+                    <li><a routerLink="/iso/iso-45001" routerLinkActive="active">ISO 45001:2018 — OHS</a></li>
+                    <li class="dropdown-divider-label">Security & Food</li>
+                    <li><a routerLink="/iso/iso-27001" routerLinkActive="active">ISO 27001:2022 — Info Security</a></li>
+                    <li><a routerLink="/iso/iso-22000" routerLinkActive="active">ISO 22000:2018 — Food Safety</a></li>
+                </ul>
+            </li>
+
+            <!-- Business Services Dropdown -->
+            <li class="has-dropdown"
+                (mouseenter)="openDropdown('business')"
+                (mouseleave)="closeDropdown('business')">
+                <a routerLinkActive="active"
+                   [routerLinkActiveOptions]="{exact:false}"
+                   (click)="toggleMobileDropdown('business', $event)"
+                   style="cursor:pointer">
+                    Business
+                    <svg class="chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <ul class="dropdown" [class.open]="openDropdowns['business']"
+                    (mouseenter)="openDropdown('business')"
+                    (mouseleave)="closeDropdown('business')">
+                    <li><a routerLink="/msme-registration" routerLinkActive="active">MSME / Udyam Registration</a></li>
+                    <li><a routerLink="/iec-registration" routerLinkActive="active">IEC Registration</a></li>
+                </ul>
+            </li>
+
+            <li><a routerLink="/blogs" routerLinkActive="active">Articles</a></li>
+        </ul>
+
+        <div class="hamburger" (click)="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>

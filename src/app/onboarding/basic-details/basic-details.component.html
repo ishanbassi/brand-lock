@@ -1,78 +1,75 @@
 <section class="basic-details-section">
-    
-    <div class="container-xxl">
-        <div class="row">
-            <div class="col col-12 col-sm-12 col-lg-7">
-                <section>
-                    <div class="basic-details-content">
-                        <h1>Tell us something about yourself</h1>
-                        <p>Details about your name, phone number</p>
-                    </div>
-                </section>
-                <section class="form-section">
-                    <form (ngSubmit)="submit()" [formGroup]="leadForm" class="nav-form" id="navForm"
-                        [ngClass]="{'submitted': onClickValidation}"
-                        >
-                        <div class="row">
-                            <div class="col-12 col-sm-12 col-md-6">
-                                <div class=" form-input-container  mat-density-3">
-                                <label for="fullName">Full Name</label>
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter full name" name="fullName" #fullName
-                                        formControlName="fullName">
-                                        <mat-icon matPrefix>person</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="leadForm.get('fullName')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            </div>
-                            <div class="col-12 col-sm-12 col-md-6">
-                                <div class=" form-input-container mat-density-3">
-                                <label for="email">Email</label>
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter email" name="email" #email
-                                        formControlName="email">
-                                        <mat-icon matPrefix>email</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="leadForm.get('email')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-12 col-md-6 custom-phone-input">
-                                        <div class=" form-input-container mat-density-3">
-                                <label for="phoneNumber">Phone number</label>
-                                <app-phone-input [control]="leadForm.controls['phoneNumber']"></app-phone-input>
-                                </div>
-                                <app-validation-message [field]="leadForm.get('phoneNumber')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            
-                            <div class="col-12 col-sm-12 col-md-6">
-                                    <div class=" form-input-container mat-density-3">
-                                <label for="city">City</label>
-                                <mat-form-field appearance="outline" class="w-full" [hideRequiredMarker]="true">
-                                    <input matInput placeholder="Enter city name" name="city" #city
-                                        formControlName="city">
-                                        <mat-icon matPrefix> location_on</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="leadForm.get('city')"
-                                    [onClickValidation]="onClickValidation"></app-validation-message>
-                            </div>
-                            </div>
-                            
-                        </div>
-                            
-        
-                        </form>
-                        <app-trademark-onboarding-btn-section 
-                        [showBackBtn]="false"
-                        [isSubmitting]="isSubmitting" (buttonClick)="submit()"></app-trademark-onboarding-btn-section>
-            </section>
-            </div>
-            <div class="col col-12 col-sm-12 col-lg-5"></div>
+  <div class="container-xxl">
+    <div class="row">
+      <div class="col col-12 col-sm-12 col-lg-7">
 
+        <div class="step-heading">
+          <h1>Tell us about yourself</h1>
+          <p>We'll use these details for your trademark application.</p>
         </div>
-    </div>
 
- 
+        <form (ngSubmit)="submit()" [formGroup]="leadForm"
+              [ngClass]="{'submitted': onClickValidation}">
+          <div class="row">
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input id="fullName" type="text" class="form-input"
+                       placeholder="Enter your full name"
+                       formControlName="fullName">
+                <app-validation-message [field]="leadForm.get('fullName')"
+                                        [onClickValidation]="onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input id="email" type="email" class="form-input"
+                       placeholder="Enter your email"
+                       formControlName="email">
+                <app-validation-message [field]="leadForm.get('email')"
+                                        [onClickValidation]="onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input id="phoneNumber" type="phoneNumber" class="form-input"
+                       placeholder="Enter your phone number"
+                       formControlName="phoneNumber">
+                <app-validation-message [field]="leadForm.get('phoneNumber')"
+                                        [onClickValidation]="onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="city">City</label>
+                <input id="city" type="text" class="form-input"
+                       placeholder="Enter your city"
+                       formControlName="city">
+                <app-validation-message [field]="leadForm.get('city')"
+                                        [onClickValidation]="onClickValidation">
+                </app-validation-message>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <app-trademark-onboarding-btn-section
+          [showBackBtn]="false"
+          [isSubmitting]="isSubmitting"
+          (buttonClick)="submit()">
+        </app-trademark-onboarding-btn-section>
+
+      </div>
+    </div>
+  </div>
 </section>

@@ -168,6 +168,11 @@ export const routes: Routes = [
         loadComponent: () => import('./trademark-auto-parts/trademark-auto-parts.component').then(m => m.TrademarkAutoPartsComponent),
         title: "Trademark Registration for Auto Parts Manufacturers — ₹1,499 | Trademarx",
     },
+    {
+        path: 'trademark-registration-for-machine-tools',
+        loadComponent: () => import('./trademark-machine-tools/trademark-machine-tools.component').then(m => m.TrademarkMachineToolsComponent),
+        title: "Trademark Registration for Machine Tools Manufacturers — ₹1,499 | Trademarx",
+    },
     // {
     //     path: 'service-checkout',
     //     loadComponent: () => import('./service-checkout/service-checkout-page.component').then(m => m.ServiceCheckoutPageComponent),

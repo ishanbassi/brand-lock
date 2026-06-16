@@ -5,6 +5,7 @@ import { AddTmNameSloganLogoClassComponent } from "../add-tm-name-slogan-logo-cl
 import { TrademarkSelectClassComponent } from "../trademark-select-class/trademark-select-class.component";
 import { TrademarkPlansPageComponent } from "../trademark-plans-page/trademark-plans-page.component";
 import { CheckoutPageComponent } from "../checkout-page/checkout-page.component";
+import { TmBrandDetailsComponent } from "../tm-brand-details/tm-brand-details.component";
 
 export const onboardingRoutes: Routes = [
     {
@@ -29,6 +30,11 @@ export const onboardingRoutes: Routes = [
             title:"Trademark Registration | Step 3"
         },
         
+        {
+            path:"brand-details",
+            component:TmBrandDetailsComponent,
+            title:"Trademark Registration | Brand Details"
+        },
         {
             path:"select-plan",
             component:TrademarkPlansPageComponent,

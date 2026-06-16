@@ -1,0 +1,108 @@
+<div class="service-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo; <a routerLink="/trademark">Trademark</a> &rsaquo; <span>Hearing Assistance</span>
+      </div>
+      <h1>Trademark Hearing Assistance — <span class="price-highlight">₹3,499</span></h1>
+      <p class="sub">Summoned for a trademark hearing? Our attorneys appear before the Registrar and present your case for the best outcome.</p>
+    </div>
+
+    <div class="service-grid">
+
+      <div class="info-column">
+
+        <div class="info-card">
+          <h3>When Is a Hearing Scheduled?</h3>
+          <ul class="benefit-list">
+            <li><i class="fas fa-check-circle"></i> A hearing is called when an objection reply is not fully accepted</li>
+            <li><i class="fas fa-check-circle"></i> Also scheduled in opposition and rectification proceedings</li>
+            <li><i class="fas fa-check-circle"></i> Non-appearance at a hearing leads to automatic rejection</li>
+            <li><i class="fas fa-check-circle"></i> Our attorneys are experienced in arguing before the Trademark Registrar</li>
+            <li><i class="fas fa-check-circle"></i> We prepare comprehensive written submissions before the hearing date</li>
+          </ul>
+        </div>
+
+        <div class="process-card">
+          <h3>How It Works</h3>
+          <div class="process-step">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Share Hearing Notice</strong>
+              <p>Upload your hearing notice and trademark details so we can review the case.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">2</div>
+            <div>
+              <strong>Case Preparation</strong>
+              <p>We study the file, prepare written arguments, and brief our attorney for the hearing.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">3</div>
+            <div>
+              <strong>Hearing Representation</strong>
+              <p>Our attorney appears before the Registrar and argues your case. You receive a full report after.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-column">
+        <div class="form-card">
+          <h2>Trademark Hearing Details</h2>
+          <p class="form-sub">Share your trademark number and our team will contact you within 24 hours.</p>
+
+          <form [formGroup]="form" [ngClass]="{'submitted': onClickValidation}" (ngSubmit)="submit()">
+
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input id="fullName" type="text" class="form-input" placeholder="Your full name" formControlName="fullName">
+              <span class="field-error" *ngIf="form.get('fullName')?.invalid && onClickValidation">Full name is required</span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="email">Email Address *</label>
+                  <input id="email" type="email" class="form-input" placeholder="your@email.com" formControlName="email">
+                  <span class="field-error" *ngIf="form.get('email')?.invalid && onClickValidation">Valid email is required</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <app-phone-input [control]="form.controls['phoneNumber']"></app-phone-input>
+                  <span class="field-error" *ngIf="form.get('phoneNumber')?.invalid && onClickValidation">Phone number is required</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input id="city" type="text" class="form-input" placeholder="Your city" formControlName="city">
+              <span class="field-error" *ngIf="form.get('city')?.invalid && onClickValidation">City is required</span>
+            </div>
+
+            <div class="form-group">
+              <label for="trademarkNumber">Trademark Application Number *</label>
+              <input id="trademarkNumber" type="text" class="form-input" placeholder="e.g. 1234567" formControlName="trademarkNumber">
+              <span class="field-error" *ngIf="form.get('trademarkNumber')?.invalid && onClickValidation">Application number is required</span>
+              <small class="field-hint">Find this on your hearing notice or via <a href="https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx" target="_blank" rel="noopener">IP India search</a>.</small>
+            </div>
+
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Proceed to Payment →</span>
+              <span *ngIf="isSubmitting">Please wait…</span>
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
