@@ -92,17 +92,19 @@ export class LeadFormComponent implements OnInit {
         next: (newLead) => {
           this.sessionStorageService.setObject('lead', newLead.body);
           this.trackConversion();
-          if (this.serviceType) {
-            if(this.serviceType === 'TRADEMARK_REGISTRATION'){
-              this.router.navigateByUrl('trademark-registration/brand-details');
-              return;
-            }
-            this.router.navigate(['/service-checkout'], {
-              queryParams: { service: this.serviceType, lead_id: newLead.body?.id }
-            });
-          } else {
-            this.toastService.success('Thank you! One of our team members will contact you soon.');
-          }
+          this.toastService.success('Thank you! One of our team members will contact you soon.');
+
+          // if (this.serviceType) {
+          //   if(this.serviceType === 'TRADEMARK_REGISTRATION'){
+          //     this.router.navigateByUrl('trademark-registration/brand-details');
+          //     return;
+          //   }
+          //   this.router.navigate(['/service-checkout'], {
+          //     queryParams: { service: this.serviceType, lead_id: newLead.body?.id }
+          //   });
+          // } else {
+          //   this.toastService.success('Thank you! One of our team members will contact you soon.');
+          // }
         },
         error: () => {
           this.toastService.error('There were some issues while submitting. Please try later.');
