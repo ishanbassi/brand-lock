@@ -199,6 +199,11 @@ export const routes: Routes = [
         title: "Trademark Registration for Hosiery & Knitwear Manufacturers — ₹1,499 | Trademarx",
     },
     {
+        path: 'trademark-registration-for-sports-goods',
+        loadComponent: () => import('./trademark-sports-goods/trademark-sports-goods.component').then(m => m.TrademarkSportsGoodsComponent),
+        title: "Trademark Registration for Sports Goods Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
         path: 'service-checkout',
         loadComponent: () => import('./service-checkout/service-checkout-page.component').then(m => m.ServiceCheckoutPageComponent),
         title: "Secure Checkout | Trademarx",

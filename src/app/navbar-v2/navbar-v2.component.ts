@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, PLATFORM_ID, Renderer2 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from "@angular/router";
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-navbar-v2',
@@ -15,10 +16,12 @@ export class NavbarV2Component implements AfterViewInit, OnDestroy {
   private isBrowser = false;
   private unlisteners: Array<() => void> = [];
   private mobileMenuOpen = false;
+  private routerSub?: Subscription;
 
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -27,11 +30,18 @@ export class NavbarV2Component implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
     this.closeAllOnOutsideClick();
+    // Close the mobile menu whenever navigation completes (e.g. a link is clicked)
+    this.routerSub = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.mobileMenuOpen) this.toggleMobileMenu();
+      });
   }
 
   ngOnDestroy(): void {
     this.unlisteners.forEach(fn => fn());
     Object.values(this.closeTimers).forEach(t => { if (t) clearTimeout(t); });
+    this.routerSub?.unsubscribe();
   }
 
   openDropdown(key: string): void {
