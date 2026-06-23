@@ -62,9 +62,10 @@ export class TrademarkHearingComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.sessionStorageService.setObject('lead', response.body);
-          this.router.navigate(['/service-checkout'], {
-            queryParams: { service: 'TRADEMARK_HEARING', lead_id: response.body?.id, tm_number: fv.trademarkNumber }
-          });
+          this.toastService.success('Thank you! One of our team members will contact you soon.');
+          // this.router.navigate(['/service-checkout'], {
+          //   queryParams: { service: 'TRADEMARK_HEARING', lead_id: response.body?.id, tm_number: fv.trademarkNumber }
+          // });
         },
         error: () => this.toastService.error('Failed to submit. Please try again.')
       });
