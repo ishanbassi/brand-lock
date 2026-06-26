@@ -71,26 +71,26 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_USER'] }
     },
-    {
-        path: 'agent-portal',
-        loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
-        loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
-        title: "Agent Portal",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_AGENT'] }
-    },
-    {
-        path: 'create-agent-account',
-        loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
-        title: "Join as IP Agent | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
-    },
-    {
-        path: 'agent/:agentCode',
-        loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
-        title: "Agent Profile | Trademarx",
-    },
+    // {
+    //     path: 'agent-portal',
+    //     loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
+    //     loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
+    //     title: "Agent Portal",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_AGENT'] }
+    // },
+    // {
+    //     path: 'create-agent-account',
+    //     loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
+    //     title: "Join as IP Agent | Trademarx",
+    //     canActivate: [AuthGuard],
+    //     data: { roles: ['ROLE_ANONYMOUS'] }
+    // },
+    // {
+    //     path: 'agent/:agentCode',
+    //     loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
+    //     title: "Agent Profile | Trademarx",
+    // },
     {
         path: 'create-account',
         loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
