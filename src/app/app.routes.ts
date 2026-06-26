@@ -71,21 +71,26 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_USER'] }
     },
-    // {
-    //     path: 'agent-portal',
-    //     loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
-    //     loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
-    //     title: "Agent Portal",
-    //     canActivate: [AuthGuard],
-    //     data: { roles: ['ROLE_AGENT'] }
-    // },
-    // {
-    //     path: 'create-agent-account',
-    //     loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
-    //     title: "Join as IP Agent | Trademarx",
-    //     canActivate: [AuthGuard],
-    //     data: { roles: ['ROLE_ANONYMOUS'] }
-    // },
+    {
+        path: 'agent-portal',
+        loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
+        loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
+        title: "Agent Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_AGENT'] }
+    },
+    {
+        path: 'create-agent-account',
+        loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
+        title: "Join as IP Agent | Trademarx",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'agent/:agentCode',
+        loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
+        title: "Agent Profile | Trademarx",
+    },
     {
         path: 'create-account',
         loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
@@ -202,6 +207,21 @@ export const routes: Routes = [
         path: 'trademark-registration-for-sports-goods',
         loadComponent: () => import('./trademark-sports-goods/trademark-sports-goods.component').then(m => m.TrademarkSportsGoodsComponent),
         title: "Trademark Registration for Sports Goods Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-steel-manufacturers',
+        loadComponent: () => import('./trademark-steel-manufacturers/trademark-steel-manufacturers.component').then(m => m.TrademarkSteelManufacturersComponent),
+        title: "Trademark Registration for Steel Manufacturers & Re-rolling Mills — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-pump-manufacturers',
+        loadComponent: () => import('./trademark-pump-manufacturers/trademark-pump-manufacturers.component').then(m => m.TrademarkPumpManufacturersComponent),
+        title: "Trademark Registration for Pump Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-forging-units',
+        loadComponent: () => import('./trademark-forging-units/trademark-forging-units.component').then(m => m.TrademarkForgingUnitsComponent),
+        title: "Trademark Registration for Forging Units — ₹1,499 | Trademarx",
     },
     {
         path: 'service-checkout',
@@ -351,7 +371,7 @@ export const routes: Routes = [
         title: "Trademark Search In India| Check brand availability online",
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
-    },
+     },
     {
         path: "trademarks/:url",
         loadComponent: () => import('./tradmark-detail/tradmark-detail.component').then(m => m.TradmarkDetailComponent),
