@@ -118,16 +118,28 @@ const STATIC_PAGES = [
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }
+interface TrademarkSitemapEntry { slug: string; lastmod: string; }
 
 app.get('/sitemap.xml', async (_req, res) => {
   try {
-    const response = await fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`);
-    const json: { data: RawBlogEntry[] } = await response.json();
+    const [blogResponse, tmResponse] = await Promise.all([
+      fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`),
+      fetch(`https://admin.trademarx.in/api/trademarks/sitemap?page=0&size=5000`),
+    ]);
 
-    const blogUrls = json.data.map(blog => `
+    const blogJson: { data: RawBlogEntry[] } = await blogResponse.json();
+    const tmEntries: TrademarkSitemapEntry[] = await tmResponse.json();
+
+    const blogUrls = blogJson.data.map(blog => `
     <url>
       <loc>${SITE_URL}/blogs/${blog.slug}</loc>
       <lastmod>${new Date(blog.updatedAt).toISOString().split('T')[0]}</lastmod>
+    </url>`);
+
+    const trademarkUrls = tmEntries.map(e => `
+    <url>
+      <loc>${SITE_URL}/trademarks/${e.slug}</loc>
+      <lastmod>${e.lastmod}</lastmod>
     </url>`);
 
     const staticUrlEntries = STATIC_PAGES.map(p => `
@@ -140,12 +152,13 @@ app.get('/sitemap.xml', async (_req, res) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticUrlEntries.join('')}
 ${blogUrls.join('')}
+${trademarkUrls.join('')}
 </urlset>`;
 
     res.header('Content-Type', 'application/xml');
     res.send(sitemap);
   } catch (err) {
-    console.error('❌ Blog sitemap error:', err);
+    console.error('❌ Sitemap error:', err);
     res.status(500).send('Sitemap error');
   }
 });

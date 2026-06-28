@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ import { Meta, Title } from '@angular/platform-browser';
   templateUrl: './trademark-search-result.component.html',
   styleUrl: './trademark-search-result.component.scss'
 })
-export class TrademarkSearchResultComponent implements OnInit {
+export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -105,12 +105,17 @@ export class TrademarkSearchResultComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.meta.removeTag("name='robots'");
+  }
+
   setSeoTags() {
     this.title.setTitle(`Search Results For ${this.query}, ${this.totalResults} results found`);
     this.meta.updateTag({
       name: 'description',
       content: `Trademark Search Results for ${this.query}, ${this.totalResults} results found. `
     });
+    this.meta.updateTag({ name: 'robots', content: 'noindex, follow' });
     this.meta.updateTag({
       property: 'og:title',
       content: `Search Results For ${this.query}, ${this.totalResults} results found`
@@ -120,7 +125,6 @@ export class TrademarkSearchResultComponent implements OnInit {
       property: 'og:description',
       content: `Search Results For ${this.query}, ${this.totalResults} results found`
     });
-    
 
   }
 

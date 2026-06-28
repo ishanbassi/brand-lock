@@ -48,6 +48,12 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     this.meta.updateTag({ property: 'og:url', content: `https://trademarx.in/trademark/${data.slug}` });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
 
+    const INDEXED_CITIES = ['ludhiana', 'gurugram'];
+    this.meta.updateTag({
+      name: 'robots',
+      content: INDEXED_CITIES.includes(slug) ? 'index, follow' : 'noindex, follow',
+    });
+
     this.seo.setCanonical(`https://trademarx.in/trademark/${data.slug}`);
     this.seo.injectJsonLd([
       {
@@ -95,5 +101,6 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
       this.seo.removeJsonLd(`trademark-city-${this.city.slug}`);
     }
     this.seo.removeCanonical();
+    this.meta.removeTag("name='robots'");
   }
 }

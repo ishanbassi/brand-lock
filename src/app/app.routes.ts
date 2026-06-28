@@ -224,6 +224,11 @@ export const routes: Routes = [
         title: "Trademark Registration for Forging Units — ₹1,499 | Trademarx",
     },
     {
+        path: 'trademark-registration-for-casting-foundry',
+        loadComponent: () => import('./trademark-casting-foundry/trademark-casting-foundry.component').then(m => m.TrademarkCastingFoundryComponent),
+        title: "Trademark Registration for Casting & Foundry Units — ₹1,499 | Trademarx",
+    },
+    {
         path: 'service-checkout',
         loadComponent: () => import('./service-checkout/service-checkout-page.component').then(m => m.ServiceCheckoutPageComponent),
         title: "Secure Checkout | Trademarx",

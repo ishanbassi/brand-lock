@@ -44,16 +44,16 @@ export class BlogListComponent implements OnInit{
     });
 
           // SEO
-      this.title.setTitle("Trademark Blog | ISO, Trademark Search Tips, Brand Protection & Legal Guides");
-      this.meta.updateTag({ name: 'description', content: "Explore expert guides on trademark search, brand name availability, trademark registration, and IP protection. Learn how to avoid conflicts and secure your brand with Trademarx." });
+      this.title.setTitle("Trademark Registration Guides & Tips | Trademarx Blog");
+      this.meta.updateTag({ name: 'description', content: "Expert guides on trademark registration, IP protection, and business compliance in India. Free resources to help you search, file, and protect your brand." });
       this.meta.updateTag({
         property: 'og:title',
-        content: "Trademark Blog | ISO, Trademark Search Tips, Brand Protection & Legal Guides"
+        content: "Trademark Registration Guides & Tips | Trademarx Blog"
       });
 
       this.meta.updateTag({
         property: 'og:description',
-        content: "Explore expert guides on trademark search, brand name availability, trademark registration, and IP protection. Learn how to avoid conflicts and secure your brand with Trademarx."
+        content: "Expert guides on trademark registration, IP protection, and business compliance in India. Free resources to help you search, file, and protect your brand."
       });
 
 
