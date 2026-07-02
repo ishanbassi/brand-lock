@@ -62,10 +62,9 @@ export class Iso45001Component implements OnInit {
       .subscribe({
         next: (response) => {
           this.sessionStorageService.setObject('lead', response.body);
-          this.toastService.success('Thank you! One of our team members will contact you soon.');
-          // this.router.navigate(['/service-checkout'], {
-          //   queryParams: { service: 'ISO_45001', lead_id: response.body?.id }
-          // });
+          this.router.navigate(['/service-checkout'], {
+            queryParams: { service: 'ISO_45001', lead_id: response.body?.id }
+          });
         },
         error: () => this.toastService.error('Failed to submit. Please try again.')
       });
