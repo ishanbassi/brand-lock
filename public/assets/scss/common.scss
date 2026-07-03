@@ -1332,30 +1332,41 @@ body {
 .campaign-section {
     position: relative;
     margin: 3rem 0;
-    padding: 2.5rem;
-    border-radius: 16px;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    border-radius: 20px;
     color: white;
     overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
+    box-shadow: 0 18px 40px -18px rgba(30, 64, 175, 0.55);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    // Subtle pattern overlay
+    // Soft decorative glow, top-left
     &::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image:
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        top: -40%;
+        left: -10%;
+        width: 55%;
+        height: 160%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    // Large translucent ring, bottom-right — adds depth without noise
+    &::after {
+        content: '';
+        position: absolute;
+        right: -70px;
+        bottom: -90px;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        border: 40px solid rgba(255, 255, 255, 0.06);
         pointer-events: none;
     }
 
     &:hover {
         transform: translateY(-4px);
-        box-shadow: var(--hover-shadow);
+        box-shadow: 0 26px 54px -20px rgba(30, 64, 175, 0.6);
     }
 
     .campaign-content {
@@ -1375,12 +1386,12 @@ body {
         flex-shrink: 0;
         width: 180px;
         height: 180px;
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 
         @media (max-width: 768px) {
             width: 150px;
@@ -1403,23 +1414,22 @@ body {
         flex: 1;
     }
 
+    // Eyebrow pill above the heading
     h3 {
-        margin: 0 0 0.75rem 0;
-        font-size: 1.75rem;
-        font-weight: 700;
-        line-height: 1.2;
+        position: relative;
+        margin: 0 0 0.85rem 0;
+        font-size: clamp(1.5rem, 3vw, 1.9rem);
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
         color: white;
-
-        @media (max-width: 768px) {
-            font-size: 1.5rem;
-        }
     }
 
     p {
-        margin: 0 0 1.5rem 0;
+        margin: 0 0 1.75rem 0;
         font-size: 1.05rem;
-        line-height: 1.6;
-        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.65;
+        color: rgba(255, 255, 255, 0.92);
         max-width: 600px;
 
         @media (max-width: 768px) {
@@ -1431,17 +1441,17 @@ body {
     .cta-button {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.875rem 1.75rem;
-        background: white;
-        color: var(--primary-color);
+        gap: 0.6rem;
+        padding: 0.95rem 1.9rem;
+        background: linear-gradient(135deg, var(--accent-color, #ffc629) 0%, var(--accent-darker-color, #ffb119) 100%);
+        color: #1a2238;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border: 2px solid transparent;
+        border-radius: 10px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+        box-shadow: 0 8px 20px rgba(255, 177, 25, 0.35);
+        border: none;
 
         .cta-arrow {
             transition: transform 0.3s ease;
@@ -1449,7 +1459,8 @@ body {
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            filter: brightness(1.03);
+            box-shadow: 0 12px 26px rgba(255, 177, 25, 0.5);
 
             .cta-arrow {
                 transform: translateX(4px);

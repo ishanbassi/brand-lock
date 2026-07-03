@@ -1,0 +1,184 @@
+<div class="mt-page">
+
+  <app-firm-banner></app-firm-banner>
+
+  <!-- Hero -->
+  <section class="mt-hero">
+    <div class="container">
+      <div class="mt-hero-content">
+        <div class="breadcrumb">
+          <a routerLink="/">Home</a> &rsaquo;
+          <a routerLink="/trademark-registration">Trademark Registration</a> &rsaquo;
+          <span>Power Tools Manufacturers</span>
+        </div>
+        <h1>Trademark Registration for <span class="highlight">Power Tools Manufacturers</span> in Ludhiana &amp; Northern India</h1>
+        <p class="hero-sub">Ludhiana is one of India's premier industrial hubs for power tools manufacturing — producing angle grinders, electric drills, rotary hammers, bench grinders, circular saws, jigsaws, die grinders, and power sanding tools supplied to automotive workshops, construction companies, fabrication units, and export markets across India and globally. Protect your power tools brand name and logo from imitators with a registered trademark filed by IP India authorised agents.</p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Starting at just ₹1,499 — professional fee, govt. fees extra</li>
+          <li><i class="fas fa-check-circle"></i> Correct class filing — Class 7, 8, 9, or 35</li>
+          <li><i class="fas fa-check-circle"></i> IP India Authorised Agents, 100% online process</li>
+          <li><i class="fas fa-check-circle"></i> TM Application Number same day — use ™ immediately</li>
+          <li><i class="fas fa-check-circle"></i> Trusted by 3,000+ businesses across India</li>
+        </ul>
+        <div class="hero-trust">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <span>4.9/5 · Trusted by 3,000+ businesses</span>
+        </div>
+      </div>
+      <div class="mt-hero-form">
+        <app-lead-form
+          [heading]="'Trademark for Power Tool Brands'"
+          [cta]="'Protect My Brand'"
+          [comments]="'POWER TOOLS TM'">
+        </app-lead-form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Trademark Matters -->
+  <section class="why-section">
+    <div class="container">
+      <div class="why-inner">
+        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="why-text">
+          <h2>Why Power Tools Manufacturers in Punjab Need Trademark Protection</h2>
+          <p>Ludhiana's machine tools and power tools manufacturing cluster is among the most productive in Northern India, producing angle grinders, electric drills, bench grinders, rotary hammers, circular saws, jigsaws, die grinders, and allied accessories for domestic and export markets. These units supply automotive workshops, construction companies, steel fabricators, and hardware retailers across India, as well as export buyers in the Middle East, Africa, and South Asia.</p>
+          <p>With counterfeit power tools — especially angle grinders and electric drills — posing real safety hazards to end-users and damaging the reputation of genuine manufacturers, brand protection through trademark registration is critical. Fake tools bearing established brand names without authorisation erode market share, undercut pricing, and expose the genuine manufacturer to legal liability when substandard counterfeits fail. A registered trademark gives you the exclusive legal right to your brand name and logo across India, enabling action against imitators through cease-and-desist notices, customs recordal, and court injunctions.</p>
+          <div class="examples-row">
+            <span class="example-tag">Angle grinder manufacturers</span>
+            <span class="example-tag">Electric drill producers</span>
+            <span class="example-tag">Bench grinder units</span>
+            <span class="example-tag">Rotary hammer manufacturers</span>
+            <span class="example-tag">Circular saw producers</span>
+            <span class="example-tag">Jigsaw machine units</span>
+            <span class="example-tag">Die grinder manufacturers</span>
+            <span class="example-tag">Power tools exporters</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trademark Classes -->
+  <section class="classes-section">
+    <div class="container">
+      <h2>Trademark Classes for Power Tools Manufacturers</h2>
+      <p class="classes-sub">Filing in the correct class is critical — protection applies only to the class(es) you register under. Most power tools manufacturers need one or more of these classes.</p>
+      <div class="classes-grid">
+        @for (cls of classes; track cls.num) {
+          <div class="class-card">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-name">{{ cls.name }}</div>
+            <p class="class-why">{{ cls.why }}</p>
+          </div>
+        }
+      </div>
+      <p class="classes-note">
+        Not sure which class covers your power tools product range?
+        <a routerLink="/trademark-classes">Browse all 45 Nice Classes</a>, run a
+        <a routerLink="/search">free trademark search</a>, or
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20need%20help%20choosing%20a%20trademark%20class%20for%20my%20power%20tools%20manufacturing%20unit" target="_blank" rel="noopener">ask our experts on WhatsApp</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>How We Register Your Power Tools Brand</h2>
+      </div>
+      <app-vertical-stepper [registrationSteps]="registrationSteps"></app-vertical-stepper>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <app-rating-review></app-rating-review>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="container">
+      <div class="pricing-card">
+        <div class="price-block">
+          <div class="price-label">Trademark Registration — Power Tools Manufacturers</div>
+          <div class="price-amount">₹1,499</div>
+          <div class="price-note">Professional fee · Govt. fees extra · All-India protection</div>
+        </div>
+        <div class="price-cta">
+          <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20want%20to%20register%20a%20trademark%20for%20my%20power%20tools%20manufacturing%20unit"
+             class="btn-whatsapp" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> WhatsApp to Start
+          </a>
+          <a href="tel:+916239771006" class="btn-call">
+            <i class="fas fa-phone"></i> Call +91-6239771006
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-wrapper">
+    <div class="container">
+      <h2>FAQs — Trademark for Power Tools Manufacturers</h2>
+      <app-faq [faqs]="faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related services -->
+  <section class="related-section">
+    <div class="container">
+      <h2>You May Also Need</h2>
+      <div class="related-grid">
+        <a routerLink="/trademark-registration" class="related-card">
+          <i class="fas fa-trademark"></i>
+          <h3>Trademark Registration</h3>
+          <p>Register your brand name, logo or slogan across India — starting at ₹1,499 + govt. fees.</p>
+        </a>
+        <a routerLink="/search" class="related-card">
+          <i class="fas fa-search"></i>
+          <h3>Free Trademark Search</h3>
+          <p>Check if your power tools brand name is available before you file — avoid objections and rejections.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-hand-tools" class="related-card">
+          <i class="fas fa-tools"></i>
+          <h3>Trademark for Hand Tools Manufacturers</h3>
+          <p>Brand protection for wrenches, spanners, pliers, and screwdriver manufacturers in Jalandhar &amp; Punjab.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-machine-tools" class="related-card">
+          <i class="fas fa-cog"></i>
+          <h3>Trademark for Machine Tools Manufacturers</h3>
+          <p>Brand protection for lathe, milling, CNC, and machine tools manufacturers in Ludhiana &amp; Punjab.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-auto-parts" class="related-card">
+          <i class="fas fa-cogs"></i>
+          <h3>Trademark for Auto Parts Manufacturers</h3>
+          <p>Brand protection for auto parts and components manufacturers in Ludhiana's industrial cluster.</p>
+        </a>
+        <a routerLink="/contact" class="related-card">
+          <i class="fas fa-headset"></i>
+          <h3>Talk to Our Team</h3>
+          <p>Get free guidance on classes, pricing and the filing process for your power tools unit.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call us -->
+  <section class="call-us-section">
+    <div class="container">
+      <h2>Let's talk</h2>
+      <p>Have questions about trademark registration for your power tools manufacturing unit? Whether you produce angle grinders, electric drills, bench grinders, rotary hammers, or circular saws in Ludhiana or anywhere in Northern India, we'd love to help you protect your brand.</p>
+      <a class="call-us-btn" href="tel:+916239771006">Call 6239771006</a>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=Hi%2C%20I%20want%20trademark%20registration%20for%20my%20power%20tools%20unit"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>

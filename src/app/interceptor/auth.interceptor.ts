@@ -32,7 +32,6 @@ export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandler
         stateStorageService.remove('user');
         sessionStorageService.remove('trademark');
         sessionStorageService.remove("initial-onboarding")
-        router.navigate(['/login']);
       }
       return throwError(() => error);
     }));

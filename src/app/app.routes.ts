@@ -38,6 +38,16 @@ export const routes: Routes = [
         title: "Terms & Conditions"
     },
     {
+        path: "cancellation-and-refund",
+        loadComponent: () => import('./cancellation-refund-policy/cancellation-refund-policy.component').then(m => m.CancellationRefundPolicyComponent),
+        title: "Cancellation and Refund Policy"
+    },
+    {
+        path: "shipping-and-exchange",
+        loadComponent: () => import('./shipping-exchange-policy/shipping-exchange-policy.component').then(m => m.ShippingExchangePolicyComponent),
+        title: "Shipping and Exchange Policy"
+    },
+    {
         path: "about-us",
         loadComponent: () => import('./about-us/about-us.component').then(m => m.AboutUsComponent),
         title: "About Us"
@@ -71,26 +81,26 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_USER'] }
     },
-    // {
-    //     path: 'agent-portal',
-    //     loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
-    //     loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
-    //     title: "Agent Portal",
-    //     canActivate: [AuthGuard],
-    //     data: { roles: ['ROLE_AGENT'] }
-    // },
-    // {
-    //     path: 'create-agent-account',
-    //     loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
-    //     title: "Join as IP Agent | Trademarx",
-    //     canActivate: [AuthGuard],
-    //     data: { roles: ['ROLE_ANONYMOUS'] }
-    // },
-    // {
-    //     path: 'agent/:agentCode',
-    //     loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
-    //     title: "Agent Profile | Trademarx",
-    // },
+    {
+        path: 'agent-portal',
+        loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
+        loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
+        title: "Agent Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_AGENT'] }
+    },
+    {
+        path: 'create-agent-account',
+        loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
+        title: "Join as IP Agent | Trademarx",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: 'agent/:agentCode',
+        loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
+        title: "Agent Profile | Trademarx",
+    },
     {
         path: 'create-account',
         loadComponent: () => import('./create-account/create-account.component').then(m => m.CreateAccountComponent),
@@ -227,6 +237,31 @@ export const routes: Routes = [
         path: 'trademark-registration-for-casting-foundry',
         loadComponent: () => import('./trademark-casting-foundry/trademark-casting-foundry.component').then(m => m.TrademarkCastingFoundryComponent),
         title: "Trademark Registration for Casting & Foundry Units — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-rubber-products',
+        loadComponent: () => import('./trademark-rubber-products/trademark-rubber-products.component').then(m => m.TrademarkRubberProductsComponent),
+        title: "Trademark Registration for Rubber Products Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-plastic-pvc-manufacturers',
+        loadComponent: () => import('./trademark-plastic-pvc-manufacturers/trademark-plastic-pvc-manufacturers.component').then(m => m.TrademarkPlasticPvcManufacturersComponent),
+        title: "Trademark Registration for Plastic & PVC Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-power-tools',
+        loadComponent: () => import('./trademark-power-tools/trademark-power-tools.component').then(m => m.TrademarkPowerToolsComponent),
+        title: "Trademark Registration for Power Tools Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-sewing-machine-manufacturers',
+        loadComponent: () => import('./trademark-sewing-machine-manufacturers/trademark-sewing-machine-manufacturers.component').then(m => m.TrademarkSewingMachineManufacturersComponent),
+        title: "Trademark Registration for Sewing Machine Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-diesel-engine-manufacturers',
+        loadComponent: () => import('./trademark-diesel-engine-manufacturers/trademark-diesel-engine-manufacturers.component').then(m => m.TrademarkDieselEngineManufacturersComponent),
+        title: "Trademark Registration for Diesel Engine & Genset Manufacturers — ₹1,499 | Trademarx",
     },
     {
         path: 'service-checkout',

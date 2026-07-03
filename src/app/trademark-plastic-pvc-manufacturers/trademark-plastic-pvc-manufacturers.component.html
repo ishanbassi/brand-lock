@@ -1,0 +1,184 @@
+<div class="mt-page">
+
+  <app-firm-banner></app-firm-banner>
+
+  <!-- Hero -->
+  <section class="mt-hero">
+    <div class="container">
+      <div class="mt-hero-content">
+        <div class="breadcrumb">
+          <a routerLink="/">Home</a> &rsaquo;
+          <a routerLink="/trademark-registration">Trademark Registration</a> &rsaquo;
+          <span>Plastic &amp; PVC Manufacturers</span>
+        </div>
+        <h1>Trademark Registration for <span class="highlight">Plastic &amp; PVC Manufacturers</span> in Ludhiana &amp; Northern India</h1>
+        <p class="hero-sub">Ludhiana and Punjab's industrial belt is home to a thriving cluster of plastic moulding units and PVC product manufacturers — producing PVC pipes, CPVC pipes, HDPE pipes, plastic fittings, injection-moulded plastic components, and plastic containers supplied to construction, agriculture, plumbing, and engineering sectors. Protect your plastic brand name and logo from imitators with a registered trademark filed by IP India authorised agents.</p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Starting at just ₹1,499 — professional fee, govt. fees extra</li>
+          <li><i class="fas fa-check-circle"></i> Correct class filing — Class 17, 19, 20, or 35</li>
+          <li><i class="fas fa-check-circle"></i> IP India Authorised Agents, 100% online process</li>
+          <li><i class="fas fa-check-circle"></i> TM Application Number same day — use ™ immediately</li>
+          <li><i class="fas fa-check-circle"></i> Trusted by 3,000+ businesses across India</li>
+        </ul>
+        <div class="hero-trust">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <span>4.9/5 · Trusted by 3,000+ businesses</span>
+        </div>
+      </div>
+      <div class="mt-hero-form">
+        <app-lead-form
+          [heading]="'Trademark for Plastic Brands'"
+          [cta]="'Protect My Brand'"
+          [comments]="'PLASTIC PVC TM'">
+        </app-lead-form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Trademark Matters -->
+  <section class="why-section">
+    <div class="container">
+      <div class="why-inner">
+        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="why-text">
+          <h2>Why Plastic &amp; PVC Manufacturers in Punjab Need Trademark Protection</h2>
+          <p>Punjab's industrial clusters — centred around Ludhiana, Jalandhar, and the surrounding belt — host a significant number of plastic moulding units and PVC product manufacturers supplying pipes, fittings, containers, and injection-moulded components to construction companies, agricultural equipment producers, plumbing contractors, and industrial buyers across India and for export. From PVC drainage pipes and CPVC hot-water pipes to HDPE agricultural pipes and precision injection-moulded plastic parts — Punjab's plastics industry serves critical supply chains.</p>
+          <p>With many plastic product units competing on similar polymer grades, tolerances, and price points, brand identity is a key differentiator for commanding premium pricing and securing long-term supply agreements with builders, contractors, and OEMs. Counterfeit PVC pipes and plastic fittings — particularly in construction and agricultural aftermarkets — carrying established brand names without authorisation are a persistent problem that erodes both revenue and brand reputation. A registered trademark gives you the exclusive legal right to your brand name and logo across India, enabling action against imitators through cease-and-desist notices, customs recordal, and court injunctions.</p>
+          <div class="examples-row">
+            <span class="example-tag">PVC pipe manufacturers</span>
+            <span class="example-tag">CPVC pipe producers</span>
+            <span class="example-tag">HDPE pipe manufacturers</span>
+            <span class="example-tag">Plastic fittings units</span>
+            <span class="example-tag">Injection moulding units</span>
+            <span class="example-tag">Plastic container manufacturers</span>
+            <span class="example-tag">SWR pipe producers</span>
+            <span class="example-tag">Plastic export units</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trademark Classes -->
+  <section class="classes-section">
+    <div class="container">
+      <h2>Trademark Classes for Plastic &amp; PVC Manufacturers</h2>
+      <p class="classes-sub">Filing in the correct class is critical — protection applies only to the class(es) you register under. Most plastic goods manufacturers need one or more of these classes.</p>
+      <div class="classes-grid">
+        @for (cls of classes; track cls.num) {
+          <div class="class-card">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-name">{{ cls.name }}</div>
+            <p class="class-why">{{ cls.why }}</p>
+          </div>
+        }
+      </div>
+      <p class="classes-note">
+        Not sure which class covers your plastic product range?
+        <a routerLink="/trademark-classes">Browse all 45 Nice Classes</a>, run a
+        <a routerLink="/search">free trademark search</a>, or
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20need%20help%20choosing%20a%20trademark%20class%20for%20my%20plastic%20products%20unit" target="_blank" rel="noopener">ask our experts on WhatsApp</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>How We Register Your Plastic &amp; PVC Brand</h2>
+      </div>
+      <app-vertical-stepper [registrationSteps]="registrationSteps"></app-vertical-stepper>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <app-rating-review></app-rating-review>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="container">
+      <div class="pricing-card">
+        <div class="price-block">
+          <div class="price-label">Trademark Registration — Plastic &amp; PVC Manufacturers</div>
+          <div class="price-amount">₹1,499</div>
+          <div class="price-note">Professional fee · Govt. fees extra · All-India protection</div>
+        </div>
+        <div class="price-cta">
+          <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20want%20to%20register%20a%20trademark%20for%20my%20plastic%20products%20unit"
+             class="btn-whatsapp" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> WhatsApp to Start
+          </a>
+          <a href="tel:+916239771006" class="btn-call">
+            <i class="fas fa-phone"></i> Call +91-6239771006
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-wrapper">
+    <div class="container">
+      <h2>FAQs — Trademark for Plastic &amp; PVC Manufacturers</h2>
+      <app-faq [faqs]="faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related services -->
+  <section class="related-section">
+    <div class="container">
+      <h2>You May Also Need</h2>
+      <div class="related-grid">
+        <a routerLink="/trademark-registration" class="related-card">
+          <i class="fas fa-trademark"></i>
+          <h3>Trademark Registration</h3>
+          <p>Register your brand name, logo or slogan across India — starting at ₹1,499 + govt. fees.</p>
+        </a>
+        <a routerLink="/search" class="related-card">
+          <i class="fas fa-search"></i>
+          <h3>Free Trademark Search</h3>
+          <p>Check if your plastic products brand name is available before you file — avoid objections and rejections.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-rubber-products" class="related-card">
+          <i class="fas fa-circle-notch"></i>
+          <h3>Trademark for Rubber Products Manufacturers</h3>
+          <p>Brand protection for rubber seals, O-rings, gaskets, and industrial rubber goods manufacturers in Punjab.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-auto-parts" class="related-card">
+          <i class="fas fa-cogs"></i>
+          <h3>Trademark for Auto Parts Manufacturers</h3>
+          <p>Brand protection for auto parts and components manufacturers in Ludhiana's industrial cluster.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-pump-manufacturers" class="related-card">
+          <i class="fas fa-tint"></i>
+          <h3>Trademark for Pump Manufacturers</h3>
+          <p>Brand protection for submersible, centrifugal, and monoblock pump manufacturers in Punjab.</p>
+        </a>
+        <a routerLink="/contact" class="related-card">
+          <i class="fas fa-headset"></i>
+          <h3>Talk to Our Team</h3>
+          <p>Get free guidance on classes, pricing and the filing process for your plastic products unit.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call us -->
+  <section class="call-us-section">
+    <div class="container">
+      <h2>Let's talk</h2>
+      <p>Have questions about trademark registration for your plastic or PVC manufacturing unit? Whether you produce PVC pipes, CPVC pipes, HDPE pipes, plastic fittings, or injection-moulded plastic components in Ludhiana or anywhere in Northern India, we'd love to help you protect your brand.</p>
+      <a class="call-us-btn" href="tel:+916239771006">Call 6239771006</a>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=Hi%2C%20I%20want%20trademark%20registration%20for%20my%20plastic%20products%20unit"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>
