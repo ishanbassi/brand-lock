@@ -1,193 +1,274 @@
-<app-dashboard-header></app-dashboard-header>
+<div class="checkout-page">
 
-<!-- Payment success banner -->
-<div class="success-banner" *ngIf="paymentSuccess">
-  <div class="container">
-    <div class="success-content">
-      <i class="fas fa-check-circle success-icon"></i>
-      <div>
-        <h3>Payment Successful!</h3>
-        <p>Your trademark application will be filed within 24 hours. Confirmation sent to your email.</p>
+  <!-- Step Progress -->
+  <div class="progress-bar-section">
+    <div class="container-xl">
+      <div class="progress-steps">
+        <div class="step completed">
+          <div class="step-circle done">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="step-label">Your Info</span>
+        </div>
+        <div class="step-connector active"></div>
+        <div class="step completed">
+          <div class="step-circle done">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="step-label">Brand Details</span>
+        </div>
+        <div class="step-connector active"></div>
+        <div class="step completed">
+          <div class="step-circle done">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="step-label">Business &amp; Documents</span>
+        </div>
+        <div class="step-connector active"></div>
+        <div class="step active">
+          <div class="step-circle current">4</div>
+          <span class="step-label">Payment</span>
+        </div>
       </div>
-      <button class="btn-dashboard" (click)="goToDashboard()">Go to Dashboard →</button>
     </div>
   </div>
-</div>
 
-<div class="container checkout-container">
-  <div class="row main-container">
+  <div class="container-xl page-content">
+    <div class="row g-4 align-items-start">
 
-    <!-- Left: Application details -->
-    <div class="col-xl-8">
+      <!-- ─── Left: Application docket ─── -->
+      <div class="col-12 col-lg-7">
 
-      <div class="checkout-card">
-        <h2 class="section-title">Review Your Application</h2>
+        <div class="page-heading">
+          <h1>Review &amp; Pay</h1>
+          <p>One last look before we file. Everything below goes into your application.</p>
+        </div>
 
-        <!-- Applicant info -->
-        <div class="info-block">
-          <div class="info-icon">
-            <i class="fas fa-user"></i>
-          </div>
-          <div class="info-body">
-            <h3>Applicant Information</h3>
-            <div class="info-grid">
-              <div class="info-row">
-                <span class="info-label">Name</span>
-                <span class="info-value">
-                  {{ isAuthorizedUser
-                    ? (userProfile?.firstName + ' ' + userProfile?.lastName)
-                    : lead?.fullName }}
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Email</span>
-                <span class="info-value">
-                  {{ isAuthorizedUser ? userProfile?.email : lead?.email }}
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Phone</span>
-                <span class="info-value">
-                  {{ isAuthorizedUser ? userProfile?.phoneNumber : lead?.phoneNumber }}
-                </span>
-              </div>
+        <div class="docket-card">
+
+          <!-- Applicant -->
+          <div class="docket-section">
+            <div class="docket-marker">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
             </div>
-          </div>
-        </div>
-
-        <!-- Trademark details -->
-        <div class="info-block">
-          <div class="info-icon">
-            <i class="fas fa-trademark"></i>
-          </div>
-          <div class="info-body">
-            <h3>Trademark Application Details</h3>
-            <div class="info-grid">
-              <div class="info-row">
-                <span class="info-label">Trademark</span>
-                <span class="info-value">{{ trademark?.name }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Type</span>
-                <span class="info-value">{{ getTrademarkType(trademark?.type) }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Plan</span>
-                <span class="info-value">{{ trademark?.trademarkPlan?.name }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trust badges -->
-      <div class="trust-cards">
-
-        <div class="trust-card">
-          <div class="trust-icon">
-            <i class="fas fa-university"></i>
-          </div>
-          <div>
-            <h4>Government Fees Payable at Filing</h4>
-            <p>The government fee is due at the time of filing and is separate from our professional fee.</p>
-          </div>
-        </div>
-
-        <div class="trust-card">
-          <div class="trust-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div>
-            <h4>Filed Within 24 Hours</h4>
-            <p>Once payment is made, your application will be filed within 24 hours and acknowledgement sent via email.</p>
-          </div>
-        </div>
-
-        <div class="trust-card highlight">
-          <div class="trust-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <div>
-            <h4>100% Money-Back Guarantee</h4>
-            <p>If we are unable to file your trademark application for any reason, you will receive a full refund.</p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="payment-badges">
-        <a href="https://razorpay.com/" target="_blank" rel="noopener">
-          <img loading="lazy" referrerpolicy="origin"
-               src="https://badges.razorpay.com/badge-dark.png"
-               style="height: 45px; width: 113px;"
-               alt="Razorpay Payment Gateway">
-        </a>
-        <img loading="lazy" src="/assets/images/money-back-guarantee.png"
-             alt="Money Back Guarantee" class="money-back-badge">
-      </div>
-
-    </div>
-
-    <!-- Right: Order summary + pay -->
-    <div class="col-xl-4">
-
-      <div class="order-summary-card">
-        <div class="summary-header">
-          <span class="summary-title">Fees Summary</span>
-          <span class="summary-id">#{{ trademarkOrderSummary?.paymentDTO?.id }}</span>
-        </div>
-
-        <table class="summary-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th class="text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of trademarkOrderSummary?.orderSummaries">
-              <td>
-                <div class="item-detail">
-                  <img loading="lazy"
-                       *ngIf="trademarkOrderSummary?.documentsDTO?.fileName; else placeholderImg"
-                       [src]="environment.BaseApiUrl + 'files/' + trademarkOrderSummary?.documentsDTO?.fileUrl"
-                       [alt]="trademarkOrderSummary?.documentsDTO?.fileName"
-                       class="item-thumb">
-                  <ng-template #placeholderImg>
-                    <img loading="lazy" src="/assets/images/trademark.png" alt="Trademark" class="item-thumb">
-                  </ng-template>
-                  <span>{{ trademark?.trademarkPlan?.name }} (1 Class)</span>
+            <div class="docket-body">
+              <h3 class="docket-title">Applicant</h3>
+              <div class="docket-grid">
+                <div class="docket-item">
+                  <span class="docket-key">Name</span>
+                  <span class="docket-val">{{ applicantName }}</span>
                 </div>
-              </td>
-              <td class="text-right">₹ {{ item.fees }}</td>
-            </tr>
-            <tr class="meta-row">
-              <td>Estimated Tax</td>
-              <td class="text-right">₹ 78</td>
-            </tr>
-            <tr class="meta-row">
-              <td>Discount</td>
-              <td class="text-right text-success">-₹ 78</td>
-            </tr>
-            <tr class="total-row">
-              <td><strong>Total</strong></td>
-              <td class="text-right"><strong>₹ {{ trademarkOrderSummary?.totalFees }}</strong></td>
-            </tr>
-          </tbody>
-        </table>
+                <div class="docket-item">
+                  <span class="docket-key">Email</span>
+                  <span class="docket-val">{{ applicantEmail }}</span>
+                </div>
+                <div class="docket-item">
+                  <span class="docket-key">Phone</span>
+                  <span class="docket-val">{{ applicantPhone }}</span>
+                </div>
+                <div class="docket-item" *ngIf="organizationTypeLabel">
+                  <span class="docket-key">Business Type</span>
+                  <span class="docket-val">{{ organizationTypeLabel }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Mark -->
+          <div class="docket-section">
+            <div class="docket-marker">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="docket-body">
+              <h3 class="docket-title">Trademark</h3>
+              <div class="docket-grid">
+                <div class="docket-item">
+                  <span class="docket-key">Mark</span>
+                  <span class="docket-val docket-mark">{{ trademark?.name || '—' }}</span>
+                </div>
+                <div class="docket-item">
+                  <span class="docket-key">Type</span>
+                  <span class="docket-val">{{ getTrademarkType(trademark?.type) }}</span>
+                </div>
+                <div class="docket-item">
+                  <span class="docket-key">Classification</span>
+                  <span class="docket-val">{{ tmClassLabel }}</span>
+                </div>
+                <div class="docket-item">
+                  <span class="docket-key">Plan</span>
+                  <span class="docket-val">{{ trademark?.trademarkPlan?.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="docket-section">
+            <div class="docket-marker">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div class="docket-body">
+              <h3 class="docket-title">Documents</h3>
+              <div class="docket-docs" *ngIf="kycDocuments.length > 0; else noDocs">
+                <span class="doc-chip" *ngFor="let doc of kycDocuments">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  {{ documentLabel(doc) }}
+                </span>
+              </div>
+              <ng-template #noDocs>
+                <p class="docket-empty">No documents uploaded yet — our team will collect them after filing. You can also add them anytime from your dashboard.</p>
+              </ng-template>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Assurance strip -->
+        <div class="assurance-strip">
+          <div class="assurance-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <div>
+              <h4>Filed within 2 days</h4>
+              <p>Acknowledgement lands in your inbox.</p>
+            </div>
+          </div>
+
+          <div class="assurance-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <div>
+              <h4>Govt. fees at filing</h4>
+              <p>Paid separately when your application is filed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-badges">
+          <a href="https://razorpay.com/" target="_blank" rel="noopener">
+            <img loading="lazy" referrerpolicy="origin"
+                 src="https://badges.razorpay.com/badge-dark.png"
+                 style="height: 45px; width: 113px;"
+                 alt="Razorpay Payment Gateway">
+          </a>
+          
+        </div>
+
       </div>
 
-      <button class="btn-pay" (click)="createRzpayOrder()" [disabled]="paymentSuccess">
-        <i class="fas fa-lock"></i>
-        Pay ₹{{ trademarkOrderSummary?.totalFees }} Securely
-      </button>
+      <!-- ─── Right: Pay card ─── -->
+      <div class="col-12 col-lg-5">
+        <div class="pay-sticky">
 
-      <p class="secure-note">
-        <i class="fas fa-shield-alt"></i>
-        Secured by Razorpay. UPI, Cards, Net Banking accepted.
-      </p>
+          <div class="pay-card">
+
+            <!-- Specimen plaque: the mark being registered -->
+            <div class="specimen-plaque">
+              <span class="specimen-eyebrow">Registering the mark</span>
+              <div class="specimen-name-wrap">
+                <span class="specimen-name">{{ trademark?.name || '—' }}</span><span class="specimen-tm">™</span>
+              </div>
+              <span class="specimen-class">{{ tmClassLabel }}</span>
+            </div>
+
+            <!-- Plan switcher -->
+            <div class="pay-plans" *ngIf="plans.length > 1">
+              <span class="pay-plans-label">Plan</span>
+              <div class="pay-plan-options">
+                <button
+                  type="button"
+                  class="pay-plan-option"
+                  *ngFor="let plan of plans"
+                  [ngClass]="{'selected': plan.id === selectedPlanId}"
+                  [disabled]="isChangingPlan"
+                  (click)="changePlan(plan)"
+                >
+                  <span class="pay-plan-name">{{ plan.name }}</span>
+                  <span class="pay-plan-price">₹{{ plan.fees | number }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Fee lines -->
+            <div class="fee-lines">
+              <div class="fee-line" *ngFor="let item of trademarkOrderSummary?.orderSummaries">
+                <span class="fee-key">
+                  Professional fee
+                  <ng-container *ngIf="item.tmClass"> — Class {{ item.tmClass }}</ng-container>
+                </span>
+                <span class="fee-val">₹{{ item.fees | number }}</span>
+              </div>
+
+              <div class="fee-divider"></div>
+
+              <div class="fee-line total-line">
+                <span class="total-key">Due today</span>
+                <span class="total-val">₹{{ trademarkOrderSummary?.totalFees | number }}</span>
+              </div>
+
+              <div class="govt-fee-box">
+                <div class="fee-line govt-line">
+                  <span class="fee-key">Govt. fee — at filing</span>
+                  <span class="fee-val">
+                    <span class="fee-strike" *ngIf="govtFeeConcessionApplies">₹{{ govtFeeStandard | number }}</span>
+                    ₹{{ govtFee | number }}
+                  </span>
+                </div>
+                <p class="govt-fee-note" *ngIf="govtFeeConcessionApplies">
+                  50% MSME concession applied — your Udyam certificate saves you ₹{{ govtFeeStandard - govtFee | number }}.
+                </p>
+                <p class="govt-fee-note" *ngIf="!govtFeeConcessionApplies">
+                  Payable separately when your application is filed, not today.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pay button -->
+            <button class="btn-pay" (click)="createRzpayOrder()" [disabled]="isPaying || isChangingPlan || !trademarkOrderSummary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <ng-container *ngIf="!isPaying">Pay ₹{{ trademarkOrderSummary?.totalFees | number }} securely</ng-container>
+              <ng-container *ngIf="isPaying">Opening secure payment…</ng-container>
+            </button>
+
+            <p class="secure-note">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              Secured by Razorpay — UPI, cards, net banking &amp; EMI accepted.
+            </p>
+
+            <div class="order-ref" *ngIf="trademarkOrderSummary?.paymentDTO?.id">
+              Order reference #{{ trademarkOrderSummary?.paymentDTO?.id }}
+            </div>
+
+          </div>
+
+        </div>
+      </div>
 
     </div>
-
   </div>
 </div>

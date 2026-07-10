@@ -48,9 +48,31 @@ export class AuthService {
   }
 
   hasRole(roles: any[]): boolean {
-    return roles.some(r => this.getUser().authorities?.some(x => x == r));
+    // Authorities come back as objects ({ name: 'ROLE_ADMIN' }) — matching the
+    // AuthGuard's own comparison. Fall back to a plain string just in case.
+    const authorities = this.getUser()?.authorities ?? [];
+    return roles.some(r => authorities.some((x: any) => (x?.name ?? x) === r));
   }
 
+
+  /**
+   * The JWT itself carries the user's authorities (backend "auth" claim,
+   * space-separated) and id ("user_id" claim). Decoding it client-side lets
+   * callers know the role immediately after login without a profile fetch —
+   * ROLE_ADMIN/ROLE_AGENT accounts have no UserProfile row to fetch.
+   */
+  decodeToken(token: string): { id?: number; authorities: { name: string }[] } {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      const auth: string = payload.auth ?? '';
+      return {
+        id: payload.user_id,
+        authorities: auth.split(' ').filter(Boolean).map((name: string) => ({ name }))
+      };
+    } catch {
+      return { authorities: [] };
+    }
+  }
 
   hasValidToken(): boolean {
     const token: any = this.getToken();

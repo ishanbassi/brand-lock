@@ -1,0 +1,76 @@
+<div class="payment-success-page">
+  <div class="success-card">
+
+    <!-- Animated check -->
+    <div class="check-ring">
+      <svg viewBox="0 0 52 52" class="check-svg" aria-hidden="true">
+        <circle class="check-circle" cx="26" cy="26" r="24" fill="none"></circle>
+        <path class="check-mark" fill="none" d="M14 27l8 8 16-16"></path>
+      </svg>
+    </div>
+
+    <h1 class="success-title">Payment successful</h1>
+    <p class="success-sub">
+      Your trademark application is in our filing queue.
+      <ng-container *ngIf="applicantEmail"> A confirmation has been sent to <strong>{{ applicantEmail }}</strong>.</ng-container>
+    </p>
+
+    <!-- The mark, on record -->
+    <div class="specimen-plaque" *ngIf="brandName">
+      <span class="specimen-eyebrow">Now protecting</span>
+      <div class="specimen-name-wrap">
+        <span class="specimen-name">{{ brandName }}</span><span class="specimen-tm">™</span>
+      </div>
+      <span class="specimen-paid" *ngIf="amountPaid">₹{{ amountPaid | number }} paid<ng-container *ngIf="orderSummary?.paymentDTO?.id"> · Order #{{ orderSummary?.paymentDTO?.id }}</ng-container></span>
+    </div>
+
+    <!-- What happens next: the actual registration journey -->
+    <div class="next-steps">
+      <h2 class="next-steps-title">What happens next</h2>
+
+      <div class="timeline">
+        <div class="timeline-item active">
+          <div class="timeline-dot"></div>
+          <div class="timeline-body">
+            <h3>Filed within 24 hours</h3>
+            <p>Our attorneys prepare and file your application with the Trademark Registry. You'll receive the acknowledgement and application number by email.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-body">
+            <h3>Examination by the Registry</h3>
+            <p>The Registry examines your application. If anything is raised, our team drafts and files the response for you.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-body">
+            <h3>Journal publication</h3>
+            <p>Your mark is published in the Trademark Journal for the statutory opposition window.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-body">
+            <h3>Registration certificate</h3>
+            <p>Once cleared, the Registry issues your registration certificate — your brand is protected for 10 years.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-dashboard" (click)="goToDashboard()">
+      Track your application on the dashboard
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </button>
+
+    <p class="help-note">
+      Questions? Call us at <a href="tel:+916239771006">+91 62397 71006</a> — your assigned attorney is already on it.
+    </p>
+
+  </div>
+</div>

@@ -1,0 +1,202 @@
+<div class="upload-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <a routerLink="/agent-portal/portfolio" class="back-link">‹ Back to Portfolio</a>
+    <h1 class="page-title">Import from Excel</h1>
+    <p class="page-sub">Upload your trademark portfolio in .xlsx or .xls format. Column order doesn't matter.</p>
+  </div>
+
+  <!-- PHASE: SELECT FILE -->
+  @if (phase() === 'select' || phase() === 'error') {
+    <div class="upload-card">
+
+      <!-- DROPZONE -->
+      <div
+        class="dropzone"
+        [class.drag-over]="dragOver()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        (click)="fileInput.click()"
+      >
+        <div class="drop-icon">📂</div>
+        <p class="drop-title">Drag & drop your Excel file here</p>
+        <p class="drop-sub">or click to browse • supports .xlsx and .xls</p>
+        <input #fileInput type="file" accept=".xlsx,.xls" class="hidden-input" (change)="onFileSelected($event)" />
+      </div>
+
+      @if (phase() === 'error') {
+        <div class="alert-error">{{ errorMessage() }}</div>
+      }
+
+      <!-- HOW IT WORKS -->
+      <div class="how-it-works">
+        <h3 class="how-title">How it works</h3>
+        <div class="how-steps">
+          <div class="how-step">
+            <span class="step-num">1</span>
+            <div>
+              <strong>Any column order</strong>
+              <p>Our smart parser detects columns automatically — use your own headings.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <span class="step-num">2</span>
+            <div>
+              <strong>Preview before importing</strong>
+              <p>Review up to 50 rows and check for parsing errors before confirming.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <span class="step-num">3</span>
+            <div>
+              <strong>One click to import</strong>
+              <p>All valid rows are added to your portfolio instantly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUPPORTED COLUMNS -->
+      <div class="supported-columns">
+        <p class="col-label">Recognized columns (any language / casing):</p>
+        <div class="col-chips">
+          @for (col of ['Trademark Name', 'Application No.', 'Class', 'Status', 'Proprietor', 'Attorney', 'Filing Date', 'Renewal Date', 'Type', 'Description']; track col) {
+            <span class="col-chip">{{ col }}</span>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- PHASE: PREVIEW -->
+  @if (phase() === 'preview') {
+    <div class="preview-card">
+
+      <!-- FILE INFO -->
+      <div class="file-info-bar">
+        <div class="file-info-left">
+          <span class="file-icon">📄</span>
+          <div>
+            <div class="file-name">{{ selectedFile()?.name }}</div>
+            <div class="file-size">{{ fileSizeLabel(selectedFile()?.size ?? 0) }}</div>
+          </div>
+        </div>
+        <button class="btn-ghost" (click)="reset()">Change file</button>
+      </div>
+
+      @if (!previewResult()) {
+        <div class="parsing-state">
+          <div class="spinner"></div>
+          <p>Parsing your file…</p>
+        </div>
+      } @else {
+        <!-- PARSE SUMMARY -->
+        <div class="parse-summary">
+          <div class="summary-pill summary-total">
+            <span class="summary-num">{{ previewResult()!.totalRows }}</span>
+            <span class="summary-lbl">Total rows</span>
+          </div>
+          <div class="summary-pill summary-ok">
+            <span class="summary-num">{{ previewResult()!.importable }}</span>
+            <span class="summary-lbl">Ready to import</span>
+          </div>
+          <div class="summary-pill summary-skip">
+            <span class="summary-num">{{ previewResult()!.skipped }}</span>
+            <span class="summary-lbl">Skipped</span>
+          </div>
+          @if (previewResult()!.errors > 0) {
+            <div class="summary-pill summary-err">
+              <span class="summary-num">{{ previewResult()!.errors }}</span>
+              <span class="summary-lbl">Errors</span>
+            </div>
+          }
+        </div>
+
+        <!-- PREVIEW TABLE -->
+        @if (preview.length > 0) {
+          <div class="preview-table-wrap">
+            <p class="preview-label">Preview (first {{ preview.length }} rows):</p>
+            <div class="table-scroll">
+              <table class="preview-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>App No.</th>
+                    <th>Class</th>
+                    <th>Proprietor</th>
+                    <th>Status</th>
+                    <th>Filing Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tm of preview; track tm.applicationNo; let i = $index) {
+                    <tr>
+                      <td class="row-num">{{ i + 1 }}</td>
+                      <td class="tm-name-cell">{{ tm.name || '—' }}</td>
+                      <td class="mono">{{ tm.applicationNo || '—' }}</td>
+                      <td>{{ tm.tmClass || '—' }}</td>
+                      <td class="proprietor-cell">{{ tm.proprietorName || '—' }}</td>
+                      <td>{{ tm.trademarkStatus || '—' }}</td>
+                      <td class="mono">{{ tm.filingDate ? (tm.filingDate | date:'dd MMM yyyy') : '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+
+        <!-- CONFIRM / CANCEL -->
+        <div class="confirm-bar">
+          <button class="btn-ghost" (click)="reset()">Cancel</button>
+          <button class="btn-primary" (click)="confirmImport()" [disabled]="(previewResult()!.importable ?? 0) === 0">
+            Import {{ previewResult()!.importable }} trademark{{ (previewResult()!.importable ?? 1) !== 1 ? 's' : '' }} →
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- PHASE: IMPORTING -->
+  @if (phase() === 'importing') {
+    <div class="loading-card">
+      <div class="spinner-lg"></div>
+      <h3>Importing your portfolio…</h3>
+      <p>Please wait while we save all records.</p>
+    </div>
+  }
+
+  <!-- PHASE: DONE -->
+  @if (phase() === 'done') {
+    <div class="done-card">
+      <div class="done-icon">✅</div>
+      <h2 class="done-title">Import Complete!</h2>
+      <p class="done-sub">{{ importResult()!.imported }} trademark{{ (importResult()!.imported ?? 1) !== 1 ? 's' : '' }} added to your portfolio.</p>
+
+      <div class="done-stats">
+        <div class="done-stat">
+          <span class="done-num">{{ importResult()!.imported }}</span>
+          <span class="done-lbl">Imported</span>
+        </div>
+        <div class="done-stat">
+          <span class="done-num">{{ importResult()!.skipped }}</span>
+          <span class="done-lbl">Skipped</span>
+        </div>
+        <div class="done-stat">
+          <span class="done-num">{{ importResult()!.errors }}</span>
+          <span class="done-lbl">Errors</span>
+        </div>
+      </div>
+
+      <div class="done-actions">
+        <a routerLink="/agent-portal/portfolio" class="btn-primary">View Portfolio</a>
+        <button class="btn-outline" (click)="reset()">Import Another File</button>
+      </div>
+    </div>
+  }
+
+</div>

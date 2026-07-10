@@ -1,0 +1,81 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Payments</h1>
+      <p class="page-sub">{{ totalItems() }} payment{{ totalItems() === 1 ? '' : 's' }}</p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <select class="filter-select" [(ngModel)]="purposeFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All purposes</option>
+      @for (opt of purposeOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <input class="filter-input" type="text" placeholder="Status (e.g. FAILED)…"
+           [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" />
+
+    <button class="btn-ghost" (click)="clearFilters()">Clear</button>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Purpose</th>
+          <th>Application</th>
+          <th>Customer</th>
+          <th>Gateway</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (payments().length === 0) {
+          <tr><td colspan="7" class="empty-cell">No payments match these filters.</td></tr>
+        } @else {
+          @for (p of payments(); track p.id) {
+            <tr>
+              <td class="muted">{{ p.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+              <td class="cell-strong">{{ p.currency || '₹' }} {{ p.amount | number }}</td>
+              <td>{{ purposeLabel(p.purpose) }}</td>
+              <td>{{ applicationLabel(p) }}</td>
+              <td>{{ customerLabel(p) }}</td>
+              <td class="muted">{{ p.gateway || '—' }}</td>
+              <td>
+                <span class="badge" [class]="badgeClass(p.status)">{{ p.status || 'Unknown' }}</span>
+                @if (p.failureReason) {
+                  <div class="muted" style="font-size: 0.72rem; margin-top: 2px;">{{ p.failureReason }}</div>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+</div>

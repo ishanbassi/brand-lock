@@ -12,12 +12,11 @@
                         (ngSubmit)="login(loginForm.form)">
                         <div class="row no-mobile-view-g">
                             <div class="col-12 site-form-field-container">
-                                <label for="email">Email</label>
+                                <label for="email">Username</label>
                                 <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
                                     [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
 
                                     <input matInput required="required" name="userEmail" #userEmail="ngModel"
-                                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$"
                                         [(ngModel)]="data.username" id="label" placeholder="Enter email address">
                                     <mat-icon matSuffix [ngClass]=" userEmail.value ? 'visible': 'invisible'"
                                         (click)="clearEmail()">highlight_off
@@ -36,7 +35,7 @@
                                     <input matInput [type]="passwordFieldType" required="required" name="userPassword"
                                         #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password"
                                         id="password"
-                                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}" />
+/>
                                     <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
                                         (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
                                 </mat-form-field>

@@ -1,0 +1,281 @@
+// Shared styles for the admin portal. Scoped under .admin-page so nothing leaks
+// into the customer/agent apps. Imported once from styles.scss.
+
+$admin-accent: #0ea5e9;
+$admin-accent-dark: #0284c7;
+$admin-success: #10b981;
+$admin-warning: #f59e0b;
+$admin-danger: #ef4444;
+$admin-info: #3b82f6;
+$admin-gray-50: #f8fafc;
+$admin-gray-100: #f1f5f9;
+$admin-gray-200: #e2e8f0;
+$admin-gray-300: #cbd5e1;
+$admin-gray-400: #94a3b8;
+$admin-gray-500: #64748b;
+$admin-gray-600: #475569;
+$admin-gray-800: #1e293b;
+
+.admin-page {
+  padding: 2rem;
+  max-width: 1400px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: $admin-gray-800;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+
+  * { box-sizing: border-box; }
+
+  // ── HEADER ──────────────────────────────
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .page-title { font-size: 1.6rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .page-sub { color: $admin-gray-400; font-size: 0.875rem; margin: 0; }
+
+  // ── FILTER BAR ──────────────────────────────
+  .filter-bar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .filter-input, .filter-select {
+    height: 38px;
+    padding: 0 0.75rem;
+    border: 1.5px solid $admin-gray-200;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: $admin-gray-800;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: $admin-accent; }
+  }
+  .filter-input { min-width: 180px; flex: 1 1 180px; max-width: 260px; }
+  .filter-select { min-width: 150px; cursor: pointer; }
+
+  // ── BUTTONS ──────────────────────────────
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 38px;
+    padding: 0 1.1rem;
+    background: $admin-accent;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+
+    &:hover { background: $admin-accent-dark; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  .btn-ghost {
+    height: 38px;
+    padding: 0 0.9rem;
+    background: #fff;
+    color: $admin-gray-600;
+    border: 1.5px solid $admin-gray-200;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover:not(:disabled) { border-color: $admin-accent; color: $admin-accent; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+
+  // ── TABLE ──────────────────────────────
+  .table-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+
+    th {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: $admin-gray-400;
+      font-weight: 600;
+      border-bottom: 1px solid $admin-gray-100;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid $admin-gray-100;
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: $admin-gray-50; }
+
+    .cell-strong { font-weight: 600; }
+    .muted { color: $admin-gray-400; }
+    .stacked { display: flex; flex-direction: column; line-height: 1.35; }
+    .empty-cell { text-align: center; color: $admin-gray-400; padding: 2.5rem 1rem; }
+    .row-action { color: $admin-accent; font-weight: 600; text-decoration: none; white-space: nowrap; &:hover { text-decoration: underline; } }
+  }
+
+  // ── BADGES ──────────────────────────────
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--success { background: rgba($admin-success, 0.12); color: darken($admin-success, 12%); }
+    &--danger  { background: rgba($admin-danger, 0.12);  color: darken($admin-danger, 8%); }
+    &--warning { background: rgba($admin-warning, 0.15); color: darken($admin-warning, 22%); }
+    &--info    { background: rgba($admin-info, 0.12);    color: darken($admin-info, 10%); }
+    &--muted   { background: $admin-gray-100;            color: $admin-gray-500; }
+  }
+
+  // ── SKELETON / PAGINATION / ALERTS ──────────────────────────────
+  .skeleton-line {
+    height: 14px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, $admin-gray-100 25%, $admin-gray-200 50%, $admin-gray-100 75%);
+    background-size: 200% 100%;
+    animation: admin-shimmer 1.4s infinite;
+  }
+  @keyframes admin-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  .page-info { font-size: 0.82rem; color: $admin-gray-500; }
+
+  .alert-error {
+    background: rgba($admin-danger, 0.08);
+    border: 1px solid rgba($admin-danger, 0.2);
+    color: $admin-danger;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+  }
+  .alert-success {
+    background: rgba($admin-success, 0.1);
+    border: 1px solid rgba($admin-success, 0.25);
+    color: darken($admin-success, 10%);
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  // ── DETAIL PAGES ──────────────────────────────
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: $admin-gray-500;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    &:hover { color: $admin-accent; }
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.25rem;
+    @media (max-width: 900px) { grid-template-columns: 1fr; }
+  }
+  .detail-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+  }
+  .detail-card h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 1.1rem;
+  }
+  .field-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid $admin-gray-100;
+    font-size: 0.875rem;
+
+    &:last-child { border-bottom: none; }
+    .field-label { color: $admin-gray-400; }
+    .field-value { font-weight: 500; text-align: right; word-break: break-word; }
+  }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $admin-gray-500;
+    margin-bottom: 0.35rem;
+  }
+  .form-control {
+    width: 100%;
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid $admin-gray-200;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: #fff;
+    color: $admin-gray-800;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: $admin-accent; }
+  }
+  textarea.form-control { resize: vertical; min-height: 80px; }
+
+  // ── INLINE ROW ACTIONS (e.g. document review) ──────────────────────────────
+  .action-group { display: inline-flex; gap: 0.4rem; flex-wrap: wrap; }
+  .act {
+    border: 1.5px solid transparent;
+    border-radius: 7px;
+    padding: 0.32rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    &--approve  { color: darken($admin-success, 8%); border-color: rgba($admin-success, 0.4); &:hover:not(:disabled) { background: rgba($admin-success, 0.1); } }
+    &--reject   { color: darken($admin-danger, 4%);  border-color: rgba($admin-danger, 0.4);  &:hover:not(:disabled) { background: rgba($admin-danger, 0.1); } }
+    &--reupload { color: darken($admin-warning, 18%); border-color: rgba($admin-warning, 0.5); &:hover:not(:disabled) { background: rgba($admin-warning, 0.12); } }
+  }
+}

@@ -1,0 +1,64 @@
+<div class="admin-page">
+
+  <a class="back-link" routerLink="/admin-portal/trademarks">← Back to applications</a>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="detail-card"><div class="skeleton-line" style="height: 180px;"></div></div>
+  } @else if (trademark()) {
+    @let tm = trademark()!;
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ tm.name || 'Application #' + tm.id }}</h1>
+        <p class="page-sub">
+          <span class="badge" [class]="badgeClass(tm.trademarkStatus)">{{ statusLabel(tm.trademarkStatus) }}</span>
+          @if (tm.applicationNo) { · App. No. {{ tm.applicationNo }} }
+        </p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- DETAILS -->
+      <div class="detail-card">
+        <h2>Application details</h2>
+        <div class="field-row"><span class="field-label">Brand name</span><span class="field-value">{{ tm.name || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Application no.</span><span class="field-value">{{ tm.applicationNo || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Class</span><span class="field-value">{{ tm.tmClass || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Type</span><span class="field-value">{{ tm.type || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Applicant</span><span class="field-value">{{ tm.proprietorName || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Source</span><span class="field-value">{{ tm.source || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Filing mode</span><span class="field-value">{{ tm.filingMode || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Renewal date</span><span class="field-value">{{ tm.renewalDate ? ($any(tm.renewalDate) | date:'dd MMM yyyy') : '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Filed on</span><span class="field-value">{{ $any(tm.createdDate) | date:'dd MMM yyyy, HH:mm' }}</span></div>
+      </div>
+
+      <!-- STATUS CONTROL -->
+      <div class="detail-card">
+        <h2>Lifecycle status</h2>
+        <p class="page-sub" style="margin-bottom: 1.1rem;">
+          Advance this application through its registration lifecycle. Only these fixed statuses are allowed.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" [(ngModel)]="statusModel">
+            @for (opt of statusOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <button class="btn-primary" [disabled]="saving() || !statusChanged" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Update status' }}
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

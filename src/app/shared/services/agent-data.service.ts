@@ -7,8 +7,10 @@ import {
   AgentImportResult,
   AgentPortfolioTrademark,
   AgentProfile,
+  AgentPublicProfile,
   AgentRegistration,
   TrademarkConflict,
+  WatchConflictHistory,
 } from '../../../models/agent.model';
 
 @Injectable({ providedIn: 'root' })
@@ -84,5 +86,29 @@ export class AgentDataService {
 
   getConflicts(portfolioItemId: number): Observable<TrademarkConflict[]> {
     return this.findConflicts(portfolioItemId);
+  }
+
+  // Phase 2 — Conflict history
+  getConflictHistory(portfolioItemId: number): Observable<WatchConflictHistory[]> {
+    return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflict-history`);
+  }
+
+  // Phase 2 — Batch watch (trigger for current agent)
+  triggerBatchWatch(): Observable<void> {
+    return this.http.post<void>(`${this.base}/agent-portal/portfolio/batch-watch`, {});
+  }
+
+  // Phase 2 — Portfolio export
+  exportPortfolioExcel(): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, { responseType: 'blob' });
+  }
+
+  exportPortfolioPdf(): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/export/pdf`, { responseType: 'blob' });
+  }
+
+  // Phase 2 — Agent public profile
+  getPublicAgentProfile(agentCode: string): Observable<AgentPublicProfile> {
+    return this.http.get<AgentPublicProfile>(`${this.base}/agent-portal/public/${agentCode}`);
   }
 }

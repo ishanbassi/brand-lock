@@ -1,0 +1,212 @@
+<div class="portfolio-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Trademark Portfolio</h1>
+      <p class="page-sub">
+        @if (!loading()) { {{ totalCount }} trademark{{ totalCount !== 1 ? 's' : '' }} in your portfolio }
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-ghost" (click)="exportExcel()" [disabled]="exportingExcel()" title="Download as Excel">
+        <span>⬇️</span> {{ exportingExcel() ? 'Exporting…' : 'Export XLS' }}
+      </button>
+      <button class="btn-ghost" (click)="exportPdf()" [disabled]="exportingPdf()" title="Download as PDF">
+        <span>📄</span> {{ exportingPdf() ? 'Exporting…' : 'Export PDF' }}
+      </button>
+      <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
+        <span>📤</span> Import Excel
+      </a>
+      <a routerLink="/agent-portal/portfolio/add" class="btn-primary">
+        <span>➕</span> Add Trademark
+      </a>
+    </div>
+  </div>
+
+  <!-- FILTERS BAR -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search by name, app number or proprietor…"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+      />
+      @if (searchQuery) {
+        <button class="search-clear" (click)="searchQuery = ''; onSearchChange()">✕</button>
+      }
+    </div>
+
+    <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="page = 0">
+      <option value="">All Statuses</option>
+      @for (s of STATUS_OPTIONS; track s) {
+        <option [value]="s">{{ s }}</option>
+      }
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filterClass" (ngModelChange)="page = 0">
+      <option value="">All Classes</option>
+      @for (c of CLASS_OPTIONS; track c) {
+        <option [value]="c">Class {{ c }}</option>
+      }
+    </select>
+
+    @if (filterStatus || filterClass || searchQuery) {
+      <button class="btn-ghost" (click)="searchQuery = ''; filterStatus = ''; filterClass = ''; page = 0; load()">
+        Clear filters
+      </button>
+    }
+  </div>
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE SKELETON -->
+  @if (loading()) {
+    <div class="table-skeleton">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  }
+
+  <!-- TABLE -->
+  @if (!loading() && filtered.length > 0) {
+    <div class="table-card">
+      <table class="tm-table">
+        <thead>
+          <tr>
+            <th>Trademark</th>
+            <th>App No.</th>
+            <th>Class</th>
+            <th>Proprietor</th>
+            <th>Status</th>
+            <th>Filing Date</th>
+            <th>Renewal</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tm of filtered; track tm.id; let i = $index) {
+            <tr [class.deleting]="deletingId() === tm.id">
+
+              <!-- TRADEMARK NAME + TYPE -->
+              <td class="tm-name-cell">
+                <div class="tm-name">{{ tm.name || '—' }}</div>
+                @if (tm.type) {
+                  <span class="tm-type-tag">{{ tm.type }}</span>
+                }
+              </td>
+
+              <!-- APP NO -->
+              <td class="app-no">{{ tm.applicationNo || '—' }}</td>
+
+              <!-- CLASS -->
+              <td class="class-cell">
+                @if (tm.tmClass) {
+                  <span class="class-badge">{{ tm.tmClass }}</span>
+                }
+                @else { — }
+              </td>
+
+              <!-- PROPRIETOR -->
+              <td class="proprietor">{{ tm.proprietorName || '—' }}</td>
+
+              <!-- STATUS -->
+              <td>
+                <span class="status-badge" [class]="'status--' + getStatusClass(tm.trademarkStatus)">
+                  {{ tm.trademarkStatus || 'Unknown' }}
+                </span>
+              </td>
+
+              <!-- FILING DATE -->
+              <td class="date-cell">{{ tm.applicationDate ? (tm.applicationDate | date:'dd MMM yyyy') : '—' }}</td>
+
+              <!-- RENEWAL DATE -->
+              <td class="date-cell">
+                @if (tm.renewalDate) {
+                  <span [class.warn-date]="isExpiringSoon(tm.renewalDate?.toString())">
+                    {{ tm.renewalDate | date:'dd MMM yyyy' }}
+                  </span>
+                } @else { — }
+              </td>
+
+              <!-- ACTIONS -->
+              <td class="actions-cell">
+                @if (confirmDeleteId() === tm.id) {
+                  <span class="confirm-delete-wrap">
+                    <span class="confirm-text">Delete?</span>
+                    <button class="btn-danger-xs" (click)="confirmDelete(tm.id!)">Yes</button>
+                    <button class="btn-ghost-xs" (click)="cancelDelete()">No</button>
+                  </span>
+                } @else {
+                  <div class="action-btns">
+                    <a [routerLink]="['/agent-portal/portfolio', tm.id, 'watch']" class="action-btn watch-btn" title="Trademark Watch">
+                      👁
+                    </a>
+                    <a [routerLink]="['/agent-portal/portfolio', tm.id, 'edit']" class="action-btn edit-btn" title="Edit">
+                      ✏️
+                    </a>
+                    <button class="action-btn delete-btn" (click)="startDelete(tm.id!)" title="Delete"
+                      [disabled]="deletingId() === tm.id">
+                      🗑️
+                    </button>
+                  </div>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" [disabled]="page === 0" (click)="goToPage(0)">«</button>
+        <button class="page-btn" [disabled]="page === 0" (click)="goToPage(page - 1)">‹</button>
+
+        @for (p of getPageRange(); track p) {
+          @if (p === -1) {
+            <span class="page-ellipsis">…</span>
+          } @else {
+            <button class="page-btn" [class.active]="p === page" (click)="goToPage(p)">{{ p + 1 }}</button>
+          }
+        }
+
+        <button class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)">›</button>
+        <button class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(totalPages - 1)">»</button>
+
+        <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
+      </div>
+    }
+  }
+
+  <!-- EMPTY STATE -->
+  @if (!loading() && filtered.length === 0 && !error()) {
+    <div class="empty-state">
+      @if (searchQuery || filterStatus || filterClass) {
+        <div class="empty-icon">🔍</div>
+        <h3>No results found</h3>
+        <p>Try adjusting your search or filters.</p>
+        <button class="btn-outline" (click)="searchQuery = ''; filterStatus = ''; filterClass = ''; load()">
+          Clear all filters
+        </button>
+      } @else {
+        <div class="empty-icon">📋</div>
+        <h3>Your portfolio is empty</h3>
+        <p>Import an Excel file or add trademarks one by one to get started.</p>
+        <div class="empty-actions">
+          <a routerLink="/agent-portal/portfolio/upload" class="btn-primary">📤 Import from Excel</a>
+          <a routerLink="/agent-portal/portfolio/add" class="btn-outline">➕ Add Manually</a>
+        </div>
+      }
+    </div>
+  }
+
+</div>

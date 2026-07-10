@@ -1,0 +1,83 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Agents</h1>
+      <p class="page-sub">{{ totalItems() }} registered agent{{ totalItems() === 1 ? '' : 's' }} in this view</p>
+    </div>
+  </div>
+
+  <!-- STATUS FILTER -->
+  <div class="filter-bar">
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All statuses</option>
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Code</th>
+          <th>Registered</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5]; track i) {
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (agents().length === 0) {
+          <tr><td colspan="7" class="empty-cell">No agents in this view.</td></tr>
+        } @else {
+          @for (agent of agents(); track agent.id) {
+            <tr>
+              <td class="cell-strong">{{ agent.fullName || '—' }}</td>
+              <td>{{ agent.companyName || '—' }}</td>
+              <td>
+                <div class="stacked">
+                  <span>{{ agent.phoneNumber || '—' }}</span>
+                  <span class="muted">{{ agent.email || '' }}</span>
+                </div>
+              </td>
+              <td class="muted">{{ agent.agentCode || '—' }}</td>
+              <td class="muted">{{ agent.createdDate | date:'dd MMM yyyy' }}</td>
+              <td><span class="badge" [class]="badgeClass(agent.profileStatus)">{{ statusLabel(agent.profileStatus) }}</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="act act--approve" [disabled]="savingId() === agent.id || agent.profileStatus === 'ACTIVE'"
+                          (click)="setStatus(agent, 'ACTIVE')">Approve</button>
+                  <button class="act act--reject" [disabled]="savingId() === agent.id || agent.profileStatus === 'SUSPENDED'"
+                          (click)="setStatus(agent, 'SUSPENDED')">Suspend</button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+</div>

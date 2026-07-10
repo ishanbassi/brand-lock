@@ -108,8 +108,8 @@ protected updateForm(trademark:ITrademark): void {
     }))
     
     .subscribe((res) => {
-      this.router.navigateByUrl("trademark-registration/select-plan");
-    })    
+      this.router.navigate(['trademark-registration/select-plan'], {queryParams: {application: trademark.id}});
+    })
     
   }
 

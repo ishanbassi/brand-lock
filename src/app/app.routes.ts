@@ -3,6 +3,15 @@ import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     {
+        // ROLE_USER customer portal — standalone shell, no public navbar/footer.
+        path: 'portal',
+        loadComponent: () => import('./trademark-portal/trademark-portal.component').then(m => m.TrademarkPortalComponent),
+        loadChildren: () => import('./trademark-portal/dashboard.routes').then(m => m.dashboardRoutes),
+        title: "Dashboard",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_USER'] }
+    },
+    {
         path: "",
         loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
         children:[
@@ -74,20 +83,20 @@ export const routes: Routes = [
         title: "Trademark Registration",
     },
     {
-        path: 'portal',
-        loadComponent: () => import('./trademark-portal/trademark-portal.component').then(m => m.TrademarkPortalComponent),
-        loadChildren: () => import('./trademark-portal/dashboard.routes').then(m => m.dashboardRoutes),
-        title: "Dashboard",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_USER'] }
-    },
-    {
         path: 'agent-portal',
         loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
         loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
         title: "Agent Portal",
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_AGENT'] }
+    },
+    {
+        path: 'admin-portal',
+        loadComponent: () => import('./admin-portal/admin-portal-shell.component').then(m => m.AdminPortalShellComponent),
+        loadChildren: () => import('./admin-portal/admin-portal.routes').then(m => m.adminPortalRoutes),
+        title: "Admin Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ADMIN'] }
     },
     {
         path: 'create-agent-account',
@@ -262,6 +271,36 @@ export const routes: Routes = [
         path: 'trademark-registration-for-diesel-engine-manufacturers',
         loadComponent: () => import('./trademark-diesel-engine-manufacturers/trademark-diesel-engine-manufacturers.component').then(m => m.TrademarkDieselEngineManufacturersComponent),
         title: "Trademark Registration for Diesel Engine & Genset Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-surgical-instruments',
+        loadComponent: () => import('./trademark-surgical-instruments/trademark-surgical-instruments.component').then(m => m.TrademarkSurgicalInstrumentsComponent),
+        title: "Trademark Registration for Surgical Instruments Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-textile-machinery',
+        loadComponent: () => import('./trademark-textile-machinery/trademark-textile-machinery.component').then(m => m.TrademarkTextileMachineryComponent),
+        title: "Trademark Registration for Textile & Hosiery Machinery Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-wire-products',
+        loadComponent: () => import('./trademark-wire-products/trademark-wire-products.component').then(m => m.TrademarkWireProductsComponent),
+        title: "Trademark Registration for Wire Drawing & Wire Mesh Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-lock-manufacturers',
+        loadComponent: () => import('./trademark-lock-manufacturers/trademark-lock-manufacturers.component').then(m => m.TrademarkLockManufacturersComponent),
+        title: "Trademark Registration for Lock & Padlock Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-brassware-manufacturers',
+        loadComponent: () => import('./trademark-brassware-manufacturers/trademark-brassware-manufacturers.component').then(m => m.TrademarkBrasswareManufacturersComponent),
+        title: "Trademark Registration for Brassware & Brass Handicrafts Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
+        path: 'trademark-registration-for-footwear-manufacturers',
+        loadComponent: () => import('./trademark-footwear-manufacturers/trademark-footwear-manufacturers.component').then(m => m.TrademarkFootwearManufacturersComponent),
+        title: "Trademark Registration for Footwear Manufacturers — ₹1,499 | Trademarx",
     },
     {
         path: 'service-checkout',

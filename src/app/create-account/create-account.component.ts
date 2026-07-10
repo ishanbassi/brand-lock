@@ -16,6 +16,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { Account } from '../../models/account.model';
+import { AuthService } from '../../models/auth.services';
 import { Login } from '../../models/login';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
 import { LoadingService } from '../common/loading.service';
@@ -116,6 +117,7 @@ export class CreateAccountComponent implements OnInit {
     private meta: Meta,
     private title: Title,
     private readonly scriptLoaderService: ScriptLoaderService,
+    private readonly authService: AuthService,
 
   ) { }
   ngOnInit() {
@@ -162,7 +164,6 @@ export class CreateAccountComponent implements OnInit {
         this.dataService.register(this.data.forRequest())
           .subscribe({
             next: (response) => {
-              this.localStorageService.setObject('user', response.body?.user);
               this.processLogin();
             }, error: (error: any) => {
               this.loadingService.hide();
@@ -183,7 +184,10 @@ export class CreateAccountComponent implements OnInit {
       .pipe(finalize(() => this.loadingService.hide()))
       .subscribe({
         next: (response) => {
-          this.localStorageService.storeAuthenticationToken(response.body!.id_token);
+          const idToken = response.body!.id_token;
+          this.localStorageService.storeAuthenticationToken(idToken);
+          const { id, authorities } = this.authService.decodeToken(idToken);
+          this.localStorageService.setObject('user', { id, authorities });
           this.sessionStorageService.set("initial-onboarding", true);
           this.googleConversionTrackingService.reportSignupConversion("trademark-registration/step-2");
           // this.router.navigateByUrl("trademark-registration/step-2");

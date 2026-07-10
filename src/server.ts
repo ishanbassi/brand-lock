@@ -32,7 +32,7 @@ const angularApp = new AngularNodeAppEngine();
 const SITE_URL = 'https://trademarx.in';
 
 // Security headers
-const devOrigins = environment.production ? '' : ' http://localhost:8080 http://localhost:4200';
+const devOrigins = environment.production ? '' : ' http://localhost:8080 http://localhost:8082 http://localhost:4200';
 app.use((_req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   res.setHeader('X-Content-Type-Options', 'nosniff');

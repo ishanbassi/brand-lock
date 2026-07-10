@@ -1,0 +1,56 @@
+<div class="portal-layout" [class.collapsed]="sidebarCollapsed()">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a routerLink="/" class="sidebar-brand">
+        @if (!sidebarCollapsed()) {
+          <span class="brand-tm">TM</span><span class="brand-arx">arx</span>
+        } @else {
+          <span class="brand-tm">TM</span>
+        }
+      </a>
+      <button class="collapse-btn" (click)="toggleSidebar()" [title]="sidebarCollapsed() ? 'Expand' : 'Collapse'">
+        {{ sidebarCollapsed() ? '→' : '←' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.route) {
+        <a [routerLink]="item.route"
+           class="nav-item"
+           [class.active]="isActive(item.route)"
+           [title]="sidebarCollapsed() ? item.label : ''">
+          <span class="nav-icon">{{ item.icon }}</span>
+          @if (!sidebarCollapsed()) {
+            <span class="nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-pill" [class.compact]="sidebarCollapsed()">
+        <div class="admin-avatar">{{ adminInitials }}</div>
+        @if (!sidebarCollapsed()) {
+          <div class="admin-info">
+            <span class="admin-name">Admin Portal</span>
+            <span class="admin-badge">Staff</span>
+          </div>
+        }
+      </div>
+      <button class="logout-btn" (click)="logout()" [title]="sidebarCollapsed() ? 'Sign out' : ''">
+        <span class="nav-icon">🚪</span>
+        @if (!sidebarCollapsed()) {
+          <span>Sign out</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

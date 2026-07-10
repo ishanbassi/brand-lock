@@ -1,0 +1,93 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Leads</h1>
+      <p class="page-sub">{{ totalItems() }} lead{{ totalItems() === 1 ? '' : 's' }} in the pipeline</p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <input class="filter-input" type="text" placeholder="Search name…"
+           [(ngModel)]="search" (ngModelChange)="onSearchChange()" />
+
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All statuses</option>
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <input class="filter-input" type="text" placeholder="Source…"
+           [(ngModel)]="sourceFilter" (ngModelChange)="onFilterChange()" />
+
+    <select class="filter-select" [(ngModel)]="assigneeFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All assignees</option>
+      @for (emp of employees(); track emp.id) {
+        <option [value]="emp.id">{{ emp.fullName }}</option>
+      }
+    </select>
+
+    <button class="btn-ghost" (click)="clearFilters()">Clear</button>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Brand</th>
+          <th>Contact</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Assigned to</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <tr class="skeleton-row"><td colspan="8"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (leads().length === 0) {
+          <tr><td colspan="8" class="empty-cell">No leads match these filters.</td></tr>
+        } @else {
+          @for (lead of leads(); track lead.id) {
+            <tr>
+              <td class="cell-strong">{{ lead.fullName || '—' }}</td>
+              <td>{{ lead.brandName || '—' }}</td>
+              <td>
+                <div class="stacked">
+                  <span>{{ lead.phoneNumber || '—' }}</span>
+                  <span class="muted">{{ lead.email || '' }}</span>
+                </div>
+              </td>
+              <td>{{ lead.leadSource || '—' }}</td>
+              <td><span class="badge" [class]="badgeClass(lead.status)">{{ statusLabel(lead.status) }}</span></td>
+              <td>{{ assigneeName(lead) }}</td>
+              <td class="muted">{{ $any(lead.createdDate) | date:'dd MMM yyyy' }}</td>
+              <td><a class="row-action" [routerLink]="['/admin-portal/leads', lead.id]">Open →</a></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+</div>

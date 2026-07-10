@@ -119,7 +119,9 @@ img {
 
 
 ::ng-deep {
-  .blog-single * {
+  /* Force Inter on blog content, but never on Font Awesome icons —
+     overriding their font-family hides the glyphs. */
+  .blog-single *:not([class*="fa-"]):not(.fa) {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
   }
@@ -248,4 +250,219 @@ img {
   transform: rotate(-90deg);
 }
 
+}
+
+/* Aside lead form — replaces the old campaign block in the sticky rail.
+   The shared form is tuned for full-width heroes, so compact it for the
+   narrow rail: smaller heading/padding and a lighter card shadow. */
+.aside-lead {
+  margin-top: 24px;
+
+  ::ng-deep {
+    .cta-form-section {
+      display: block;
+      padding: 0;
+
+    }
+
+    .cta-form {
+      max-width: 100% !important;
+      padding: 1.4rem 1.35rem !important;
+      border-radius: 16px !important;
+      box-shadow: 0 12px 30px -14px rgba(15, 23, 42, 0.28) !important;
+    }
+
+    .cta-form-call-now {
+      font-size: 0.9rem !important;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-heading-section {
+      margin-bottom: 1rem !important;
+    }
+
+    .form-heading {
+      font-size: 1.2rem !important;
+      line-height: 1.25;
+    }
+
+    .form-input-container {
+      margin-bottom: 0.8rem !important;
+    }
+
+    .form-input {
+      padding-top: 0.68rem;
+      padding-bottom: 0.68rem;
+      font-size: 0.9rem;
+    }
+
+    .cta-submit-btn {
+      font-size: 1.02rem !important;
+      padding: 0.78rem 1.1rem !important;
+    }
+  }
+}
+
+/* Desktop rail: keep the TOC and the lead form both on screen.
+   The TOC absorbs spare height and scrolls; the form never shrinks,
+   so it stays fully visible no matter how long the TOC gets. */
+@media (min-width: 992px) {
+  .blog-aside aside {
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .blog-aside .toc {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .aside-lead {
+    flex: 0 0 auto;
+    margin-top: 0;
+  }
+}
+
+/* ---------- Mobile floating Table of Contents ---------- */
+.mobile-toc {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  /* Single-column layout: the stacked in-aside TOC is redundant with the
+     floating one, so hide it and let the floating TOC do the job. */
+  .blog-aside .toc {
+    display: none;
+  }
+
+  .mobile-toc {
+    display: block;
+  }
+
+  .mobile-toc__fab {
+    position: fixed;
+    right: 16px;
+    bottom: 20px;
+    z-index: 1002;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 999px;
+    background: var(--gradient, #2563eb);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &.is-open {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+  }
+
+  .mobile-toc__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    background: rgba(15, 23, 42, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .mobile-toc__sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1003;
+    max-height: 65vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.2);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+
+    &.is-open {
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-toc__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .mobile-toc__close {
+    all: unset;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: #9ca3af;
+    padding: 4px 8px;
+  }
+
+  .mobile-toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0 max(16px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+
+    li {
+      margin: 0;
+    }
+
+    a {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 13px 20px;
+      color: #1f2937;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.4;
+      text-decoration: none;
+
+      &:active {
+        background: #f8fafc;
+      }
+    }
+  }
+
+  .mobile-toc__num {
+    flex-shrink: 0;
+    min-width: 22px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-color, #2563eb);
+    font-variant-numeric: tabular-nums;
+  }
 }

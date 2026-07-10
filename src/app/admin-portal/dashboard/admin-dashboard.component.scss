@@ -1,0 +1,217 @@
+$accent: #0ea5e9;
+$accent-light: #38bdf8;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$purple: #8b5cf6;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* { box-sizing: border-box; }
+
+.dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 0.25rem;
+}
+
+.page-sub {
+  color: $gray-400;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+// ── STATS GRID ──────────────────────────────────────
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px)  { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); }
+
+  &--warning { border-left: 4px solid $warning; }
+
+  &.skeleton {
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    height: 130px;
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.stat-icon {
+  font-size: 1.6rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+
+  &--leads  { background: rgba($accent, 0.1); }
+  &--apps   { background: rgba($purple, 0.1); }
+  &--docs   { background: rgba($warning, 0.1); }
+  &--pay    { background: rgba($success, 0.1); }
+  &--agents { background: rgba($gray-400, 0.12); }
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: $gray-400;
+  font-weight: 500;
+}
+
+.stat-link {
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.stat-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  &.badge-warn { background: rgba($warning, 0.15); color: darken($warning, 20%); }
+}
+
+// ── CONTENT GRID ──────────────────────────────────────
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.content-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0;
+}
+
+.card-link {
+  font-size: 0.8rem;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 600;
+  &:hover { text-decoration: underline; }
+}
+
+// ── BREAKDOWN ROWS ──────────────────────────────────────
+.breakdown-list { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid $gray-100;
+
+  &:last-child { border-bottom: none; }
+}
+
+.breakdown-label {
+  font-size: 0.85rem;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.breakdown-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $gray-800;
+}
+
+// ── EMPTY / ALERT ──────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  p { color: $gray-400; font-size: 0.875rem; margin: 0; }
+}
+
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}

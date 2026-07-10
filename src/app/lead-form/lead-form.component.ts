@@ -12,6 +12,7 @@ import { NewLead } from '../../models/lead.model';
 import { finalize, Subject } from 'rxjs';
 import { PhoneInputComponent } from '../phone-input/phone-input.component';
 import { ServiceType } from '../../models/service-order.model';
+import { OnboardingStateService } from '../shared/services/onboarding-state.service';
 
 @Component({
   selector: 'app-lead-form',
@@ -40,6 +41,7 @@ export class LeadFormComponent implements OnInit {
     private readonly leadService: LeadService,
     private readonly sessionStorageService: SessionStorageService,
     private readonly googleConversionTrackingService: GoogleConversionTrackingService,
+    private readonly onboardingStateService: OnboardingStateService,
     private readonly router: Router,
   ) {}
 
@@ -94,7 +96,11 @@ export class LeadFormComponent implements OnInit {
           this.trackConversion();
           if (this.serviceType) {
             if(this.serviceType === 'TRADEMARK_REGISTRATION'){
-              this.router.navigateByUrl('trademark-registration/brand-details');
+              // Returning visitors resume where they left off; the fresh lead
+              // is attached to the in-progress application either way.
+              const resumeUrl = this.onboardingStateService.resumeUrl();
+              this.onboardingStateService.saveState({ lead: newLead.body ?? null });
+              this.router.navigateByUrl(resumeUrl ?? 'trademark-registration/brand-details');
               return;
             }
             this.router.navigate(['/service-checkout'], {

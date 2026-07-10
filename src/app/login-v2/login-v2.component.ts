@@ -70,9 +70,27 @@ export class LoginV2Component implements OnInit{
     this.dataService.login(this.data.forRequest())
       .subscribe({
         next: (response) => {
-          this.loadingService.hide();
-          this.localStorageService.storeAuthenticationToken(response.body!.id_token);
-          this.fetchUserDetail();
+          const idToken = response.body!.id_token;
+          this.localStorageService.storeAuthenticationToken(idToken);
+          const { id, authorities } = this.authService.decodeToken(idToken);
+          this.localStorageService.setObject('user', { id, authorities });
+
+          // ROLE_ADMIN/ROLE_AGENT accounts have no UserProfile row, so they can't
+          // go through fetchUserDetail() (which 500s on the missing profile).
+          // Role is already known from the token, so route them straight in.
+          if (this.authService.hasRole(['ROLE_ADMIN'])) {
+            this.loadingService.hide();
+            this.navigateTo('/admin-portal/dashboard');
+            return;
+          }
+          if (this.authService.hasRole(['ROLE_AGENT'])) {
+            // TODO: agent gets a dedicated login page in a later phase.
+            this.loadingService.hide();
+            this.navigateTo('/agent-portal/dashboard');
+            return;
+          }
+
+          this.fetchUserDetail(authorities);
         }, error: (error: any) => {
           this.loadingService.hide();
           if (!error.detail?.includes('Bad Credentials')) {
@@ -84,22 +102,24 @@ export class LoginV2Component implements OnInit{
       });
   }
 
-  fetchUserDetail() {
+  private fetchUserDetail(authorities: { name: string }[]) {
     this.dataService.getCurrentUser()
       .subscribe({
         next: (response) => {
           this.loadingService.hide();
-          this.localStorageService.setObject('user', response.body?.user);
-          const isAgent = this.authService.hasRole(['ROLE_AGENT']);
-          const destination = isAgent ? '/agent-portal/dashboard' : (this.returnUrl || '/portal/dashboard');
-          setTimeout(() => {
-          this.router.navigate([destination]);
-          }, 200);
+          this.localStorageService.setObject('user', { ...response.body, authorities });
+          this.navigateTo(this.returnUrl || '/portal/dashboard');
         }, error: (error: any) => {
           this.loadingService.hide();
           this.toastService.error("Failed to sign in! Please check your credentials and try again.");
         }
       });
+  }
+
+  private navigateTo(destination: string) {
+    setTimeout(() => {
+      this.router.navigate([destination]);
+    }, 200);
   }
 
   eyePassword() {

@@ -1,0 +1,381 @@
+$accent: #6366f1;
+$accent-light: #818cf8;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* { box-sizing: border-box; }
+
+.dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+}
+
+// ── PAGE HEADER ──────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 0.25rem;
+}
+
+.page-sub {
+  color: $gray-400;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, $accent, $accent-light);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($accent, 0.35);
+  }
+
+  &.btn-sm { padding: 0.45rem 0.9rem; font-size: 0.8rem; }
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: $white;
+  color: $gray-600;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
+// ── STATS GRID ──────────────────────────────────────
+.stats-grid, .loading-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); }
+
+  &--warning { border-left: 4px solid $warning; }
+
+  &.skeleton {
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    height: 110px;
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.stat-icon {
+  font-size: 1.75rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+
+  &--total   { background: rgba($accent, 0.1); }
+  &--active  { background: rgba($success, 0.1); }
+  &--expiring{ background: rgba($warning, 0.1); }
+  &--watch   { background: rgba($gray-400, 0.12); }
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: $gray-400;
+  font-weight: 500;
+}
+
+.stat-link {
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover { text-decoration: underline; }
+}
+
+.stat-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  &.badge-warn { background: rgba($warning, 0.15); color: darken($warning, 20%); }
+}
+
+// ── CONTENT GRID ──────────────────────────────────────
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.content-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0;
+}
+
+.card-link {
+  font-size: 0.8rem;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 600;
+  &:hover { text-decoration: underline; }
+}
+
+.card-sub { font-size: 0.8rem; color: $gray-400; }
+
+// ── TRADEMARK ROWS ──────────────────────────────────────
+.trademark-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.tm-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid $gray-100;
+
+  &:last-child { border-bottom: none; }
+}
+
+.tm-index {
+  width: 22px;
+  height: 22px;
+  background: $gray-100;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: $gray-400;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tm-main { flex: 1; min-width: 0; }
+
+.tm-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $gray-800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tm-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2px;
+
+  span {
+    font-size: 0.72rem;
+    color: $gray-400;
+    white-space: nowrap;
+
+    &:not(:last-child)::after {
+      content: '·';
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+.status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &.status--active   { background: rgba($success, 0.12); color: darken($success, 15%); }
+  &.status--pending  { background: rgba($warning, 0.12); color: darken($warning, 20%); }
+  &.status--objected { background: rgba($danger, 0.12);  color: $danger; }
+  &.status--inactive { background: $gray-100;            color: $gray-400; }
+  &.status--unknown  { background: $gray-100;            color: $gray-400; }
+}
+
+.watch-btn {
+  font-size: 1rem;
+  text-decoration: none;
+  opacity: 0.4;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+
+  &:hover { opacity: 1; }
+}
+
+.edit-btn {
+  font-size: 0.75rem;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &:hover { text-decoration: underline; }
+}
+
+.renewal-info { text-align: right; flex-shrink: 0; }
+.renewal-label { display: block; font-size: 0.7rem; color: $gray-400; }
+.renewal-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $gray-800;
+
+  &.warn { color: $warning; }
+}
+
+// ── EMPTY STATE ──────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+
+  .empty-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+  p { color: $gray-400; font-size: 0.875rem; margin: 0 0 1rem; }
+}
+
+// ── QUICK ACTIONS ──────────────────────────────────────
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.qa-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: $accent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba($accent, 0.12);
+  }
+}
+
+.qa-icon { font-size: 1.75rem; flex-shrink: 0; }
+
+.qa-text {
+  strong { display: block; color: $gray-800; font-size: 0.875rem; margin-bottom: 2px; }
+  p { color: $gray-400; font-size: 0.78rem; margin: 0; }
+}
+
+// ── ALERTS ──────────────────────────────────────
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}

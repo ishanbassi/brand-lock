@@ -1,0 +1,164 @@
+<div class="form-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <a routerLink="/agent-portal/portfolio" class="back-link">‹ Back to Portfolio</a>
+    <h1 class="page-title">{{ isEdit ? 'Edit Trademark' : 'Add Trademark' }}</h1>
+    <p class="page-sub">{{ isEdit ? 'Update the details for this trademark.' : 'Add a new trademark to your portfolio.' }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading trademark…</p>
+    </div>
+  } @else {
+    <form class="form-card" (ngSubmit)="save()" #f="ngForm">
+
+      @if (error()) {
+        <div class="alert-error">{{ error() }}</div>
+      }
+
+      <div class="form-grid">
+
+        <!-- NAME -->
+        <div class="field full-span">
+          <label class="field-label" for="name">Trademark Name <span class="req">*</span></label>
+          <input
+            id="name"
+            type="text"
+            class="field-input"
+            [(ngModel)]="form.name"
+            name="name"
+            placeholder="e.g. TRADEMARX"
+            required
+          />
+        </div>
+
+        <!-- APP NO -->
+        <div class="field">
+          <label class="field-label" for="appNo">Application Number</label>
+          <input
+            id="appNo"
+            type="number"
+            class="field-input"
+            [(ngModel)]="form.applicationNo"
+            name="applicationNo"
+            placeholder="e.g. 1234567"
+          />
+        </div>
+
+        <!-- CLASS -->
+        <div class="field">
+          <label class="field-label" for="tmClass">Trademark Class</label>
+          <select id="tmClass" class="field-select" [(ngModel)]="form.tmClass" name="tmClass">
+            <option [value]="undefined">Select class…</option>
+            @for (c of CLASS_OPTIONS; track c) {
+              <option [value]="c">Class {{ c }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- TYPE -->
+        <div class="field">
+          <label class="field-label" for="type">Type</label>
+          <select id="type" class="field-select" [(ngModel)]="form.type" name="type">
+            <option value="">Select type…</option>
+            @for (t of TYPE_OPTIONS; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- STATUS -->
+        <div class="field">
+          <label class="field-label" for="status">Status</label>
+          <select id="status" class="field-select" [(ngModel)]="form.trademarkStatus" name="trademarkStatus">
+            <option value="">Select status…</option>
+            @for (s of STATUS_OPTIONS; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- PROPRIETOR -->
+        <div class="field">
+          <label class="field-label" for="proprietor">Proprietor Name</label>
+          <input
+            id="proprietor"
+            type="text"
+            class="field-input"
+            [(ngModel)]="form.proprietorName"
+            name="proprietorName"
+            placeholder="Company or individual name"
+          />
+        </div>
+
+        <!-- ATTORNEY -->
+        <div class="field">
+          <label class="field-label" for="attorney">Attorney Name</label>
+          <input
+            id="attorney"
+            type="text"
+            class="field-input"
+            [(ngModel)]="form.attorneyName"
+            name="attorneyName"
+            placeholder="Handling attorney"
+          />
+        </div>
+
+        <!-- FILING DATE -->
+        <div class="field">
+          <label class="field-label" for="applicationDate">Filing Date</label>
+          <input
+            id="applicationDate"
+            type="date"
+            class="field-input"
+            [(ngModel)]="form.applicationDate"
+            name="applicationDate"
+          />
+        </div>
+
+        <!-- RENEWAL DATE -->
+        <div class="field">
+          <label class="field-label" for="renewalDate">Renewal Date</label>
+          <input
+            id="renewalDate"
+            type="date"
+            class="field-input"
+            [(ngModel)]="form.renewalDate"
+            name="renewalDate"
+          />
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="field full-span">
+          <label class="field-label" for="details">Description / Goods & Services</label>
+          <textarea
+            id="details"
+            class="field-textarea"
+            [(ngModel)]="form.details"
+            name="details"
+            rows="3"
+            placeholder="Describe the goods or services covered by this trademark…"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <!-- FORM ACTIONS -->
+      <div class="form-actions">
+        <a routerLink="/agent-portal/portfolio" class="btn-ghost">Cancel</a>
+        <button type="submit" class="btn-primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="btn-spinner"></span> Saving…
+          } @else {
+            {{ isEdit ? 'Save Changes' : 'Add to Portfolio' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

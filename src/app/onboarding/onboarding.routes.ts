@@ -6,6 +6,8 @@ import { TrademarkSelectClassComponent } from "../trademark-select-class/tradema
 import { TrademarkPlansPageComponent } from "../trademark-plans-page/trademark-plans-page.component";
 import { CheckoutPageComponent } from "../checkout-page/checkout-page.component";
 import { TmBrandDetailsComponent } from "../tm-brand-details/tm-brand-details.component";
+import { TmBusinessDetailsComponent } from "../tm-business-details/tm-business-details.component";
+import { PaymentSuccessComponent } from "../payment-success/payment-success.component";
 
 export const onboardingRoutes: Routes = [
     {
@@ -29,11 +31,21 @@ export const onboardingRoutes: Routes = [
             component:AddTmNameSloganLogoClassComponent,
             title:"Trademark Registration | Step 3"
         },
-        
+        {
+            path:"select-class",
+            component:TrademarkSelectClassComponent,
+            title:"Trademark Registration | Select Class"
+        },
+
         {
             path:"brand-details",
             component:TmBrandDetailsComponent,
             title:"Trademark Registration | Brand Details"
+        },
+        {
+            path:"business-details",
+            component:TmBusinessDetailsComponent,
+            title:"Trademark Registration | Business & Documents"
         },
         {
             path:"select-plan",
@@ -44,5 +56,10 @@ export const onboardingRoutes: Routes = [
             path:"checkout",
             component:CheckoutPageComponent,
             title:"Trademark Registration | Pay"
+        },
+        {
+            path:"payment-success",
+            component:PaymentSuccessComponent,
+            title:"Payment Successful | Trademarx"
         },
 ]

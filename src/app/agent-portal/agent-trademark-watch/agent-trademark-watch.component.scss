@@ -1,0 +1,404 @@
+$accent: #6366f1;
+$accent-light: #818cf8;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* { box-sizing: border-box; }
+
+.watch-page {
+  padding: 2rem;
+  max-width: 1100px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+}
+
+.back-link {
+  display: inline-block;
+  color: $gray-400;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  transition: color 0.15s;
+
+  &:hover { color: $accent; }
+}
+
+// ── WATCH HEADER ─────────────────────────────────────────
+.watch-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $gray-400;
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tm-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tm-name {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: $gray-800;
+}
+
+.tm-app {
+  font-size: 0.875rem;
+  color: $gray-400;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.class-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  background: rgba($accent, 0.1);
+  color: $accent;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: $white;
+  color: $gray-600;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover { border-color: $accent; color: $accent; text-decoration: none; }
+}
+
+// ── RISK SUMMARY ─────────────────────────────────────────
+.risk-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.risk-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid transparent;
+
+  &--high   { border-left-color: $danger; }
+  &--medium { border-left-color: $warning; }
+  &--low    { border-left-color: $success; }
+  &--total  { border-left-color: $accent; }
+}
+
+.risk-num {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.risk-lbl {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin-bottom: 2px;
+}
+
+.risk-sub {
+  font-size: 0.75rem;
+  color: $gray-400;
+}
+
+// ── CONFLICT LIST ─────────────────────────────────────────
+.results-card {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.results-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid $gray-200;
+}
+
+.results-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 0.25rem;
+}
+
+.results-sub {
+  font-size: 0.8rem;
+  color: $gray-400;
+  margin: 0;
+}
+
+.conflict-list { display: flex; flex-direction: column; }
+
+.conflict-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $gray-100;
+  transition: background 0.1s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($accent, 0.025); }
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
+// ── RISK BADGE ─────────────────────────────────────────
+.risk-badge {
+  flex-shrink: 0;
+  width: 72px;
+  text-align: center;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+
+  &.badge-risk-high   { background: rgba($danger, 0.1); }
+  &.badge-risk-medium { background: rgba($warning, 0.1); }
+  &.badge-risk-low    { background: rgba($success, 0.1); }
+}
+
+.badge-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+
+  .badge-risk-high &   { color: $danger; }
+  .badge-risk-medium & { color: darken($warning, 20%); }
+  .badge-risk-low &    { color: darken($success, 15%); }
+}
+
+// ── CONFLICT MAIN ─────────────────────────────────────────
+.conflict-main { flex: 1; min-width: 0; }
+
+.conflict-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gray-800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.3rem;
+}
+
+.conflict-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+
+  span {
+    font-size: 0.78rem;
+    color: $gray-400;
+
+    &:not(:last-child)::after {
+      content: ' · ';
+      margin: 0 0.25rem;
+    }
+  }
+}
+
+// ── SCORE BLOCK ─────────────────────────────────────────
+.score-block {
+  flex-shrink: 0;
+  width: 100px;
+  text-align: center;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.score-bar-wrap {
+  height: 5px;
+  background: $gray-200;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.score-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, $success, $warning, $danger);
+  transition: width 0.6s ease;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  color: $gray-400;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ── EMPTY WATCH ─────────────────────────────────────────
+.empty-watch {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  .empty-icon { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
+  h3 { font-size: 1.3rem; font-weight: 700; color: $gray-800; margin: 0 0 0.5rem; }
+  p  { color: $gray-400; font-size: 0.9rem; margin: 0; max-width: 400px; margin: 0 auto; }
+}
+
+// ── LOADING / ERROR ─────────────────────────────────────────
+.loading-state {
+  text-align: center;
+  padding: 5rem 2rem;
+
+  p { color: $gray-400; margin: 1.25rem 0 0; font-size: 0.875rem; }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $gray-200;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+// ── CONFLICT HISTORY (Phase 2) ────────────────────────────
+.history-section {
+  margin-bottom: 1.5rem;
+}
+
+.history-toggle {
+  background: none;
+  border: 1.5px solid $gray-200;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: $gray-600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { border-color: $accent; color: $accent; }
+}
+
+.history-list {
+  margin-top: 0.75rem;
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.history-row {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid $gray-200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  &:last-child { border-bottom: none; }
+}
+
+.history-name {
+  font-weight: 600;
+  color: $gray-800;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: $gray-400;
+}
+
+.risk-pill {
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  &--high   { background: rgba($danger,0.1); color: $danger; }
+  &--medium { background: rgba($warning,0.1); color: darken($warning,20%); }
+  &--low    { background: rgba($success,0.1); color: darken($success,15%); }
+}
+
+.new-badge {
+  background: $accent;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+}
+
+.history-score { font-weight: 600; color: $gray-600; }
+.history-date { color: $gray-400; }

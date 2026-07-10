@@ -9,10 +9,12 @@ import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component'
 import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
 import { SeoService } from '../shared/services/seo.service';
+import { LeadFormComponent } from '../lead-form/lead-form.component';
+import { ServiceType } from '../../models/service-order.model';
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [RouterLink, SharedModule, BlogMarkdownComponent],
+  imports: [RouterLink, SharedModule, BlogMarkdownComponent, LeadFormComponent],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })
@@ -24,10 +26,36 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   collapsed = false;
   previewCount = 4;
   showAll = false;
+  mobileTocOpen = false;
   private isBrowser = false;
 
   get visibleToc() {
     return this.showAll ? this.toc : this.toc.slice(0, this.previewCount);
+  }
+
+  /**
+   * Derives the service funnel a blog reader should enter when they submit the
+   * aside lead form. Uses the campaign block's CTA link / blog category as hints
+   * so an ISO article routes to ISO checkout, an IEC article to IEC, etc.,
+   * falling back to trademark registration.
+   */
+  get leadServiceType(): ServiceType {
+    const hint = `${this.blog?.campaignBlock?.ctaLink ?? ''} ${this.blog?.category ?? ''}`.toLowerCase();
+    if (hint.includes('iso')) return 'ISO';
+    if (hint.includes('iec') || hint.includes('import') || hint.includes('export')) return 'IEC';
+    if (hint.includes('msme') || hint.includes('udyam')) return 'MSME';
+    if (hint.includes('renewal')) return 'TRADEMARK_RENEWAL';
+    if (hint.includes('objection')) return 'TRADEMARK_OBJECTION';
+    if (hint.includes('opposition')) return 'TRADEMARK_OPPOSITION';
+    return 'TRADEMARK_REGISTRATION';
+  }
+
+  toggleMobileToc() {
+    this.mobileTocOpen = !this.mobileTocOpen;
+  }
+
+  closeMobileToc() {
+    this.mobileTocOpen = false;
   }
 
 

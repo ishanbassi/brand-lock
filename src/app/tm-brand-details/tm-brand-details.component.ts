@@ -3,20 +3,22 @@ import { Component, ElementRef, OnInit, PLATFORM_ID, ViewChild, inject } from '@
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { finalize, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, of, switchMap, tap } from 'rxjs';
 import { ILead } from '../../models/lead.model';
 import { IDocuments } from '../../models/documents.model';
 import { ITrademark, NewTrademark } from '../../models/trademark.model';
+import { ITrademarkClass } from '../../models/trademark-class.model';
 import { ITrademarkPlan } from '../../models/trademark-plan.model';
-import { IPayment } from '../../models/payment.model';
 import { DocumentType } from '../enumerations/document-type.model';
 import { TrademarkType } from '../enumerations/trademark-type.model';
 import { LoadingService } from '../common/loading.service';
 import { AuthService } from '../../models/auth.services';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { TrademarkService, PartialUpdateTrademarkWithLogo } from '../shared/services/trademark.service';
-import { PaymentService } from '../shared/services/payment.service';
+import { DataService } from '../shared/services/data.service';
+import { TrademarkClassService } from '../shared/services/trademark-class.service';
 import { TrademarkPlanService } from '../shared/trademark-plan.service';
+import { OnboardingStateService } from '../shared/services/onboarding-state.service';
 import { SharedModule } from '../shared/shared.module';
 
 @Component({
@@ -32,9 +34,7 @@ export class TmBrandDetailsComponent implements OnInit {
   lead: ILead | null = null;
   trademark: ITrademark | null = null;
   document: IDocuments | null = null;
-  existingPayment: IPayment | null = null;
   plans: ITrademarkPlan[] = [];
-  selectedPlan: ITrademarkPlan | null = null;
 
   onClickValidation = false;
   isSubmitting = false;
@@ -45,16 +45,25 @@ export class TmBrandDetailsComponent implements OnInit {
   uploadedFileContentType: string | null = null;
   uploadedFileName: string | null = null;
 
+  // Business-scope → class suggestion
+  classSearching = false;
+  classSuggestions: ITrademarkClass[] = [];
+  selectedClass: ITrademarkClass | null = null;
+  showSuggestions = false;
+
   brandForm = new FormGroup({
-    brandName: new FormControl('', [Validators.required, Validators.minLength(1)])
+    brandName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    businessScope: new FormControl('')
   });
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly authService = inject(AuthService);
   private readonly sessionStorageService = inject(SessionStorageService);
   private readonly trademarkService = inject(TrademarkService);
-  private readonly paymentService = inject(PaymentService);
+  private readonly dataService = inject(DataService);
+  private readonly trademarkClassService = inject(TrademarkClassService);
   private readonly trademarkPlanService = inject(TrademarkPlanService);
+  private readonly onboardingStateService = inject(OnboardingStateService);
   private readonly loadingService = inject(LoadingService);
   private readonly toastService = inject(ToastrService);
   private readonly router = inject(Router);
@@ -64,6 +73,7 @@ export class TmBrandDetailsComponent implements OnInit {
     // would cause a spurious redirect to "/" that the browser then has to undo.
     if (!isPlatformBrowser(this.platformId)) return;
 
+    this.onboardingStateService.restoreSession();
     this.lead = this.sessionStorageService.getObject('lead');
     const isAuthorized = this.authService.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
 
@@ -72,19 +82,13 @@ export class TmBrandDetailsComponent implements OnInit {
       return;
     }
 
+    // Plans are not shown on this step, but the application needs a default
+    // plan attached so the payment can be created later in the flow.
     this.trademarkPlanService.query().subscribe(res => {
       this.plans = res.body || [];
-      if (this.plans.length > 0 && !this.selectedPlan) {
-        this.selectedPlan = this.plans[0];
-      }
     });
 
-    const paymentId = this.sessionStorageService.get('payment_id');
-    if (paymentId) {
-      this.paymentService.find(+paymentId).subscribe(res => {
-        this.existingPayment = res.body;
-      });
-    }
+    this.setupClassSuggestions();
 
     const trademarkInSession = this.sessionStorageService.getObject('trademark');
     if (trademarkInSession?.id) {
@@ -98,10 +102,7 @@ export class TmBrandDetailsComponent implements OnInit {
           if (this.trademark?.name) {
             this.brandForm.patchValue({ brandName: this.trademark.name });
           }
-          if (this.trademark?.trademarkPlan?.id && this.plans.length > 0) {
-            const matched = this.plans.find(p => p.id === this.trademark?.trademarkPlan?.id);
-            if (matched) this.selectedPlan = matched;
-          }
+          this.restoreSelectedClass();
           this.isInitializing = false;
         },
         error: () => {
@@ -113,30 +114,117 @@ export class TmBrandDetailsComponent implements OnInit {
     }
   }
 
+  private setupClassSuggestions() {
+    this.brandForm.get('businessScope')!.valueChanges.pipe(
+      tap(term => {
+        if (!term || term.trim().length < 3) {
+          this.classSuggestions = [];
+          this.showSuggestions = false;
+        }
+      }),
+      filter((term): term is string => !!term && term.trim().length >= 3),
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.classSearching = true),
+      switchMap(term =>
+        this.trademarkClassService.search(term.trim(), 8).pipe(
+          catchError(() => of(null))
+        )
+      )
+    ).subscribe(res => {
+      this.classSearching = false;
+      this.classSuggestions = res?.body ?? [];
+      this.showSuggestions = this.classSuggestions.length > 0;
+    });
+  }
+
+  private restoreSelectedClass() {
+    const classRef = this.trademark?.trademarkClasses?.[0];
+    if (!classRef?.id) return;
+    this.trademarkClassService.find(classRef.id).subscribe(res => {
+      if (res.body) {
+        this.selectedClass = res.body;
+      }
+    });
+  }
+
+  /** Strip the trailing "*" WIPO base-term marker for display (e.g. "clothing*" → "clothing"). */
+  displayKeyword(keyword?: string | null): string {
+    return (keyword ?? '').replace(/\*+$/, '').trim();
+  }
+
+  selectClassSuggestion(suggestion: ITrademarkClass) {
+    this.selectedClass = suggestion;
+    this.classSuggestions = [];
+    this.showSuggestions = false;
+    this.brandForm.patchValue({ businessScope: '' });
+  }
+
+  clearSelectedClass() {
+    this.selectedClass = null;
+  }
+
+  hideSuggestionsSoon() {
+    // Delay so a click on a suggestion registers before the list hides.
+    setTimeout(() => this.showSuggestions = false, 180);
+  }
+
   private createDefaultTrademark() {
-    if (!this.lead?.id) return;
+    const isAuthorized = this.authService.isAuthorizedUser(['ROLE_USER', 'ROLE_ADMIN']).hasRoleAccess;
+    if (!this.lead?.id && !isAuthorized) return;
+
     this.isInitializing = true;
     this.loadingService.show();
 
+    // Anonymous onboarding attaches the application to its lead. An authenticated
+    // user starting a filing from the dashboard has no lead, so we attach it to
+    // their profile instead — the backend then fills in the applicant details
+    // (name, email, phone) and the application shows up on their dashboard.
+    if (this.lead?.id) {
+      this.persistNewTrademark({ lead: { id: this.lead.id } });
+      return;
+    }
+
+    this.dataService.getCurrentUser().subscribe({
+      next: (res) => {
+        const profileId = res.body?.id;
+        if (!profileId) {
+          this.failInitialization();
+          return;
+        }
+        this.persistNewTrademark({ user: { id: profileId } });
+      },
+      error: () => this.failInitialization()
+    });
+  }
+
+  private persistNewTrademark(owner: Pick<NewTrademark, 'lead' | 'user'>) {
     const newTm: NewTrademark = {
       id: null,
       type: TrademarkType.TRADEMARK as keyof typeof TrademarkType,
-      lead: { id: this.lead.id },
+      ...owner,
     };
 
     this.trademarkService.create(newTm).subscribe({
       next: (res) => {
         this.trademark = res.body;
         this.sessionStorageService.setObject('trademark', res.body);
+        this.onboardingStateService.saveState({
+          step: 'brand-details',
+          lead: this.lead,
+          trademarkId: res.body?.id ?? null
+        });
         this.isInitializing = false;
         this.loadingService.hide();
       },
-      error: () => {
-        this.isInitializing = false;
-        this.loadingService.hide();
-        this.toastService.error('Failed to initialize your application. Please try again.');
-      }
+      error: () => this.failInitialization()
     });
+  }
+
+  private failInitialization() {
+    this.isInitializing = false;
+    this.loadingService.hide();
+    this.toastService.error('Failed to initialize your application. Please try again.');
   }
 
   onFileChange(event: Event) {
@@ -192,10 +280,6 @@ export class TmBrandDetailsComponent implements OnInit {
     }
   }
 
-  selectPlan(plan: ITrademarkPlan) {
-    this.selectedPlan = plan;
-  }
-
   get logoPreviewSrc(): string | null {
     if (this.uploadedFileBase64 && this.uploadedFileContentType) {
       return `data:${this.uploadedFileContentType};base64,${this.uploadedFileBase64}`;
@@ -219,13 +303,9 @@ export class TmBrandDetailsComponent implements OnInit {
     this.onClickValidation = true;
     this.brandForm.markAllAsTouched();
 
-    if (this.brandForm.invalid) return;
+    if (this.brandForm.get('brandName')?.invalid) return;
     if (!this.trademark?.id) {
       this.toastService.warning('Please wait while we set up your application.');
-      return;
-    }
-    if (!this.selectedPlan) {
-      this.toastService.error('Please select a plan to continue.');
       return;
     }
 
@@ -236,11 +316,17 @@ export class TmBrandDetailsComponent implements OnInit {
       ? TrademarkType.TRADEMARK_WITH_IMAGE as keyof typeof TrademarkType
       : TrademarkType.TRADEMARK as keyof typeof TrademarkType;
 
+    // Attach the default plan silently — fees are reviewed on the checkout step.
+    const plan = this.trademark.trademarkPlan?.id
+      ? this.trademark.trademarkPlan
+      : (this.plans.length > 0 ? { id: this.plans[0].id, name: this.plans[0].name } : null);
+
     const trademarkUpdate: Partial<ITrademark> & Pick<ITrademark, 'id'> = {
       id: this.trademark.id,
       name: this.brandForm.get('brandName')!.value!,
       type,
-      trademarkPlan: { id: this.selectedPlan.id, name: this.selectedPlan.name },
+      ...(plan ? { trademarkPlan: plan } : {}),
+      ...(this.selectedClass ? { trademarkClasses: [{ id: this.selectedClass.id }], tmClass: this.selectedClass.tmClass } : {}),
       ...(this.lead?.id ? { lead: { id: this.lead.id } } : {}),
     };
 
@@ -260,23 +346,19 @@ export class TmBrandDetailsComponent implements OnInit {
     };
 
     this.trademarkService.partialUpdateWithLogo(payload).pipe(
-      switchMap((tm) => {
-        if (this.existingPayment?.id) {
-          this.existingPayment.amount = this.selectedPlan!.fees;
-          return this.paymentService.update(this.existingPayment);
-        }
-        return this.paymentService.createPaymentFromTrademark(tm.body!.id);
-      }),
       finalize(() => {
         this.isSubmitting = false;
         this.loadingService.hide();
       })
     ).subscribe({
-      next: (payment) => {
-        this.sessionStorageService.set('payment_id', payment.body?.id);
-        this.router.navigate(['trademark-registration/checkout'], {
-          queryParams: { order_id: payment.body?.orderId }
+      next: () => {
+        this.onboardingStateService.saveState({
+          step: 'business-details',
+          lead: this.lead,
+          trademarkId: this.trademark!.id,
+          brandName: this.brandForm.get('brandName')!.value
         });
+        this.router.navigateByUrl('trademark-registration/business-details');
       },
       error: () => {
         this.toastService.error('Something went wrong. Please try again.');

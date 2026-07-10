@@ -1,0 +1,35 @@
+<div class="doc-slot-row" [ngClass]="{'doc-uploaded': slot.document}">
+  <div class="doc-slot-icon">
+    <svg *ngIf="!slot.document" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+    </svg>
+    <svg *ngIf="slot.document" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </div>
+  <div class="doc-slot-info">
+    <span class="doc-slot-label">{{ slot.label }}</span>
+    <span class="doc-slot-hint" *ngIf="!slot.document">{{ slot.hint }}</span>
+    <span class="doc-slot-filename" *ngIf="slot.document">{{ slot.document.fileName }}</span>
+  </div>
+  <div class="doc-slot-actions">
+    <label class="btn-upload" [ngClass]="{'disabled': slot.uploading}">
+      <ng-container *ngIf="!slot.uploading">{{ slot.document ? 'Replace' : 'Upload' }}</ng-container>
+      <ng-container *ngIf="slot.uploading">Uploading…</ng-container>
+      <input type="file" accept=".png,.jpg,.jpeg,.pdf" [disabled]="slot.uploading" (change)="onFileChange($event)">
+    </label>
+    <button
+      *ngIf="slot.document && !slot.uploading"
+      type="button"
+      class="btn-doc-remove"
+      (click)="remove()"
+      aria-label="Remove document"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+</div>

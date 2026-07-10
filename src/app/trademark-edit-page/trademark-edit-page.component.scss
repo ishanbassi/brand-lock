@@ -1,28 +1,312 @@
-::ng-deep{
-    body{
-        background:#eee;
+// ══════════════════════════════════════════════════════════════════════
+//  Trademark edit page. Tokens (--tmx-*) are inherited from the portal
+//  shell host; fallbacks keep the component sane if rendered standalone.
+//  Visual language matches the dashboard (dossier / journey / panel).
+// ══════════════════════════════════════════════════════════════════════
+
+:host {
+  --ink:   var(--tmx-ink, #0f1d33);
+  --ink2:  var(--tmx-ink-2, #26364f);
+  --muted: var(--tmx-muted, #5b6b82);
+  --faint: var(--tmx-faint, #8a99ad);
+  --line:  var(--tmx-line, #dce4ef);
+  --line2: var(--tmx-line-soft, #eaeff6);
+  --panel: var(--tmx-panel, #fff);
+  --paper: var(--tmx-paper, #eef2f8);
+  --blue:  var(--tmx-blue, #1e56d6);
+  --blue-deep: var(--tmx-blue-deep, #16337e);
+  --blue-soft: var(--tmx-blue-soft, #e7eefc);
+  --green: var(--tmx-green, #157f52);
+  --green-soft: var(--tmx-green-soft, #e3f2e9);
+  --amber: var(--tmx-amber, #92500e);
+  --amber-soft: var(--tmx-amber-soft, #fdf3d8);
+  --red: var(--tmx-red, #a4302b);
+  --radius: var(--tmx-radius, 16px);
+  --radius-s: var(--tmx-radius-s, 10px);
+  --shadow: var(--tmx-shadow, 0 1px 2px rgba(15,29,51,.06), 0 10px 30px rgba(15,29,51,.05));
+  --serif: var(--font-serif, Georgia, serif);
+  --mono:  var(--font-mono, ui-monospace, monospace);
+
+  display: block;
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+
+.edit-page { display: flex; flex-direction: column; gap: 18px; }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 600;
+  text-decoration: none;
+  svg { width: 16px; height: 16px; }
+  &:hover { color: var(--blue); }
+}
+
+.card-eyebrow {
+  margin: 0 0 6px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+// ── Status dossier (read-only Registry facts + journey) ──────────────
+.dossier {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  box-shadow: var(--shadow);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid var(--line2);
+    border-radius: calc(var(--radius) - 6px);
+    pointer-events: none;
+  }
+  > * { position: relative; }
+}
+.dossier-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.dossier-id { min-width: 0; }
+.mark-name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 550;
+  font-size: 1.7rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.mark-sym { font-size: .8rem; color: var(--blue); vertical-align: super; margin-left: 2px; font-family: 'Inter', sans-serif; }
+.mark-meta {
+  margin: 8px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--muted);
+  span { position: relative; }
+  span + span::before { content: "·"; position: absolute; left: -9px; color: var(--faint); }
+}
+
+.status-pill {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  &.active     { background: var(--blue-soft); color: var(--blue-deep); }
+  &.in-process { background: var(--amber-soft); color: var(--amber); }
+  &.registered { background: var(--green-soft); color: var(--green); }
+  &.failure    { background: #e9edf3; color: #556; }
+}
+
+.journey { display: flex; align-items: flex-start; margin-bottom: 20px; overflow-x: auto; padding-bottom: 2px; }
+.j-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 62px; flex-shrink: 0; }
+.j-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  display: grid; place-items: center;
+  color: #fff;
+  svg { width: 15px; height: 15px; }
+}
+.j-label { font-size: .72rem; font-weight: 550; color: var(--faint); text-align: center; }
+.j-line { flex: 1; height: 2px; background: var(--line); margin-top: 13px; border-radius: 2px; min-width: 24px; &.done { background: var(--green); } }
+
+.j-stage.done    .j-dot { background: var(--green); border-color: var(--green); }
+.j-stage.done    .j-label { color: var(--ink2); }
+.j-stage.current .j-dot { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 0 4px rgba(30,86,214,.15); }
+.j-stage.current .j-label { color: var(--blue-deep); font-weight: 650; }
+
+.dossier-note {
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--ink2);
+  background: var(--paper);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────
+.edit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+}
+.edit-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.edit-rail { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 88px; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.panel-title { margin: 0 0 16px; font-size: 1.02rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.panel-hint { margin: -10px 0 14px; font-size: .82rem; color: var(--muted); line-height: 1.4; }
+
+// ── Form fields (native inputs, no Material) ───────────────────────────
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 20px;
+}
+.field-group {
+  margin-bottom: 16px;
+  min-width: 0;
+  &.full { grid-column: 1 / -1; }
+}
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--ink2);
+}
+.field-input {
+  width: 100%;
+  padding: 10px 13px;
+  font-size: .92rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-s);
+  transition: border-color .15s, box-shadow .15s;
+  appearance: none;
+
+  &::placeholder { color: var(--faint); }
+
+  &:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+  }
+
+  &:disabled {
+    background: var(--line2);
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+}
+textarea.field-input { resize: vertical; min-height: 76px; }
+select.field-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%235b6b82' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+// The phone-input's inner native input is styled via its own ::ng-deep hook so
+// it visually matches the native .field-input fields around it.
+app-phone-input {
+  display: block;
+  ::ng-deep .iti { width: 100%; }
+  ::ng-deep input {
+    width: 100%;
+    padding: 10px 13px 10px 52px;
+    font-size: .92rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-s);
+    transition: border-color .15s, box-shadow .15s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-soft);
     }
+  }
 }
 
-.card {
-    box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+// ── Documents ─────────────────────────────────────────────────────────
+.doc-slot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 0 solid rgba(0,0,0,.125);
-    border-radius: 1rem;
+// ── Actions ───────────────────────────────────────────────────────────
+.edit-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn-primary, .btn-secondary {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 999px;
+  font-weight: 650;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .15s, transform .1s, border-color .15s;
+  text-align: center;
+  text-decoration: none;
+}
+.btn-primary {
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(30,86,214,.3);
+  &:hover:not(:disabled) { background: var(--blue-deep); }
+  &:active:not(:disabled) { transform: translateY(1px); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
+}
+.btn-secondary {
+  border: 1.5px solid var(--line);
+  background: var(--panel);
+  color: var(--ink2);
+  &:hover { border-color: var(--faint); background: var(--line2); }
 }
 
-.card-body {
-    -webkit-box-flex: 1;
-    -ms-flex: 1 1 auto;
-    flex: 1 1 auto;
-    padding: 1.5rem 1.5rem;
+// ── Responsive ──────────────────────────────────────────────────────────
+@media (max-width: 1080px) {
+  .edit-grid { grid-template-columns: 1fr; }
+  .edit-rail { position: static; }
+}
+@media (max-width: 640px) {
+  .dossier { padding: 20px 18px; }
+  .dossier-head { flex-direction: column; align-items: flex-start; }
+  .mark-name { font-size: 1.4rem; }
+  .panel { padding: 18px; }
+  .field-grid { grid-template-columns: 1fr; }
+  .edit-actions { flex-direction: column-reverse; }
+}
+
+// ── Quality floor: keyboard focus + reduced motion ──────────────────────
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }

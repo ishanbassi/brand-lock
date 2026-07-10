@@ -106,7 +106,22 @@ export class ServiceCheckoutPageComponent implements OnInit {
         contact: this.applicantPhone
       },
       modal: { escape: false },
-      theme: { color: '#001F4D' }
+      theme: { color: '#001F4D' },
+      config: {
+        display: {
+          blocks: {
+            payLater: {
+              name: 'Pay in installments',
+              instruments: [
+                { method: 'emi' },
+                { method: 'paylater' }
+              ]
+            }
+          },
+          sequence: ['block.payLater', 'block.other'],
+          preferences: { show_default_blocks: true }
+        }
+      }
     };
 
     options.handler = (response: RazorPayOrderResponse) => {

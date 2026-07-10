@@ -1,0 +1,78 @@
+<div class="admin-page">
+
+  <a class="back-link" routerLink="/admin-portal/leads">← Back to leads</a>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="detail-card"><div class="skeleton-line" style="height: 180px;"></div></div>
+  } @else if (lead()) {
+    @let l = lead()!;
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ l.fullName || 'Lead #' + l.id }}</h1>
+        <p class="page-sub">
+          <span class="badge" [class]="badgeClass(l.status)">{{ statusLabel(l.status) }}</span>
+          @if (l.brandName) { · {{ l.brandName }} }
+        </p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- DETAILS -->
+      <div class="detail-card">
+        <h2>Lead details</h2>
+        <div class="field-row"><span class="field-label">Full name</span><span class="field-value">{{ l.fullName || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Phone</span><span class="field-value">{{ l.phoneNumber || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Email</span><span class="field-value">{{ l.email || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">City</span><span class="field-value">{{ l.city || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Brand</span><span class="field-value">{{ l.brandName || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Package</span><span class="field-value">{{ l.selectedPackage || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">TM class</span><span class="field-value">{{ l.tmClass || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Contact via</span><span class="field-value">{{ l.contactMethod || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Source</span><span class="field-value">{{ l.leadSource || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Created</span><span class="field-value">{{ $any(l.createdDate) | date:'dd MMM yyyy, HH:mm' }}</span></div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="detail-card">
+        <h2>Manage</h2>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" [(ngModel)]="statusModel">
+            @for (opt of statusOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Assigned to</label>
+          <select class="form-control" [(ngModel)]="assigneeModel">
+            <option value="">Unassigned</option>
+            @for (emp of employees(); track emp.id) {
+              <option [value]="emp.id">{{ emp.fullName }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Comments</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="commentsModel"
+                    placeholder="Internal notes about this lead…"></textarea>
+        </div>
+
+        <button class="btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

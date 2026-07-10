@@ -101,7 +101,7 @@ export class TrademarkPlansPageComponent implements OnInit {
     if(this.anonymousUser){
       const isInitialOnboarding = this.sessionStorageService.get("initial-onboarding");
       if(!isInitialOnboarding){
-       this.router.navigateByUrl("portal/trademark-registration/type")
+       this.router.navigateByUrl("trademark-registration/brand-details")
         return
       }
       this.router.navigateByUrl("trademark-registration/step-1")

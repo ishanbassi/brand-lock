@@ -1,0 +1,95 @@
+<div class="profile-page">
+  <div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-sub">Manage your professional information and contact details.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your profile…</p>
+    </div>
+  } @else {
+    <div class="profile-layout">
+
+      <!-- AVATAR CARD -->
+      <div class="avatar-card">
+        <div class="avatar-circle">{{ initials }}</div>
+        <div class="avatar-name">{{ profile()?.firstName }} {{ profile()?.lastName }}</div>
+        <div class="avatar-email">{{ profile()?.email }}</div>
+        @if (profile()?.profileStatus) {
+          <span class="status-pill" [class]="'status--' + profile()!.profileStatus!.toLowerCase()">
+            {{ profile()!.profileStatus }}
+          </span>
+        }
+        <div class="avatar-meta">
+          @if (profile()?.companyName) {
+            <div class="meta-row"><span class="meta-icon">🏢</span> {{ profile()!.companyName }}</div>
+          }
+          @if (profile()?.barRegNo) {
+            <div class="meta-row"><span class="meta-icon">⚖️</span> Bar Reg. {{ profile()!.barRegNo }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- EDIT FORM -->
+      <form class="form-card" (ngSubmit)="save()">
+
+        @if (error()) {
+          <div class="alert-error">{{ error() }}</div>
+        }
+
+        @if (saved()) {
+          <div class="alert-success">✅ Profile updated successfully.</div>
+        }
+
+        <div class="section-title">Personal Information</div>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">First Name</label>
+            <input type="text" class="field-input" [(ngModel)]="form.firstName" name="firstName" />
+          </div>
+          <div class="field">
+            <label class="field-label">Last Name</label>
+            <input type="text" class="field-input" [(ngModel)]="form.lastName" name="lastName" />
+          </div>
+          <div class="field">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" class="field-input" [(ngModel)]="form.phoneNumber" name="phoneNumber" placeholder="+91 98765 43210" />
+          </div>
+        </div>
+
+        <div class="section-title">Professional Details</div>
+        <div class="form-grid">
+          <div class="field full-span">
+            <label class="field-label">Company / Firm Name</label>
+            <input type="text" class="field-input" [(ngModel)]="form.companyName" name="companyName" placeholder="Your law firm or practice name" />
+          </div>
+          <div class="field">
+            <label class="field-label">Bar Registration No.</label>
+            <input type="text" class="field-input" [(ngModel)]="form.barRegNo" name="barRegNo" placeholder="e.g. BAR/2023/12345" />
+          </div>
+          <div class="field">
+            <label class="field-label">Website</label>
+            <input type="url" class="field-input" [(ngModel)]="form.website" name="website" placeholder="https://yourfirm.com" />
+          </div>
+          <div class="field full-span">
+            <label class="field-label">Office Address</label>
+            <textarea class="field-textarea" [(ngModel)]="form.address" name="address" rows="2" placeholder="Your office address"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span> Saving…
+            } @else {
+              Save Changes
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+</div>

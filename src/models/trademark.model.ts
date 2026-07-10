@@ -38,6 +38,7 @@ export interface ITrademark {
   phoneNumber?: string | null;
   email?: string | null;
   organizationType?: string | null;
+  filingMode?: string | null;
   trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
   trademarkPlan?: Pick<ITrademarkPlan, 'id' | 'name'> | null;
   documents?: Pick<IDocuments, 'id'| 'documentType'>[] | null;

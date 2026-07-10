@@ -88,6 +88,26 @@ export class TrademarkService {
     .patch<RestTrademark>(`${this.resourceUrl}/onboarding/${this.getTrademarkIdentifier(trademarkWithLogo.trademark)}`, trademarkWithLogo, { observe: 'response' })
     .pipe(map(res => this.convertResponseFromServer(res)));
   }
+
+  getOnboardingDocuments(trademarkId: number): Observable<HttpResponse<IDocuments[]>> {
+    return this.http
+      .get<RestDocuments[]>(`${this.resourceUrl}/onboarding/${trademarkId}/documents`, { observe: 'response' })
+      .pipe(map(res => res.clone({
+        body: res.body ? res.body.map(item => this.documentsService.convertDateFromServer(item)) : null,
+      })));
+  }
+
+  uploadOnboardingDocument(trademarkId: number, document: Partial<IDocuments>): Observable<HttpResponse<IDocuments>> {
+    return this.http
+      .post<RestDocuments>(`${this.resourceUrl}/onboarding/${trademarkId}/documents`, document, { observe: 'response' })
+      .pipe(map(res => res.clone({
+        body: res.body ? this.documentsService.convertDateFromServer(res.body) : null,
+      })));
+  }
+
+  deleteOnboardingDocument(trademarkId: number, documentId: number): Observable<HttpResponse<{}>> {
+    return this.http.delete(`${this.resourceUrl}/onboarding/${trademarkId}/documents/${documentId}`, { observe: 'response' });
+  }
   
   liveSearch(query:string): Observable<EntityArrayResponseType> {
     return this.http

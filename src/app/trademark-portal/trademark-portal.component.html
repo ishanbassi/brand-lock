@@ -1,47 +1,99 @@
-<app-dashboard-header></app-dashboard-header>
-<mat-drawer-container class="dashboard-drawer-container" [ngClass]="!this.matDrawerOpened ? 'sidenav-closed' :''">
-  <mat-drawer mode="side" [opened]="matDrawerOpened" class="dashboard-mat-drawer">
-    <div>
-     
-    <div class="sidenav-content sidenav-menu-content">
-      <a class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-        [routerLink]="['/portal/dashboard']">
-        <div class="menu-item-heading  dashboard-margin">
-          <div class="dashboard-icon"><span>
-              <img src="/assets/images/icons/dashboard.svg" alt="dashboard-icon">
-        </span>
-        </div>
-        <p>Dashboard</p></div>
-      </a>
-      <a class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-        [routerLink]="['/portal/trademark-registration/type']">
-        <div class="menu-item-heading  dashboard-margin">
-          <div class="dashboard-icon"><span>
-              <img src="/assets/images/icons/documents.svg" alt="dashboard-icon">
-        </span>
-        </div>
-        <p>File New Trademark</p></div>
-      </a>
-      <a class="menu-item active" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-        [routerLink]="['/portal/upload-documents']">
-        <div class="menu-item-heading  dashboard-margin">
-          <div class="dashboard-icon"><span>
-              <img src="/assets/images/icons/documents.svg" alt="dashboard-icon">
-        </span>
-        </div>
-        <p>Upload Documents</p></div>
-      </a>
-      
-     
+<div class="portal-shell" [class.nav-open]="mobileNavOpen()">
 
-      
+  <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+  <aside class="portal-sidebar">
+    <a routerLink="/portal/dashboard" class="brand" aria-label="Trademarx home">
+      <span class="brand-mark">trade</span><span class="brand-mark alt">marx</span><span class="brand-dot">.in</span>
+    </a>
+
+    <nav class="side-nav" aria-label="Primary">
+      <span class="nav-eyebrow">Filings</span>
+      @for (item of navItems; track item.route) {
+        <a [routerLink]="item.route"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: item.exact }"
+           class="nav-link">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+               [innerHTML]="item.iconSafe"></svg>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+
+      <span class="nav-eyebrow">Explore services</span>
+      @for (item of serviceLinks; track item.route) {
+        <a [routerLink]="item.route" class="nav-link subtle">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+               [innerHTML]="item.iconSafe"></svg>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="side-support">
+      <p class="support-title">Need a hand?</p>
+      <p class="support-line">Talk to your attorney</p>
+      <a href="tel:+916239771006" class="support-phone">+91 62397 71006</a>
     </div>
-    
-    </div>
-  </mat-drawer>
-  <mat-drawer-content>
-    <div class="dashboard-drawer-content">
-         <router-outlet></router-outlet>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+  </aside>
+
+  <!-- ── Main column ─────────────────────────────────────────────────── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <button class="hamburger" type="button" (click)="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="topbar-greeting">
+        <span class="greet-label">{{ greeting }},</span>
+        <span class="greet-name">{{ greetingName }}</span>
+      </div>
+
+      <div class="topbar-actions">
+        <a routerLink="/trademark-registration/brand-details" class="file-btn">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round"><path d="M10 5v10M5 10h10"/></svg>
+          <span>File new trademark</span>
+        </a>
+
+        <button class="user-chip" type="button" (click)="toggleUserMenu($event)"
+                [class.open]="userMenuOpen()" aria-label="Account">
+          <span class="user-avatar">{{ userInitials }}</span>
+          <svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round"><path d="m6 8 4 4 4-4"/></svg>
+        </button>
+
+        @if (userMenuOpen()) {
+          <div class="user-menu">
+            <div class="user-menu-head">
+              <p class="um-name">{{ user?.firstName }} {{ user?.lastName }}</p>
+              <p class="um-email">{{ user?.email }}</p>
+            </div>
+            <button class="um-item" type="button" (click)="logout()">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 16H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3M13 13l3-3-3-3M16 10H8"/>
+              </svg>
+              Sign out
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <main class="portal-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Dark scrim behind the mobile drawer -->
+  <button class="portal-scrim" type="button" aria-label="Close menu"
+          (click)="mobileNavOpen.set(false)"></button>
+
+  <!-- Invisible click-catcher that closes the account menu -->
+  @if (userMenuOpen()) {
+    <button class="menu-backdrop" type="button" aria-label="Close account menu"
+            (click)="userMenuOpen.set(false)"></button>
+  }
+</div>

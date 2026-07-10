@@ -1,0 +1,171 @@
+<div class="dashboard">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ greeting }}, {{ agentFirstName }} 👋</h1>
+      <p class="page-sub">Here's your portfolio at a glance</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
+        📤 Import Excel
+      </a>
+      <a routerLink="/agent-portal/portfolio/add" class="btn-primary">
+        ➕ Add Trademark
+      </a>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  @if (loading()) {
+    <div class="loading-grid">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="stat-card skeleton"></div>
+      }
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- STATS CARDS -->
+  @if (stats(); as s) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--total">📂</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.totalTrademarks }}</div>
+          <div class="stat-label">Total Trademarks</div>
+        </div>
+        <a routerLink="/agent-portal/portfolio" class="stat-link">View all →</a>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--active">✅</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.activeTrademarks }}</div>
+          <div class="stat-label">Active / Registered</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--warning">
+        <div class="stat-icon stat-icon--expiring">⏰</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.expiringIn90Days }}</div>
+          <div class="stat-label">Expiring in 90 days</div>
+        </div>
+        @if (s.expiringIn90Days > 0) {
+          <span class="stat-badge badge-warn">Action needed</span>
+        }
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--watch">👁</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.watchlistCount }}</div>
+          <div class="stat-label">Watch Alerts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN LAYOUT -->
+    <div class="content-grid">
+
+      <!-- RECENT ADDITIONS -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">Recent Additions</h2>
+          <a routerLink="/agent-portal/portfolio" class="card-link">See all</a>
+        </div>
+        @if (s.recentAdditions.length === 0) {
+          <div class="empty-state">
+            <p>No trademarks yet.</p>
+            <a routerLink="/agent-portal/portfolio/upload" class="btn-primary btn-sm">Import your first portfolio →</a>
+          </div>
+        } @else {
+          <div class="trademark-list">
+            @for (tm of s.recentAdditions; track tm.id; let i = $index) {
+              <div class="tm-row">
+                <div class="tm-index">{{ i + 1 }}</div>
+                <div class="tm-main">
+                  <div class="tm-name">{{ tm.name || '—' }}</div>
+                  <div class="tm-meta">
+                    @if (tm.applicationNo) { <span>No. {{ tm.applicationNo }}</span> }
+                    @if (tm.tmClass) { <span>Class {{ tm.tmClass }}</span> }
+                    @if (tm.proprietorName) { <span>{{ tm.proprietorName }}</span> }
+                  </div>
+                </div>
+                <span class="status-badge" [class]="'status--' + getStatusBadge(tm.trademarkStatus)">
+                  {{ tm.trademarkStatus || 'Unknown' }}
+                </span>
+                <a [routerLink]="['/agent-portal/portfolio', tm.id, 'watch']" class="watch-btn" title="Find conflicts">👁</a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- EXPIRING SOON -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">Expiring Soon</h2>
+          <span class="card-sub">Within 90 days</span>
+        </div>
+        @if (s.expiringSoon.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">🎉</span>
+            <p>No renewals due in the next 90 days.</p>
+          </div>
+        } @else {
+          <div class="trademark-list">
+            @for (tm of s.expiringSoon; track tm.id) {
+              <div class="tm-row">
+                <div class="tm-main">
+                  <div class="tm-name">{{ tm.name || '—' }}</div>
+                  <div class="tm-meta">
+                    @if (tm.applicationNo) { <span>No. {{ tm.applicationNo }}</span> }
+                    @if (tm.proprietorName) { <span>{{ tm.proprietorName }}</span> }
+                  </div>
+                </div>
+                <div class="renewal-info">
+                  <span class="renewal-label">Renewal</span>
+                  <span class="renewal-date warn">{{ tm.renewalDate | date:'dd MMM yyyy' }}</span>
+                </div>
+                <a [routerLink]="['/agent-portal/portfolio', tm.id, 'edit']" class="edit-btn">Edit</a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+
+    <!-- QUICK ACTIONS BANNER -->
+    <div class="quick-actions">
+      <div class="qa-item" routerLink="/agent-portal/portfolio/upload">
+        <span class="qa-icon">📤</span>
+        <div class="qa-text">
+          <strong>Import from Excel</strong>
+          <p>Upload .xlsx or .xls in seconds</p>
+        </div>
+      </div>
+      <div class="qa-item" routerLink="/agent-portal/portfolio">
+        <span class="qa-icon">🔍</span>
+        <div class="qa-text">
+          <strong>Search Portfolio</strong>
+          <p>Filter by class, status or name</p>
+        </div>
+      </div>
+      <div class="qa-item" routerLink="/agent-portal/profile">
+        <span class="qa-icon">👤</span>
+        <div class="qa-text">
+          <strong>Update Profile</strong>
+          <p>Add your firm details & credentials</p>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

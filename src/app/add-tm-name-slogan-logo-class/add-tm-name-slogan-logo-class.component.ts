@@ -86,7 +86,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
       this.router.navigate(['trademark-registration/step-2']);
       return;
     }
-    this.router.navigate(['portal/trademark-registration/type']);
+    this.router.navigate(['trademark-registration/brand-details']);
 
 
     
@@ -142,7 +142,7 @@ export class AddTmNameSloganLogoClassComponent implements OnInit {
         this.isSubmitting = false;
         this.loadingService.hide();
         this.sessionStorageService.setObject('trademark', trademark.body);
-        this.router.navigate(['trademark-registration/select-plan'], {queryParams: {application:trademark.body?.id}});
+        this.router.navigate(['trademark-registration/select-class'], {queryParams: {application:trademark.body?.id}});
       },
       error: () => {
         this.isSubmitting = false;

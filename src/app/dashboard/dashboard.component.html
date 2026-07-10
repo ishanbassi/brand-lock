@@ -1,218 +1,236 @@
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="dash">
 
-<div class="container">
-    <div class="row">
-        <div class="col-xl-8 col-xxl-6 col col-12 col-sm-12">
-
-
-            <div class="my-trademark-section">
-                <div class="container">
-                    <div class="row lg:flex-nowrap">
-
-
-                        <div class="col col-12 col-sm-12">
-
-                            <div class="row lg:flex-nowrap">
-                                <div class="col col-12 col-sm-12 mb-3">
-                                    <div class="e-panel card ">
-                                        <div class="card-body">
-                                            <div class="card-title">
-                                            </div>
-                                            <div class="e-table">
-                                                <div class="table-responsive table-lg mt-3">
-                                                    <h3>Recent Applications</h3>
-                                                    <table class="table recent-application-table">
-                                                        <thead>
-                                                            <tr>
-
-                                                                <th class="max-width">Trademark</th>
-                                                                <th class="max-width">Class</th>
-
-                                                                <th class="sortable">Application No.</th>
-                                                                <th>Status </th>
-                                                                <th>Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                            <tr
-                                                                *ngFor="let applications of dashboardStats?.recentApplications">
-
-
-                                                                <td class="text-nowrap align-middle">
-                                                                    {{applications.name}}
-                                                                </td>
-                                                                <td class="text-nowrap align-middle tm-class">
-                                                                    {{applications.tmClass || '-'}}</td>
-                                                                <td class="text-nowrap align-middle application-no">
-                                                                    <span>{{applications.applicationNo || 'Awaiting filing'}}</span></td>
-                                                                <td class="text-center align-middle review-status">
-                                                                    <span [ngClass]="{
-                                                                        'active': activeStatuses.includes(applications?.trademarkStatus!),
-                                                                        'in-process': inProcessStatuses.includes(applications?.trademarkStatus!),
-                                                                        'failure-status': failureStatuses.includes(applications?.trademarkStatus!)
-                                                                    }">
-
-                                                                        {{applications.trademarkStatus || 'UNKNOWN'}}
-
-                                                                    </span>
-                                                                </td>
-                                                                <td class="text-center align-middle">
-                                                                    <div class="btn-group align-top">
-                                                                        <button class="btn btn-primary" type="button"
-                                                                        [routerLink]="`/portal/trademark/edit/${applications.id}`">View</button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-            <div class="trademark-application-stats">
-                <div class="container">
-                    <div class="row lg:flex-nowrap">
-
-
-                        <div class="col">
-
-                            <div class="row lg:flex-nowrap">
-                                <div class="col mb-3">
-                                    <div class="e-panel card ">
-                                        <div class="card-body">
-                                            <div class="card-title">
-                                            </div>
-                                            <div class="e-table">
-                                                <div class="table-responsive table-lg mt-3">
-                                                    <h3>Application Stats</h3>
-                                                    <table class="table recent-application-table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th *ngFor="let stat of dashboardStats?.stats">
-                                                                    {{stat.trademarkStatus | trademarkStatus}}
-                                                                </th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                            <tr>
-
-
-                                                                <td *ngFor="let stat of dashboardStats?.stats"
-                                                                    class="text-nowrap align-middle">
-                                                                    {{stat.count}}
-                                                                </td>
-
-                                                            </tr>
-
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
+  <!-- ══ Portfolio ledger ═══════════════════════════════════════════════ -->
+  @if (loaded && hasApplications) {
+    <section class="ledger">
+      <div class="ledger-intro">
+        <p class="ledger-eyebrow">Your IP portfolio</p>
+        <h1 class="ledger-title">{{ greeting }}, {{ firstName }}.</h1>
+        <p class="ledger-sub">Here’s where your brand protection stands today.</p>
+      </div>
+      <div class="ledger-figures">
+        <div class="fig">
+          <span class="fig-num">{{ protectedCount }}</span>
+          <span class="fig-label">Protected</span>
         </div>
-        <div class="col-12 col-sm-12 col-xl-4">
-            <div class="notification-section dashboard-card mb-3">
-                <div class="section-header">
-                    <h3>Pending Actions</h3>
-                    <span class="badge-count" *ngIf="dashboardStats?.pendingTasks?.length">
-                        {{dashboardStats?.pendingTasks!.length}}
-                    </span>
-                </div>
-
-                <div class="notifications">
-                    <div class="" *ngFor="let tasks of getDisplayedTasks(); let i = index">
-                        <a (click)="openPendingTask(tasks.link)"
-                         class="notification-link">
-                            <div class="notification-item">
-                                <div class="notification-icon">
-                                    
-                          <i [ngClass]="
-                            tasks.type === 'DOCUMENT_UPLOAD'    ? ['fa-regular', 'fa-file'] :
-                            tasks.type === 'PAYMENT_PENDING'    ? ['fa-solid', 'fa-indian-rupee-sign'] :
-                            tasks.type === 'DETAILS_MISSING'    ? ['fa-solid', 'fa-trademark'] :
-                            tasks.type === 'PLAN_PENDING'       ? ['fa-solid', 'fa-exclamation'] :
-                            []
-                        "></i>
-                        </div>
-                        <div class="notification-content">
-                            <h4 class="notification-title">{{tasks.title}}</h4>
-                            <p class="notification-description">{{tasks.description}}</p>
-                        </div>
-                        <div class="notification-action">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                            </div>
-                        </a>
-                        
-                    </div>
-
-                    <div class="empty-state"
-                        *ngIf="!dashboardStats?.pendingTasks || dashboardStats?.pendingTasks?.length === 0">
-                        <i class="fa-regular fa-circle-check"></i>
-                        <p>No pending actions</p>
-                    </div>
-
-                    <!-- Show More/Less Button -->
-                    <button class="show-more-btn" *ngIf="dashboardStats?.pendingTasks!.length > maxVisibleTasks"
-                        (click)="toggleShowAll()">
-                        <span *ngIf="!showAllTasks">
-                            <i class="fa-solid fa-chevron-down"></i>
-                            Show More ({{dashboardStats?.pendingTasks!.length - maxVisibleTasks}} more)
-                        </span>
-                        <span *ngIf="showAllTasks">
-                            <i class="fa-solid fa-chevron-up"></i>
-                            Show Less
-                        </span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="">
-                <div class="card m-b-30">
-                    <div class="card-body row">
-                        <h3>Agent Assigned</h3>
-                        <div class="col-4">
-                            <img src="/assets/images/icons/agent.png" alt=""
-                                    class="img-fluid rounded-circle w-60">
-                        </div>
-                        <div class="col-8 card-title align-self-center mb-0">
-                            <h5>Name: Ishan Bassi</h5>
-                            <p class="m-0">Trademark Attorney & Expert </p>
-                        </div>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> <i class="fa fa-envelope float-right"></i><span
-                                class="email">Email</span> : <br> <a href="mailto:ishanbassi23@gmail.com">ishanbassi23&#64;gmail.com</a></li>
-                        <li class="list-group-item"><i class="fa fa-phone float-right"></i><span class="phone">Phone
-                            </span>:<br> +91 6239771006</li>
-                    </ul>
-
-                </div>
-            </div>
+        <div class="fig">
+          <span class="fig-num">{{ inProgressCount }}</span>
+          <span class="fig-label">In progress</span>
         </div>
+        <div class="fig" [class.alert]="actionCount > 0">
+          <span class="fig-num">{{ actionCount }}</span>
+          <span class="fig-label">Needs your action</span>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ══ Empty state (new user, no filings) ════════════════════════════ -->
+  @if (loaded && !hasApplications) {
+    <section class="hero-empty">
+      <div class="hero-empty-copy">
+        <p class="ledger-eyebrow">{{ greeting }}, {{ firstName }}</p>
+        <h1 class="empty-title">Your brand’s protection<br>starts here.</h1>
+        <p class="empty-sub">
+          File your trademark and we’ll take it through the Registry — filing, examination,
+          publication and registration. You’ll track every step right here.
+        </p>
+        <a routerLink="/trademark-registration/brand-details" class="btn-primary lg">
+          File your first trademark
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
+        </a>
+      </div>
+      <ol class="expect">
+        <li><span class="expect-n">1</span><div><p class="expect-h">File</p><p class="expect-p">We prepare and submit to the Registry within 24 hours.</p></div></li>
+        <li><span class="expect-n">2</span><div><p class="expect-h">Examination</p><p class="expect-p">The Registry reviews your mark; we handle any objection.</p></div></li>
+        <li><span class="expect-n">3</span><div><p class="expect-h">Publication</p><p class="expect-p">Your mark appears in the Trademark Journal.</p></div></li>
+        <li><span class="expect-n">4</span><div><p class="expect-h">Registered</p><p class="expect-p">You get the ® symbol and 10 years of protection.</p></div></li>
+      </ol>
+    </section>
+  }
+
+  <!-- ══ Main grid ═════════════════════════════════════════════════════ -->
+  <div class="dash-grid">
+    <div class="dash-main">
+
+      <!-- Featured application dossier -->
+      @if (featuredApplication) {
+        <article class="dossier">
+          <div class="dossier-head">
+            <div>
+              <p class="card-eyebrow">Active filing</p>
+              <h2 class="mark-name">
+                {{ featuredApplication.name || 'Your trademark' }}<sup class="mark-sym">{{ featuredIsRegistered ? '®' : '™' }}</sup>
+              </h2>
+              <p class="mark-meta">
+                @if (featuredApplication.tmClass) { <span>Class {{ featuredApplication.tmClass }}</span> }
+                <span>{{ featuredApplication.applicationNo ? 'No. ' + featuredApplication.applicationNo : 'Awaiting filing' }}</span>
+              </p>
+            </div>
+            <span class="status-pill" [ngClass]="statusClass(featuredApplication.trademarkStatus)">
+              {{ featuredApplication.trademarkStatus | trademarkStatus }}
+            </span>
+          </div>
+
+          <div class="journey">
+            @for (stage of progressStages; track stage; let i = $index; let last = $last) {
+              <div class="j-stage"
+                   [class.done]="i < featuredStageIndex"
+                   [class.current]="i === featuredStageIndex">
+                <span class="j-dot">
+                  @if (i < featuredStageIndex) {
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round"><path d="m4 8 2.5 2.5L12 5"/></svg>
+                  }
+                </span>
+                <span class="j-label">{{ stage }}</span>
+              </div>
+              @if (!last) { <span class="j-line" [class.done]="i < featuredStageIndex"></span> }
+            }
+          </div>
+
+          <p class="dossier-note">{{ featuredStageNote }}</p>
+
+          <a class="dossier-link" [routerLink]="['/portal/trademark/edit', featuredApplication.id]">
+            View full application
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>
+          </a>
+        </article>
+      }
+
+      <!-- All filings -->
+      @if (hasApplications) {
+        <section class="panel">
+          <div class="panel-head">
+            <h3 class="panel-title">All my filings</h3>
+            <span class="panel-count">{{ totalFilings }}</span>
+          </div>
+          <div class="filings">
+            @for (app of getDisplayedFilings(); track app.id) {
+              <a class="filing-row" [routerLink]="['/portal/trademark/edit', app.id]">
+                <div class="filing-id">
+                  <span class="filing-name">{{ app.name || 'Untitled mark' }}</span>
+                  <span class="filing-sub">
+                    {{ app.tmClass ? 'Class ' + app.tmClass : 'Class —' }} ·
+                    {{ app.applicationNo || 'awaiting filing' }}
+                  </span>
+                </div>
+                <span class="status-pill sm" [ngClass]="statusClass(app.trademarkStatus)">
+                  {{ app.trademarkStatus | trademarkStatus }}
+                </span>
+                <svg class="filing-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>
+              </a>
+            }
+          </div>
+          @if (dashboardStats && dashboardStats.recentApplications.length > maxVisibleFilings) {
+            <button class="link-btn" type="button" (click)="toggleShowAllFilings()">
+              {{ showAllFilings ? 'Show less' : 'Show ' + (dashboardStats.recentApplications.length - maxVisibleFilings) + ' more' }}
+            </button>
+          }
+        </section>
+      }
+
+      <!-- Services -->
+      <section class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">{{ hasServices ? 'My services' : 'Grow your protection' }}</h3>
+        </div>
+
+        @if (hasServices) {
+          <div class="svc-active">
+            @for (svc of services; track svc.serviceType) {
+              <div class="svc-item">
+                <div class="svc-top">
+                  <span class="svc-title">{{ svc.title }}</span>
+                  <span class="svc-status">{{ svc.statusLabel }}</span>
+                </div>
+                <div class="svc-bar"><span [style.width.%]="svc.progress"></span></div>
+                @if (svc.reference) { <span class="svc-ref">Ref {{ svc.reference }}</span> }
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="svc-lead">Services you’ve purchased will appear here with live progress. In the meantime, these pair well with a trademark:</p>
+          <div class="discover">
+            @for (d of discoverServices; track d.route) {
+              <a class="discover-card" [routerLink]="d.route">
+                <span class="discover-title">{{ d.title }}</span>
+                <span class="discover-blurb">{{ d.blurb }}</span>
+                <span class="discover-price">{{ d.price }}</span>
+              </a>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <!-- ── Right rail ─────────────────────────────────────────────────── -->
+    <aside class="dash-rail">
+
+      <!-- Next actions -->
+      <section class="panel actions">
+        <div class="panel-head">
+          <h3 class="panel-title">Next actions</h3>
+          @if (actionCount) { <span class="panel-count alert">{{ actionCount }}</span> }
+        </div>
+
+        @if (actionCount) {
+          <div class="action-list">
+            @for (task of getDisplayedTasks(); track task.type + '-' + task.applicationId + '-' + (task.documentType || '')) {
+              <button class="action-item" type="button" (click)="openPendingTask(task.link)">
+                <span class="action-ico">
+                  <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="taskIcon(task.type)"/></svg>
+                </span>
+                <span class="action-body">
+                  <span class="action-title">{{ task.title }}</span>
+                  <span class="action-desc">{{ task.description }}</span>
+                </span>
+                <svg class="action-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>
+              </button>
+            }
+          </div>
+          @if (dashboardStats && dashboardStats.pendingTasks.length > maxVisibleTasks) {
+            <button class="link-btn" type="button" (click)="toggleShowAll()">
+              {{ showAllTasks ? 'Show less' : 'Show ' + (dashboardStats.pendingTasks.length - maxVisibleTasks) + ' more' }}
+            </button>
+          }
+        } @else {
+          <div class="actions-clear">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+            <p>You’re all caught up.<br>Nothing needs your attention.</p>
+          </div>
+        }
+      </section>
+
+      <!-- Expert card -->
+      <section class="expert">
+        <p class="card-eyebrow light">Your attorney</p>
+        <div class="expert-id">
+          <span class="expert-avatar">IB</span>
+          <div>
+            <p class="expert-name">Ishan Bassi</p>
+            <p class="expert-role">Trademark Attorney</p>
+          </div>
+        </div>
+        <div class="expert-contacts">
+          <a href="mailto:ishanbassi23@gmail.com" class="expert-link">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="10" rx="1.5"/><path d="m3.5 6 6.5 5 6.5-5"/></svg>
+            ishanbassi23&#64;gmail.com
+          </a>
+          <a href="tel:+916239771006" class="expert-link">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l1.5 4L8 9.5a8 8 0 0 0 3.5 3.5L13 11.5 17 13v3a1 1 0 0 1-1.1 1A12 12 0 0 1 4 5.1 1 1 0 0 1 5 4Z"/></svg>
+            +91 62397 71006
+          </a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,182 @@
+<div class="mt-page">
+
+  <app-firm-banner></app-firm-banner>
+
+  <!-- Hero -->
+  <section class="mt-hero">
+    <div class="container">
+      <div class="mt-hero-content">
+        <div class="breadcrumb">
+          <a routerLink="/">Home</a> &rsaquo;
+          <a routerLink="/trademark-registration">Trademark Registration</a> &rsaquo;
+          <span>Surgical Instruments Manufacturers</span>
+        </div>
+        <h1>Trademark Registration for <span class="highlight">Surgical Instruments Manufacturers</span> in Jalandhar &amp; Northern India</h1>
+        <p class="hero-sub">Jalandhar's surgical instruments industry is one of the world's largest hubs for surgical, dental, veterinary, and beauty grooming instruments — supplying hospitals, clinics, and salons across Europe, the US, and the Middle East. Protect your export brand name and logo from imitators with a registered trademark filed by IP India authorised agents.</p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Starting at just ₹1,499 — professional fee, govt. fees extra</li>
+          <li><i class="fas fa-check-circle"></i> Correct class filing — Class 10, 8, 35, or 44</li>
+          <li><i class="fas fa-check-circle"></i> IP India Authorised Agents, 100% online process</li>
+          <li><i class="fas fa-check-circle"></i> TM Application Number same day — use ™ immediately</li>
+          <li><i class="fas fa-check-circle"></i> Trusted by 3,000+ businesses across India</li>
+        </ul>
+        <div class="hero-trust">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <span>4.9/5 · Trusted by 3,000+ businesses</span>
+        </div>
+      </div>
+      <div class="mt-hero-form">
+        <app-lead-form
+          [heading]="'Trademark for Surgical Instrument Brands'"
+          [cta]="'Protect My Brand'"
+          [comments]="'SURGICAL INSTRUMENTS MANUFACTURER TM'">
+        </app-lead-form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Trademark Matters -->
+  <section class="why-section">
+    <div class="container">
+      <div class="why-inner">
+        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="why-text">
+          <h2>Why Surgical Instrument Manufacturers in Punjab Need Trademark Protection</h2>
+          <p>Jalandhar's surgical instruments cluster is one of the oldest and largest of its kind in the world, manufacturing surgical scissors, forceps, scalpels, dental instruments, veterinary instruments, and beauty grooming tools that are exported to CE and FDA-regulated markets across Europe, the US, the Middle East, and beyond.</p>
+          <p>With hundreds of units producing similar-looking instruments through overlapping export agents, copied brand names on packaging, look-alike catalogues, and grey-market counterfeits reaching the same overseas buyers are well-known hazards in this industry. A registered trademark gives you the exclusive legal right to your brand name and logo across India — enabling you to record your mark with Indian Customs, and act against counterfeiters through cease-and-desist notices, civil court injunctions, and takedowns on B2B export platforms.</p>
+          <div class="examples-row">
+            <span class="example-tag">Surgical scissors &amp; forceps makers</span>
+            <span class="example-tag">Dental instrument manufacturers</span>
+            <span class="example-tag">Veterinary instrument makers</span>
+            <span class="example-tag">Manicure &amp; pedicure instrument units</span>
+            <span class="example-tag">Beauty &amp; barber instrument manufacturers</span>
+            <span class="example-tag">Surgical instrument export houses</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trademark Classes -->
+  <section class="classes-section">
+    <div class="container">
+      <h2>Trademark Classes for Surgical Instruments Manufacturers</h2>
+      <p class="classes-sub">Filing in the correct class is critical — protection applies only to the class(es) you register under. Most surgical instrument manufacturers and exporters need one or more of these classes.</p>
+      <div class="classes-grid">
+        @for (cls of classes; track cls.num) {
+          <div class="class-card">
+            <div class="class-num">Class {{ cls.num }}</div>
+            <div class="class-name">{{ cls.name }}</div>
+            <p class="class-why">{{ cls.why }}</p>
+          </div>
+        }
+      </div>
+      <p class="classes-note">
+        Not sure which class covers your instrument range?
+        <a routerLink="/trademark-classes">Browse all 45 Nice Classes</a>, run a
+        <a routerLink="/search">free trademark search</a>, or
+        <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20need%20help%20choosing%20a%20trademark%20class%20for%20my%20surgical%20instruments%20manufacturing%20business" target="_blank" rel="noopener">ask our experts on WhatsApp</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>How We Register Your Surgical Instrument Brand</h2>
+      </div>
+      <app-vertical-stepper [registrationSteps]="registrationSteps"></app-vertical-stepper>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <app-rating-review></app-rating-review>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="container">
+      <div class="pricing-card">
+        <div class="price-block">
+          <div class="price-label">Trademark Registration — Surgical Instruments Manufacturers</div>
+          <div class="price-amount">₹1,499</div>
+          <div class="price-note">Professional fee · Govt. fees extra · All-India protection</div>
+        </div>
+        <div class="price-cta">
+          <a href="https://api.whatsapp.com/send?phone=916239771006&text=Hi%2C%20I%20want%20to%20register%20a%20trademark%20for%20my%20surgical%20instruments%20manufacturing%20business"
+             class="btn-whatsapp" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> WhatsApp to Start
+          </a>
+          <a href="tel:+916239771006" class="btn-call">
+            <i class="fas fa-phone"></i> Call +91-6239771006
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-wrapper">
+    <div class="container">
+      <h2>FAQs — Trademark for Surgical Instruments Manufacturers</h2>
+      <app-faq [faqs]="faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related services -->
+  <section class="related-section">
+    <div class="container">
+      <h2>You May Also Need</h2>
+      <div class="related-grid">
+        <a routerLink="/trademark-registration" class="related-card">
+          <i class="fas fa-trademark"></i>
+          <h3>Trademark Registration</h3>
+          <p>Register your brand name, logo or slogan across India — starting at ₹1,499 + govt. fees.</p>
+        </a>
+        <a routerLink="/search" class="related-card">
+          <i class="fas fa-search"></i>
+          <h3>Free Trademark Search</h3>
+          <p>Check if your instrument brand name is available before you file — avoid objections and rejections.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-hand-tools" class="related-card">
+          <i class="fas fa-wrench"></i>
+          <h3>Trademark for Hand Tools Manufacturers</h3>
+          <p>Brand protection for wrenches, pliers, and hand tool exporters in Jalandhar, Punjab.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-sports-goods" class="related-card">
+          <i class="fas fa-futbol"></i>
+          <h3>Trademark for Sports Goods Manufacturers</h3>
+          <p>Brand protection for cricket bats, footballs, and sports equipment makers in Jalandhar, Punjab.</p>
+        </a>
+        <a routerLink="/trademark-registration-for-fasteners" class="related-card">
+          <i class="fas fa-cogs"></i>
+          <h3>Trademark for Fasteners Manufacturers</h3>
+          <p>Brand protection for nuts, bolts, and fastener exporters in Punjab's industrial cluster.</p>
+        </a>
+        <a routerLink="/contact" class="related-card">
+          <i class="fas fa-headset"></i>
+          <h3>Talk to Our Team</h3>
+          <p>Get free guidance on classes, pricing and the filing process for your surgical instruments business.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call us -->
+  <section class="call-us-section">
+    <div class="container">
+      <h2>Let's talk</h2>
+      <p>Have questions about trademark registration for your surgical instruments business? Whether you make surgical scissors, dental instruments, veterinary instruments, or beauty grooming tools in Jalandhar or anywhere in Northern India, we'd love to help you protect your brand.</p>
+      <a class="call-us-btn" href="tel:+916239771006">Call 6239771006</a>
+    </div>
+  </section>
+
+  <a href="https://api.whatsapp.com/send?phone=6239771006&text=Hi%2C%20I%20want%20trademark%20registration%20for%20my%20surgical%20instruments%20manufacturing%20business"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+</div>

@@ -1,0 +1,122 @@
+<div class="dashboard">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ greeting }}, {{ adminFirstName }} 👋</h1>
+      <p class="page-sub">Operations overview across the platform</p>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  @if (loading()) {
+    <div class="stats-grid">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="stat-card skeleton"></div>
+      }
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- STATS CARDS -->
+  @if (stats(); as s) {
+    <div class="stats-grid">
+      <a routerLink="/admin-portal/leads" class="stat-card">
+        <div class="stat-icon stat-icon--leads">🎯</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.totalLeads }}</div>
+          <div class="stat-label">Total Leads</div>
+        </div>
+        <span class="stat-link">Manage →</span>
+      </a>
+
+      <a routerLink="/admin-portal/trademarks" class="stat-card">
+        <div class="stat-icon stat-icon--apps">™️</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.totalApplications }}</div>
+          <div class="stat-label">Applications</div>
+        </div>
+        <span class="stat-link">Manage →</span>
+      </a>
+
+      <a routerLink="/admin-portal/documents" class="stat-card"
+         [class.stat-card--warning]="s.documentsPendingReview > 0">
+        <div class="stat-icon stat-icon--docs">📄</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.documentsPendingReview }}</div>
+          <div class="stat-label">Docs to Review</div>
+        </div>
+        @if (s.documentsPendingReview > 0) {
+          <span class="stat-badge badge-warn">Action needed</span>
+        }
+      </a>
+
+      <a routerLink="/admin-portal/payments" class="stat-card">
+        <div class="stat-icon stat-icon--pay">💳</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.paymentsToday }}</div>
+          <div class="stat-label">Payments Today · ₹{{ s.paymentsTodayAmount | number }}</div>
+        </div>
+        <span class="stat-link">Reconcile →</span>
+      </a>
+
+      <a routerLink="/admin-portal/agents" class="stat-card"
+         [class.stat-card--warning]="s.agentsPendingApproval > 0">
+        <div class="stat-icon stat-icon--agents">🧑‍⚖️</div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.agentsPendingApproval }}</div>
+          <div class="stat-label">Agents Pending</div>
+        </div>
+        @if (s.agentsPendingApproval > 0) {
+          <span class="stat-badge badge-warn">Review</span>
+        }
+      </a>
+    </div>
+
+    <!-- BREAKDOWNS -->
+    <div class="content-grid">
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">Leads by status</h2>
+          <a routerLink="/admin-portal/leads" class="card-link">Open pipeline</a>
+        </div>
+        @if (leadBreakdown().length === 0) {
+          <div class="empty-state"><p>No leads yet.</p></div>
+        } @else {
+          <div class="breakdown-list">
+            @for (row of leadBreakdown(); track row.label) {
+              <div class="breakdown-row">
+                <span class="breakdown-label">{{ row.label }}</span>
+                <span class="breakdown-value">{{ row.value }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">Applications by status</h2>
+          <a routerLink="/admin-portal/trademarks" class="card-link">Open</a>
+        </div>
+        @if (applicationBreakdown().length === 0) {
+          <div class="empty-state"><p>No applications yet.</p></div>
+        } @else {
+          <div class="breakdown-list">
+            @for (row of applicationBreakdown(); track row.label) {
+              <div class="breakdown-row">
+                <span class="breakdown-label">{{ row.label }}</span>
+                <span class="breakdown-value">{{ row.value }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

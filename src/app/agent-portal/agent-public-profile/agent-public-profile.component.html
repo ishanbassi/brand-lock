@@ -1,0 +1,61 @@
+<div class="public-profile-page">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading agent profile…</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h2>Agent Not Found</h2>
+      <p>{{ error() }}</p>
+      <a routerLink="/" class="btn-primary">Go to Home</a>
+    </div>
+  }
+
+  @if (!loading() && !error() && profile()) {
+    <div class="profile-card">
+      <div class="profile-hero">
+        <div class="agent-avatar-lg">{{ profile()!.fullName?.[0] ?? 'A' }}</div>
+        <div class="profile-info">
+          <h1 class="agent-name">{{ profile()!.fullName }}</h1>
+          @if (profile()!.companyName) {
+            <p class="company-name">{{ profile()!.companyName }}</p>
+          }
+          <span class="status-badge" [class]="statusClass">
+            {{ profile()!.profileStatus ?? 'Unknown' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-box">
+          <span class="stat-value">{{ profile()!.portfolioCount ?? 0 }}</span>
+          <span class="stat-label">Trademarks Managed</span>
+        </div>
+        @if (profile()!.agentCode) {
+          <div class="stat-box">
+            <span class="stat-value code">{{ profile()!.agentCode }}</span>
+            <span class="stat-label">Agent Code</span>
+          </div>
+        }
+      </div>
+
+      @if (profile()!.website) {
+        <div class="profile-links">
+          <a [href]="profile()!.website" target="_blank" rel="noopener" class="website-link">
+            🌐 {{ profile()!.website }}
+          </a>
+        </div>
+      }
+
+      <div class="profile-footer">
+        <a routerLink="/" class="btn-outline">Back to Trademarx</a>
+      </div>
+    </div>
+  }
+
+</div>

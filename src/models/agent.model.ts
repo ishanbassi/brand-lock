@@ -78,3 +78,27 @@ export interface TrademarkConflict {
   score: number;
   similarityScore?: number;
 }
+
+export interface WatchConflictHistory {
+  id?: number;
+  trademarkId?: number;
+  trademarkName?: string;
+  tmAgentId?: number;
+  checkDate?: string;
+  conflictingTrademarkId?: number;
+  conflictingTrademarkName?: string;
+  similarityScore?: number;
+  riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW';
+  isNewConflict?: boolean;
+  status?: 'PENDING' | 'RESOLVED' | 'IGNORED';
+}
+
+export interface AgentPublicProfile {
+  id?: number;
+  fullName?: string;
+  companyName?: string;
+  agentCode?: string;
+  website?: string;
+  profileStatus?: string;
+  portfolioCount?: number;
+}

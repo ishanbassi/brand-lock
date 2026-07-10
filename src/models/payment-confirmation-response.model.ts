@@ -7,5 +7,5 @@ export interface PaymentConfirmationResponse{
 }
 
 export interface JwtToken{
-    idToken:string;
+    id_token:string;
 }

@@ -1,0 +1,139 @@
+<div class="watch-page">
+
+  <!-- BACK -->
+  <a routerLink="/agent-portal/portfolio" class="back-link">‹ Back to Portfolio</a>
+
+  <!-- LOADING -->
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Running trademark watch scan…</p>
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (!loading() && trademark()) {
+    <!-- HEADER -->
+    <div class="watch-header">
+      <div class="watch-header-left">
+        <h1 class="page-title">Trademark Watch</h1>
+        <div class="tm-identity">
+          <span class="tm-name">{{ trademark()!.name }}</span>
+          @if (trademark()!.applicationNo) {
+            <span class="tm-app">App. No. {{ trademark()!.applicationNo }}</span>
+          }
+          @if (trademark()!.tmClass) {
+            <span class="class-badge">Class {{ trademark()!.tmClass }}</span>
+          }
+        </div>
+      </div>
+      <a [routerLink]="['/agent-portal/portfolio', id, 'edit']" class="btn-outline">
+        ✏️ Edit Trademark
+      </a>
+    </div>
+
+    <!-- RISK SUMMARY CARDS -->
+    <div class="risk-summary">
+      <div class="risk-card risk-card--high">
+        <div class="risk-num">{{ highRiskCount }}</div>
+        <div class="risk-lbl">High Risk</div>
+        <div class="risk-sub">Similarity ≥ 85%</div>
+      </div>
+      <div class="risk-card risk-card--medium">
+        <div class="risk-num">{{ mediumRiskCount }}</div>
+        <div class="risk-lbl">Medium Risk</div>
+        <div class="risk-sub">70% – 84%</div>
+      </div>
+      <div class="risk-card risk-card--low">
+        <div class="risk-num">{{ conflicts().length - highRiskCount - mediumRiskCount }}</div>
+        <div class="risk-lbl">Low Risk</div>
+        <div class="risk-sub">Below 70%</div>
+      </div>
+      <div class="risk-card risk-card--total">
+        <div class="risk-num">{{ conflicts().length }}</div>
+        <div class="risk-lbl">Total Matches</div>
+        <div class="risk-sub">Found in database</div>
+      </div>
+    </div>
+
+    <!-- CONFLICT HISTORY (Phase 2) -->
+    @if (conflictHistory().length > 0) {
+      <div class="history-section">
+        <button class="history-toggle" (click)="toggleHistory()">
+          🕐 {{ showHistory() ? 'Hide' : 'Show' }} Check History ({{ conflictHistory().length }} past results)
+        </button>
+        @if (showHistory()) {
+          <div class="history-list">
+            @for (h of conflictHistory(); track h.id) {
+              <div class="history-row">
+                <div class="history-name">{{ h.conflictingTrademarkName }}</div>
+                <div class="history-meta">
+                  <span class="risk-pill risk-pill--{{ h.riskLevel?.toLowerCase() }}">{{ h.riskLevel }}</span>
+                  <span class="history-score">{{ ((h.similarityScore ?? 0) * 100).toFixed(0) }}% match</span>
+                  <span class="history-date">{{ h.checkDate | date:'dd MMM yyyy' }}</span>
+                  @if (h.isNewConflict) {
+                    <span class="new-badge">NEW</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- RESULTS LIST -->
+    @if (conflicts().length === 0) {
+      <div class="empty-watch">
+        <div class="empty-icon">✅</div>
+        <h3>No similar trademarks found</h3>
+        <p>Your trademark appears to be unique in our database. No conflicting marks detected.</p>
+      </div>
+    } @else {
+      <div class="results-card">
+        <div class="results-header">
+          <h2 class="results-title">Potential Conflicts</h2>
+          <p class="results-sub">Sorted by similarity score, highest first</p>
+        </div>
+
+        <div class="conflict-list">
+          @for (conflict of conflicts(); track conflict.id) {
+            <div class="conflict-row" [class]="getRiskClassForConflict(conflict)">
+
+              <!-- RISK BADGE -->
+              <div class="risk-badge" [class]="'badge-' + getRiskClassForConflict(conflict)">
+                <span class="badge-label">{{ getRiskLabelForConflict(conflict) }}</span>
+              </div>
+
+              <!-- TRADEMARK INFO -->
+              <div class="conflict-main">
+                <div class="conflict-name">{{ conflict.name }}</div>
+                <div class="conflict-meta">
+                  @if (conflict.applicationNo) { <span>App. {{ conflict.applicationNo }}</span> }
+                  @if (conflict.proprietorName) { <span>{{ conflict.proprietorName }}</span> }
+                  @if (conflict.tmClass) { <span>Class {{ conflict.tmClass }}</span> }
+                  @if (conflict.trademarkStatus) { <span>{{ conflict.trademarkStatus }}</span> }
+                </div>
+              </div>
+
+              <!-- SIMILARITY SCORE -->
+              <div class="score-block">
+                <div class="score-value">{{ scorePercentForConflict(conflict) }}%</div>
+                <div class="score-bar-wrap">
+                  <div class="score-bar" [style.width.%]="scorePercentForConflict(conflict)"></div>
+                </div>
+                <div class="score-label">similarity</div>
+              </div>
+
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+
+</div>

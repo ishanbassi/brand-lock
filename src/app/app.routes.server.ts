@@ -20,6 +20,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client
   },
   {
+    // Onboarding funnel depends on browser storage (resume flow) — no SEO value.
+    path: 'trademark-registration/**',
+    renderMode: RenderMode.Client
+  },
+  {
     path: 'search',
     renderMode: RenderMode.Server
   },

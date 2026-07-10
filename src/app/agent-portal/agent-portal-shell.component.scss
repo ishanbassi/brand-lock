@@ -1,0 +1,208 @@
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 64px;
+$sidebar-bg: #0f172a;
+$sidebar-hover: rgba(255, 255, 255, 0.06);
+$sidebar-active: #6366f1;
+$sidebar-active-bg: rgba(99, 102, 241, 0.15);
+$text-muted: rgba(255, 255, 255, 0.45);
+$text-main: rgba(255, 255, 255, 0.85);
+$content-bg: #f8fafc;
+
+* { box-sizing: border-box; }
+
+.portal-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+// ── SIDEBAR ──────────────────────────────────────────────
+.sidebar {
+  width: $sidebar-width;
+  background: $sidebar-bg;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.25s ease;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.portal-layout.collapsed .sidebar {
+  width: $sidebar-collapsed-width;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 64px;
+}
+
+.sidebar-brand {
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  white-space: nowrap;
+
+  .brand-tm { color: #818cf8; }
+  .brand-arx { color: #ffffff; }
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  color: $text-muted;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $sidebar-hover;
+    color: $text-main;
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  color: $text-muted;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 0;
+  transition: color 0.15s, background 0.15s;
+  margin: 0 0.5rem;
+  border-radius: 8px;
+
+  .nav-icon { font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center; }
+
+  &:hover {
+    background: $sidebar-hover;
+    color: $text-main;
+  }
+
+  &.active {
+    background: $sidebar-active-bg;
+    color: #818cf8;
+    font-weight: 600;
+
+    .nav-icon { filter: none; }
+  }
+}
+
+.sidebar-footer {
+  padding: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agent-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.5rem;
+
+  &.compact { justify-content: center; }
+}
+
+.agent-avatar {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.agent-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.agent-name {
+  color: $text-main;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-badge {
+  font-size: 0.7rem;
+  color: #34d399;
+  font-weight: 500;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: none;
+  border: none;
+  color: $text-muted;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  .nav-icon { width: 24px; text-align: center; flex-shrink: 0; }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
+}
+
+// ── MAIN CONTENT ──────────────────────────────────────────────
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: $content-bg;
+}
+
+// ── MOBILE ──────────────────────────────────────────────
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 999;
+  }
+
+  .portal-layout:not(.collapsed) .sidebar {
+    transform: translateX(0);
+  }
+
+  .main-content { overflow-x: hidden; }
+}

@@ -174,3 +174,6 @@ app-root {
 .toast-top-center, .toast-top-right, .toast-top-left, .toast-top-full-width{
   z-index: 999999999 !important;
 }
+
+// Admin portal shared styles (scoped under .admin-page)
+@import 'styles/admin';

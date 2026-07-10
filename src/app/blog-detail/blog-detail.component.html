@@ -77,28 +77,12 @@
                             {{ showAll ? 'Show less' : 'Show more' }}
                         </button>
                     </div>
-                    <div class="campaign-section campaign-visible" *ngIf="blog?.campaignBlock"
-                        [ngStyle]="{'background': blog?.campaignBlock?.backgroundColor || 'var(--gradient)' }">
-
-                        <div class="campaign-content">
-                            <div *ngIf="blog?.campaignBlock?.campaignImage" class="campaign-image">
-                                <img  [src]="blog?.campaignBlock?.campaignImage" [alt]="blog?.campaignBlock?.title"
-                                    [title]="blog?.campaignBlock?.title" loading="lazy">
-
-                            </div>
-                            <div class="campaign-text">
-                                <h3>{{blog?.campaignBlock?.title}}</h3>
-                                <p>{{blog?.campaignBlock?.description || ''}}</p>
-                                <a [href]="blog?.campaignBlock?.ctaLink" class="cta-button">
-                                    {{blog?.campaignBlock?.ctaText}}
-                                    <svg class="cta-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-
+                    <div class="aside-lead">
+                        <app-lead-form
+                            [heading]="blog?.campaignBlock?.title || 'Talk to a Trademark Expert'"
+                            [cta]="blog?.campaignBlock?.ctaText || 'Get a Free Callback'"
+                            [serviceType]="leadServiceType"
+                            [showTextArea]="false"></app-lead-form>
                     </div>
                 </aside>
 
@@ -109,4 +93,33 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Mobile floating Table of Contents (main headings only) -->
+<div class="mobile-toc" *ngIf="toc.length">
+    <div class="mobile-toc__backdrop" [class.is-open]="mobileTocOpen" (click)="closeMobileToc()"></div>
+
+    <div class="mobile-toc__sheet" [class.is-open]="mobileTocOpen">
+        <div class="mobile-toc__head">
+            <span>On this page</span>
+            <button type="button" class="mobile-toc__close" (click)="closeMobileToc()" aria-label="Close">✕</button>
+        </div>
+        <ul class="mobile-toc__list">
+            <li *ngFor="let item of toc; let i = index">
+                <a [routerLink]="[]" [fragment]="item.id" (click)="closeMobileToc()">
+                    <span class="mobile-toc__num">{{ i + 1 }}</span>
+                    <span class="mobile-toc__text">{{ item.text }}</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <button type="button" class="mobile-toc__fab" [class.is-open]="mobileTocOpen"
+        (click)="toggleMobileToc()" aria-label="Table of contents">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="mobile-toc__fab-label">Contents</span>
+    </button>
 </div>

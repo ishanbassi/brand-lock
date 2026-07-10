@@ -1,0 +1,191 @@
+<div class="agent-reg-page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-inner">
+      <a routerLink="/" class="brand-logo">
+        <span class="logo-tm">TM</span><span class="logo-arx">arx</span>
+      </a>
+
+      <div class="hero-text">
+        <h1>Join the<br><span class="accent">Agent Network</span></h1>
+        <p class="hero-sub">Trusted by 500+ IP attorneys & trademark agents across India</p>
+      </div>
+
+      <ul class="benefits-list">
+        @for (b of benefits; track b.text) {
+          <li class="benefit-item">
+            <span class="benefit-icon">{{ b.icon }}</span>
+            <span>{{ b.text }}</span>
+          </li>
+        }
+      </ul>
+
+      <div class="already-account">
+        Already have an account?
+        <a routerLink="/login" class="login-link">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="right-inner">
+
+      <!-- Progress bar (only steps 1 & 2) -->
+      @if (step() < 3) {
+        <div class="step-header">
+          <span class="step-label">Step {{ step() }} of {{ totalSteps - 1 }}</span>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="progressPercent"></div>
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 1: Personal Info ── -->
+      @if (step() === 1) {
+        <div class="step-block animate-in">
+          <h2 class="step-title">Create your account</h2>
+          <p class="step-desc">Start with your personal details</p>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label>First name <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="formData.firstName" placeholder="Anil"
+                     [class.invalid]="onClickValidation && !formData.firstName" />
+              @if (onClickValidation && !formData.firstName) {
+                <span class="err">Required</span>
+              }
+            </div>
+            <div class="field-group">
+              <label>Last name</label>
+              <input type="text" [(ngModel)]="formData.lastName" placeholder="Bassi" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Email address <span class="req">*</span></label>
+            <input type="email" [(ngModel)]="formData.email" placeholder="agent@example.com"
+                   [class.invalid]="onClickValidation && !formData.email" />
+            @if (onClickValidation && !formData.email) {
+              <span class="err">Required</span>
+            }
+          </div>
+
+          <div class="field-group">
+            <label>Phone number</label>
+            <input type="tel" [(ngModel)]="formData.phoneNumber" placeholder="+91 98765 43210" />
+          </div>
+
+          <div class="field-group">
+            <label>Password <span class="req">*</span></label>
+            <div class="input-with-icon">
+              <input [type]="passwordVisible ? 'text' : 'password'"
+                     [(ngModel)]="formData.password" placeholder="Min 6 characters"
+                     [class.invalid]="onClickValidation && !formData.password" />
+              <button type="button" class="eye-btn" (click)="passwordVisible = !passwordVisible">
+                {{ passwordVisible ? '🙈' : '👁' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Confirm password <span class="req">*</span></label>
+            <div class="input-with-icon">
+              <input [type]="confirmPasswordVisible ? 'text' : 'password'"
+                     [(ngModel)]="confirmPassword" placeholder="Repeat password" />
+              <button type="button" class="eye-btn" (click)="confirmPasswordVisible = !confirmPasswordVisible">
+                {{ confirmPasswordVisible ? '🙈' : '👁' }}
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" (click)="nextStep()">
+            Continue →
+          </button>
+        </div>
+      }
+
+      <!-- ── STEP 2: Professional Info ── -->
+      @if (step() === 2) {
+        <div class="step-block animate-in">
+          <h2 class="step-title">Professional details</h2>
+          <p class="step-desc">Help clients find and trust you (all optional)</p>
+
+          <div class="field-group">
+            <label>Company / Firm name</label>
+            <input type="text" [(ngModel)]="formData.companyName" placeholder="Bassi IP Consultants" />
+          </div>
+
+          <div class="field-group">
+            <label>Office address</label>
+            <textarea [(ngModel)]="formData.address" rows="2" placeholder="38 Hambran Road, Ludhiana"></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Bar / IP Registration No.</label>
+            <input type="text" [(ngModel)]="formData.barRegNo" placeholder="e.g. RDU-123456" />
+            <span class="hint">Leave blank if not applicable</span>
+          </div>
+
+          <div class="field-group">
+            <label>Website (optional)</label>
+            <input type="url" [(ngModel)]="formData.website" placeholder="https://yourfirm.com" />
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-ghost" (click)="prevStep()">← Back</button>
+            <button class="btn-primary" (click)="submit()" [disabled]="submitting">
+              @if (submitting) {
+                <span class="spinner"></span> Creating account…
+              } @else {
+                Create Account
+              }
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 3: Success ── -->
+      @if (step() === 3) {
+        <div class="step-block success-block animate-in">
+          <div class="success-icon">🎉</div>
+          <h2 class="step-title">You're all set!</h2>
+          <p class="step-desc">
+            Welcome to the Trademarx Agent Network,
+            <strong>{{ formData.firstName }}</strong>.<br>
+            Your agent portal is ready.
+          </p>
+
+          <div class="next-steps">
+            <div class="next-step-card" (click)="goToDashboard()">
+              <span class="ns-icon">📊</span>
+              <div>
+                <strong>View Dashboard</strong>
+                <p>See your portfolio overview</p>
+              </div>
+            </div>
+            <div class="next-step-card" routerLink="/agent-portal/portfolio/upload">
+              <span class="ns-icon">📤</span>
+              <div>
+                <strong>Import Portfolio</strong>
+                <p>Upload your Excel file</p>
+              </div>
+            </div>
+            <div class="next-step-card" routerLink="/agent-portal/portfolio/add">
+              <span class="ns-icon">➕</span>
+              <div>
+                <strong>Add Trademark</strong>
+                <p>Enter details manually</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" (click)="goToDashboard()">Go to Dashboard →</button>
+        </div>
+      }
+
+    </div>
+  </div>
+
+</div>

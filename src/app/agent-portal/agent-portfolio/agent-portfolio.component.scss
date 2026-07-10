@@ -1,0 +1,494 @@
+$accent: #6366f1;
+$accent-light: #818cf8;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* { box-sizing: border-box; }
+
+.portfolio-page {
+  padding: 2rem;
+  max-width: 1400px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+}
+
+// ── PAGE HEADER ─────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 0.25rem;
+}
+
+.page-sub {
+  color: $gray-400;
+  font-size: 0.875rem;
+  margin: 0;
+  min-height: 1.2em;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, $accent, $accent-light);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($accent, 0.35);
+    color: white;
+    text-decoration: none;
+  }
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: $white;
+  color: $gray-600;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: $accent;
+    color: $accent;
+    text-decoration: none;
+  }
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  background: none;
+  color: $gray-600;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover { color: $danger; }
+}
+
+// ── FILTERS BAR ─────────────────────────────────────────
+.filters-bar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 2.25rem 0.6rem 2.25rem;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: $white;
+  color: $gray-800;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.1);
+  }
+
+  &::placeholder { color: $gray-400; }
+}
+
+.search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: $gray-400;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  line-height: 1;
+
+  &:hover { color: $gray-800; }
+}
+
+.filter-select {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: $gray-800;
+  background: $white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: $accent; }
+}
+
+// ── SKELETON ─────────────────────────────────────────
+.table-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-row {
+  height: 52px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── TABLE ─────────────────────────────────────────
+.table-card {
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.tm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr {
+    background: $gray-50;
+    border-bottom: 1.5px solid $gray-200;
+  }
+
+  th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $gray-600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $gray-100;
+    transition: background 0.1s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($accent, 0.03); }
+    &.deleting { opacity: 0.5; pointer-events: none; }
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    color: $gray-800;
+    vertical-align: middle;
+  }
+}
+
+.tm-name-cell { max-width: 220px; }
+
+.tm-name {
+  font-weight: 600;
+  color: $gray-800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.tm-type-tag {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 0.1rem 0.45rem;
+  background: rgba($accent, 0.08);
+  color: $accent;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-no {
+  color: $gray-600;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+}
+
+.class-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 24px;
+  background: rgba($accent, 0.08);
+  color: $accent;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.proprietor {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: $gray-600;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.status--active   { background: rgba($success, 0.12); color: darken($success, 12%); }
+  &.status--warning  { background: rgba($warning, 0.12); color: darken($warning, 20%); }
+  &.status--inactive { background: $gray-100;            color: $gray-400; }
+  &.status--pending  { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+  &.status--unknown  { background: $gray-100;            color: $gray-400; }
+}
+
+.date-cell {
+  color: $gray-600;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.warn-date {
+  color: $warning;
+  font-weight: 600;
+}
+
+.actions-col { width: 120px; }
+
+.actions-cell { white-space: nowrap; }
+
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+
+  &.watch-btn:hover { background: rgba($accent, 0.1); border-color: rgba($accent, 0.25); }
+  &.edit-btn:hover  { background: rgba($success, 0.1); border-color: rgba($success, 0.25); }
+  &.delete-btn:hover { background: rgba($danger, 0.1); border-color: rgba($danger, 0.25); }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.confirm-delete-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.confirm-text { font-size: 0.78rem; color: $danger; font-weight: 600; }
+
+.btn-danger-xs {
+  padding: 0.25rem 0.55rem;
+  background: $danger;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.btn-ghost-xs {
+  padding: 0.25rem 0.55rem;
+  background: $gray-100;
+  color: $gray-600;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: $gray-200; }
+}
+
+// ── PAGINATION ─────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid $gray-200;
+  background: $white;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: $accent;
+    color: $accent;
+  }
+
+  &.active {
+    background: $accent;
+    border-color: $accent;
+    color: white;
+  }
+
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+.page-ellipsis {
+  width: 32px;
+  text-align: center;
+  color: $gray-400;
+}
+
+.page-info {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: $gray-400;
+  font-weight: 500;
+}
+
+// ── EMPTY STATE ─────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  .empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+  h3 { font-size: 1.2rem; font-weight: 700; color: $gray-800; margin: 0 0 0.5rem; }
+  p  { color: $gray-400; margin: 0 0 1.5rem; font-size: 0.9rem; }
+}
+
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+// ── ALERT ─────────────────────────────────────────
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+// ── RESPONSIVE TABLE ─────────────────────────────────────────
+@media (max-width: 1024px) {
+  .tm-table {
+    th:nth-child(7), td:nth-child(7) { display: none; } // renewal
+    th:nth-child(4), td:nth-child(4) { display: none; } // proprietor
+  }
+}
+
+@media (max-width: 768px) {
+  .tm-table {
+    th:nth-child(6), td:nth-child(6) { display: none; } // filing date
+    th:nth-child(3), td:nth-child(3) { display: none; } // class
+  }
+}
