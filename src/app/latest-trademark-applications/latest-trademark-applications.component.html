@@ -1,0 +1,105 @@
+<section class="latest-apps gray-bg">
+  <div class="container">
+    <div class="breadcrumb">
+      <a [routerLink]="'/home'">Home</a>
+      <span class="sep">›</span>
+      <span class="current">Latest Trademark Applications</span>
+    </div>
+
+    <div class="page-header">
+      <h1>Latest Trademark Applications Filed in India</h1>
+      <p class="subtitle">
+        Live feed of trademark applications filed with the India Trademark Registry — search by brand name, check the
+        class, applicant and current status before you file your own.
+      </p>
+    </div>
+
+    <div class="cta-banner">
+      <div class="cta-banner-text">
+        <h2>Seen a similar mark? File yours first.</h2>
+        <p>Register your trademark online from ₹1,499 + govt. fees — free search report included.</p>
+      </div>
+      <a routerLink="/trademark-registration/your-info" class="cta-banner-btn">Register My Trademark</a>
+    </div>
+
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Search applications by trademark name..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <p class="result-count" *ngIf="!loading && !error && totalItems">
+      {{ totalItems | number }} applications found
+    </p>
+
+    <div class="table-wrap" *ngIf="!loading && trademarks.length">
+      <table class="tm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let col of columns">
+              <a [routerLink]="['/latest-trademark-applications']" [queryParams]="sortQueryParams(col.field)" queryParamsHandling="merge">
+                {{ col.label }}
+                <span class="sort-arrow" *ngIf="sortField === col.field">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+              </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tm of trademarks">
+            <td class="logo-cell">
+              <a [routerLink]="'/trademarks/' + tm.slug">
+                <img [src]="imgSrc(tm)" alt="{{ tm.name || 'Trademark' }} logo" loading="lazy" />
+              </a>
+            </td>
+            <td>
+              <a [routerLink]="'/trademarks/' + tm.slug" class="tm-name" [title]="tm.name || 'Application No. ' + tm.applicationNo">{{ tm.name || 'Application No. ' + tm.applicationNo }}</a>
+            </td>
+            <td>{{ tm.applicationDate?.format('DD MMM YYYY') }}</td>
+            <td>{{ tm.applicationNo }}</td>
+            <td>{{ tm.tmClass }}</td>
+            <td>{{ tm.proprietorName }}</td>
+            <td>{{ tm.trademarkStatus || 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !error && !trademarks.length">
+      No applications found{{ searchTerm ? ' for "' + searchTerm + '"' : '' }}.
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && error">
+      Something went wrong loading the latest applications. Please try again later.
+    </div>
+
+    <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
+      <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
+        <a [routerLink]="['/latest-trademark-applications']" [queryParams]="{ page: currentPage - 1 }" queryParamsHandling="merge"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-left text-sm"></i>
+        </a>
+      </li>
+
+      <li *ngFor="let page of pages">
+        <a [routerLink]="['/latest-trademark-applications']" [queryParams]="{ page: page }" queryParamsHandling="merge"
+          [class]="page === currentPage
+   ? 'flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white font-medium text-sm'
+   : 'flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm transition-colors'">
+          {{ page }}
+        </a>
+      </li>
+
+      <li [class.opacity-50]="currentPage === totalPages" [class.pointer-events-none]="currentPage === totalPages">
+        <a [routerLink]="['/latest-trademark-applications']" [queryParams]="{ page: currentPage + 1 }" queryParamsHandling="merge"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-right text-sm"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+<app-mobile-bottom-navbar></app-mobile-bottom-navbar>

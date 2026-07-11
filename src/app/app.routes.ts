@@ -458,6 +458,27 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
+    {
+        path: "trademark-journal",
+        loadComponent: () => import('./trademark-journal-list/trademark-journal-list.component').then(m => m.TrademarkJournalListComponent),
+        title: "Trademark Journal | Latest India Trademark Registry Publications",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: "trademark-journal/:journalNo",
+        loadComponent: () => import('./trademark-journal-detail/trademark-journal-detail.component').then(m => m.TrademarkJournalDetailComponent),
+        title: "Trademark Journal | Trademarx",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: "latest-trademark-applications",
+        loadComponent: () => import('./latest-trademark-applications/latest-trademark-applications.component').then(m => m.LatestTrademarkApplicationsComponent),
+        title: "Latest Trademark Applications Filed in India | Live Registry Updates — Trademarx",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
 
     {
         path: "submit-otp",

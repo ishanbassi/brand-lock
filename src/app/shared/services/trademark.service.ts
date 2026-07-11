@@ -5,6 +5,7 @@ import { Observable, filter, map, tap } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { ApplicationConfigService } from '../../core/config/application-config.service';
+import { createRequestOption } from '../../core/request/request-util';
 import { DATE_FORMAT } from '../../config/input.constants';
 import { ITrademark, ITrademarkWithLogo, NewTrademark } from '../../../models/trademark.model';
 import { IDocuments } from '../../../models/documents.model';
@@ -129,6 +130,26 @@ export class TrademarkService {
     return this.http
       .get<RestTrademark>(`${this.resourceUrl}/slug/${slug}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  /** Trademarks published in a given journal (scoped to the scraped journal corpus, never customer-owned applications). */
+  queryByJournal(journalNo: number, req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption({ ...req, 'journalNo.equals': journalNo, 'source.equals': 'JOURNAL_PUBLICATION' });
+    return this.http
+      .get<RestTrademark[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  getJournalSummaries(req?: any): Observable<HttpResponse<any[]>> {
+    return this.http.get<any[]>(`${this.resourceUrl}/journals/summary`, { params: createRequestOption(req), observe: 'response' });
+  }
+
+  /** Latest scraped trademark applications (public corpus, no client-owned rows). */
+  queryLatestApplications(req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption({ ...req, 'source.equals': 'SCRAPPER' });
+    return this.http
+      .get<RestTrademark[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
 

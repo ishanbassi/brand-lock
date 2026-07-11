@@ -1,0 +1,53 @@
+<section class="journal-listing gray-bg">
+  <div class="container">
+    <div class="page-header">
+      <h1>Trademark Journal</h1>
+      <p class="subtitle">Browse trademarks published in each India Trademark Registry journal.</p>
+    </div>
+
+    <div class="row" *ngIf="!loading && journals.length">
+      <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let journal of journals">
+        <a class="journal-card" [routerLink]="['/trademark-journal', journal.journalNo]">
+          <div class="journal-no">Journal No. {{ journal.journalNo }}</div>
+          <div class="journal-meta">
+            <span *ngIf="journal.publishedDate">Published {{ journal.publishedDate | date: 'dd MMM yyyy' }}</span>
+          </div>
+          <div class="journal-count">{{ journal.count }} trademarks</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !error && !journals.length">
+      No journals found.
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && error">
+      Something went wrong loading trademark journals. Please try again later.
+    </div>
+
+    <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
+      <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
+        <a [routerLink]="['/trademark-journal']" [queryParams]="{ page: currentPage - 1 }"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-left text-sm"></i>
+        </a>
+      </li>
+
+      <li *ngFor="let page of pages">
+        <a [routerLink]="['/trademark-journal']" [queryParams]="{ page: page }"
+          [class]="page === currentPage
+   ? 'flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white font-medium text-sm'
+   : 'flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm transition-colors'">
+          {{ page }}
+        </a>
+      </li>
+
+      <li [class.opacity-50]="currentPage === totalPages" [class.pointer-events-none]="currentPage === totalPages">
+        <a [routerLink]="['/trademark-journal']" [queryParams]="{ page: currentPage + 1 }"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-right text-sm"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

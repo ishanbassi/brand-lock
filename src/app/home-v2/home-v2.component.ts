@@ -13,10 +13,12 @@ import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { FaqComponent } from '../faq/faq.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
+import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
+import { LatestJournalsComponent } from '../latest-journals/latest-journals.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent],
+  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent, TrademarkPulseComponent, LatestJournalsComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })

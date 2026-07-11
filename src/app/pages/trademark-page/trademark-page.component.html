@@ -77,6 +77,20 @@
 
         </div>
 
+        <!-- Live Activity: Recent Filings & Latest Journals -->
+        <section class="activity-section" [@fadeInOut]="animationState">
+            <div class="container-xxl">
+                <div class="section-header">
+                    <h2>Live From the Trademark Registry</h2>
+                    <p>Real applications and journals published — updated as they happen.</p>
+                </div>
+                <div class="activity-grid">
+                    <app-trademark-pulse></app-trademark-pulse>
+                    <app-latest-journals></app-latest-journals>
+                </div>
+            </div>
+        </section>
+
         <div class="" [@fadeInOut]="animationState">
             <app-rating-review></app-rating-review>
 

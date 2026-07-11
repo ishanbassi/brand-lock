@@ -1,0 +1,91 @@
+<section class="journal-detail gray-bg">
+  <div class="container">
+    <div class="breadcrumb">
+      <a [routerLink]="'/home'">Home</a>
+      <span class="sep">›</span>
+      <a [routerLink]="'/trademark-journal'">Trademark Journal</a>
+      <span class="sep">›</span>
+      <span class="current">Journal No. {{ journalNo }}</span>
+    </div>
+
+    <div class="page-header">
+      <h1>Trademark Journal No. {{ journalNo }}</h1>
+      <p class="subtitle" *ngIf="totalItems">{{ totalItems }} trademarks published in this journal</p>
+    </div>
+
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Search trademarks in this journal..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <div class="table-wrap" *ngIf="!loading && trademarks.length">
+      <table class="tm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let col of columns">
+              <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="sortQueryParams(col.field)" queryParamsHandling="merge">
+                {{ col.label }}
+                <span class="sort-arrow" *ngIf="sortField === col.field">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+              </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tm of trademarks">
+            <td class="logo-cell">
+              <a [routerLink]="'/trademarks/' + tm.slug">
+                <img [src]="imgSrc(tm)" alt="{{ tm.name || 'Trademark' }} logo" />
+              </a>
+            </td>
+            <td>
+              <a [routerLink]="'/trademarks/' + tm.slug" class="tm-name" [title]="tm.name || 'Application No. ' + tm.applicationNo">{{ tm.name || 'Application No. ' + tm.applicationNo }}</a>
+            </td>
+            <td>{{ tm.applicationDate?.format('DD MMM YYYY') }}</td>
+            <td>{{ tm.applicationNo }}</td>
+            <td>{{ tm.tmClass }}</td>
+            <td>{{ tm.proprietorName }}</td>
+            <td>{{ tm.trademarkStatus || 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !error && !trademarks.length">
+      No trademarks found{{ searchTerm ? ' for "' + searchTerm + '"' : '' }}.
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && error">
+      Something went wrong loading this journal. Please try again later.
+    </div>
+
+    <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
+      <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
+        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: currentPage - 1 }" queryParamsHandling="merge"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-left text-sm"></i>
+        </a>
+      </li>
+
+      <li *ngFor="let page of pages">
+        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: page }" queryParamsHandling="merge"
+          [class]="page === currentPage
+   ? 'flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white font-medium text-sm'
+   : 'flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm transition-colors'">
+          {{ page }}
+        </a>
+      </li>
+
+      <li [class.opacity-50]="currentPage === totalPages" [class.pointer-events-none]="currentPage === totalPages">
+        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: currentPage + 1 }" queryParamsHandling="merge"
+          class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-right text-sm"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

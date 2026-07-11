@@ -725,3 +725,23 @@
 }
 @media (max-width: 992px) { .tm-compare-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 576px) { .tm-compare-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Live Activity: Recent Filings & Latest Journals ---------- */
+.activity-section {
+    padding: 3rem 0;
+}
+
+.activity-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+
+    > * {
+        flex: 1 1 320px;
+    }
+
+    ::ng-deep app-trademark-pulse,
+    ::ng-deep app-latest-journals {
+        max-width: none;
+    }
+}

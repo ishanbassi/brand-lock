@@ -121,6 +121,26 @@
     position: relative;
 }
 
+/* ---------- Live Activity: Recent Filings & Latest Journals ---------- */
+.activity-section {
+    padding: 2.5rem 0;
+}
+
+.activity-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+
+    > * {
+        flex: 1 1 320px;
+    }
+
+    ::ng-deep app-trademark-pulse,
+    ::ng-deep app-latest-journals {
+        max-width: none;
+    }
+}
+
 /* ---------- Service cards: CTA + popular badge ---------- */
 .services-grid {
     .service-card {
