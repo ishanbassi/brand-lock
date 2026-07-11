@@ -12,6 +12,8 @@ import { SERVICE_CONFIG, ServiceType } from '../../models/service-order.model';
 import { CreateOrderResponse } from '../../models/create-order-response.model';
 import { RazorPayOrderResponse } from '../../models/razorpay-order-response.model';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { LocalStorageService } from '../shared/services/local-storage.service';
+import { AuthService } from '../../models/auth.services';
 
 @Component({
   selector: 'app-service-checkout-page',
@@ -41,7 +43,9 @@ export class ServiceCheckoutPageComponent implements OnInit {
     private readonly sessionStorageService: SessionStorageService,
     private readonly loadingService: LoadingService,
     private readonly servicePaymentService: ServicePaymentService,
-    private readonly googleConversionTrackingService: GoogleConversionTrackingService
+    private readonly googleConversionTrackingService: GoogleConversionTrackingService,
+    private readonly localstorageService: LocalStorageService,
+    private readonly authservice: AuthService
   ) {}
 
   ngOnInit() {
@@ -125,11 +129,23 @@ export class ServiceCheckoutPageComponent implements OnInit {
     };
 
     options.handler = (response: RazorPayOrderResponse) => {
+      // The lead is what the backend uses to create (or find) the buyer's account and
+      // link this payment to it — without it the purchase never shows on any dashboard.
+      const lead = this.sessionStorageService.getObject('lead');
       this.servicePaymentService.verifyServiceSignature({
         ...response,
-        serviceType: this.serviceType!
+        serviceType: this.serviceType!,
+        leadDTO: lead ?? null
       }).subscribe({
-        next: () => {
+        next: (confirmation) => {
+          if (confirmation?.token?.id_token) {
+            const idToken = confirmation.token.id_token;
+            this.localstorageService.storeAuthenticationToken(idToken);
+            // Same as guest trademark checkout: the portal guard reads authorities from
+            // the 'user' storage entry, which nothing else on this path populates.
+            const { id, authorities } = this.authservice.decodeToken(idToken);
+            this.localstorageService.setObject('user', { id, authorities });
+          }
           this.googleConversionTrackingService.reportPurchaseConversion(
             response.razorpay_payment_id,
             orderResponse.amount,
