@@ -60,12 +60,16 @@
             </span>
             <span class="result-description" [innerHTML]="highlight(result.details)">
             </span>
+            <span class="result-meta" *ngIf="result.tmClass || result.type || result.proprietorName">
+              <ng-container *ngIf="result.tmClass">
+                <span class="meta-class">Class {{ result.tmClass }}</span><ng-container *ngIf="className(result.tmClass) as cn"> &ndash; {{ cn }}</ng-container>
+              </ng-container>
+              <ng-container *ngIf="typeLabel(result.type) as tl"> &middot; {{ tl }}</ng-container>
+              <ng-container *ngIf="result.proprietorName"> &middot; {{ result.proprietorName }}</ng-container>
+            </span>
           </span>
 
         </a>
-
-
-        <!-- <span class="result-category">{{ result.category }}</span> -->
       </li>
     </ul>
 

@@ -1,0 +1,359 @@
+// ── Page Layout ──────────────────────────────────────────────────────────────
+
+.brand-details-page {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding-bottom: 64px;
+}
+
+// ── Step Progress Bar ─────────────────────────────────────────────────────────
+
+.progress-bar-section {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  justify-content: center;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #94a3b8;
+  transition: all 0.2s;
+
+  &.done {
+    background: #16a34a;
+    color: #fff;
+  }
+
+  &.current {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  }
+}
+
+.step-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+
+  .step.completed &,
+  .step.active & {
+    color: #475569;
+  }
+}
+
+.step-connector {
+  flex: 1;
+  max-width: 80px;
+  height: 2px;
+  background: #e2e8f0;
+  margin-bottom: 20px;
+
+  &.active {
+    background: #2563eb;
+  }
+}
+
+// ── Page Content ──────────────────────────────────────────────────────────────
+
+.page-content {
+  padding-top: 40px;
+}
+
+.page-heading {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0;
+
+    strong {
+      color: #1e293b;
+    }
+  }
+}
+
+// ── Form Card ─────────────────────────────────────────────────────────────────
+
+.form-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.form-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    color: #2563eb;
+  }
+}
+
+.form-group {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+
+  &:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  .has-error & {
+    border-color: #ef4444;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+    }
+  }
+}
+
+.field-hint {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 5px;
+  display: block;
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: #ef4444;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+// ── Right Column: Summary ─────────────────────────────────────────────────────
+
+.summary-sticky {
+  position: sticky;
+  top: 80px;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.summary-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summary-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.summary-key {
+  font-size: 0.82rem;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.summary-val {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: right;
+  word-break: break-word;
+}
+
+// ── CTA Button ────────────────────────────────────────────────────────────────
+
+.btn-checkout {
+  width: 100%;
+  padding: 15px 24px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+  margin-bottom: 12px;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0 0 16px;
+  text-align: center;
+
+  svg {
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+}
+
+// ── Trust Items ───────────────────────────────────────────────────────────────
+
+.trust-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 500;
+
+  svg {
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 992px) {
+  .summary-sticky {
+    position: static;
+  }
+
+  .summary-card {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-heading h1 {
+    font-size: 1.4rem;
+  }
+
+  .form-card {
+    padding: 18px;
+  }
+
+  .progress-steps {
+    gap: 0;
+  }
+
+  .step {
+    min-width: 60px;
+  }
+
+  .step-connector {
+    max-width: 40px;
+  }
+}

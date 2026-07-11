@@ -9,6 +9,13 @@
 }
 
 .hero-content {
+    // common.scss's shared `.hero-content` rule leaves a permanent `transform: translateY(0)`
+    // after its fadeIn animation finishes, which creates a stacking context that traps the
+    // search dropdown's z-index below .hero-form-col. Kill it so the dropdown can stack above.
+    animation: none;
+    opacity: 1;
+    transform: none;
+
     h1 {
         font-size: clamp(1.6rem, 2.6vw, 2.2rem);
         margin-bottom: 1rem;
@@ -99,6 +106,9 @@
 }
 
 .hero-search {
+    position: relative;
+    z-index: 10;
+
     .search-label {
         font-size: 0.9rem;
         font-weight: 600;
@@ -109,7 +119,6 @@
 
 .hero-form-col {
     position: relative;
-    z-index: 1;
 }
 
 /* ---------- Service cards: CTA + popular badge ---------- */

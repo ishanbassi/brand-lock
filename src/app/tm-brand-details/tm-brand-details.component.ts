@@ -214,6 +214,12 @@ export class TmBrandDetailsComponent implements OnInit {
           lead: this.lead,
           trademarkId: res.body?.id ?? null
         });
+        // If the visitor arrived here with a trademark name already in hand (e.g.
+        // searched it on the "no results" page before registering), carry it over
+        // instead of making them retype it.
+        if (this.lead?.brandName) {
+          this.brandForm.patchValue({ brandName: this.lead.brandName });
+        }
         this.isInitializing = false;
         this.loadingService.hide();
       },

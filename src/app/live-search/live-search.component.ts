@@ -28,6 +28,8 @@ import { ITrademark } from '../../models/trademark.model';
 import { SharedModule } from '../shared/shared.module';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
+import { TRADEMARK_CLASSES } from '../pages/trademark-classes/trademark-classes.component';
+import { TrademarkTypeValues } from '../enumerations/trademark-type.model';
 
 
 
@@ -53,6 +55,9 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   isLoading = false;
   filters: IFilterOptions = new FilterOptions();
   baseUrl = environment.BaseApiUrl;
+
+  private readonly classNameByNum = new Map(TRADEMARK_CLASSES.map(c => [c.num, c.name]));
+  private readonly typeLabelByValue = new Map<string, string>(TrademarkTypeValues.map(t => [t.value as string, t.label]));
 
   private destroy$ = new Subject<void>();
 
@@ -185,6 +190,16 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
 
   trackById(_: number, item: ITrademark): number {
     return item.id;
+  }
+
+  className(tmClass?: number | null): string | null {
+    if (tmClass == null) return null;
+    return this.classNameByNum.get(tmClass) ?? null;
+  }
+
+  typeLabel(type?: string | null): string | null {
+    if (!type) return null;
+    return this.typeLabelByValue.get(type) ?? null;
   }
 
   searchFilter($event: any) {
