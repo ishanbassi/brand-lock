@@ -43,8 +43,6 @@ import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../../live-search/live-search.component';
 import { SeoService } from '../../shared/services/seo.service';
 import { trademarkFaqs } from '../../enums/faqList';
-import { TrademarkPulseComponent } from '../../trademark-pulse/trademark-pulse.component';
-import { LatestJournalsComponent } from '../../latest-journals/latest-journals.component';
 declare let gtag: Function;
 
 
@@ -54,7 +52,7 @@ declare let gtag: Function;
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent,LiveSearchComponent,TrademarkPulseComponent,LatestJournalsComponent
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent,LiveSearchComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',

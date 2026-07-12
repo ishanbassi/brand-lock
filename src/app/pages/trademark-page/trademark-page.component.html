@@ -85,8 +85,22 @@
                     <p>Real applications and journals published — updated as they happen.</p>
                 </div>
                 <div class="activity-grid">
-                    <app-trademark-pulse></app-trademark-pulse>
-                    <app-latest-journals></app-latest-journals>
+                    <a routerLink="/latest-trademark-applications" class="activity-link-card">
+                        <i class="fas fa-file-signature"></i>
+                        <div>
+                            <h3>Latest Trademark Applications</h3>
+                            <p>Browse trademark applications as they're filed with the registry.</p>
+                            <span class="card-cta">View Applications <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <a routerLink="/trademark-journal" class="activity-link-card">
+                        <i class="fas fa-newspaper"></i>
+                        <div>
+                            <h3>Trademark Journals</h3>
+                            <p>Browse published trademark journal issues from the registry.</p>
+                            <span class="card-cta">View Journals <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </a>
                 </div>
             </div>
         </section>
