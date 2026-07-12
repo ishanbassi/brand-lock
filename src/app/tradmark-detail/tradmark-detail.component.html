@@ -30,7 +30,13 @@
           </div>
           <div class="info-row">
             <span>Status:</span>
-            <strong class="status registered">{{trademark?.trademarkStatus || 'Unknown'}}</strong>
+            <strong *ngIf="liveStatus === 'fetching'" class="status fetching">
+              <span class="live-dot"></span> Fetching live status…
+            </strong>
+            <strong *ngIf="liveStatus !== 'fetching'" class="status registered">
+              {{trademark?.trademarkStatus || 'Unknown'}}
+              <span *ngIf="liveStatus === 'updated'" class="live-badge">Live</span>
+            </strong>
           </div>
           <div class="info-row">
             <span>Class:</span>
@@ -80,7 +86,15 @@
             </tr>
             <tr>
               <td>Status</td>
-              <td>{{trademark?.trademarkStatus || 'Unknown'}}</td>
+              <td>
+                <ng-container *ngIf="liveStatus === 'fetching'; else statusValue">
+                  <span class="status fetching"><span class="live-dot"></span> Fetching live status…</span>
+                </ng-container>
+                <ng-template #statusValue>
+                  {{trademark?.trademarkStatus || 'Unknown'}}
+                  <span *ngIf="liveStatus === 'updated'" class="live-badge">Live</span>
+                </ng-template>
+              </td>
             </tr>
             <tr *ngIf="trademark?.proprietorName">
               <td>Applicant:</td>

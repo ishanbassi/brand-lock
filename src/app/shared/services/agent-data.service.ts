@@ -15,7 +15,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class AgentDataService {
-  private readonly base = `${environment.BaseApiUrl}/api`;
+  private readonly base = `${environment.BaseApiUrl}api`;
 
   constructor(private readonly http: HttpClient) {}
 

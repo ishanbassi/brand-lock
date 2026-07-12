@@ -38,6 +38,12 @@ export type PartialUpdateRestTrademark = RestOf<PartialUpdateTrademark>;
 export type EntityResponseType = HttpResponse<ITrademark>;
 export type EntityArrayResponseType = HttpResponse<ITrademark[]>;
 
+export type LiveRefreshState = 'FRESH' | 'QUEUED' | 'BUSY' | 'NONE' | 'FETCHING' | 'COMPLETED' | 'NOT_FOUND' | 'FAILED';
+export interface ILiveRefreshStatus {
+  state: LiveRefreshState;
+  trademark?: RestTrademark | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TrademarkService {
   protected readonly http = inject(HttpClient);
@@ -126,6 +132,15 @@ export class TrademarkService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
   
+  /** Asks the backend to scrape this application from the govt registry ahead of the normal automation. */
+  requestLiveRefresh(applicationNo: number): Observable<ILiveRefreshStatus> {
+    return this.http.post<ILiveRefreshStatus>(`${this.resourceUrl}/refresh/${applicationNo}`, null);
+  }
+
+  getLiveRefreshStatus(applicationNo: number): Observable<ILiveRefreshStatus> {
+    return this.http.get<ILiveRefreshStatus>(`${this.resourceUrl}/refresh/${applicationNo}/status`);
+  }
+
   findBySlug(slug: string): Observable<EntityResponseType> {
     return this.http
       .get<RestTrademark>(`${this.resourceUrl}/slug/${slug}`, { observe: 'response' })
