@@ -1,17 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { MatFormField, MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { FormGroup, FormsModule } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ReCaptchaV3Service } from 'ng-recaptcha-2';
-import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
@@ -22,22 +14,17 @@ import { CommonRegisterLoginMobileSectionComponent } from '../common-register-lo
 import { LoadingService } from '../common/loading.service';
 import { RequiredDocumentsList } from '../enums/RequiredDocumentsList';
 import { TestimonialsList } from '../enums/TestimonialsList';
-import { FeaturesComponent } from '../features/features.component';
 import { DataService } from '../shared/services/data.service';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { ScriptLoaderService } from '../shared/services/script-loader.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
-import { SharedModule } from '../shared/shared.module';
+import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
+import { ValidationMessageComponent } from '../shared/validation-message/validation-message.component';
 
 @Component({
   selector: 'app-create-account',
-  imports: [FormsModule, MatFormField, SharedModule, FeaturesComponent, MatInputModule, MatIcon, MatIconModule, MatButtonModule, CommonRegisterLoginMobileSectionComponent, NgxIntlTelInputModule, NgxMaskDirective,
-    ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
-     MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule
-
-  ],
+  imports: [FormsModule, NgxMaskDirective, CommonRegisterLoginMobileSectionComponent, AuthLayoutComponent, ValidationMessageComponent],
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss',
   animations: [
@@ -146,7 +133,8 @@ export class CreateAccountComponent implements OnInit {
       .subscribe((token: string) => {
         this.data.captchaResponse = token;
         this.onClickValidation = !form.valid;
-        if (!form.valid) {
+        if (!form.valid || !this.data.isValidPasswordRequest(form)) {
+          this.onClickValidation = true;
           return;
         }
 
@@ -159,7 +147,6 @@ export class CreateAccountComponent implements OnInit {
         this.data.firstName = nameParts[0];
         this.data.lastName = nameParts.slice(1).join(" ") || " ";
         this.data.login = this.data.email;
-        this.data.password = "Ish@n@070720"
         this.loadingService.show();
         this.dataService.register(this.data.forRequest())
           .subscribe({
@@ -189,7 +176,15 @@ export class CreateAccountComponent implements OnInit {
           const { id, authorities } = this.authService.decodeToken(idToken);
           this.localStorageService.setObject('user', { id, authorities });
           this.sessionStorageService.set("initial-onboarding", true);
-          this.googleConversionTrackingService.reportSignupConversion("trademark-registration/step-2");
+
+          // Fetch the full profile (name/email/phone) now, same as the login page does,
+          // so the rest of the app recognises this customer immediately instead of only
+          // after their next explicit login.
+          this.dataService.getCurrentUser().subscribe({
+            next: (profile) => this.localStorageService.setObject('user', { ...profile.body, authorities }),
+          });
+
+          this.googleConversionTrackingService.reportSignupConversion("portal/dashboard");
           // this.router.navigateByUrl("trademark-registration/step-2");
 
 
@@ -205,6 +200,14 @@ export class CreateAccountComponent implements OnInit {
     } else {
       this.passwordFieldType = "password";
 
+    }
+  }
+
+  eyeConfirmPassword() {
+    if (this.confirmPasswordFieldType === "password") {
+      this.confirmPasswordFieldType = "text";
+    } else {
+      this.confirmPasswordFieldType = "password";
     }
   }
 

@@ -1,0 +1,186 @@
+// Shared primitives for the auth pages (login, create-account, forgot-password,
+// reset-password). Scoped under .auth-page so nothing leaks elsewhere.
+// Imported once from styles.scss. Pairs with AuthLayoutComponent, which
+// declares the same --tmx-* tokens on :host for the surrounding shell.
+
+.auth-page {
+  --tmx-ink:        #0f1d33;
+  --tmx-ink-2:      #26364f;
+  --tmx-muted:      #5b6b82;
+  --tmx-faint:      #8a99ad;
+  --tmx-line:       #dce4ef;
+  --tmx-line-soft:  #eaeff6;
+  --tmx-paper:      #eef2f8;
+  --tmx-panel:      #ffffff;
+  --tmx-blue:       #1e56d6;
+  --tmx-blue-deep:  #16337e;
+  --tmx-blue-soft:  #e7eefc;
+  --tmx-green:      #157f52;
+  --tmx-green-soft: #e3f2e9;
+  --tmx-red:        #a4302b;
+  --tmx-red-soft:   #fbe9e7;
+  --tmx-radius:   16px;
+  --tmx-radius-s: 10px;
+  --tmx-shadow:   0 1px 2px rgba(15, 29, 51, .06), 0 10px 30px rgba(15, 29, 51, .05);
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--tmx-ink);
+
+  * { box-sizing: border-box; }
+
+  // ── Card heading ──────────────────────────────────────────────────
+  .auth-eyebrow {
+    margin: 0 0 6px;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--tmx-blue);
+  }
+
+  .auth-title {
+    margin: 0 0 8px;
+    font-family: var(--font-serif);
+    font-size: 1.9rem;
+    font-weight: 550;
+    letter-spacing: -.01em;
+    color: var(--tmx-ink);
+  }
+
+  .auth-lede {
+    margin: 0 0 28px;
+    font-size: .92rem;
+    line-height: 1.55;
+    color: var(--tmx-muted);
+  }
+
+  // ── Fields ────────────────────────────────────────────────────────
+  .auth-field { margin-bottom: 18px; }
+
+  .auth-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--tmx-ink-2);
+  }
+
+  .auth-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .auth-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 44px 0 14px;
+    border: 1px solid var(--tmx-line);
+    border-radius: var(--tmx-radius-s);
+    background: var(--tmx-panel);
+    font-family: inherit;
+    font-size: .94rem;
+    color: var(--tmx-ink);
+    transition: border-color .15s, box-shadow .15s;
+
+    &::placeholder { color: var(--tmx-faint); }
+
+    &:focus {
+      outline: none;
+      border-color: var(--tmx-blue);
+      box-shadow: 0 0 0 3px var(--tmx-blue-soft);
+    }
+
+    &.has-error {
+      border-color: var(--tmx-red);
+      &:focus { box-shadow: 0 0 0 3px var(--tmx-red-soft); }
+    }
+  }
+
+  .auth-input-btn {
+    position: absolute;
+    right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--tmx-faint);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+
+    svg { width: 19px; height: 19px; }
+    &:hover { background: var(--tmx-line-soft); color: var(--tmx-ink-2); }
+  }
+
+  .auth-error {
+    margin: 6px 0 0;
+    font-size: .8rem;
+    color: var(--tmx-red);
+  }
+
+  // ── Actions ───────────────────────────────────────────────────────
+  .auth-row-between {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: -6px 0 22px;
+    font-size: .84rem;
+  }
+
+  .auth-link {
+    color: var(--tmx-blue);
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  .auth-btn-primary {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 999px;
+    background: var(--tmx-blue);
+    color: #fff;
+    font-size: .96rem;
+    font-weight: 650;
+    letter-spacing: -.01em;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(30, 86, 214, .28);
+    transition: background .15s, transform .1s, opacity .15s;
+
+    &:hover:not(:disabled) { background: var(--tmx-blue-deep); }
+    &:active:not(:disabled) { transform: translateY(1px); }
+    &:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+  }
+
+  .auth-foot {
+    margin-top: 24px;
+    text-align: center;
+    font-size: .86rem;
+    color: var(--tmx-muted);
+  }
+
+  .auth-terms {
+    margin-top: 18px;
+    font-size: .78rem;
+    line-height: 1.5;
+    color: var(--tmx-faint);
+    text-align: center;
+
+    a { color: var(--tmx-muted); text-decoration: underline; }
+  }
+
+  @media (max-width: 420px) {
+    .auth-title { font-size: 1.6rem; }
+  }
+}

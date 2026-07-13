@@ -13,6 +13,7 @@ import { finalize, Subject } from 'rxjs';
 import { PhoneInputComponent } from '../phone-input/phone-input.component';
 import { ServiceType } from '../../models/service-order.model';
 import { OnboardingStateService } from '../shared/services/onboarding-state.service';
+import { AuthService } from '../../models/auth.services';
 
 @Component({
   selector: 'app-lead-form',
@@ -34,6 +35,9 @@ export class LeadFormComponent implements OnInit {
   @Input() serviceType?: ServiceType;
   @ViewChild('ctaFormElement') ctaFormElement!: ElementRef;
 
+  /** Set when a logged-in customer's account already has full contact info on file. */
+  knownContact: { fullName: string; email: string; phoneNumber: string } | null = null;
+
   constructor(
     private readonly leadFormService: LeadFormService,
     private readonly toastService: ToastrService,
@@ -42,6 +46,7 @@ export class LeadFormComponent implements OnInit {
     private readonly sessionStorageService: SessionStorageService,
     private readonly googleConversionTrackingService: GoogleConversionTrackingService,
     private readonly onboardingStateService: OnboardingStateService,
+    private readonly authService: AuthService,
     private readonly router: Router,
   ) {}
 
@@ -50,6 +55,22 @@ export class LeadFormComponent implements OnInit {
       this.ctaForm.get('selectedPackage')?.setValue(planType);
       this.focusOnCtaForm();
     });
+
+    // A logged-in customer already told us who they are — don't make them
+    // retype it, just carry it into the lead.
+    this.knownContact = this.authService.hasValidToken() ? this.authService.getKnownContact() : null;
+    if (this.knownContact) {
+      this.ctaForm.patchValue({
+        fullName: this.knownContact.fullName,
+        email: this.knownContact.email,
+        phoneNumber: this.knownContact.phoneNumber,
+      });
+    }
+  }
+
+  /** Trademark filing has a known next step for a signed-in customer — the rest don't. */
+  get showQuickFileCard(): boolean {
+    return this.serviceType === 'TRADEMARK_REGISTRATION' && !!this.knownContact;
   }
 
   ctaForm = new FormGroup({
@@ -80,6 +101,9 @@ export class LeadFormComponent implements OnInit {
     }
 
     const lead = this.leadFormService.getLead(form) as NewLead;
+    if (this.knownContact) {
+      lead.leadSource = 'LOGGED_IN_QUICK_FILE';
+    }
     this.loadingService.show();
     this.leadService.create(lead)
       .pipe(finalize(() => {

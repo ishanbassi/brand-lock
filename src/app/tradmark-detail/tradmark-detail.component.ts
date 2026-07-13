@@ -12,12 +12,13 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
+import { TrademarkStatusActionComponent } from '../trademark-status-action/trademark-status-action.component';
 import { DataUtils } from '../shared/services/data-util.service';
 
 
 @Component({
   selector: 'app-tradmark-detail',
-  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent],
+  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent],
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })

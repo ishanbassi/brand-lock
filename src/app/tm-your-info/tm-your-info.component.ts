@@ -11,6 +11,7 @@ import { OnboardingStateService } from '../shared/services/onboarding-state.serv
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { LoadingService } from '../common/loading.service';
 import { SharedModule } from '../shared/shared.module';
+import { AuthService } from '../../models/auth.services';
 
 @Component({
   selector: 'app-tm-your-info',
@@ -39,6 +40,7 @@ export class TmYourInfoComponent implements OnInit {
   private readonly googleConversionTrackingService = inject(GoogleConversionTrackingService);
   private readonly loadingService = inject(LoadingService);
   private readonly toastService = inject(ToastrService);
+  private readonly authService = inject(AuthService);
 
   ngOnInit(): void {
     this.searchedTrademark = this.route.snapshot.queryParamMap.get('trademark');
@@ -52,7 +54,55 @@ export class TmYourInfoComponent implements OnInit {
     if (existingLead) {
       const resumeUrl = this.onboardingStateService.resumeUrl();
       this.router.navigateByUrl(resumeUrl ?? '/trademark-registration/brand-details');
+      return;
     }
+
+    // A logged-in customer already gave us their contact details at signup —
+    // don't make them retype it, just log the lead against their account info
+    // and take them straight to brand details.
+    const knownContact = this.authService.hasValidToken() ? this.authService.getKnownContact() : null;
+    if (knownContact) {
+      this.createLeadAndAdvance(knownContact);
+      return;
+    }
+
+    // Partial account info (e.g. missing phone) still saves a retype or two.
+    const partialContact = this.authService.hasValidToken() ? this.authService.getUser() as any : null;
+    if (partialContact) {
+      const fullName = partialContact.fullName || [partialContact.firstName, partialContact.lastName].filter(Boolean).join(' ');
+      this.infoForm.patchValue({
+        fullName: fullName || '',
+        email: partialContact.email ?? '',
+        phoneNumber: partialContact.phoneNumber ?? '',
+      });
+    }
+  }
+
+  private createLeadAndAdvance(contact: { fullName: string; email: string; phoneNumber: string }): void {
+    const lead: NewLead = {
+      id: null,
+      fullName: contact.fullName,
+      email: contact.email,
+      phoneNumber: contact.phoneNumber,
+      brandName: this.searchedTrademark,
+      leadSource: 'LOGGED_IN_QUICK_FILE',
+    };
+
+    this.loadingService.show();
+    this.leadService.create(lead)
+      .pipe(finalize(() => this.loadingService.hide()))
+      .subscribe({
+        next: (res) => {
+          this.sessionStorageService.setObject('lead', res.body);
+          this.googleConversionTrackingService.reportLeadFormSubmit();
+          const resumeUrl = this.onboardingStateService.resumeUrl();
+          this.onboardingStateService.saveState({ lead: res.body ?? null });
+          this.router.navigateByUrl(resumeUrl ?? '/trademark-registration/brand-details');
+        },
+        error: () => {
+          // Fall through to the manual form rather than stranding the visitor.
+        }
+      });
   }
 
   submit(): void {

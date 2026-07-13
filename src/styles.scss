@@ -177,3 +177,6 @@ app-root {
 
 // Admin portal shared styles (scoped under .admin-page)
 @import 'styles/admin';
+
+// Auth pages shared styles (scoped under .auth-page)
+@import 'styles/auth';

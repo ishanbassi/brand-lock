@@ -18,8 +18,9 @@
                     <li><a routerLink="/iso/iso-9001-2015">ISO</a></li>
                     <li><a routerLink="/blogs">Articles</a></li>
                     <li><a routerLink="/about-us">About</a></li>
-                    <!-- <li><a routerLink="/create-account">Create Account</a></li> -->
-                    <!-- <li><a routerLink="/login">Login</a></li> -->
+                    <li *ngIf="!isLoggedIn"><a routerLink="/create-account">Create Account</a></li>
+                    <li *ngIf="!isLoggedIn"><a routerLink="/login">Login</a></li>
+                    <li *ngIf="isLoggedIn"><a routerLink="/portal/dashboard">Dashboard</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -28,6 +29,7 @@
                     <li><a routerLink="/trademark">Trademark Registration</a></li>
                     <li><a routerLink="/iso/iso-9001-2015">ISO Certifications</a></li>
                     <li><a routerLink="/search">Trademark Search</a></li>
+                    <li><a routerLink="/trademark-status-check">Trademark Status Check</a></li>
                 </ul>
             </div>
             <div class="footer-section">

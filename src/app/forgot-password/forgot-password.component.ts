@@ -1,22 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Login } from '../../models/login';
 import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../shared/services/data.service';
 import { LoadingService } from '../common/loading.service';
-import { FeaturesComponent } from '../features/features.component';
-import { MatFormField, MatInputModule } from '@angular/material/input';
-import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { MatIcon } from '@angular/material/icon';
+import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
+import { ValidationMessageComponent } from '../shared/validation-message/validation-message.component';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
-  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,MatIcon]
+  imports: [FormsModule, RouterLink, AuthLayoutComponent, ValidationMessageComponent]
 
 })
 export class ForgotPasswordComponent implements OnInit {

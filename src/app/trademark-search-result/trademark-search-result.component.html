@@ -35,7 +35,8 @@
 
         <!-- Results List -->
         <div class="results-list" *ngIf="!isLoading && results && results.length > 0">
-          <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById"
+          <ng-container *ngFor="let trademark of results; trackBy: trackById; let i = index; let last = last">
+          <article class="trademark-card"
             [attr.data-status]="trademark.trademarkStatus?.toLowerCase()">
             <!-- Card Header -->
             <div class="card-header">
@@ -87,6 +88,11 @@
               </a>
             </div>
           </article>
+
+          <!-- Inline conflict-assessment lead card after the 3rd result (or the last, if fewer) -->
+          <app-search-expert-opinion *ngIf="i === 2 || (last && results.length < 3)"
+            [query]="query" [resultCount]="totalResults"></app-search-expert-opinion>
+          </ng-container>
         </div>
 
         <!-- Empty State - Trademark Available -->
@@ -118,8 +124,8 @@
                   </svg>
                   <span>Limited Time Offer</span>
                 </div>
-                <h4 class="cta-card-title">File Your Trademark at Just ₹1499</h4>
-                <p class="cta-card-subtitle">+ Government fees | Expert guidance included</p>
+                <h4 class="cta-card-title">File Your Trademark at Just ₹1499 + Govt Fees</h4>
+                <p class="cta-card-subtitle">Expert guidance included</p>
               </div>
 
               <div class="cta-card-features">

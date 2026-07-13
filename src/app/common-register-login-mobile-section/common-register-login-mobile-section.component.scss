@@ -1,10 +1,10 @@
 .mobile-view-bottom-section {
     padding: 10px 12px;
-    background-color: #F6F5F4;
+    background-color: #eef2f8;
 
     .negotiated-rates-section {
         .heading {
-            color: #001F4D;
+            color: #0f1d33;
             text-align: center;
             font-size: 22px;
             font-style: normal;
@@ -13,7 +13,7 @@
         }
 
         .negotiated-rates {
-            color: var(--Neutra-800, #4A4A4A);
+            color: var(--Neutra-800, #5b6b82);
             text-align: center;
             font-size: 13px;
             font-style: normal;
@@ -40,7 +40,7 @@
             .provider-category {
                 font-size: 18px;
                 line-height: normal;
-                color: #001F4D;
+                color: #0f1d33;
             }
 
             .provider-savings-section {
@@ -53,18 +53,18 @@
         font-size: 13px !important;
         font-weight: 400 !important;
         line-height: normal !important;
-        color: #4A4A4A !important;
+        color: #5b6b82 !important;
     }
 }
 
 @media screen and (max-width:1200px) {
     .mobile-view-bottom-section {
         padding: 10px 12px;
-        background-color: #F6F5F4;
+        background-color: #eef2f8;
 
         .negotiated-rates-section {
             .heading {
-                color: #001F4D;
+                color: #0f1d33;
                 text-align: center;
                 font-size: 22px;
                 font-style: normal;
@@ -73,7 +73,7 @@
             }
 
             .negotiated-rates {
-                color: var(--Neutra-800, #4A4A4A);
+                color: var(--Neutra-800, #5b6b82);
                 text-align: center;
                 font-size: 13px;
                 font-style: normal;
@@ -100,7 +100,7 @@
                 .provider-category {
                     font-size: 18px;
                     line-height: normal;
-                    color: #001F4D;
+                    color: #0f1d33;
                 }
 
                 .provider-savings-section {
@@ -113,7 +113,7 @@
             font-size: 13px !important;
             font-weight: 400 !important;
             line-height: normal !important;
-            color: #4A4A4A !important;
+            color: #5b6b82 !important;
         }
     }
 
@@ -165,7 +165,7 @@
         }
 
         .provider-savings-section {
-            color: #001F4D;
+            color: #0f1d33;
             font-size: 20px;
             font-style: normal;
             font-weight: 500;
@@ -189,5 +189,5 @@
 }
 
 .services{
-    background-color: #f6f5f4 !important;
+    background-color: #eef2f8 !important;
 }

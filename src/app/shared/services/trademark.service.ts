@@ -131,6 +131,12 @@ export class TrademarkService {
       .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params:{trademark:query} })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
+
+  searchByApplicationNumber(applicationNo:string): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestTrademark[]>(`${this.resourceUrl}/search-by-application-number`, { observe: 'response',params:{applicationNo} })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
   
   /** Asks the backend to scrape this application from the govt registry ahead of the normal automation. */
   requestLiveRefresh(applicationNo: number): Observable<ILiveRefreshStatus> {

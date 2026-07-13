@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../shared/services/data.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
@@ -8,12 +8,9 @@ import { LoadingService } from '../common/loading.service';
 import { AuthService } from '../../models/auth.services';
 import { JwtToken } from '../../models/jwt.token';
 import { Login } from '../../models/login';
-import { FeaturesComponent } from '../features/features.component';
-import { MatFormField, MatInputModule } from '@angular/material/input';
-import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
-import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
-import { MatIcon } from '@angular/material/icon';
+import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
+import { ValidationMessageComponent } from '../shared/validation-message/validation-message.component';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
 
 
@@ -21,8 +18,7 @@ import { CommonRegisterLoginMobileSectionComponent } from '../common-register-lo
   selector: 'app-login-v2',
   templateUrl: './login-v2.component.html',
   styleUrl: './login-v2.component.scss',
-  imports: [FeaturesComponent, MatFormField, SharedModule, FormsModule,DashboardHeaderComponent,MatInputModule,
-    MatIcon,CommonRegisterLoginMobileSectionComponent]
+  imports: [FormsModule, RouterLink, AuthLayoutComponent, ValidationMessageComponent, CommonRegisterLoginMobileSectionComponent]
 })
 export class LoginV2Component implements OnInit{
  onClickValidation: boolean = false;

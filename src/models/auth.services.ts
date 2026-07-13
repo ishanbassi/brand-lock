@@ -54,6 +54,26 @@ export class AuthService {
     return roles.some(r => authorities.some((x: any) => (x?.name ?? x) === r));
   }
 
+  /**
+   * Contact details for a logged-in customer, when all three are known —
+   * used to skip lead-capture fields the account already has on file.
+   * Freshly-created accounts only carry {id, authorities} until the portal
+   * fetches the full profile, so this can legitimately return null.
+   */
+  getKnownContact(): { fullName: string; email: string; phoneNumber: string } | null {
+    const user: any = this.getUser();
+    if (!user) {
+      return null;
+    }
+    const fullName: string = (user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ')).trim();
+    const email: string | undefined = user.email;
+    const phoneNumber: string | undefined = user.phoneNumber;
+    if (!fullName || !email || !phoneNumber) {
+      return null;
+    }
+    return { fullName, email, phoneNumber };
+  }
+
 
   /**
    * The JWT itself carries the user's authorities (backend "auth" claim,

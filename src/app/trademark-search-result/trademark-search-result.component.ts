@@ -6,6 +6,7 @@ import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-p
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
+import { SearchExpertOpinionComponent } from '../search-expert-opinion/search-expert-opinion.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
@@ -17,7 +18,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-trademark-search-result',
-  imports: [LiveSearchComponent, SharedModule, ReactiveFormsModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, SearchCtaSectionComponent, FirmBannerComponent],
+  imports: [LiveSearchComponent, SharedModule, ReactiveFormsModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, SearchCtaSectionComponent, SearchExpertOpinionComponent, FirmBannerComponent],
   templateUrl: './trademark-search-result.component.html',
   styleUrl: './trademark-search-result.component.scss'
 })

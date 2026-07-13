@@ -21,6 +21,22 @@ export class Account {
   utmMedium?: string;
   utmContent? :string;
   
+  isValidPasswordRequest(form: any) {
+    if (!this.password || this.password.trim() === '') {
+      form.controls.userPassword.setErrors({ invalid: true });
+      return false;
+    }
+    if (!this.confirmPassword || this.confirmPassword.trim() === '') {
+      form.controls.confirmPassword.setErrors({ invalid: true });
+      return false;
+    }
+    if (this.password.trim() !== this.confirmPassword.trim()) {
+      form.controls.confirmPassword.setErrors({ invalid: true });
+      return false;
+    }
+    return true;
+  }
+
   forRequest() {
     this.firstName = this.trimMe(this.firstName);
     this.lastName = this.trimMe(this.lastName);

@@ -1,0 +1,45 @@
+<div class="expert-opinion-card">
+  <div class="eo-content">
+    <div class="eo-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+    <div class="eo-text">
+      <h3 class="eo-title">
+        {{ resultCount }} similar mark{{ resultCount !== 1 ? 's' : '' }} already exist{{ resultCount === 1 ? 's' : '' }} for
+        <span class="eo-query">"{{ query }}"</span>
+      </h3>
+      <p class="eo-subtitle">
+        A similar existing trademark is the most common reason applications get objected or refused.
+        Get a <strong>free conflict assessment</strong> from our attorneys before you file.
+      </p>
+    </div>
+  </div>
+
+  <form class="eo-form" [formGroup]="leadForm" (ngSubmit)="submit()" *ngIf="!submitted">
+    <div class="eo-phone-wrapper">
+      <span class="eo-prefix">+91</span>
+      <input type="tel" class="eo-input" placeholder="Phone number" formControlName="phoneNumber"
+        maxlength="10" autocomplete="tel"
+        [class.invalid]="leadForm.get('phoneNumber')?.touched && leadForm.get('phoneNumber')?.invalid" />
+    </div>
+    <button class="eo-submit" type="submit" [disabled]="isSubmitting">
+      <span *ngIf="!isSubmitting">Get Free Assessment</span>
+      <span *ngIf="isSubmitting">Sending…</span>
+    </button>
+  </form>
+  <p class="eo-error" *ngIf="!submitted && leadForm.get('phoneNumber')?.touched && leadForm.get('phoneNumber')?.invalid">
+    Please enter a valid 10-digit phone number.
+  </p>
+
+  <div class="eo-success" *ngIf="submitted">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span><strong>Request received.</strong> A trademark attorney will call you with the assessment shortly.</span>
+  </div>
+</div>

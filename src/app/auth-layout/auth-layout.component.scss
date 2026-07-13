@@ -1,0 +1,191 @@
+// ══════════════════════════════════════════════════════════════════════
+//  Auth pages shell — "official document" theme (login/register/reset)
+//  Tokens mirror trademark-portal.component.scss so the whole account
+//  lifecycle (auth → portal) reads as one system.
+// ══════════════════════════════════════════════════════════════════════
+
+:host {
+  --tmx-ink:        #0f1d33;
+  --tmx-ink-2:      #26364f;
+  --tmx-muted:      #5b6b82;
+  --tmx-faint:      #8a99ad;
+  --tmx-line:       #dce4ef;
+  --tmx-line-soft:  #eaeff6;
+  --tmx-paper:      #eef2f8;
+  --tmx-panel:      #ffffff;
+  --tmx-blue:       #1e56d6;
+  --tmx-blue-deep:  #16337e;
+  --tmx-blue-soft:  #e7eefc;
+  --tmx-green:      #157f52;
+  --tmx-green-soft: #e3f2e9;
+  --tmx-red:        #a4302b;
+  --tmx-red-soft:   #fbe9e7;
+
+  --tmx-radius:   16px;
+  --tmx-radius-s: 10px;
+  --tmx-shadow:   0 1px 2px rgba(15, 29, 51, .06), 0 10px 30px rgba(15, 29, 51, .05);
+
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  display: block;
+}
+
+* { box-sizing: border-box; }
+
+.auth-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--tmx-paper);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+// ── Brand panel ───────────────────────────────────────────────────────
+.auth-brand-panel {
+  position: relative;
+  flex: 0 0 44%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  background: var(--tmx-ink);
+  color: #fff;
+  overflow: hidden;
+}
+
+.guilloche {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, .05);
+  pointer-events: none;
+}
+
+.auth-wordmark {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -.02em;
+  width: fit-content;
+
+  .wm-mark { color: #fff; }
+  .wm-mark.alt { color: #8fb1f5; }
+  .wm-dot { color: rgba(255, 255, 255, .45); font-weight: 600; font-size: .8rem; margin-left: 1px; }
+}
+
+.form-wordmark {
+  display: none;
+  margin-bottom: 32px;
+
+  .wm-mark { color: var(--tmx-ink); }
+  .wm-mark.alt { color: var(--tmx-blue); }
+  .wm-dot { color: var(--tmx-faint); }
+}
+
+.auth-brand-copy {
+  position: relative;
+  margin-top: 56px;
+}
+
+.auth-headline {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 550;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+}
+
+.auth-subline {
+  margin: 0 0 32px;
+  max-width: 38ch;
+  font-size: .96rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .68);
+}
+
+.auth-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: .92rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, .92);
+
+    svg {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      padding: 3px;
+      border-radius: 50%;
+      background: rgba(21, 127, 82, .28);
+      color: #4ade95;
+    }
+  }
+}
+
+.auth-brand-support {
+  position: relative;
+
+  .support-label { margin: 0 0 4px; font-size: .76rem; color: rgba(255, 255, 255, .5); }
+  .support-phone {
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: .96rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: -.01em;
+  }
+  .support-phone:hover { text-decoration: underline; }
+}
+
+// ── Form panel ───────────────────────────────────────────────────────
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.auth-form-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+// ── Responsive ───────────────────────────────────────────────────────
+@media (max-width: 960px) {
+  .auth-brand-panel { display: none; }
+  .form-wordmark { display: inline-flex; }
+  .auth-form-panel { padding: 32px 20px 12px; }
+}
+
+@media (max-width: 420px) {
+  .auth-form-panel { padding: 24px 16px 8px; }
+}
+
+// ── Quality floor ────────────────────────────────────────────────────
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--tmx-blue);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

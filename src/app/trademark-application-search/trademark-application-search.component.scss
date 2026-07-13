@@ -1,0 +1,270 @@
+$primary: #2563eb;
+$secondary: #1e40af;
+$text: #1f2937;
+$text-light: #6b7280;
+$border: #e5e7eb;
+$surface: #f8fafc;
+$success: #10b981;
+$warning: #f59e0b;
+$error: #ef4444;
+$radius-md: 10px;
+$radius-lg: 14px;
+
+.status-check-page {
+  min-height: 60vh;
+}
+
+.hero {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: #fff;
+  padding: 56px 20px 72px;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  max-width: 640px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 220px;
+  padding: 14px 18px;
+  border-radius: $radius-md;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: $radius-md;
+  background: #fff;
+  color: $primary;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.results-section {
+  margin-top: -36px;
+  padding-bottom: 60px;
+}
+
+.results-count {
+  color: $text-light;
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+}
+
+.trademark-card {
+  background: #fff;
+  border: 1.5px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.trademark-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $surface;
+  border: 1px solid $border;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.trademark-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.trademark-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: $surface;
+  color: $text-light;
+  white-space: nowrap;
+
+  &.status-active {
+    background: rgba(16, 185, 129, 0.12);
+    color: $success;
+  }
+
+  &.status-pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: $warning;
+  }
+
+  &.status-expired {
+    background: rgba(239, 68, 68, 0.12);
+    color: $error;
+  }
+}
+
+.card-body {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid $border;
+}
+
+.trademark-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+
+.meta-item {
+  font-size: 0.875rem;
+  color: $text-light;
+
+  b {
+    color: $text;
+    font-weight: 600;
+  }
+}
+
+.card-footer {
+  margin-top: 16px;
+}
+
+.btn-details {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: $primary;
+  font-weight: 700;
+  font-size: 0.9rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.empty-state,
+.idle-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: $text-light;
+}
+
+.empty-title {
+  color: $text;
+  font-size: 1.15rem;
+  margin: 0 0 8px;
+}
+
+.empty-note {
+  margin: 0 0 20px;
+}
+
+.idle-state svg {
+  color: $border;
+  margin-bottom: 16px;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1.5px solid $primary;
+  color: $primary;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: rgba(37, 99, 235, 0.06);
+  }
+}
+
+.loading-state {
+  padding-top: 8px;
+}
+
+.skeleton-card {
+  height: 120px;
+  border-radius: $radius-lg;
+  background: linear-gradient(90deg, $surface 25%, #eef1f5 37%, $surface 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (max-width: 560px) {
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+  }
+
+  .search-btn {
+    justify-content: center;
+  }
+}

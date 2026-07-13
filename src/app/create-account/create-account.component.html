@@ -1,144 +1,121 @@
+<app-auth-layout class="auth-page" headline="Protect what's yours." subline="Register free and start your filing in minutes — no payment until you file."
+  [bullets]="['Protect your name early — register before someone else does', 'Avoid rejection with smart similarity checks before you file', 'Stay informed — we track your status and journal publications']">
+  <form authForm class="site-form" novalidate="novalidate" #loginForm="ngForm" (ngSubmit)="executeRecaptchaAndRegister(loginForm.form)">
+    <p class="auth-eyebrow">Get started</p>
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-lede">
+      Call now:
+      <a class="auth-link" href="tel:+916239771006" (click)="trackCallToActionEvent()">6239771006</a>
+    </p>
 
-
-<div>
-  <div class="site-page-body create-account-page-v2">
-    <div class="create-account-main-section">
-      <app-features class="features-component"></app-features>
-      <div class="register-section">
-        <p class="cta-form-call-now">Call Now:
-          <a type="button" class="call-now" href="tel:+916239771006" (click)="trackCallToActionEvent()">6239771006</a>
-        </p>
-        <h2 class="register-heading ">
-          Create Account
-        </h2>
-        <div class="form-section mx-2 mx-md-auto">
-          <form class="site-form" novalidate="novalidate" #loginForm="ngForm"
-            (ngSubmit)="executeRecaptchaAndRegister(loginForm.form)">
-            <div class="row g-4 no-mobile-view-g">
-              <div class="col-lg-12 site-form-field-container mb-3">
-                <label for="firstname" class="form-labels">Name</label>
-                <mat-form-field class="site-form-field" appearance="outline"
-                  [ngClass]="{'mat-form-field-invalid':!firstName.valid && (onClickValidation || firstName.touched || firstName.dirty)}">
-                  <input matInput required="required" name="firstName" #firstName="ngModel" [(ngModel)]="data.firstName"
-                    id="firstname" maxlength="45" placeholder="Enter full Name" appWhitespaceValidator>
-                  <mat-icon matSuffix [ngClass]="firstName.value ? 'visible': 'invisible'"
-                    (click)="data.firstName=undefined">highlight_off</mat-icon>
-                </mat-form-field>
-                <app-validation-message [field]="firstName"
-                  [onClickValidation]="firstName.dirty || firstName.touched || onClickValidation">
-                </app-validation-message>
-              </div>
-
-            </div>
-            <div class="row g-0">
-              <div class="site-form-field-container mb-3 no-padding">
-                <label for="email" class="form-labels">Email</label>
-
-                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
-                  [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
-
-                  <input matInput required="required" name="userEmail" #userEmail="ngModel" [readonly]="loggedIn"
-                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$" [(ngModel)]="data.email" id="label"
-                    placeholder="Enter email address">
-                  <mat-icon *ngIf="!loggedIn" matSuffix [ngClass]=" userEmail.value ? 'visible': 'invisible'"
-                    (click)="data.email=undefined">highlight_off</mat-icon>
-                </mat-form-field>
-                <app-validation-message [field]="userEmail"
-                  [customPatternMessage]="'Please provide a valid email address'"
-                  [onClickValidation]="userEmail.dirty || userEmail.touched|| onClickValidation">
-                </app-validation-message>
-              </div>
-            </div>
-            <div class="row g-4 no-mobile-view-g">
-              <div class="col-lg-12 site-form-field-container mb-3">
-                <label for="phonenumber" class="form-labels"> Phone number</label>
-                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
-                  [ngClass]="{'mat-form-field-invalid':!phoneNumber.valid && (onClickValidation || phoneNumber.touched || phoneNumber.dirty)}">
-
-                  <input matInput type="tel" required="required" name="phoneNumber" #phoneNumber="ngModel"
-                    [(ngModel)]="data.phoneNumber" mask="000-000-0000" id="phonenumber"
-                    placeholder="Enter phone number">
-                  <mat-icon matSuffix [ngClass]="phoneNumber.value ? 'visible': 'invisible'"
-                    (click)="data.phoneNumber=undefined">highlight_off</mat-icon>
-                </mat-form-field>
-                <app-validation-message [field]="phoneNumber"
-                  [onClickValidation]="phoneNumber.dirty || phoneNumber.touched || onClickValidation">
-                </app-validation-message>
-              </div>
-            </div>
-            <!-- <div class="row g-0 no-mobile-view-g" *ngIf="!loggedIn">
-              <div class="col-lg-12 site-form-field-container mb-3 password-field-container">
-                <label for="password" class="form-labels">Password</label>
-                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
-                  [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
-
-                  <input matInput [type]="passwordFieldType" required="required" name="userPassword"
-                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}"
-                    #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password" id="password" />
-                  <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
-                    (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
-                </mat-form-field>
-                <app-validation-message [field]="userPassword"
-                  [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
-                  [onClickValidation]=" userPassword.dirty || userPassword.touched ||onClickValidation">
-                </app-validation-message>
-              </div>
-            </div> -->
-
-
-            <div class="register-action-container">
-              <button mat-raised-button class="register-btn" aria-label="Continue"
-                [ngClass]="{'disable-btn': !loginForm.form.valid}">
-                <span>Register Now!</span>
-              </button>
-            </div>
-
-
-
-
-            <div class="pre-register-bottom">
-              <span>Save Time. Save Money.</span>
-            </div>
-
-            <div class="register-bottom">
-              Free to sign up. Pay only when you file.
-            </div>
-          </form>
-          <div class="terms-conditions-section">
-            By clicking “Join now” you agree to our <a href="/terms-and-conditions" target="_blank"
-              class="form-links">Terms
-              and Conditions</a> and the <a href="/privacy-policy" target="_blank" class="form-links">Privacy
-              Policy</a>.
-          </div>
-        </div>
+    <div class="auth-field">
+      <label for="firstname" class="auth-label">Name</label>
+      <div class="auth-input-wrap">
+        <input #firstName="ngModel" type="text" id="firstname" name="firstName" class="auth-input"
+          [class.has-error]="!firstName.valid && (onClickValidation || firstName.touched || firstName.dirty)"
+          required maxlength="45" [(ngModel)]="data.firstName" placeholder="Enter full name">
       </div>
-      <app-common-register-login-mobile-section></app-common-register-login-mobile-section>
-
-      <div class="manage-bills-section only-mobile-view">
-        <div class="heading">
-          There's a smarter way to protect your brand:
-        </div>
-        <ul>
-          <li>
-            <b>Protect your name early—</b>register before someone else does and build brand ownership from day one.
-          </li>
-          <li>
-            <b>Avoid rejection—</b>our smart checks detect similar trademarks before you file, reducing risk of
-            objection.
-          </li>
-          <li>
-            <b>Stay informed—</b>we track your application status and journal publications so you never miss an update.
-          </li>
-        </ul>
-      </div>
+      <app-validation-message [field]="firstName"
+        [onClickValidation]="firstName.dirty || firstName.touched || onClickValidation">
+      </app-validation-message>
     </div>
-  </div>
 
-</div>
+    <div class="auth-field">
+      <label for="email" class="auth-label">Email</label>
+      <div class="auth-input-wrap">
+        <input #userEmail="ngModel" type="email" id="email" name="userEmail" class="auth-input"
+          [class.has-error]="!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)"
+          required [readonly]="loggedIn" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$"
+          [(ngModel)]="data.email" placeholder="Enter email address">
+      </div>
+      <app-validation-message [field]="userEmail" [customPatternMessage]="'Please provide a valid email address'"
+        [onClickValidation]="userEmail.dirty || userEmail.touched || onClickValidation">
+      </app-validation-message>
+    </div>
+
+    <div class="auth-field">
+      <label for="phonenumber" class="auth-label">Phone number</label>
+      <div class="auth-input-wrap">
+        <input #phoneNumber="ngModel" type="tel" id="phonenumber" name="phoneNumber" class="auth-input"
+          [class.has-error]="!phoneNumber.valid && (onClickValidation || phoneNumber.touched || phoneNumber.dirty)"
+          required [(ngModel)]="data.phoneNumber" mask="000-000-0000" placeholder="Enter phone number">
+      </div>
+      <app-validation-message [field]="phoneNumber"
+        [onClickValidation]="phoneNumber.dirty || phoneNumber.touched || onClickValidation">
+      </app-validation-message>
+    </div>
+
+    <div class="auth-field">
+      <label for="password" class="auth-label">Password</label>
+      <div class="auth-input-wrap">
+        <input #userPassword="ngModel" [type]="passwordFieldType" id="password" name="userPassword" class="auth-input"
+          [class.has-error]="!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)"
+          required [(ngModel)]="data.password" placeholder="Create a password" autocomplete="new-password"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}">
+        <button type="button" class="auth-input-btn" (click)="eyePassword()"
+          [attr.aria-label]="passwordFieldType === 'password' ? 'Show password' : 'Hide password'">
+          @if (passwordFieldType === 'password') {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/><path d="m3 3 14 14"/>
+            </svg>
+          }
+        </button>
+      </div>
+      <app-validation-message [field]="userPassword"
+        [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
+        [onClickValidation]="userPassword.dirty || userPassword.touched || onClickValidation">
+      </app-validation-message>
+    </div>
+
+    <div class="auth-field">
+      <label for="confirmpassword" class="auth-label">Confirm password</label>
+      <div class="auth-input-wrap">
+        <input #confirmPassword="ngModel" [type]="confirmPasswordFieldType" id="confirmpassword" name="confirmPassword"
+          class="auth-input"
+          [class.has-error]="(!confirmPassword.valid && (onClickValidation || confirmPassword.touched || confirmPassword.dirty)) || (data.password !== data.confirmPassword)"
+          required [(ngModel)]="data.confirmPassword" placeholder="Re-enter password" autocomplete="new-password"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()-_=+\{};:.?*?])[A-Za-z\d!@#$%^&()-_=+\{};:.?*?]{8,}">
+        <button type="button" class="auth-input-btn" (click)="eyeConfirmPassword()"
+          [attr.aria-label]="confirmPasswordFieldType === 'password' ? 'Show password' : 'Hide password'">
+          @if (confirmPasswordFieldType === 'password') {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/><path d="m3 3 14 14"/>
+            </svg>
+          }
+        </button>
+      </div>
+      <app-validation-message [field]="confirmPassword"
+        [customPatternMessage]="'Must be at least 8 characters and include a capital letter, number, and special character.'"
+        [comparableField]="userPassword"
+        [onClickValidation]="confirmPassword.dirty || confirmPassword.touched || onClickValidation">
+      </app-validation-message>
+    </div>
+
+    <button type="submit" class="auth-btn-primary" [disabled]="loginForm.form.invalid">Register now</button>
+
+    <p class="auth-foot">Free to sign up. Pay only when you file.</p>
+
+    <p class="auth-terms">
+      By clicking "Register now" you agree to our
+      <a href="/terms-and-conditions" target="_blank">Terms and Conditions</a> and the
+      <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+    </p>
+  </form>
+</app-auth-layout>
+
+<app-common-register-login-mobile-section></app-common-register-login-mobile-section>
+
 <a href="https://api.whatsapp.com/send?phone=6239771006&text=I%20want%20a%20trademark%20registration" class="whatsapp-button" target="_blank">
-    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="whatsapp icon">
-  </a>
-  <a href="tel:+916239771006" class="call-button" (click)="trackCallToActionEvent()"
-   >
+  <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="whatsapp icon">
+</a>
+<a href="tel:+916239771006" class="call-button" (click)="trackCallToActionEvent()">
   <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call Button">
 </a>

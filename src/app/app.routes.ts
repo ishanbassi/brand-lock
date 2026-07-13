@@ -12,6 +12,24 @@ export const routes: Routes = [
         data: { roles: ['ROLE_USER'] }
     },
     {
+        // ROLE_AGENT portal — standalone shell, no public navbar/footer.
+        path: 'agent-portal',
+        loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
+        loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
+        title: "Agent Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_AGENT'] }
+    },
+    {
+        // ROLE_ADMIN portal — standalone shell, no public navbar/footer.
+        path: 'admin-portal',
+        loadComponent: () => import('./admin-portal/admin-portal-shell.component').then(m => m.AdminPortalShellComponent),
+        loadChildren: () => import('./admin-portal/admin-portal.routes').then(m => m.adminPortalRoutes),
+        title: "Admin Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ADMIN'] }
+    },
+    {
         path: "",
         loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
         children:[
@@ -19,22 +37,16 @@ export const routes: Routes = [
         path: "",
         loadComponent: () => import('./home-v2/home-v2.component').then(m => m.HomeV2Component),
         title: "Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "home",
         loadComponent: () => import('./home-v2/home-v2.component').then(m => m.HomeV2Component),
         title: "Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "trademark",
         loadComponent: () => import('./pages/trademark-page/trademark-page.component').then(m => m.TrademarkPageComponent),
         title: "Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "privacy-policy",
@@ -81,22 +93,6 @@ export const routes: Routes = [
         loadComponent: () => import('./onboarding/onboarding.component').then(m => m.OnboardingComponent),
         loadChildren: () => import('./onboarding/onboarding.routes').then(m => m.onboardingRoutes),
         title: "Trademark Registration",
-    },
-    {
-        path: 'agent-portal',
-        loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
-        loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
-        title: "Agent Portal",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_AGENT'] }
-    },
-    {
-        path: 'admin-portal',
-        loadComponent: () => import('./admin-portal/admin-portal-shell.component').then(m => m.AdminPortalShellComponent),
-        loadChildren: () => import('./admin-portal/admin-portal.routes').then(m => m.adminPortalRoutes),
-        title: "Admin Portal",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ADMIN'] }
     },
     {
         path: 'create-agent-account',
@@ -149,43 +145,31 @@ export const routes: Routes = [
         path: 'trademark-renewal',
         loadComponent: () => import('./trademark-renewal/trademark-renewal.component').then(m => m.TrademarkRenewalComponent),
         title: "Trademark Renewal — ₹4,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-objection-reply',
         loadComponent: () => import('./trademark-objection-reply/trademark-objection-reply.component').then(m => m.TrademarkObjectionReplyComponent),
         title: "Trademark Objection Reply — ₹2,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-watch',
         loadComponent: () => import('./trademark-watch/trademark-watch.component').then(m => m.TrademarkWatchComponent),
         title: "Trademark Watch Service — ₹1,499/year | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-assignment',
         loadComponent: () => import('./trademark-assignment/trademark-assignment.component').then(m => m.TrademarkAssignmentComponent),
         title: "Trademark Assignment / Transfer — ₹4,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-opposition',
         loadComponent: () => import('./trademark-opposition/trademark-opposition.component').then(m => m.TrademarkOppositionComponent),
         title: "Trademark Opposition — ₹3,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-hearing',
         loadComponent: () => import('./trademark-hearing/trademark-hearing.component').then(m => m.TrademarkHearingComponent),
         title: "Trademark Hearing Assistance — ₹3,499 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-registration-for-auto-parts',
@@ -303,11 +287,14 @@ export const routes: Routes = [
         title: "Trademark Registration for Footwear Manufacturers — ₹1,499 | Trademarx",
     },
     {
+        path: 'trademark-registration-for-scientific-instruments',
+        loadComponent: () => import('./trademark-scientific-instruments/trademark-scientific-instruments.component').then(m => m.TrademarkScientificInstrumentsComponent),
+        title: "Trademark Registration for Scientific & Laboratory Instruments Manufacturers — ₹1,499 | Trademarx",
+    },
+    {
         path: 'service-checkout',
         loadComponent: () => import('./service-checkout/service-checkout-page.component').then(m => m.ServiceCheckoutPageComponent),
         title: "Secure Checkout | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'trademark-process',
@@ -359,36 +346,26 @@ export const routes: Routes = [
         path: "iso/iso-9001-2015",
         loadComponent: () => import('./iso-9001/iso-9001.component').then(m => m.Iso9001Component),
         title: "ISO 9001:2015 at Just ₹1,499",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "iso/iso-14001",
         loadComponent: () => import('./iso-14001/iso-14001.component').then(m => m.Iso14001Component),
         title: "ISO 14001:2015 Environmental Certification — ₹1,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "iso/iso-45001",
         loadComponent: () => import('./iso-45001/iso-45001.component').then(m => m.Iso45001Component),
         title: "ISO 45001:2018 OHS Certification — ₹1,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "iso/iso-27001",
         loadComponent: () => import('./iso-27001/iso-27001.component').then(m => m.Iso27001Component),
         title: "ISO 27001:2022 Information Security Certification — ₹2,499 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "iso/iso-22000",
         loadComponent: () => import('./iso-22000/iso-22000.component').then(m => m.Iso22000Component),
         title: "ISO 22000:2018 Food Safety Certification — ₹1,999 | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "msme-registration",
@@ -441,43 +418,36 @@ export const routes: Routes = [
         path: "search",
         loadComponent: () => import('./trademark-search/trademark-search.component').then(m => m.TrademarkSearchComponent),
         title: "Trademark Search In India| Check brand availability online",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "search/results",
         loadComponent: () => import('./trademark-search-result/trademark-search-result.component').then(m => m.TrademarkSearchResultComponent),
         title: "Trademark Search In India| Check brand availability online",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
      },
     {
         path: "trademarks/:url",
         loadComponent: () => import('./tradmark-detail/tradmark-detail.component').then(m => m.TradmarkDetailComponent),
         title: "Trademark Search In India| Check brand availability online",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
+        path: "trademark-status-check",
+        loadComponent: () => import('./trademark-application-search/trademark-application-search.component').then(m => m.TrademarkApplicationSearchComponent),
+        title: "Trademark Status Check by Application Number | Trademarx",
     },
     {
         path: "trademark-journal",
         loadComponent: () => import('./trademark-journal-list/trademark-journal-list.component').then(m => m.TrademarkJournalListComponent),
         title: "Trademark Journal | Latest India Trademark Registry Publications",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "trademark-journal/:journalNo",
         loadComponent: () => import('./trademark-journal-detail/trademark-journal-detail.component').then(m => m.TrademarkJournalDetailComponent),
         title: "Trademark Journal | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: "latest-trademark-applications",
         loadComponent: () => import('./latest-trademark-applications/latest-trademark-applications.component').then(m => m.LatestTrademarkApplicationsComponent),
         title: "Latest Trademark Applications Filed in India | Live Registry Updates — Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
 
     {

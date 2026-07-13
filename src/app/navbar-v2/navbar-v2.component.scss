@@ -147,6 +147,20 @@ $mobile-bp: 768px;
     &:first-child { border-top: none; margin-top: 0; }
 }
 
+/* ── Auth links ─────────────────────────────────────────────── */
+.nav-auth-link {
+    margin-left: 0.25rem;
+
+    &:first-of-type { margin-left: 0.75rem; }
+}
+
+.nav-auth-cta > a {
+    background: $blue;
+    color: #fff;
+
+    &:hover { background: #1e40af; color: #fff; }
+}
+
 /* ── Hamburger ──────────────────────────────────────────────── */
 .hamburger {
     display: none;

@@ -1,63 +1,52 @@
+<app-auth-layout class="auth-page" headline="Welcome back." subline="Sign in to track your filings, manage documents and pick up where you left off.">
+  <form authForm class="site-form" novalidate="novalidate" #loginForm="ngForm" (ngSubmit)="login(loginForm.form)">
+    <p class="auth-eyebrow">Account access</p>
+    <h1 class="auth-title">Sign in</h1>
 
-
-<div class="website-redesign-v2">
-    <div class="site-page-body create-account-page-v2">
-        <div class="create-account-main-section">
-            <app-features class="features-component"></app-features>
-            <div class="register-section">
-                <h2 class="welcome-text">Login</h2>
-                <div class="create-account-desktop "> New User? <a class="create-account" [routerLink]="['/create-account']">Create free account</a></div>
-                <div class="form-section mx-2 mx-md-auto">
-                    <form class="site-form" novalidate="novalidate" #loginForm="ngForm"
-                        (ngSubmit)="login(loginForm.form)">
-                        <div class="row no-mobile-view-g">
-                            <div class="col-12 site-form-field-container">
-                                <label for="email">Username</label>
-                                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
-                                    [ngClass]="{'mat-form-field-invalid':!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)}">
-
-                                    <input matInput required="required" name="userEmail" #userEmail="ngModel"
-                                        [(ngModel)]="data.username" id="label" placeholder="Enter email address">
-                                    <mat-icon matSuffix [ngClass]=" userEmail.value ? 'visible': 'invisible'"
-                                        (click)="clearEmail()">highlight_off
-                                    </mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="userEmail"
-                                    [customPatternMessage]="'Please provide a valid email address'"
-                                    [onClickValidation]="userEmail.dirty || userEmail.touched|| onClickValidation">
-                                </app-validation-message>
-                            </div>
-                            <div class="col-lg-12 site-form-field-container password-field-container">
-                                <label for="password">Password</label>
-                                <mat-form-field class="site-form-field" appearance="fill" appearance="outline"
-                                    [ngClass]="{'mat-form-field-invalid':!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)}">
-
-                                    <input matInput [type]="passwordFieldType" required="required" name="userPassword"
-                                        #userPassword="ngModel" [(ngModel)]="data.password" placeholder="Enter password"
-                                        id="password"
-/>
-                                    <mat-icon matSuffix [ngClass]="userPassword.value ? 'visible': 'invisible'"
-                                        (click)="eyePassword()">{{passwordFieldType==='password'?'visibility':'visibility_off'}}</mat-icon>
-                                </mat-form-field>
-                                <app-validation-message [field]="userPassword"
-                                    [customPatternMessage]="'Please provide a valid value.'"
-                                    [onClickValidation]=" userPassword.dirty || userPassword.touched ||onClickValidation">
-                                </app-validation-message>
-                            </div>
-                        </div>
-                        <div class="forgot-password-mobile-container mt-2 mb-4">
-                            <a [routerLink]="['/forgot-password']" class="text-dark text-decoration-underline">Forgot
-                                Password?</a>
-                        </div>
-                        <button mat-raised-button class="btn btn-lg sign-btn" [disabled]="loginForm.form.invalid">
-                            Sign In
-                        </button>
-                        
-                    </form>
-                </div>
-            </div>
-      <app-common-register-login-mobile-section></app-common-register-login-mobile-section>
-                  
-        </div>
+    <div class="auth-field">
+      <label for="userEmail" class="auth-label">Email address</label>
+      <div class="auth-input-wrap">
+        <input #userEmail="ngModel" type="email" id="userEmail" name="userEmail" class="auth-input"
+          [class.has-error]="!userEmail.valid && (onClickValidation || userEmail.touched || userEmail.dirty)"
+          required [(ngModel)]="data.username" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <app-validation-message [field]="userEmail" [customPatternMessage]="'Please provide a valid email address'"
+        [onClickValidation]="userEmail.dirty || userEmail.touched || onClickValidation">
+      </app-validation-message>
     </div>
-</div>
+
+    <div class="auth-field">
+      <label for="userPassword" class="auth-label">Password</label>
+      <div class="auth-input-wrap">
+        <input #userPassword="ngModel" [type]="passwordFieldType" id="userPassword" name="userPassword"
+          class="auth-input" [class.has-error]="!userPassword.valid && (onClickValidation || userPassword.touched || userPassword.dirty)"
+          required [(ngModel)]="data.password" placeholder="Enter password" autocomplete="current-password">
+        <button type="button" class="auth-input-btn" (click)="eyePassword()"
+          [attr.aria-label]="passwordFieldType === 'password' ? 'Show password' : 'Hide password'">
+          @if (passwordFieldType === 'password') {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z"/><circle cx="10" cy="10" r="2.5"/><path d="m3 3 14 14"/>
+            </svg>
+          }
+        </button>
+      </div>
+      <app-validation-message [field]="userPassword" [customPatternMessage]="'Please provide a valid value.'"
+        [onClickValidation]="userPassword.dirty || userPassword.touched || onClickValidation">
+      </app-validation-message>
+    </div>
+
+    <div class="auth-row-between">
+      <a [routerLink]="['/forgot-password']" class="auth-link">Forgot password?</a>
+    </div>
+
+    <button type="submit" class="auth-btn-primary" [disabled]="loginForm.form.invalid">Sign in</button>
+
+    <p class="auth-foot">New here? <a [routerLink]="['/create-account']" class="auth-link">Create a free account</a></p>
+  </form>
+</app-auth-layout>
+
+<app-common-register-login-mobile-section></app-common-register-login-mobile-section>

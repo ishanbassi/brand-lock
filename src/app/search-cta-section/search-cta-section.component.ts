@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ILead, NewLead } from '../../models/lead.model';
 import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { LeadFormService } from '../../models/lead-form.service';
 import { LoadingService } from '../common/loading.service';
 import { LeadService } from '../shared/services/lead.service';
@@ -11,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-search-cta-section',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule],
   templateUrl: './search-cta-section.component.html',
   styleUrl: './search-cta-section.component.scss'
 })

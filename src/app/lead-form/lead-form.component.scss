@@ -144,6 +144,13 @@
             letter-spacing: -0.028px;
             margin-bottom: 5px;
         }
+
+        &.quick-file-card .quick-file-note {
+            color: var(--text-color);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
     }
 }
 

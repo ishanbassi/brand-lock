@@ -2,6 +2,20 @@
   <div>
     <p class="cta-form-call-now">Call Now:
       <a type="button" class="call-now" href="tel:+916239771006">6239771006</a></p>
+
+    @if (showQuickFileCard) {
+      <div class="cta-form quick-file-card" id="ctaForm" #ctaFormElement>
+        <div class="form-heading-section">
+          <h2 class="form-heading">{{heading}}</h2>
+        </div>
+        <p class="quick-file-note">
+          Continue as <strong>{{ knownContact?.fullName }}</strong> — we already have your contact details on file.
+        </p>
+        <button type="button" class="cta-submit-btn" [disabled]="isSubmitting" (click)="submit()">
+          <span>{{isSubmitting ? 'Please wait…' : cta}}</span>
+        </button>
+      </div>
+    } @else {
     <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
       [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement>
       <div class="form-heading-section">
@@ -51,5 +65,6 @@
         <span>{{cta}}</span>
       </button>
     </form>
+    }
   </div>
 </section>

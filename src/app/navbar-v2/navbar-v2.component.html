@@ -36,6 +36,7 @@
                     <li class="dropdown-divider-label">Resources</li>
                     <li><a routerLink="/trademark-journal" routerLinkActive="active">Trademark Journal</a></li>
                     <li><a routerLink="/latest-trademark-applications" routerLinkActive="active">Latest Applications</a></li>
+                    <li><a routerLink="/trademark-status-check" routerLinkActive="active">Check Application Status</a></li>
                 </ul>
             </li>
 
@@ -86,6 +87,10 @@
             </li>
 
             <li><a routerLink="/blogs" routerLinkActive="active">Articles</a></li>
+
+            <li *ngIf="!isLoggedIn" class="nav-auth-link"><a routerLink="/login" routerLinkActive="active">Login</a></li>
+            <li *ngIf="!isLoggedIn" class="nav-auth-link nav-auth-cta"><a routerLink="/create-account" routerLinkActive="active">Sign Up</a></li>
+            <li *ngIf="isLoggedIn" class="nav-auth-link"><a routerLink="/portal/dashboard">Dashboard</a></li>
         </ul>
 
         <div class="hamburger" (click)="toggleMobileMenu()">

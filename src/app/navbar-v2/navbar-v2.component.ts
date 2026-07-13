@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, PLATFORM_ID, R
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subscription, filter } from 'rxjs';
+import { AuthService } from '../../models/auth.services';
 
 @Component({
   selector: 'app-navbar-v2',
@@ -22,9 +23,14 @@ export class NavbarV2Component implements AfterViewInit, OnDestroy {
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
+    private readonly authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  get isLoggedIn(): boolean {
+    return this.isBrowser && this.authService.hasValidToken();
   }
 
   ngAfterViewInit(): void {

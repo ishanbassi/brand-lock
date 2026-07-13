@@ -1,0 +1,52 @@
+<div class="auth-shell">
+
+  <!-- ── Brand panel (desktop only) ─────────────────────────────────── -->
+  <aside class="auth-brand-panel">
+    <svg class="guilloche" viewBox="0 0 400 800" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <pattern id="guilloche-lines" width="80" height="80" patternUnits="userSpaceOnUse">
+          <path d="M0 40 Q 20 0 40 40 T 80 40" fill="none" stroke="currentColor" stroke-width="1"/>
+          <path d="M0 0 Q 20 40 40 0 T 80 0" fill="none" stroke="currentColor" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="400" height="800" fill="url(#guilloche-lines)"/>
+    </svg>
+
+    <a routerLink="/" class="auth-wordmark">
+      <span class="wm-mark">trade</span><span class="wm-mark alt">marx</span><span class="wm-dot">.in</span>
+    </a>
+
+    <div class="auth-brand-copy">
+      <h1 class="auth-headline">{{ headline }}</h1>
+      <p class="auth-subline">{{ subline }}</p>
+
+      <ul class="auth-bullets">
+        @for (bullet of bullets; track bullet) {
+          <li>
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m4 10.5 4 4 8-9"/>
+            </svg>
+            <span>{{ bullet }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="auth-brand-support">
+      <p class="support-label">Need a hand?</p>
+      <a href="tel:+916239771006" class="support-phone">+91 62397 71006</a>
+    </div>
+  </aside>
+
+  <!-- ── Form panel ──────────────────────────────────────────────────── -->
+  <main class="auth-form-panel">
+    <a routerLink="/" class="auth-wordmark form-wordmark">
+      <span class="wm-mark">trade</span><span class="wm-mark alt">marx</span><span class="wm-dot">.in</span>
+    </a>
+
+    <div class="auth-form-card">
+      <ng-content select="[authForm]"></ng-content>
+    </div>
+  </main>
+
+</div>
