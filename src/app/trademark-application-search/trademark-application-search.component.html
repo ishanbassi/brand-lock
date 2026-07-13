@@ -18,9 +18,12 @@
           id="applicationNo"
           type="text"
           inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="10"
           class="search-input"
           placeholder="e.g., 5678901"
-          [(ngModel)]="applicationNo"
+          [ngModel]="applicationNo"
+          (ngModelChange)="onApplicationNoChange($event)"
           name="applicationNo"
           autocomplete="off"
         >

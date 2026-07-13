@@ -127,13 +127,17 @@ export class TrademarkApplicationSearchComponent implements OnInit, OnDestroy {
 
     const queryAppNo = this.route.snapshot.queryParamMap.get('applicationNo');
     if (queryAppNo) {
-      this.applicationNo = queryAppNo;
+      this.onApplicationNoChange(queryAppNo);
       this.search();
     }
   }
 
   ngOnDestroy(): void {
     this.seo.removeJsonLd('trademark-application-search');
+  }
+
+  onApplicationNoChange(value: string): void {
+    this.applicationNo = value.replace(/\D/g, '').slice(0, 10);
   }
 
   search(): void {
