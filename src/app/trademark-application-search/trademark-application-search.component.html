@@ -2,11 +2,20 @@
 
   <div class="hero">
     <div class="container">
-      <h1 class="hero-title">Trademark Status Check</h1>
-      <p class="hero-subtitle">Enter the application number to check the live status of any trademark filed with the India Trademark Registry.</p>
+      <div class="breadcrumb">
+        <a [routerLink]="'/home'">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Trademark Search by Application Number</span>
+      </div>
+
+      <h1 class="hero-title">Trademark Search by Application Number</h1>
+      <p class="hero-subtitle">Enter the application number to check the live status of any trademark filed with the India Trademark Registry — objection, opposition, registered, or pending.</p>
 
       <form class="search-form" (ngSubmit)="search()">
+        <label for="applicationNo" class="sr-only">Trademark application number</label>
         <input
+          #applicationNoInput
+          id="applicationNo"
           type="text"
           inputmode="numeric"
           class="search-input"
@@ -23,10 +32,24 @@
           <span>{{ isLoading ? 'Checking…' : 'Check Status' }}</span>
         </button>
       </form>
+      <p class="hero-hint">Don't have your application number? <a routerLink="/search">Search by brand name instead</a>.</p>
     </div>
   </div>
 
   <div class="container results-section">
+
+    <div class="cta-banner">
+      <div class="cta-banner-text">
+        <h2>Objected, opposed, or stuck for months?</h2>
+        <p>Our attorneys have handled 5,400+ trademark matters — get a free case review before your deadline passes.</p>
+      </div>
+      <a href="tel:+916239771006" class="cta-banner-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>Call +91 62397-71006</span>
+      </a>
+    </div>
 
     <!-- Loading -->
     <div class="loading-state" *ngIf="isLoading">
@@ -53,7 +76,7 @@
         <div class="card-body">
           <div class="trademark-meta">
             <div class="meta-item">Application No: <b>{{ trademark.applicationNo }}</b></div>
-            <div class="meta-item" *ngIf="trademark.applicationDate">Filed: <b>{{ trademark.applicationDate?.format('DD MMM YYYY') }}</b></div>
+            <div class="meta-item" *ngIf="trademark.applicationDate">Filed: <b>{{ trademark.applicationDate.format('DD MMM YYYY') }}</b></div>
             <div class="meta-item" *ngIf="trademark.tmClass">Class: <b>{{ trademark.tmClass }}</b></div>
             <div class="meta-item" *ngIf="trademark.proprietorName">Applicant: <b>{{ trademark.proprietorName }}</b></div>
           </div>
@@ -89,6 +112,152 @@
     </div>
 
   </div>
+
+  <!-- What each status means -->
+  <section class="status-meanings-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Status Guide</span>
+        <h2 class="section-title">What Each Trademark Status Means</h2>
+        <p class="section-description">
+          Every application moves through these stages at the India Trade Marks Registry. Know what yours means — and
+          what to do about it — before a deadline slips past.
+        </p>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card" *ngFor="let item of statusMeanings" [attr.data-tone]="item.tone">
+          <div class="status-card-head">
+            <span class="status-dot"></span>
+            <h3>{{ item.status }}</h3>
+          </div>
+          <p>{{ item.description }}</p>
+          <a *ngIf="item.serviceLink" [routerLink]="item.serviceLink" class="status-card-link">
+            {{ item.serviceLabel }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why track your application -->
+  <section class="why-track-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Why It Matters</span>
+        <h2 class="section-title">Why You Should Track Your Application's Status</h2>
+      </div>
+
+      <div class="why-track-grid">
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3>Catch Objections in Time</h3>
+          <p>Miss the 30-day window to reply to an objection and your application can be treated as abandoned — often before you even receive the physical notice.</p>
+        </div>
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3>Never Miss a Renewal</h3>
+          <p>A registered mark is only protected for 10 years. Track the date so renewal fees never sneak past and hand your brand to a lapse.</p>
+        </div>
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3>Confirm Before You Grow</h3>
+          <p>Signing a franchise deal, listing on a marketplace, or raising funds? Lenders and partners will ask for proof of status — have it ready.</p>
+        </div>
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+            </svg>
+          </div>
+          <h3>Spot Opposition Early</h3>
+          <p>A competitor opposing your mark has a fixed 2-month reply window. Checking status regularly is the only way to know it's happened.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Authority / trust bar -->
+  <section class="trust-section">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-stat">
+          <span class="trust-value">30+ Yrs</span>
+          <span class="trust-label">Led by Anil Bassi, trademark attorney</span>
+        </div>
+        <div class="trust-stat">
+          <span class="trust-value">5,400+</span>
+          <span class="trust-label">Trademark matters handled</span>
+        </div>
+        <div class="trust-stat">
+          <span class="trust-value">Govt.</span>
+          <span class="trust-label">Authorized filing agent</span>
+        </div>
+        <div class="trust-stat">
+          <span class="trust-value">ISO</span>
+          <span class="trust-label">Certified process</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Trademark Status Check</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.open]="openFaqIndex === i">
+          <button class="faq-question" type="button" (click)="toggleFaq(i)" [attr.aria-expanded]="openFaqIndex === i">
+            <span class="faq-q-text">{{ faq.question }}</span>
+            <span class="faq-icon">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="1" x2="6" y2="11" />
+                <line x1="1" y1="6" x2="11" y2="6" />
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer" *ngIf="openFaqIndex === i">
+            <div class="faq-answer-inner">{{ faq.answer }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta-section">
+    <div class="container">
+      <div class="final-cta-content">
+        <h2>Need Help With Your Trademark Application?</h2>
+        <p>From objections to renewals, our attorneys handle every stage so your application doesn't stall.</p>
+        <div class="final-cta-buttons">
+          <button class="btn-primary" type="button" (click)="focusSearchInput()">Check Another Application</button>
+          <a class="btn-secondary-solid" href="tel:+916239771006">Talk to an Expert</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <app-mobile-bottom-navbar></app-mobile-bottom-navbar>
 </div>
