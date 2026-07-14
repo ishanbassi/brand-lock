@@ -9,6 +9,7 @@ import { SeoService } from '../shared/services/seo.service';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
+import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 
 interface StatusMeaning {
   status: string;
@@ -25,7 +26,7 @@ interface Faq {
 
 @Component({
   selector: 'app-trademark-application-search',
-  imports: [SharedModule, FormsModule, MobileBottomNavbarComponent],
+  imports: [SharedModule, FormsModule, MobileBottomNavbarComponent, TrademarkPulseComponent],
   templateUrl: './trademark-application-search.component.html',
   styleUrl: './trademark-application-search.component.scss',
 })

@@ -105,13 +105,21 @@
     </div>
 
     <!-- Idle -->
-    <div class="idle-state" *ngIf="!isLoading && !hasSearched">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <path d="M9 15l2 2 4-4"/>
-      </svg>
-      <p>Enter an application number above to check its status — objection, opposition, registered, or pending.</p>
+    <div class="idle-block" *ngIf="!isLoading && !hasSearched">
+      <div class="idle-state">
+        <div class="idle-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <path d="M9 15l2 2 4-4"/>
+          </svg>
+        </div>
+        <h3 class="idle-title">Check any trademark's status instantly</h3>
+        <p class="idle-note">Enter an application number above to see its live status — objection, opposition, registered, or pending.</p>
+      </div>
+
+      <!-- Live feed of the latest applications while idle -->
+      <app-trademark-pulse></app-trademark-pulse>
     </div>
 
   </div>
