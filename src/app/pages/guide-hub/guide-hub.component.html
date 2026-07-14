@@ -1,0 +1,35 @@
+@if (source) {
+<div class="guide-hub">
+
+  <section class="hub-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo;
+        <span>{{ source.breadcrumbLabel }}</span>
+      </div>
+      <h1>{{ source.hubH1 }}</h1>
+      <p class="hub-intro">{{ source.hubIntro }}</p>
+    </div>
+  </section>
+
+  <section class="hub-body">
+    <div class="container">
+      @for (group of groups; track group.category) {
+        <div class="hub-group">
+          <h2>{{ group.category }}</h2>
+          <div class="hub-grid">
+            @for (page of group.pages; track page.slug) {
+              <a [routerLink]="source.urlPrefix + '/' + page.slug" class="hub-card">
+                <h3>{{ page.title }}</h3>
+                <p>{{ page.quickAnswer }}</p>
+                <span class="hub-card-cta">Read guide <i class="fas fa-arrow-right"></i></span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>
+}

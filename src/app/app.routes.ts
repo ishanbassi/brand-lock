@@ -392,6 +392,26 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/comparison-page/comparison-page.component').then(m => m.ComparisonPageComponent),
     },
     {
+        path: "trademark-status",
+        loadComponent: () => import('./pages/guide-hub/guide-hub.component').then(m => m.GuideHubComponent),
+        data: { source: 'status' },
+    },
+    {
+        path: "trademark-status/:slug",
+        loadComponent: () => import('./pages/guide-page/guide-page.component').then(m => m.GuidePageComponent),
+        data: { source: 'status' },
+    },
+    {
+        path: "trademark-for",
+        loadComponent: () => import('./pages/guide-hub/guide-hub.component').then(m => m.GuideHubComponent),
+        data: { source: 'usecase' },
+    },
+    {
+        path: "trademark-for/:slug",
+        loadComponent: () => import('./pages/guide-page/guide-page.component').then(m => m.GuidePageComponent),
+        data: { source: 'usecase' },
+    },
+    {
         path: "trademark/industry/:industry",
         loadComponent: () => import('./pages/trademark-industry-page/trademark-industry-page.component').then(m => m.TrademarkIndustryPageComponent),
     },

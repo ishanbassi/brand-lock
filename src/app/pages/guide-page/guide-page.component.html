@@ -1,0 +1,162 @@
+@if (page) {
+<div class="guide-page">
+
+  <!-- Hero -->
+  <section class="guide-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a routerLink="/">Home</a> &rsaquo;
+        <a [routerLink]="source.urlPrefix">{{ source.breadcrumbLabel }}</a> &rsaquo;
+        <span>{{ page.title }}</span>
+      </div>
+      <div class="category-badge">{{ page.category }}</div>
+      <h1>{{ page.title }}</h1>
+
+      <!-- Quick Answer Box — optimised for AI Overviews -->
+      <div class="quick-answer-box">
+        <div class="qa-label"><i class="fas fa-bolt"></i> Quick Answer</div>
+        <p>{{ page.quickAnswer }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Highlights strip -->
+  <section class="highlights-section">
+    <div class="container">
+      <div class="highlights-grid">
+        @for (h of page.highlights; track h.label) {
+          <div class="highlight-card">
+            <i [class]="h.icon"></i>
+            <div class="hl-text">
+              <span class="hl-label">{{ h.label }}</span>
+              <span class="hl-value">{{ h.value }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="intro-section">
+    <div class="container">
+      <p class="intro-text">{{ page.intro }}</p>
+    </div>
+  </section>
+
+  <!-- Body sections -->
+  <section class="body-section">
+    <div class="container">
+      @for (s of page.sections; track s.heading) {
+        <div class="content-block">
+          <h2>{{ s.heading }}</h2>
+          <p>{{ s.body }}</p>
+          @if (s.bullets && s.bullets.length) {
+            <ul class="block-bullets">
+              @for (b of s.bullets; track b) {
+                <li><i class="fas fa-check"></i> {{ b }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Verdict -->
+  @if (page.verdict) {
+    <section class="verdict-section">
+      <div class="container">
+        <div class="verdict-box">
+          <div class="verdict-label"><i class="fas fa-check-double"></i> Bottom Line</div>
+          <p>{{ page.verdict }}</p>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Lead Form CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-text">
+          <h2>{{ page.ctaHeading }}</h2>
+          <p>{{ page.ctaText }}</p>
+          <ul class="cta-list">
+            <li><i class="fas fa-check-circle"></i> Free eligibility &amp; conflict check</li>
+            <li><i class="fas fa-check-circle"></i> IP India authorised agents</li>
+            <li><i class="fas fa-check-circle"></i> 100% online — filing from ₹1,499</li>
+          </ul>
+        </div>
+        <div class="cta-form-wrap">
+          <app-lead-form
+            [heading]="'Talk to an IP Expert'"
+            [cta]="'Get Free Advice'"
+            [comments]="page.leadComment">
+          </app-lead-form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="container">
+      <h2>Frequently Asked Questions</h2>
+      <app-faq [faqs]="page.faqs"></app-faq>
+    </div>
+  </section>
+
+  <!-- Related Services / Colony links -->
+  <section class="related-section">
+    <div class="container">
+      <h2>Related Services &amp; Tools</h2>
+      <div class="related-grid">
+        @for (r of page.relatedLinks; track r.route) {
+          <a [routerLink]="r.route" class="related-card">
+            <i [class]="r.icon"></i>
+            <h3>{{ r.title }}</h3>
+            <p>{{ r.desc }}</p>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Other guides in same category -->
+  @if (relatedGuides.length > 0) {
+    <section class="more-guides">
+      <div class="container">
+        <h2>More {{ page.category }} Guides</h2>
+        <div class="guide-links">
+          @for (g of relatedGuides; track g.slug) {
+            <a [routerLink]="source.urlPrefix + '/' + g.slug" class="guide-link-card">
+              <span class="guide-title">{{ g.title }}</span>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Hub link -->
+  <section class="hub-link-section">
+    <div class="container">
+      <p class="hub-note">
+        Looking for something else?
+        <a [routerLink]="source.urlPrefix">Browse all {{ source.breadcrumbLabel }} guides</a>
+      </p>
+    </div>
+  </section>
+
+  <a [href]="'https://api.whatsapp.com/send?phone=6239771006&text=' + source.ctaWhatsappText"
+     class="whatsapp-button" target="_blank">
+    <img loading="lazy" src="/assets/images/whatsapp-icon.png" alt="WhatsApp" width="56" height="56">
+  </a>
+  <a href="tel:+916239771006" class="call-button">
+    <img loading="lazy" src="/assets/images/call-now-icon.png" alt="Call" width="45" height="45">
+  </a>
+
+</div>
+}
