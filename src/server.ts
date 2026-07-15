@@ -118,8 +118,8 @@ const STATIC_PAGES = [
   ...ALL_COMPARISON_SLUGS.map(s => ({ loc: `${SITE_URL}/compare/${s}`, lastmod: TODAY })),
   { loc: `${SITE_URL}/trademark-status`, lastmod: TODAY },
   ...guideSlugs('status').map(s => ({ loc: `${SITE_URL}/trademark-status/${s}`, lastmod: TODAY })),
-  { loc: `${SITE_URL}/trademark-for`, lastmod: TODAY },
-  ...guideSlugs('usecase').map(s => ({ loc: `${SITE_URL}/trademark-for/${s}`, lastmod: TODAY })),
+  { loc: `${SITE_URL}/how-to-trademark`, lastmod: TODAY },
+  ...guideSlugs('usecase').map(s => ({ loc: `${SITE_URL}/how-to-trademark/${s}`, lastmod: TODAY })),
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }

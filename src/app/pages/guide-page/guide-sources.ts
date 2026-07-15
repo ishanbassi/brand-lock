@@ -22,7 +22,7 @@ export const GUIDE_SOURCES: Record<string, GuideSourceConfig> = {
 
   usecase: {
     key: 'usecase',
-    urlPrefix: '/trademark-for',
+    urlPrefix: '/how-to-trademark',
     breadcrumbLabel: 'Trademark Guides',
     hubMetaTitle: 'How to Trademark Your Business — Guides by Business Type | Trademarx',
     hubMetaDesc: 'Step-by-step trademark guides for specific business types — home bakery, Instagram page, podcast, mobile app, NGO, YouTube channel. Find the right class and file from ₹1,499.',

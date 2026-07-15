@@ -402,12 +402,12 @@ export const routes: Routes = [
         data: { source: 'status' },
     },
     {
-        path: "trademark-for",
+        path: "how-to-trademark",
         loadComponent: () => import('./pages/guide-hub/guide-hub.component').then(m => m.GuideHubComponent),
         data: { source: 'usecase' },
     },
     {
-        path: "trademark-for/:slug",
+        path: "how-to-trademark/:slug",
         loadComponent: () => import('./pages/guide-page/guide-page.component').then(m => m.GuidePageComponent),
         data: { source: 'usecase' },
     },
