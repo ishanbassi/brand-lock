@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
@@ -8,18 +9,21 @@ import { SeoService } from '../shared/services/seo.service';
 import {
   IClassBreakdown,
   IJournalActivity,
+  INamedBreakdown,
   IStatusBreakdown,
   ITrendsPage,
   ITrendsSummary,
   TrademarkTrendsService,
 } from '../shared/services/trademark-trends.service';
+import { buildRecentMonths, RecentMonth } from '../shared/utils/recent-months.util';
+import { stateSlug as slugifyState } from '../shared/utils/trends-slug.util';
 
 type RangeOption = '30d' | '90d' | '180d' | '365d';
 
 @Component({
   selector: 'app-trademark-filing-trends',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, RouterLink, BaseChartDirective],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './trademark-filing-trends.component.html',
   styleUrl: './trademark-filing-trends.component.scss',
@@ -78,6 +82,30 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
   journalLoading = true;
   journalError = false;
   journalActivity: IJournalActivity[] = [];
+
+  /** Last 12 complete calendar months, newest first, for the "Monthly Reports" index links. */
+  readonly recentMonths: RecentMonth[] = buildRecentMonths(12);
+
+  // Extra insight dimensions — rendered as CSS percentage-bar lists (no extra canvases,
+  // so no Chart.js overhead or mobile-overflow risk).
+  stateBreakdown: INamedBreakdown[] = [];
+  typeBreakdown: INamedBreakdown[] = [];
+  orgTypeBreakdown: INamedBreakdown[] = [];
+  filingModeBreakdown: INamedBreakdown[] = [];
+  usageBreakdown: INamedBreakdown[] = [];
+  topWords: INamedBreakdown[] = [];
+
+  // Multi-line "classes over time" chart.
+  classTrendData: ChartData<'line'> = { labels: [], datasets: [] };
+  readonly classTrendOptions: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: { y: { beginAtZero: true } },
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+  };
+
+  private static readonly SERIES_COLORS = ['#0ea5e9', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
   private static readonly STATUS_COLORS: Record<string, string> = {
     Registered: '#10b981',
@@ -166,6 +194,28 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
 
         this.journalActivity = res.journalActivity;
         this.journalLoading = false;
+
+        // Extra dimensions (all part of the same single response).
+        this.stateBreakdown = res.stateBreakdown ?? [];
+        this.typeBreakdown = res.typeBreakdown ?? [];
+        this.orgTypeBreakdown = res.orgTypeBreakdown ?? [];
+        this.filingModeBreakdown = res.filingModeBreakdown ?? [];
+        this.usageBreakdown = res.usageBreakdown ?? [];
+        this.topWords = res.topWords ?? [];
+
+        const trends = res.classTrends ?? [];
+        this.classTrendData = {
+          labels: trends.length ? trends[0].points.map(p => p.bucketDate) : [],
+          datasets: trends.map((s, i) => ({
+            data: s.points.map(p => p.count),
+            label: s.className || `Class ${s.tmClass}`,
+            borderColor: TrademarkFilingTrendsComponent.SERIES_COLORS[i % TrademarkFilingTrendsComponent.SERIES_COLORS.length],
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            pointRadius: 0,
+            borderWidth: 2,
+          })),
+        };
       },
       error: () => {
         this.volumeError = true;
@@ -183,10 +233,15 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** "Tamil Nadu" -> "tamil-nadu", matching the backend's slugify so the link round-trips. */
+  stateSlug(label: string): string {
+    return slugifyState(label);
+  }
+
   private setSeoTags(): void {
-    const title = 'India Trademark Filing Trends — Volume, Classes & Status Data | Trademarx';
+    const title = 'India Trademark Filing Trends — Volume, Classes, States & Status Data | Trademarx';
     const description =
-      'Explore India trademark filing trends: daily filing volume, the most active NICE classes, status breakdown and journal activity — sourced from the official IP India registry, updated hourly.';
+      'Live India trademark filing trends: daily filing volume, most active NICE classes over time, filings by state, applicant & filing-mode splits, the most common words in trademarks, status breakdown and journal activity — sourced from the official IP India registry, updated hourly.';
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });

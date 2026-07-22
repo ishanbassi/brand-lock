@@ -44,12 +44,60 @@ export interface ITrendsSummary {
   lastUpdated: string;
 }
 
+export interface INamedBreakdown {
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface IClassTrendSeries {
+  tmClass: number;
+  className: string | null;
+  points: IFilingVolumePoint[];
+}
+
 export interface ITrendsPage {
   summary: ITrendsSummary;
   filingVolume: IFilingVolumeTrend;
   classBreakdown: IClassBreakdown[];
   statusBreakdown: IStatusBreakdown[];
   journalActivity: IJournalActivity[];
+  classTrends: IClassTrendSeries[];
+  stateBreakdown: INamedBreakdown[];
+  typeBreakdown: INamedBreakdown[];
+  orgTypeBreakdown: INamedBreakdown[];
+  filingModeBreakdown: INamedBreakdown[];
+  usageBreakdown: INamedBreakdown[];
+  topWords: INamedBreakdown[];
+}
+
+export interface IDimensionTrends {
+  dimension: 'state' | 'class';
+  value: string;
+  displayName: string;
+  totalFilings: number;
+  filingVolume: IFilingVolumePoint[];
+  breakdownLabel: string;
+  breakdown: INamedBreakdown[];
+}
+
+export interface IMonthlyReport {
+  year: number;
+  month: number;
+  monthLabel: string;
+  totalFilings: number;
+  momChangePercent: number | null;
+  classBreakdown: INamedBreakdown[];
+  stateBreakdown: INamedBreakdown[];
+  typeBreakdown: INamedBreakdown[];
+}
+
+export interface IJournalDetail {
+  journalNo: number;
+  publishedDate: string | null;
+  totalMarks: number;
+  classBreakdown: INamedBreakdown[];
+  stateBreakdown: INamedBreakdown[];
 }
 
 /**
@@ -67,5 +115,22 @@ export class TrademarkTrendsService {
 
   getTrendsPage(range = '90d', granularity = 'day', topN = 10, journalLimit = 12): Observable<ITrendsPage> {
     return this.http.get<ITrendsPage>(this.resourceUrl, { params: { range, granularity, topN, journalLimit } });
+  }
+
+  getStateTrends(slug: string): Observable<IDimensionTrends> {
+    return this.http.get<IDimensionTrends>(`${this.resourceUrl}/state/${slug}`);
+  }
+
+  getClassTrends(tmClass: number): Observable<IDimensionTrends> {
+    return this.http.get<IDimensionTrends>(`${this.resourceUrl}/class/${tmClass}`);
+  }
+
+  getMonthlyReport(year: number, month: number): Observable<IMonthlyReport> {
+    return this.http.get<IMonthlyReport>(`${this.resourceUrl}/monthly/${year}/${month}`);
+  }
+
+  getJournalDetail(journalNo: number): Observable<IJournalDetail> {
+    // journal detail lives under /api/trademarks/journal/:no, a sibling of /trends
+    return this.http.get<IJournalDetail>(`${this.applicationConfigService.getEndpointFor('api/trademarks/journal')}/${journalNo}`);
   }
 }

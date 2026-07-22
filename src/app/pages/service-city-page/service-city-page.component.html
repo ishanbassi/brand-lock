@@ -102,6 +102,10 @@
   <section class="related-section">
     <div class="container">
       <h2>You May Also Need</h2>
+      <p class="trends-note">
+        Many {{ city.name }} businesses register a trademark alongside {{ service.shortName }} — see live
+        <a [routerLink]="'/trademark-filings/' + stateSlug(city.state)">{{ city.state }} trademark filing trends →</a>
+      </p>
       <div class="related-grid">
         @for (r of service.relatedServices; track r.route) {
           <a [routerLink]="r.route" class="related-card">

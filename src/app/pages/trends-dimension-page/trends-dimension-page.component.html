@@ -1,0 +1,90 @@
+<div class="dim-page">
+  <header class="dim-header">
+    <div class="breadcrumb">
+      <a routerLink="/">Home</a> &rsaquo;
+      <a routerLink="/trademark-filing-trends">Filing Trends</a> &rsaquo;
+      <span>{{ data?.displayName || '…' }}</span>
+    </div>
+    @if (data) {
+      <h1>
+        @if (dimension === 'state') {
+          Trademark Filings in {{ data.displayName }}
+        } @else {
+          {{ data.displayName }} — Trademark Filing Trends
+        }
+      </h1>
+      <p class="dim-total">
+        <strong>{{ data.totalFilings | number }}</strong> trademark filings recorded in the national registry
+        @if (dimension === 'state') {
+          from {{ data.displayName }}.
+        } @else {
+          in this NICE class.
+        }
+      </p>
+    } @else {
+      <h1>Loading trademark trends…</h1>
+    }
+  </header>
+
+  <!-- Monthly filing volume -->
+  <section class="dim-card">
+    <h2>Filing Volume Over Time</h2>
+    @if (loading || !isBrowser) {
+      <div class="chart-box skeleton"></div>
+    } @else if (volumeChartData.datasets.length && volumeChartData.labels?.length) {
+      <div class="chart-box">
+        <canvas baseChart [data]="volumeChartData" [options]="volumeChartOptions" type="line"></canvas>
+      </div>
+    } @else {
+      <p class="muted">Not enough dated filings to plot a volume trend.</p>
+    }
+  </section>
+
+  <!-- Breakdown -->
+  @if (data && data.breakdown.length) {
+    <section class="dim-card">
+      <h2>{{ data.breakdownLabel }}</h2>
+      <ul class="bar-list">
+        @for (b of data.breakdown; track b.label) {
+          <li class="bar-row">
+            @if (b.label.startsWith('Other')) {
+              <span class="bar-label">{{ b.label }}</span>
+            } @else if (dimension === 'state') {
+              <a class="bar-label" [routerLink]="'/trademark-trends/class/' + b.label.split(' ')[1]">{{ b.label }}</a>
+            } @else {
+              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(b.label)">{{ b.label }}</a>
+            }
+            <span class="bar-track"><span class="bar-fill" [style.width.%]="b.percentage"></span></span>
+            <span class="bar-value">{{ b.count | number }} ({{ b.percentage | number: '1.0-1' }}%)</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- Recent monthly reports -->
+  <section class="dim-card">
+    <h2>Recent Monthly Reports</h2>
+    <div class="month-grid">
+      @for (m of recentMonths; track m.slug) {
+        <a class="month-pill" [routerLink]="'/trademark-trends/' + m.slug">{{ m.label }}</a>
+      }
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="dim-cta">
+    <h2>Protect your brand{{ dimension === 'state' ? ' in ' + (data?.displayName || 'India') : '' }}</h2>
+    <p>Free trademark search, IP India authorised agents, filing from ₹1,499 + govt. fees.</p>
+    <div class="dim-cta-btns">
+      <a routerLink="/trademark" class="btn-primary">Register a Trademark</a>
+      <a routerLink="/search" class="btn-ghost">Free Trademark Search</a>
+    </div>
+  </section>
+
+  <p class="dim-source muted">
+    Data sourced from the official <a href="https://ipindia.gov.in" target="_blank" rel="noopener noreferrer">IP India</a>
+    trademark registry and Trade Marks Journal, refreshed continuously.
+    <a routerLink="/trademark-filing-trends">See all-India filing trends →</a>
+  </p>
+</div>

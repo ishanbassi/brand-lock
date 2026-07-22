@@ -50,6 +50,7 @@
       <p class="registry-note">
         Trademark applications from {{ city.name }} are examined by the Trade Marks Registry's
         <strong>{{ registryOffice }}</strong> branch office, which holds jurisdiction over {{ city.state }}.
+        See live <a [routerLink]="'/trademark-filings/' + stateSlug(city.state)">{{ city.state }} trademark filing trends →</a>
       </p>
     </div>
   </section>

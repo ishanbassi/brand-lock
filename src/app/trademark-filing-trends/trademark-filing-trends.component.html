@@ -88,7 +88,11 @@
         <ul class="breakdown-list">
           @for (c of classBreakdown; track c.tmClass) {
             <li class="breakdown-row">
-              <span class="breakdown-label">{{ c.className || (c.tmClass ? 'Class ' + c.tmClass : 'Other') }}</span>
+              @if (c.tmClass) {
+                <a class="breakdown-label" [routerLink]="'/trademark-trends/class/' + c.tmClass">{{ c.className || 'Class ' + c.tmClass }}</a>
+              } @else {
+                <span class="breakdown-label">Other</span>
+              }
               <span class="breakdown-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
             </li>
           }
@@ -122,6 +126,136 @@
     </section>
   </div>
 
+  <!-- Classes over time -->
+  <section class="content-card">
+    <div class="card-header">
+      <h2 class="card-title">Top NICE Classes Over Time</h2>
+    </div>
+    @if (classLoading || !isBrowser) {
+      <div class="chart-container skeleton"></div>
+    } @else if (classTrendData.datasets.length) {
+      <div class="chart-container">
+        <canvas baseChart [data]="classTrendData" [options]="classTrendOptions" type="line"></canvas>
+      </div>
+    } @else {
+      <div class="empty-state"><p>Not enough data to plot class trends for this range.</p></div>
+    }
+  </section>
+
+  <!-- Filings by state -->
+  <section class="content-card">
+    <div class="card-header">
+      <h2 class="card-title">Filings by State</h2>
+    </div>
+    @if (stateBreakdown.length) {
+      <ul class="bar-list">
+        @for (s of stateBreakdown; track s.label) {
+          <li class="bar-row">
+            @if (s.label === 'Other') {
+              <span class="bar-label">{{ s.label }}</span>
+            } @else {
+              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
+            }
+            <span class="bar-track"><span class="bar-fill" [style.width.%]="s.percentage"></span></span>
+            <span class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state"><p>State data unavailable for this range.</p></div>
+    }
+  </section>
+
+  <div class="content-grid">
+    <!-- Trademark type -->
+    <section class="content-card">
+      <div class="card-header"><h2 class="card-title">Wordmark vs Logo &amp; Other Types</h2></div>
+      @if (typeBreakdown.length) {
+        <ul class="bar-list">
+          @for (t of typeBreakdown; track t.label) {
+            <li class="bar-row">
+              <span class="bar-label">{{ t.label }}</span>
+              <span class="bar-track"><span class="bar-fill" [style.width.%]="t.percentage"></span></span>
+              <span class="bar-value">{{ t.percentage | number: '1.0-1' }}%</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state"><p>Type data unavailable.</p></div>
+      }
+    </section>
+
+    <!-- Applicant type -->
+    <section class="content-card">
+      <div class="card-header"><h2 class="card-title">Applicant Type</h2></div>
+      @if (orgTypeBreakdown.length) {
+        <ul class="bar-list">
+          @for (o of orgTypeBreakdown; track o.label) {
+            <li class="bar-row">
+              <span class="bar-label">{{ o.label }}</span>
+              <span class="bar-track"><span class="bar-fill" [style.width.%]="o.percentage"></span></span>
+              <span class="bar-value">{{ o.percentage | number: '1.0-1' }}%</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state"><p>Applicant-type data unavailable.</p></div>
+      }
+    </section>
+
+    <!-- Filing mode -->
+    <section class="content-card">
+      <div class="card-header"><h2 class="card-title">Filing Mode (e-Filing vs Physical)</h2></div>
+      @if (filingModeBreakdown.length) {
+        <ul class="bar-list">
+          @for (f of filingModeBreakdown; track f.label) {
+            <li class="bar-row">
+              <span class="bar-label">{{ f.label }}</span>
+              <span class="bar-track"><span class="bar-fill" [style.width.%]="f.percentage"></span></span>
+              <span class="bar-value">{{ f.percentage | number: '1.0-1' }}%</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state"><p>Filing-mode data unavailable.</p></div>
+      }
+    </section>
+
+    <!-- Usage basis -->
+    <section class="content-card">
+      <div class="card-header"><h2 class="card-title">Usage Basis</h2></div>
+      @if (usageBreakdown.length) {
+        <ul class="bar-list">
+          @for (u of usageBreakdown; track u.label) {
+            <li class="bar-row">
+              <span class="bar-label">{{ u.label }}</span>
+              <span class="bar-track"><span class="bar-fill" [style.width.%]="u.percentage"></span></span>
+              <span class="bar-value">{{ u.percentage | number: '1.0-1' }}%</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state"><p>Usage data unavailable.</p></div>
+      }
+    </section>
+  </div>
+
+  <!-- Most common words -->
+  <section class="content-card">
+    <div class="card-header">
+      <h2 class="card-title">Most Common Words in Indian Trademarks</h2>
+    </div>
+    @if (topWords.length) {
+      <div class="word-cloud">
+        @for (w of topWords; track w.label) {
+          <span class="word-chip">{{ w.label }} <em>{{ w.count | number }}</em></span>
+        }
+      </div>
+    } @else {
+      <div class="empty-state"><p>Word-frequency data unavailable for this range.</p></div>
+    }
+  </section>
+
   <!-- Journal activity -->
   <section class="content-card">
     <div class="card-header">
@@ -138,11 +272,23 @@
       <ul class="breakdown-list">
         @for (j of journalActivity; track j.journalNo) {
           <li class="breakdown-row">
-            <span class="breakdown-label">Journal {{ j.journalNo }}</span>
+            <a class="breakdown-label" [routerLink]="'/trademark-journal/' + j.journalNo">Journal {{ j.journalNo }}</a>
             <span class="breakdown-value">{{ j.count | number }} filings</span>
           </li>
         }
       </ul>
     }
+  </section>
+
+  <!-- Monthly reports index -->
+  <section class="content-card">
+    <div class="card-header">
+      <h2 class="card-title">Monthly Filing Reports</h2>
+    </div>
+    <div class="month-grid">
+      @for (m of recentMonths; track m.slug) {
+        <a class="month-pill" [routerLink]="'/trademark-trends/' + m.slug">{{ m.label }}</a>
+      }
+    </div>
   </section>
 </div>

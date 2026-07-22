@@ -474,6 +474,26 @@ export const routes: Routes = [
         loadComponent: () => import('./trademark-filing-trends/trademark-filing-trends.component').then(m => m.TrademarkFilingTrendsComponent),
         title: "India Trademark Filing Trends — Volume, Classes & Status Data | Trademarx",
     },
+    {
+        // Per-NICE-class trends. Listed before the :yearMonth route below; different segment
+        // counts mean they never collide, but keeping class first is defensive.
+        path: "trademark-trends/class/:tmClass",
+        loadComponent: () => import('./pages/trends-dimension-page/trends-dimension-page.component').then(m => m.TrendsDimensionPageComponent),
+        data: { dimension: 'class' },
+    },
+    {
+        path: "trademark-trends/:yearMonth",
+        loadComponent: () => import('./pages/trends-monthly-page/trends-monthly-page.component').then(m => m.TrendsMonthlyPageComponent),
+    },
+    {
+        path: "trademark-filings/:state",
+        loadComponent: () => import('./pages/trends-dimension-page/trends-dimension-page.component').then(m => m.TrendsDimensionPageComponent),
+        data: { dimension: 'state' },
+    },
+    {
+        path: "trademark-journal/:journalNo",
+        loadComponent: () => import('./pages/trends-journal-page/trends-journal-page.component').then(m => m.TrendsJournalPageComponent),
+    },
 
     {
         path: "submit-otp",

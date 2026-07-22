@@ -6,6 +6,7 @@ import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { FaqComponent } from '../../faq/faq.component';
 import { trademarkFaqs } from '../../enums/faqList';
 import { getCityData, getRegistryOffice, CityData, CITY_DATA } from './city-data';
+import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
 
 @Component({
   selector: 'app-trademark-city-page',
@@ -100,5 +101,10 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     }
     this.seo.removeCanonical();
     this.meta.removeTag("name='robots'");
+  }
+
+  /** "Tamil Nadu" -> "tamil-nadu", matching the backend's slugify so the link round-trips. */
+  stateSlug(state: string): string {
+    return slugifyState(state);
   }
 }

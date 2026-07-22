@@ -6,6 +6,7 @@ import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { FaqComponent } from '../../faq/faq.component';
 import { getCityData, CityData, CITY_DATA } from '../trademark-city-page/city-data';
 import { getServiceData, ServiceConfig } from './service-data';
+import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
 
 @Component({
   selector: 'app-service-city-page',
@@ -101,5 +102,10 @@ export class ServiceCityPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.seo.removeJsonLd(this.schemaId);
     this.seo.removeCanonical();
+  }
+
+  /** "Tamil Nadu" -> "tamil-nadu", matching the backend's slugify so the link round-trips. */
+  stateSlug(state: string): string {
+    return slugifyState(state);
   }
 }

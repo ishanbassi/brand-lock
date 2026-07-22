@@ -121,6 +121,7 @@ const STATIC_PAGES = [
   ...guideSlugs('status').map(s => ({ loc: `${SITE_URL}/trademark-status/${s}`, lastmod: TODAY })),
   { loc: `${SITE_URL}/how-to-trademark`, lastmod: TODAY },
   ...guideSlugs('usecase').map(s => ({ loc: `${SITE_URL}/how-to-trademark/${s}`, lastmod: TODAY })),
+  { loc: `${SITE_URL}/trademark-filing-trends`, lastmod: TODAY },
 ];
 
 interface RawBlogEntry { slug: string; updatedAt: string; }
@@ -128,13 +129,16 @@ interface TrademarkSitemapEntry { slug: string; lastmod: string; }
 
 app.get('/sitemap.xml', async (_req, res) => {
   try {
-    const [blogResponse, tmResponse] = await Promise.all([
+    const [blogResponse, tmResponse, trendsResponse] = await Promise.all([
       fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`),
       fetch(`https://admin.trademarx.in/api/trademarks/sitemap?page=0&size=5000`),
+      // Relative paths for every dimensional / periodic trends page (state, class, month, journal).
+      fetch(`https://admin.trademarx.in/api/trademarks/trends/sitemap`).catch(() => null),
     ]);
 
     const blogJson: { data: RawBlogEntry[] } = await blogResponse.json();
     const tmEntries: TrademarkSitemapEntry[] = await tmResponse.json();
+    const trendsPaths: string[] = trendsResponse && trendsResponse.ok ? await trendsResponse.json() : [];
 
     const blogUrls = blogJson.data.map(blog => `
     <url>
@@ -154,9 +158,16 @@ app.get('/sitemap.xml', async (_req, res) => {
       <lastmod>${p.lastmod}</lastmod>
     </url>`);
 
+    const trendsUrls = trendsPaths.map(path => `
+    <url>
+      <loc>${SITE_URL}${path}</loc>
+      <lastmod>${TODAY}</lastmod>
+    </url>`);
+
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticUrlEntries.join('')}
+${trendsUrls.join('')}
 ${blogUrls.join('')}
 ${trademarkUrls.join('')}
 </urlset>`;

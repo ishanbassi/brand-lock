@@ -1,0 +1,73 @@
+<div class="jr-page">
+  <header>
+    <div class="breadcrumb">
+      <a routerLink="/">Home</a> &rsaquo;
+      <a routerLink="/trademark-filing-trends">Filing Trends</a> &rsaquo;
+      <span>Journal {{ data?.journalNo || '…' }}</span>
+    </div>
+    @if (data) {
+      <h1>Trade Marks Journal No. {{ data.journalNo }}</h1>
+      <p class="jr-total">
+        <strong>{{ data.totalMarks | number }}</strong> trademark entries recorded from this journal
+        @if (data.publishedDate) {
+          · indexed {{ data.publishedDate | date: 'mediumDate' }}
+        }
+        @if (monthlyReportLink) {
+          · <a [routerLink]="'/trademark-trends/' + monthlyReportLink.slug">See the {{ monthlyReportLink.label }} filing report →</a>
+        }
+      </p>
+    } @else {
+      <h1>Loading journal…</h1>
+    }
+  </header>
+
+  @if (data) {
+    <section class="jr-card">
+      <h2>Marks by NICE Class</h2>
+      <ul class="bar-list">
+        @for (c of data.classBreakdown; track c.label) {
+          <li class="bar-row">
+            @if (c.label.startsWith('Other')) {
+              <span class="bar-label">{{ c.label }}</span>
+            } @else {
+              <a class="bar-label" [routerLink]="'/trademark-trends/class/' + c.label.split(' ')[1]">{{ c.label }}</a>
+            }
+            <span class="bar-track"><span class="bar-fill" [style.width.%]="c.percentage"></span></span>
+            <span class="bar-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="jr-card">
+      <h2>Marks by State</h2>
+      <ul class="bar-list">
+        @for (s of data.stateBreakdown; track s.label) {
+          <li class="bar-row">
+            @if (s.label.startsWith('Other')) {
+              <span class="bar-label">{{ s.label }}</span>
+            } @else {
+              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
+            }
+            <span class="bar-track"><span class="bar-fill" [style.width.%]="s.percentage"></span></span>
+            <span class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="jr-cta">
+      <h2>Your mark advertised? Watch for oppositions.</h2>
+      <p>Once advertised in the journal, there's a 4-month opposition window. We monitor and respond on your behalf.</p>
+      <div class="jr-cta-btns">
+        <a routerLink="/trademark-opposition" class="btn-primary">Trademark Opposition</a>
+        <a routerLink="/trademark" class="btn-ghost">Register a Trademark</a>
+      </div>
+    </section>
+
+    <p class="jr-source muted">
+      Data from the official <a href="https://ipindia.gov.in" target="_blank" rel="noopener noreferrer">IP India</a> Trade Marks Journal.
+      <a routerLink="/trademark-filing-trends">See live all-India trends →</a>
+    </p>
+  }
+</div>
