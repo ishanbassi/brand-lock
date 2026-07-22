@@ -105,6 +105,7 @@ const CORE_PAGES = [
   { loc: `${SITE_URL}/contact`,           lastmod: TODAY },
   { loc: `${SITE_URL}/privacy-policy`,    lastmod: TODAY },
   { loc: `${SITE_URL}/terms-and-conditions`, lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark-filing-trends`, lastmod: TODAY },
 ];
 
 const STATIC_PAGES = [

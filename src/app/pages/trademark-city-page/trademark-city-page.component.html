@@ -36,6 +36,24 @@
     </div>
   </section>
 
+  <!-- Local context -->
+  <section class="local-insights-section">
+    <div class="container">
+      <h2>{{ city.name }} at a Glance</h2>
+      @if (city.localInsights?.length) {
+        <ul class="local-insights-list">
+          @for (fact of city.localInsights; track fact) {
+            <li>{{ fact }}</li>
+          }
+        </ul>
+      }
+      <p class="registry-note">
+        Trademark applications from {{ city.name }} are examined by the Trade Marks Registry's
+        <strong>{{ registryOffice }}</strong> branch office, which holds jurisdiction over {{ city.state }}.
+      </p>
+    </div>
+  </section>
+
   <!-- Why trademark in this city -->
   <section class="why-section">
     <div class="container">

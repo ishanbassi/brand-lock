@@ -1,0 +1,148 @@
+<div class="trends-page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">India Trademark Filing Trends</h1>
+      <p class="page-sub">
+        Filing volume, top NICE classes, status breakdown and journal activity from the official IP India registry —
+        refreshed hourly.
+      </p>
+    </div>
+  </header>
+
+  <!-- Headline stat cards -->
+  <section class="stats-grid">
+    @if (summaryLoading) {
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="stat-card skeleton"></div>
+      }
+    } @else if (summary) {
+      <div class="stat-card">
+        <div class="stat-value">{{ summary.totalFilingsInRange | number }}</div>
+        <div class="stat-label">Filings — last 30 days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" [class.text-success]="(summary.momChangePercent ?? 0) >= 0" [class.text-danger]="(summary.momChangePercent ?? 0) < 0">
+          @if (summary.momChangePercent !== null) {
+            {{ summary.momChangePercent > 0 ? '+' : '' }}{{ summary.momChangePercent | number: '1.0-1' }}%
+          } @else {
+            —
+          }
+        </div>
+        <div class="stat-label">Month-over-month change</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ summary.topClassName || (summary.topClass ? 'Class ' + summary.topClass : '—') }}</div>
+        <div class="stat-label">Most active NICE class</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ summary.topStatusBucket || '—' }}</div>
+        <div class="stat-label">Most common status</div>
+      </div>
+    }
+  </section>
+
+  <!-- Filing volume chart -->
+  <section class="content-card volume-card">
+    <div class="card-header">
+      <h2 class="card-title">Filing Volume Over Time</h2>
+      <div class="range-toggle">
+        @for (opt of rangeOptions; track opt.value) {
+          <button
+            type="button"
+            class="range-btn"
+            [class.active]="selectedRange === opt.value"
+            (click)="onRangeChange(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (volumeError) {
+      <div class="alert-error">Couldn't load filing volume data right now.</div>
+    } @else if (volumeLoading || !isBrowser) {
+      <div class="chart-container skeleton"></div>
+    } @else {
+      <div class="chart-container">
+        <canvas baseChart [data]="volumeChartData" [options]="volumeChartOptions" type="line"></canvas>
+      </div>
+    }
+  </section>
+
+  <div class="content-grid">
+    <!-- Class breakdown -->
+    <section class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">Top NICE Classes</h2>
+      </div>
+
+      @if (classError) {
+        <div class="alert-error">Couldn't load class breakdown right now.</div>
+      } @else if (classLoading || !isBrowser) {
+        <div class="chart-container chart-container--sm skeleton"></div>
+      } @else {
+        <div class="chart-container chart-container--sm">
+          <canvas baseChart [data]="classChartData" [options]="classChartOptions" type="bar"></canvas>
+        </div>
+        <ul class="breakdown-list">
+          @for (c of classBreakdown; track c.tmClass) {
+            <li class="breakdown-row">
+              <span class="breakdown-label">{{ c.className || (c.tmClass ? 'Class ' + c.tmClass : 'Other') }}</span>
+              <span class="breakdown-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Status breakdown -->
+    <section class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">Status Breakdown</h2>
+      </div>
+
+      @if (statusError) {
+        <div class="alert-error">Couldn't load status breakdown right now.</div>
+      } @else if (statusLoading || !isBrowser) {
+        <div class="chart-container chart-container--sm skeleton"></div>
+      } @else {
+        <div class="chart-container chart-container--sm">
+          <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" type="doughnut"></canvas>
+        </div>
+        <ul class="breakdown-list">
+          @for (s of statusBreakdown; track s.bucket) {
+            <li class="breakdown-row">
+              <span class="breakdown-label">{{ s.bucket }}</span>
+              <span class="breakdown-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  <!-- Journal activity -->
+  <section class="content-card">
+    <div class="card-header">
+      <h2 class="card-title">Recent Journal Activity</h2>
+    </div>
+
+    @if (journalError) {
+      <div class="alert-error">Couldn't load journal activity right now.</div>
+    } @else if (journalLoading) {
+      <div class="empty-state"><p>Loading journal activity…</p></div>
+    } @else if (!journalActivity.length) {
+      <div class="empty-state"><p>No journal activity data available.</p></div>
+    } @else {
+      <ul class="breakdown-list">
+        @for (j of journalActivity; track j.journalNo) {
+          <li class="breakdown-row">
+            <span class="breakdown-label">Journal {{ j.journalNo }}</span>
+            <span class="breakdown-value">{{ j.count | number }} filings</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

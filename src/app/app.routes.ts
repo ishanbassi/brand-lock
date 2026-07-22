@@ -469,6 +469,11 @@ export const routes: Routes = [
         loadComponent: () => import('./latest-trademark-applications/latest-trademark-applications.component').then(m => m.LatestTrademarkApplicationsComponent),
         title: "Latest Trademark Applications Filed in India | Live Registry Updates — Trademarx",
     },
+    {
+        path: "trademark-filing-trends",
+        loadComponent: () => import('./trademark-filing-trends/trademark-filing-trends.component').then(m => m.TrademarkFilingTrendsComponent),
+        title: "India Trademark Filing Trends — Volume, Classes & Status Data | Trademarx",
+    },
 
     {
         path: "submit-otp",

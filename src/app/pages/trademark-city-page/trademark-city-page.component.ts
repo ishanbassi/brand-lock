@@ -5,7 +5,7 @@ import { SeoService } from '../../shared/services/seo.service';
 import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { FaqComponent } from '../../faq/faq.component';
 import { trademarkFaqs } from '../../enums/faqList';
-import { getCityData, CityData, CITY_DATA } from './city-data';
+import { getCityData, getRegistryOffice, CityData, CITY_DATA } from './city-data';
 
 @Component({
   selector: 'app-trademark-city-page',
@@ -16,6 +16,7 @@ import { getCityData, CityData, CITY_DATA } from './city-data';
 export class TrademarkCityPageComponent implements OnInit, OnDestroy {
   city!: CityData;
   otherCities: CityData[] = [];
+  registryOffice = '';
   faqs = trademarkFaqs;
 
   constructor(
@@ -36,6 +37,7 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     }
 
     this.city = data;
+    this.registryOffice = getRegistryOffice(data.state);
     this.otherCities = Object.values(CITY_DATA).filter(c => c.slug !== slug);
     const pageTitle = `Trademark Registration in ${data.name}, ${data.state} — ₹1,499 + Govt. Fees | Trademarx`;
     const desc = `Register your trademark in ${data.name} from ₹1,499. IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.`;
@@ -48,11 +50,7 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     this.meta.updateTag({ property: 'og:url', content: `https://trademarx.in/trademark/${data.slug}` });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
 
-    const INDEXED_CITIES = ['ludhiana', 'gurugram'];
-    this.meta.updateTag({
-      name: 'robots',
-      content: INDEXED_CITIES.includes(slug) ? 'index, follow' : 'noindex, follow',
-    });
+    this.meta.updateTag({ name: 'robots', content: 'index, follow' });
 
     this.seo.setCanonical(`https://trademarx.in/trademark/${data.slug}`);
     this.seo.injectJsonLd([

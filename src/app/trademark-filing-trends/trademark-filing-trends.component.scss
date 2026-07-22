@@ -1,0 +1,263 @@
+$accent: #0ea5e9;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$purple: #8b5cf6;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* {
+  box-sizing: border-box;
+}
+
+.trends-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  font-family:
+    'Inter',
+    'Segoe UI',
+    sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 0.5rem;
+}
+
+.page-sub {
+  color: $gray-600;
+  font-size: 0.95rem;
+  max-width: 700px;
+  margin: 0;
+}
+
+// ── STATS GRID ──────────────────────────────────────
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0; // grid items default to min-width: auto, which can force the track to grow
+
+  &.skeleton {
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    height: 90px;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+
+  &.text-success {
+    color: $success;
+  }
+  &.text-danger {
+    color: $danger;
+  }
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: $gray-400;
+  font-weight: 500;
+}
+
+// ── CONTENT CARDS ──────────────────────────────────────
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.content-card {
+  background: $white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.25rem;
+  min-width: 0; // grid/flex items default to min-width: auto - without this, an oversized
+  // chart canvas can force the whole grid track (and page) wider than the viewport
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0;
+}
+
+// ── RANGE TOGGLE ──────────────────────────────────────
+.range-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: $gray-50;
+  border-radius: 10px;
+  padding: 0.25rem;
+}
+
+.range-btn {
+  border: none;
+  background: transparent;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  &:hover {
+    color: $gray-800;
+  }
+
+  &.active {
+    background: $white;
+    color: $accent;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── CHARTS ──────────────────────────────────────
+.chart-container {
+  position: relative;
+  height: 320px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; // hard guard: Chart.js sets the canvas's pixel width from its
+  // container's measured size, and a feedback loop between the two can otherwise grow
+  // the canvas past the viewport, especially on first paint before layout settles
+
+  &--sm {
+    height: 220px;
+  }
+
+  &.skeleton {
+    border-radius: 10px;
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+
+  canvas {
+    max-width: 100% !important;
+  }
+}
+
+// ── BREAKDOWN ROWS ──────────────────────────────────────
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid $gray-100;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.breakdown-label {
+  font-size: 0.85rem;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.breakdown-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $gray-800;
+}
+
+// ── EMPTY / ALERT ──────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  p {
+    color: $gray-400;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}
+
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}

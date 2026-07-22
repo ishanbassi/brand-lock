@@ -29,15 +29,42 @@
         </div>
 
         <!-- Loading State -->
-        <div class="loading-state" *ngIf="isLoading">
-          <div class="skeleton-card" *ngFor="let i of [1,2,3]"></div>
+        <div class="results-list loading-state" *ngIf="isLoading">
+          <div class="trademark-card skeleton-card" *ngFor="let i of [1,2,3,4]">
+            <div class="skeleton-badge"></div>
+            <div class="card-header">
+              <div class="trademark-image skeleton-block"></div>
+              <div class="trademark-info">
+                <div class="skeleton-line skeleton-line--title"></div>
+                <div class="skeleton-line skeleton-line--short"></div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="skeleton-tags">
+                <span class="skeleton-tag"></span>
+                <span class="skeleton-tag"></span>
+              </div>
+              <div class="skeleton-line skeleton-line--full"></div>
+              <div class="skeleton-line skeleton-line--half"></div>
+            </div>
+            <div class="card-footer">
+              <div class="skeleton-block skeleton-btn"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Results List -->
         <div class="results-list" *ngIf="!isLoading && results && results.length > 0">
           <ng-container *ngFor="let trademark of results; trackBy: trackById; let i = index; let last = last">
           <article class="trademark-card"
-            [attr.data-status]="trademark.trademarkStatus?.toLowerCase()">
+            [attr.data-status]="trademark.trademarkStatus?.toLowerCase()"
+            [style.animation-delay]="(i % 12 * 60) + 'ms'">
+
+            <span class="status-stamp" [ngClass]="getStatusClass(trademark.trademarkStatus)"
+              *ngIf="trademark.trademarkStatus">
+              {{ trademark.trademarkStatus }}
+            </span>
+
             <!-- Card Header -->
             <div class="card-header">
               <div class="trademark-image">
@@ -47,30 +74,23 @@
 
               <div class="trademark-info">
                 <h2 class="trademark-name" [innerHTML]="highlight(trademark.name)"></h2>
-
+                <div class="trademark-docket">
+                  <span class="docket-label">App</span>
+                  <span class="docket-no">#{{ trademark.applicationNo }}</span>
+                </div>
               </div>
-
-              <span class="status-badge" [ngClass]="getStatusClass(trademark.trademarkStatus)"
-                *ngIf="trademark.trademarkStatus">
-                {{ trademark.trademarkStatus }}
-              </span>
             </div>
 
             <!-- Card Body -->
             <div class="card-body">
               <div class="trademark-meta">
-                <div class="meta-item">
-                  Application No:
-                  <b>{{ trademark.applicationNo }}</b>
-                </div>
-                <div class="meta-item" *ngIf="trademark.applicationDate">
-                  Applicant:
-                  <b>{{ trademark?.proprietorName }}</b>
-                </div>
-                <div class="meta-item" *ngIf="trademark.tmClass">
-                  Class:
+                <span class="meta-pill meta-pill--class" *ngIf="trademark.tmClass">
+                  <span class="meta-pill-label">Class</span>
                   <b>{{ trademark?.tmClass }}</b>
-                </div>
+                </span>
+                <span class="meta-pill meta-pill--applicant" *ngIf="trademark.applicationDate">
+                  <b>{{ trademark?.proprietorName }}</b>
+                </span>
               </div>
               <div class="trademark-class">
                 <span class="trademark-details" [innerHTML]="highlight(trademark.details)"></span>
