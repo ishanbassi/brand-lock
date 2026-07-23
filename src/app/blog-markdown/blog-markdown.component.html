@@ -1,6 +1,6 @@
 <markdown class="blog-content" [data]="blog?.content" (ready)="onMarkdownReady()">
 </markdown>
-<section class="faq-section">
+<section class="faq-section" *ngIf="blog?.faqs?.length">
     <div class="container">
         <h2 class="faq-heading">Frequently Asked Questions</h2>
         <div class="faq-list" id="faqList">

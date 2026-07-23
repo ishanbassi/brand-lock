@@ -18,6 +18,10 @@ export class BlogMarkdownComponent implements OnInit , OnDestroy{
 
     @Output()
     markdownReady: EventEmitter<boolean> = new EventEmitter();
+
+    @Output()
+    imageClick: EventEmitter<{ src: string; alt: string }> = new EventEmitter();
+
     private isBrowser = false;
 
 
@@ -45,6 +49,9 @@ export class BlogMarkdownComponent implements OnInit , OnDestroy{
         if (!this.isBrowser) return;
         this.markdownReady.emit(true);
 
+        this.wrapTables();
+        this.bindImageZoom();
+
         if (!this.blog?.content || !this.blog.campaignBlock) return;
 
 
@@ -66,6 +73,46 @@ export class BlogMarkdownComponent implements OnInit , OnDestroy{
                 paragraphs[position].insertAdjacentElement('afterend', campaignDiv);
                 this.observeCampaignSection(campaignDiv);
             }
+        });
+    }
+
+    /**
+     * ngx-markdown renders tables at their natural (often wide) column widths.
+     * Forcing them to 100% width just squeezes cell text into unreadable
+     * multi-line wraps on narrow screens, so instead each table gets its own
+     * horizontal-scroll wrapper and keeps its natural sizing.
+     */
+    wrapTables() {
+        const markdownElement = document.querySelector('.blog-content');
+        if (!markdownElement) return;
+
+        markdownElement.querySelectorAll('table').forEach(table => {
+            if (table.parentElement?.classList.contains('table-scroll')) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-scroll';
+            table.insertAdjacentElement('beforebegin', wrapper);
+            wrapper.appendChild(table);
+        });
+    }
+
+    /**
+     * Content images (charts, screenshots) render small inline; clicking one
+     * should open it full-size rather than leaving the reader stuck squinting.
+     * The campaign block's own promo image is excluded — that one's a CTA,
+     * not reading material.
+     */
+    bindImageZoom() {
+        const markdownElement = document.querySelector('.blog-content');
+        if (!markdownElement) return;
+
+        markdownElement.querySelectorAll('img').forEach(img => {
+            const el = img as HTMLImageElement;
+            if (el.dataset['zoomBound'] || el.closest('.campaign-section')) return;
+            el.dataset['zoomBound'] = 'true';
+            el.classList.add('zoomable');
+            el.addEventListener('click', () => {
+                this.imageClick.emit({ src: el.currentSrc || el.src, alt: el.alt });
+            });
         });
     }
 

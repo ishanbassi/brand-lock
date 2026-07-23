@@ -3,6 +3,7 @@ import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from 
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import dayjs from 'dayjs/esm';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../environments/environment';
 import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
@@ -11,6 +12,8 @@ import { SharedModule } from '../shared/shared.module';
 import { SeoService } from '../shared/services/seo.service';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { ServiceType } from '../../models/service-order.model';
+
+const WORDS_PER_MINUTE = 200;
 
 @Component({
   selector: 'app-blog-detail',
@@ -27,10 +30,39 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   previewCount = 4;
   showAll = false;
   mobileTocOpen = false;
+  readProgress = 0;
+  showBackToTop = false;
+  canNativeShare = false;
+  relatedBlogs: BlogData[] = [];
+  lightboxImage: { src: string; alt: string } | null = null;
   private isBrowser = false;
 
   get visibleToc() {
     return this.showAll ? this.toc : this.toc.slice(0, this.previewCount);
+  }
+
+  get readTimeMinutes(): number {
+    const words = (this.blog?.content || '').trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+  }
+
+  get authorInitials(): string {
+    const name = this.blog?.author || 'Trademarx';
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase())
+      .join('');
+  }
+
+  get shareUrl(): string {
+    const slug = this.route.snapshot.paramMap.get('slug') || '';
+    return `https://trademarx.in/blogs/${slug}`;
+  }
+
+  get shareTitle(): string {
+    return this.blog?.title || '';
   }
 
   /**
@@ -66,10 +98,12 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     private meta: Meta,
     private router: Router,
     private seo: SeoService,
+    private toastr: ToastrService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+    this.canNativeShare = this.isBrowser && !!(navigator as any)?.share;
   }
 
   ngOnDestroy(): void {
@@ -171,6 +205,16 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         'mainEntityOfPage': { '@type': 'WebPage', '@id': canonicalUrl }
       }, 'blog-post');
 
+      this.loadRelatedBlogs(this.blog.category, slug);
+
+    });
+  }
+
+  loadRelatedBlogs(category: string, currentSlug: string) {
+    this.blogService.getLatestBlogsByCategory(4, category).subscribe(res => {
+      this.relatedBlogs = (res?.data || [])
+        .filter((b: BlogData) => b.slug !== currentSlug)
+        .slice(0, 3);
     });
   }
 
@@ -242,16 +286,89 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
       const rect = section.getBoundingClientRect();
       item['active'] = rect.top >= 0 && rect.top < 200;
+
+      for (const child of item.children) {
+        const childSection = document.getElementById(child.id);
+        if (!childSection) continue;
+        const childRect = childSection.getBoundingClientRect();
+        child['active'] = childRect.top >= 0 && childRect.top < 200;
+      }
+    }
+
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    this.readProgress = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
+    this.showBackToTop = scrollTop > 600;
+  }
+
+  scrollToTop() {
+    if (!this.isBrowser) return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Opens the image lightbox and pushes a throwaway history entry so the
+   * device/browser back gesture closes the overlay instead of navigating
+   * away from the article. Switching to a different image while the
+   * lightbox is already open reuses that same entry.
+   */
+  openLightbox(src?: string, alt?: string) {
+    if (!src) return;
+    const wasOpen = !!this.lightboxImage;
+    this.lightboxImage = { src, alt: alt || '' };
+    if (this.isBrowser && !wasOpen) {
+      history.pushState({ blogLightbox: true }, '');
     }
   }
 
+  closeLightbox(fromPopState = false) {
+    if (!this.lightboxImage) return;
+    this.lightboxImage = null;
+    if (this.isBrowser && !fromPopState) {
+      history.back();
+    }
+  }
+
+  @HostListener('window:popstate')
+  onPopState() {
+    if (this.lightboxImage) {
+      this.closeLightbox(true);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.closeLightbox();
+  }
 
   onMarkdownReady() {
     if (!isPlatformBrowser(this.platformId)) return;
     this.buildTOC();
   }
 
+  shareOn(network: 'twitter' | 'linkedin' | 'whatsapp') {
+    if (!this.isBrowser) return;
+    const url = encodeURIComponent(this.shareUrl);
+    const text = encodeURIComponent(this.shareTitle);
+    const links: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      whatsapp: `https://api.whatsapp.com/send?text=${text}%20${url}`,
+    };
+    window.open(links[network], '_blank', 'noopener,noreferrer,width=600,height=600');
+  }
 
+  nativeShare() {
+    if (!this.isBrowser || !(navigator as any)?.share) return;
+    (navigator as any).share({ title: this.shareTitle, url: this.shareUrl }).catch(() => { });
+  }
+
+  copyLink() {
+    if (!this.isBrowser) return;
+    navigator.clipboard.writeText(this.shareUrl).then(() => {
+      this.toastr.success('Link copied to clipboard');
+    });
+  }
 
 
 }

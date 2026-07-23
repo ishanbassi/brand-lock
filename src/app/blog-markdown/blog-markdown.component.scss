@@ -1,8 +1,21 @@
     ::ng-deep {
 
+  /* Scroll wrapper — lets wide tables scroll horizontally on their own
+     instead of the whole page, and keeps column widths readable instead
+     of being crushed down to fit a narrow viewport. */
+  .table-scroll {
+    width: 100%;
+    margin: 24px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  }
+
   /* Table container */
   table {
     width: 100%;
+    min-width: 480px;
     border-collapse: separate;
     border-spacing: 0;
     background: #ffffff;
@@ -67,6 +80,19 @@
     margin: 0 auto;
     padding: 48px 16px;
     color: #111827;
+  }
+
+  /* Drop cap on the opening paragraph — a quiet nod to the certificate/seal
+     feel of a trademark filing, kept to one paragraph so it stays an accent
+     rather than a running style. */
+  .blog-content > p:first-of-type::first-letter {
+    float: left;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 3.4em;
+    line-height: 0.85;
+    font-weight: 700;
+    padding: 4px 10px 0 0;
+    color: var(--primary-color, #2563eb);
   }
 
   .blog-content {
@@ -200,6 +226,15 @@
       /* KEY */
       display: block;
     }
+
+    img.zoomable {
+      cursor: zoom-in;
+      transition: opacity 0.15s ease;
+
+      &:hover {
+        opacity: 0.92;
+      }
+    }
   }
 
   .blog-content a:hover {
@@ -228,6 +263,32 @@
   }
   
 @media (max-width: 500px) {
+  .blog-content > p:first-of-type::first-letter {
+    font-size: 2.6em;
+    padding: 2px 8px 0 0;
+  }
+
+  .table-scroll {
+    /* Full-bleed on mobile so the scrollable area isn't boxed in by the
+       article's side padding, matching how the rest of the width works here. */
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: 0;
+  }
+
+  table {
+    min-width: 560px;
+    border-radius: 0;
+  }
+
+  table thead th,
+  table td {
+    padding: 12px 14px;
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+
   .blog-content {
     /* Base text */
     font-size: 16px;

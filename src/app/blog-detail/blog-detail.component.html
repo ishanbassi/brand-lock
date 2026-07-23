@@ -1,25 +1,32 @@
 
 
-<header class="blog-hero" [ngStyle]="{'background-color': blog?.backgroundColor}">
+<!-- Reading progress -->
+<div class="progress-rail" *ngIf="blog">
+    <div class="progress-fill" [style.width.%]="readProgress"></div>
+</div>
+
+<header class="blog-hero" [ngStyle]="{'background': blog?.backgroundColor}">
     <div class="blog-hero__container">
         <nav class="breadcrumb">
             <a href="javascript:void(0)">Trademarx</a>
             <span>›</span>
             <a routerLink="/blogs">Blog</a>
             <span>›</span>
-            <a href="javascript:void(0)">{{blog?.category}}</a>
-
+            <span class="crumb-current">{{blog?.category}}</span>
         </nav>
+
+        <a href="javascript:void(0)" class="category-pill">{{blog?.category}}</a>
 
         <h1 class="blog-title">
             {{blog?.title}}
         </h1>
 
         <div class="blog-meta">
-            <span>Author: <strong>{{blog?.author || 'Trademarx'}}</strong></span>
-            <span>•</span>
-            <span>10 min read</span>
-            <span>•</span>
+            <span class="author-avatar" aria-hidden="true">{{authorInitials}}</span>
+            <span class="author-name">{{blog?.author || 'Trademarx'}}</span>
+            <span class="dot">•</span>
+            <span>{{readTimeMinutes}} min read</span>
+            <span class="dot">•</span>
             <span>{{blog?.createdAt?.format('MMM D, YYYY')}}</span>
         </div>
 
@@ -29,20 +36,60 @@
 <div class="blog-single">
     <div class="container">
         <div class="row justify-center">
-            <div class="col-lg-8 col-xl-7 col-xxl-6 m-15px-tb">
+            <div class="col-lg-8 col-xl-8 col-xxl-8 m-15px-tb">
                 <article class="article">
-                    <div class="article-img">
+
+                    <!-- Share rail (desktop) -->
+                    <aside class="share-rail" aria-label="Share this article">
+                        <span class="share-rail__label">Share</span>
+                        <button type="button" class="share-btn share-btn--twitter" (click)="shareOn('twitter')" aria-label="Share on X">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-6.9l-5.4-6.9L4.7 22H1.6l8.1-9.3L1 2h7.1l4.9 6.3L18.9 2Zm-1.2 18h1.9L7.4 4H5.4l12.3 16Z"/></svg>
+                        </button>
+                        <button type="button" class="share-btn share-btn--linkedin" (click)="shareOn('linkedin')" aria-label="Share on LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z"/></svg>
+                        </button>
+                        <button type="button" class="share-btn share-btn--whatsapp" (click)="shareOn('whatsapp')" aria-label="Share on WhatsApp">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.7.44 3.35 1.29 4.8L2 22l5.42-1.4a9.9 9.9 0 0 0 4.62 1.18h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.13-2.9-7C17.17 3.03 14.68 2 12.04 2Zm0 18.1h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.11.81.83-3.03-.2-.31a8.19 8.19 0 1 1 6.98 3.86Zm4.5-6.13c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.24-.42.08-.16.04-.3-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.48c-.16 0-.42.06-.64.3-.22.25-.85.83-.85 2.02 0 1.2.87 2.35 1 2.5.12.17 1.7 2.6 4.13 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.15-1.17-.06-.1-.22-.16-.47-.28Z"/></svg>
+                        </button>
+                        <button *ngIf="canNativeShare" type="button" class="share-btn share-btn--more" (click)="nativeShare()" aria-label="More share options">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+                        </button>
+                        <button type="button" class="share-btn share-btn--copy" (click)="copyLink()" aria-label="Copy link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.36-1.36"/></svg>
+                        </button>
+                    </aside>
+
+                    <div class="article-img" (click)="openLightbox(blogBaseUrl + blog?.featuredImage?.url, blog?.title)">
                         <img  loading="lazy" [src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
                     </div>
                     <div class="article-content">
 
-                        <app-blog-markdown [blog]="blog" (markdownReady)="onMarkdownReady()"></app-blog-markdown>
+                        <app-blog-markdown [blog]="blog" (markdownReady)="onMarkdownReady()" (imageClick)="openLightbox($event.src, $event.alt)"></app-blog-markdown>
+                    </div>
+
+                    <!-- Share row (mobile / tablet) -->
+                    <div class="share-row">
+                        <span class="share-row__label">Found this useful? Share it</span>
+                        <div class="share-row__buttons">
+                            <button type="button" class="share-btn share-btn--twitter" (click)="shareOn('twitter')" aria-label="Share on X">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-6.9l-5.4-6.9L4.7 22H1.6l8.1-9.3L1 2h7.1l4.9 6.3L18.9 2Zm-1.2 18h1.9L7.4 4H5.4l12.3 16Z"/></svg>
+                            </button>
+                            <button type="button" class="share-btn share-btn--linkedin" (click)="shareOn('linkedin')" aria-label="Share on LinkedIn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z"/></svg>
+                            </button>
+                            <button type="button" class="share-btn share-btn--whatsapp" (click)="shareOn('whatsapp')" aria-label="Share on WhatsApp">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.7.44 3.35 1.29 4.8L2 22l5.42-1.4a9.9 9.9 0 0 0 4.62 1.18h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.13-2.9-7C17.17 3.03 14.68 2 12.04 2Zm0 18.1h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.11.81.83-3.03-.2-.31a8.19 8.19 0 1 1 6.98 3.86Zm4.5-6.13c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.24-.42.08-.16.04-.3-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.48c-.16 0-.42.06-.64.3-.22.25-.85.83-.85 2.02 0 1.2.87 2.35 1 2.5.12.17 1.7 2.6 4.13 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.15-1.17-.06-.1-.22-.16-.47-.28Z"/></svg>
+                            </button>
+                            <button type="button" class="share-btn share-btn--copy" (click)="copyLink()" aria-label="Copy link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.36-1.36"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </article>
             </div>
-            <div class="col-lg-4 col-xl-3 m-15px-tb blog-aside">
+            <div class="col-lg-4 col-xl-4 col-xxl-4 m-15px-tb blog-aside">
                 <aside>
-                    <div class="toc">
+                    <div class="toc" *ngIf="toc.length">
                         <h4>📑 Table of Contents</h4>
 
                         <ul class="toc-list">
@@ -50,7 +97,7 @@
 
                                 <!-- Parent heading -->
                                 <div class="toc-parent">
-                                    <a [routerLink]="[]" [fragment]="item.id">
+                                    <a [routerLink]="[]" [fragment]="item.id" [class.active]="item.active">
                                         {{ item.text }}
                                     </a>
 
@@ -63,7 +110,7 @@
                                 <!-- Child headings -->
                                 <ul class="toc-children" *ngIf="item.children.length && item.expanded">
                                     <li *ngFor="let child of item.children">
-                                        <a [routerLink]="[]" [fragment]="child.id">
+                                        <a [routerLink]="[]" [fragment]="child.id" [class.active]="child.active">
                                             {{ child.text }}
                                         </a>
                                     </li>
@@ -77,6 +124,15 @@
                             {{ showAll ? 'Show less' : 'Show more' }}
                         </button>
                     </div>
+
+                    <div class="author-card">
+                        <span class="author-card__avatar">{{authorInitials}}</span>
+                        <div class="author-card__body">
+                            <span class="author-card__name">{{blog?.author || 'Trademarx'}}</span>
+                            <span class="author-card__role">Trademarx Editorial Team</span>
+                        </div>
+                    </div>
+
                     <div class="aside-lead">
                         <app-lead-form
                             [heading]="blog?.campaignBlock?.title || 'Talk to a Trademark Expert'"
@@ -85,15 +141,36 @@
                             [showTextArea]="false"></app-lead-form>
                     </div>
                 </aside>
+            </div>
+        </div>
 
-
-
-
-
+        <!-- Continue reading -->
+        <div class="row justify-center" *ngIf="relatedBlogs.length">
+            <div class="col-lg-11">
+                <section class="related">
+                    <h2 class="related__title">Continue reading</h2>
+                    <div class="related__grid">
+                        <a *ngFor="let post of relatedBlogs" [routerLink]="'/blogs/'+post.slug" class="related-card">
+                            <div class="related-card__img">
+                                <img loading="lazy" [src]="blogBaseUrl + post.featuredImage?.formats?.small?.url" [alt]="post.title">
+                            </div>
+                            <div class="related-card__body">
+                                <span class="related-card__category">{{post.category}}</span>
+                                <h3>{{post.title}}</h3>
+                                <p>{{post.excerpt}}</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Back to top (desktop) -->
+<button type="button" class="back-to-top" [class.is-visible]="showBackToTop" (click)="scrollToTop()" aria-label="Back to top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+</button>
 
 <!-- Mobile floating Table of Contents (main headings only) -->
 <div class="mobile-toc" *ngIf="toc.length">
@@ -122,4 +199,12 @@
         </svg>
         <span class="mobile-toc__fab-label">Contents</span>
     </button>
+</div>
+
+<!-- Image lightbox — closes on backdrop click, the close icon, Escape, or the browser/device back gesture -->
+<div class="lightbox" *ngIf="lightboxImage" (click)="closeLightbox()">
+    <button type="button" class="lightbox__close" (click)="closeLightbox()" aria-label="Close">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <img [src]="lightboxImage.src" [alt]="lightboxImage.alt" (click)="$event.stopPropagation()">
 </div>
