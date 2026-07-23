@@ -28,7 +28,7 @@
           <tr>
             <th></th>
             <th *ngFor="let col of columns">
-              <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="sortQueryParams(col.field)" queryParamsHandling="merge">
+              <a [routerLink]="['/trademark-journal', journalNo, 'browse']" [queryParams]="sortQueryParams(col.field)" queryParamsHandling="merge">
                 {{ col.label }}
                 <span class="sort-arrow" *ngIf="sortField === col.field">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
               </a>
@@ -65,14 +65,14 @@
 
     <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
       <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
-        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: currentPage - 1 }" queryParamsHandling="merge"
+        <a [routerLink]="['/trademark-journal', journalNo, 'browse']" [queryParams]="{ page: currentPage - 1 }" queryParamsHandling="merge"
           class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
           <i class="fas fa-chevron-left text-sm"></i>
         </a>
       </li>
 
       <li *ngFor="let page of pages">
-        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: page }" queryParamsHandling="merge"
+        <a [routerLink]="['/trademark-journal', journalNo, 'browse']" [queryParams]="{ page: page }" queryParamsHandling="merge"
           [class]="page === currentPage
    ? 'flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white font-medium text-sm'
    : 'flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm transition-colors'">
@@ -81,7 +81,7 @@
       </li>
 
       <li [class.opacity-50]="currentPage === totalPages" [class.pointer-events-none]="currentPage === totalPages">
-        <a [routerLink]="['/trademark-journal', journalNo]" [queryParams]="{ page: currentPage + 1 }" queryParamsHandling="merge"
+        <a [routerLink]="['/trademark-journal', journalNo, 'browse']" [queryParams]="{ page: currentPage + 1 }" queryParamsHandling="merge"
           class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
           <i class="fas fa-chevron-right text-sm"></i>
         </a>

@@ -460,7 +460,10 @@ export const routes: Routes = [
         title: "Trademark Journal | Latest India Trademark Registry Publications",
     },
     {
-        path: "trademark-journal/:journalNo",
+        // Searchable/sortable table of the trademarks in a journal. Lives under /browse so the
+        // SEO stats page below can own the bare /trademark-journal/:journalNo URL (matches the
+        // path TrademarkTrendsService.java already emits into the live sitemap).
+        path: "trademark-journal/:journalNo/browse",
         loadComponent: () => import('./trademark-journal-detail/trademark-journal-detail.component').then(m => m.TrademarkJournalDetailComponent),
         title: "Trademark Journal | Trademarx",
     },
@@ -491,6 +494,8 @@ export const routes: Routes = [
         data: { dimension: 'state' },
     },
     {
+        // SEO stats page (schema, breadcrumbs, class/state breakdown) — the canonical public URL
+        // for a journal. TrademarkTrendsService.java's sitemap generator points here directly.
         path: "trademark-journal/:journalNo",
         loadComponent: () => import('./pages/trends-journal-page/trends-journal-page.component').then(m => m.TrendsJournalPageComponent),
     },
