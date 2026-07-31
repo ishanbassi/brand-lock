@@ -7,37 +7,42 @@ import { createRequestOption } from '../../core/request/request-util';
 
 export type PartialUpdateTrademark = Partial<ITrademark> & Pick<ITrademark, 'id'>;
 
+export interface ScrapedTrademarkPageRequest {
+  ocrExtracted?: boolean;
+  cursorId?: number;
+  limit?: number;
+}
+
 /**
- * Admin application (trademark) data access. Hits the ROLE_ADMIN-gated
- * /api/admin/trademarks endpoints, which are scoped to customer-owned
- * applications only (never the scraped journal corpus).
+ * Admin review of the scraped/journal trademark corpus (unowned rows) - hits the
+ * ROLE_ADMIN-gated /api/admin/scraped-trademarks endpoints, distinct from
+ * AdminTrademarkService which is scoped to customer-owned applications only.
+ * The list endpoint is keyset (id-cursor) paginated, not offset/page based.
  */
 @Injectable({ providedIn: 'root' })
-export class AdminTrademarkService {
+export class AdminScrapedTrademarkService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/admin/trademarks');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/admin/scraped-trademarks');
 
-  query(req?: any): Observable<HttpResponse<ITrademark[]>> {
-    const options = createRequestOption(req);
-    return this.http.get<ITrademark[]>(this.resourceUrl, { params: options, observe: 'response' });
+  page(req: ScrapedTrademarkPageRequest): Observable<ITrademark[]> {
+    const options = createRequestOption({
+      'ocrExtracted.equals': req.ocrExtracted,
+      cursorId: req.cursorId,
+      limit: req.limit,
+    });
+    return this.http.get<ITrademark[]>(this.resourceUrl, { params: options });
   }
 
   find(id: number): Observable<HttpResponse<ITrademark>> {
     return this.http.get<ITrademark>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  /** Advance the lifecycle status (or other fields). Null fields are ignored server-side. */
   update(trademark: PartialUpdateTrademark): Observable<HttpResponse<ITrademark>> {
     return this.http.patch<ITrademark>(`${this.resourceUrl}/${trademark.id}`, trademark, {
       headers: { 'Content-Type': 'application/merge-patch+json' },
       observe: 'response',
     });
-  }
-
-  /** Sends the website/app-development pitch email to whatever email is currently on file. */
-  sendPitchEmail(id: number): Observable<HttpResponse<void>> {
-    return this.http.post<void>(`${this.resourceUrl}/${id}/pitch-email`, {}, { observe: 'response' });
   }
 }

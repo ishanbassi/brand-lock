@@ -1,0 +1,58 @@
+<div class="admin-page">
+
+  <a class="back-link" routerLink="/admin-portal/scraped-trademarks">← Back to scraped trademarks</a>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="detail-card"><div class="skeleton-line" style="height: 180px;"></div></div>
+  } @else if (trademark()) {
+    @let tm = trademark()!;
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ tm.name || 'Trademark #' + tm.id }}</h1>
+        <p class="page-sub">
+          @if (tm.ocrExtracted) { <span class="badge badge-ocr">OCR-extracted name</span> }
+          @if (tm.applicationNo) { · App. No. {{ tm.applicationNo }} }
+        </p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- DETAILS -->
+      <div class="detail-card">
+        <h2>Trademark details</h2>
+        <img class="tm-thumb-large" [src]="imgSrc(tm)" alt="" />
+        <div class="field-row"><span class="field-label">Class</span><span class="field-value">{{ tm.tmClass || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Application no.</span><span class="field-value">{{ tm.applicationNo || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Journal no.</span><span class="field-value">{{ tm.journalNo || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Status</span><span class="field-value">{{ tm.trademarkStatus || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Applicant</span><span class="field-value">{{ tm.proprietorName || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">OCR-extracted</span><span class="field-value">{{ tm.ocrExtracted ? 'Yes' : 'No' }}</span></div>
+      </div>
+
+      <!-- NAME CORRECTION -->
+      <div class="detail-card">
+        <h2>Correct name</h2>
+        <p class="page-sub" style="margin-bottom: 1.1rem;">
+          Fix a misread OCR name if needed. Other fields aren't editable from this page.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-control" type="text" [(ngModel)]="nameModel" />
+        </div>
+
+        <button class="btn-primary" [disabled]="saving() || !nameChanged" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Save name' }}
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

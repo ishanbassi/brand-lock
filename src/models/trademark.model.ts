@@ -24,6 +24,7 @@ export interface ITrademark {
   tmClass?: number | null;
   journalNo?: number | null;
   deleted?: boolean | null;
+  ocrExtracted?: boolean | null;
   usage?: string | null;
   associatedTms?: string | null;
   trademarkStatus?: string | null;

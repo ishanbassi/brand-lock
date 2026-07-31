@@ -1,0 +1,64 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Scraped trademarks</h1>
+      <p class="page-sub">{{ records().length }} loaded{{ noMore() ? ' · end of results' : '' }}</p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <label style="display: flex; align-items: center; gap: 0.4rem;">
+      <input type="checkbox" [(ngModel)]="ocrOnly" (ngModelChange)="onOcrToggleChange()" />
+      OCR-extracted only
+    </label>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Brand</th>
+          <th>Class</th>
+          <th>App. No.</th>
+          <th>Journal No.</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (records().length === 0 && !loading()) {
+          <tr><td colspan="6" class="empty-cell">No trademarks match these filters.</td></tr>
+        } @else {
+          @for (tm of records(); track tm.id) {
+            <tr>
+              <td><img class="tm-thumb" [src]="imgSrc(tm)" alt="" /></td>
+              <td class="cell-strong">
+                {{ tm.name || '—' }}
+                @if (tm.ocrExtracted) { <span class="badge badge-ocr">OCR</span> }
+              </td>
+              <td>{{ tm.tmClass || '—' }}</td>
+              <td class="muted">{{ tm.applicationNo || '—' }}</td>
+              <td class="muted">{{ tm.journalNo || '—' }}</td>
+              <td><a class="row-action" [routerLink]="['/admin-portal/scraped-trademarks', tm.id]">Open →</a></td>
+            </tr>
+          }
+        }
+        @if (loading()) {
+          @for (i of [1,2,3]; track i) {
+            <tr class="skeleton-row"><td colspan="6"><div class="skeleton-line"></div></td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div #sentinel></div>
+
+</div>
