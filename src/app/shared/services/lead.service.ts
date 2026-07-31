@@ -6,6 +6,7 @@ import dayjs from 'dayjs/esm';
 import { ILead, NewLead } from '../../../models/lead.model';
 import { ApplicationConfigService } from '../../core/config/application-config.service';
 import { createRequestOption } from '../../core/request/request-util';
+import { ReferralAttributionService } from './referral-attribution.service';
 
 
 export type PartialUpdateLead = Partial<ILead> & Pick<ILead, 'id'>;
@@ -28,12 +29,17 @@ export type EntityArrayResponseType = HttpResponse<ILead[]>;
 export class LeadService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly referralAttributionService = inject(ReferralAttributionService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/leads');
   protected resourceUrlExtended = this.applicationConfigService.getEndpointFor('api/extended/leads');
 
   create(lead: NewLead): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(lead);
+    const withReferral: NewLead = {
+      ...lead,
+      referralCode: lead.referralCode ?? this.referralAttributionService.getActiveCode() ?? undefined,
+    };
+    const copy = this.convertDateFromClient(withReferral);
     return this.http.post<RestLead>(this.resourceUrlExtended, copy, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
   }
 

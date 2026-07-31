@@ -14,6 +14,7 @@ import { RazorPayOrderResponse } from '../../models/razorpay-order-response.mode
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { LocalStorageService } from '../shared/services/local-storage.service';
 import { AuthService } from '../../models/auth.services';
+import { ReferralAttributionService } from '../shared/services/referral-attribution.service';
 
 @Component({
   selector: 'app-service-checkout-page',
@@ -45,7 +46,8 @@ export class ServiceCheckoutPageComponent implements OnInit {
     private readonly servicePaymentService: ServicePaymentService,
     private readonly googleConversionTrackingService: GoogleConversionTrackingService,
     private readonly localstorageService: LocalStorageService,
-    private readonly authservice: AuthService
+    private readonly authservice: AuthService,
+    private readonly referralAttributionService: ReferralAttributionService
   ) {}
 
   ngOnInit() {
@@ -81,7 +83,8 @@ export class ServiceCheckoutPageComponent implements OnInit {
       serviceType: this.serviceType,
       leadId: this.leadId,
       amount: this.serviceConfig.price,
-      description: this.serviceConfig.name
+      description: this.serviceConfig.name,
+      referralCode: this.referralAttributionService.getActiveCode()
     }).subscribe({
       next: (res) => {
         this.createOrderResponse = res.body!;
@@ -153,6 +156,7 @@ export class ServiceCheckoutPageComponent implements OnInit {
           );
           this.paymentSuccess = true;
           this.sessionStorageService.remove('lead');
+          this.referralAttributionService.clear();
           this.toastService.success('Payment successful! Our team will contact you within 24 hours.');
         },
         error: () => {

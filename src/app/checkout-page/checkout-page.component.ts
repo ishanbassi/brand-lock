@@ -30,6 +30,7 @@ import { AuthService } from '../../models/auth.services';
 import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import { ScriptLoaderService } from '../shared/services/script-loader.service';
 import { OnboardingStateService } from '../shared/services/onboarding-state.service';
+import { ReferralAttributionService } from '../shared/services/referral-attribution.service';
 
 const GOVT_FEE_STANDARD = 9000;
 const GOVT_FEE_CONCESSION = 4500;
@@ -71,7 +72,8 @@ export class CheckoutPageComponent implements OnInit {
     private readonly authservice: AuthService,
     private readonly googleConversionTrackingService: GoogleConversionTrackingService,
     private readonly scriptLoaderService: ScriptLoaderService,
-    private readonly onboardingStateService: OnboardingStateService
+    private readonly onboardingStateService: OnboardingStateService,
+    private readonly referralAttributionService: ReferralAttributionService
   ) {}
 
   trademarkOrderSummary?: TrademarkOrderSummary | null;
@@ -107,7 +109,8 @@ export class CheckoutPageComponent implements OnInit {
           this.userProfile = this.trademarkOrderSummary?.userProfileDTO;
           this.createOrderRequest = {
             trademarkDTO: this.trademark,
-            paymentDTO: this.trademarkOrderSummary?.paymentDTO
+            paymentDTO: this.trademarkOrderSummary?.paymentDTO,
+            referralCode: this.referralAttributionService.getActiveCode()
           };
           if (this.trademark?.id) {
             this.trademarkService.getOnboardingDocuments(this.trademark.id).subscribe({
@@ -303,6 +306,7 @@ export class CheckoutPageComponent implements OnInit {
             }
             // Onboarding is complete — drop the saved progress.
             this.onboardingStateService.clear();
+            this.referralAttributionService.clear();
             // The tracking service navigates to the redirect URL once the
             // conversion event is reported (with a 2s fallback).
             this.googleConversionTrackingService.reportPurchaseConversion(

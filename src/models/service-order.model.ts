@@ -8,6 +8,7 @@ export interface ServiceOrderRequest {
   leadId?: number;
   amount: number;
   description?: string;
+  referralCode?: string | null;
 }
 
 export interface ServiceOrderSummary {

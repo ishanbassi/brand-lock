@@ -32,6 +32,7 @@ export class Lead {
     deleted?: boolean;
     status?: LeadStatus;
     leadSource?: string;
+    referralCode?: string;
     assignedTo?: Employee;
 
     constructor(data?: Partial<Lead>) {
@@ -62,6 +63,7 @@ export interface ILead {
     deleted?: boolean | null;
     status?: keyof typeof LeadStatus | null;
     leadSource?: string | null;
+    referralCode?: string | null;
     assignedTo?: IEmployee | null;
   }
   

@@ -4,5 +4,6 @@ import { ITrademark } from "./trademark.model";
 export interface CreateOrder{
     trademarkDTO?: ITrademark | null;
     currency?: string;
-    paymentDTO?: IPayment | null
+    paymentDTO?: IPayment | null;
+    referralCode?: string | null;
 }

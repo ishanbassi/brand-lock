@@ -30,6 +30,15 @@ export const routes: Routes = [
         data: { roles: ['ROLE_ADMIN'] }
     },
     {
+        // ROLE_PARTNER portal — standalone shell, no public navbar/footer.
+        path: 'partner-portal',
+        loadComponent: () => import('./partner-portal/partner-portal-shell.component').then(m => m.PartnerPortalShellComponent),
+        loadChildren: () => import('./partner-portal/partner-portal.routes').then(m => m.partnerPortalRoutes),
+        title: "Partner Portal",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_PARTNER'] }
+    },
+    {
         path: "",
         loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
         children:[
@@ -105,6 +114,13 @@ export const routes: Routes = [
         path: 'agent/:agentCode',
         loadComponent: () => import('./agent-portal/agent-public-profile/agent-public-profile.component').then(m => m.AgentPublicProfileComponent),
         title: "Agent Profile | Trademarx",
+    },
+    {
+        path: 'become-a-partner',
+        loadComponent: () => import('./create-partner-account/create-partner-account.component').then(m => m.CreatePartnerAccountComponent),
+        title: "Become a Referral Partner | Trademarx",
+        canActivate: [AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'create-account',

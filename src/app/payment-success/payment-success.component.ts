@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TrademarkOrderSummary } from '../../models/trademark-order-summary.model';
 import { DataService } from '../shared/services/data.service';
 import { OnboardingStateService } from '../shared/services/onboarding-state.service';
+import { ReferralAttributionService } from '../shared/services/referral-attribution.service';
 import { SharedModule } from '../shared/shared.module';
 
 @Component({
@@ -23,12 +24,14 @@ export class PaymentSuccessComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly dataService = inject(DataService);
   private readonly onboardingStateService = inject(OnboardingStateService);
+  private readonly referralAttributionService = inject(ReferralAttributionService);
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     // Payment is done — nothing left to resume.
     this.onboardingStateService.clear();
+    this.referralAttributionService.clear();
 
     this.route.queryParams.subscribe(params => {
       this.orderId = params['order_id'] ?? null;

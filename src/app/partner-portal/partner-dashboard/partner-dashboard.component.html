@@ -1,0 +1,102 @@
+<div class="dashboard-page">
+
+  <header class="page-header">
+    <h1>Partner Dashboard</h1>
+    @if (profile?.status === 'SUSPENDED') {
+      <span class="status-pill suspended">Suspended</span>
+    } @else {
+      <span class="status-pill active">Active</span>
+    }
+  </header>
+
+  <!-- STAT TILES -->
+  <div class="stat-grid">
+    <div class="stat-tile">
+      <span class="stat-label">Total conversions</span>
+      <span class="stat-value">{{ stats?.totalConversions ?? 0 }}</span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Commission pending</span>
+      <span class="stat-value">₹{{ stats?.totalCommissionPending ?? 0 }}</span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Commission paid</span>
+      <span class="stat-value">₹{{ stats?.totalCommissionPaid ?? 0 }}</span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Your rate</span>
+      <span class="stat-value">{{ (profile?.commissionRateBps ?? 0) / 100 }}%</span>
+    </div>
+  </div>
+
+  <!-- TRACKED LINK -->
+  <section class="card">
+    <h2>Your tracked link</h2>
+    <p class="card-desc">Share this link anywhere — you earn commission on every sale it brings in.</p>
+    <div class="copy-row">
+      <code class="tracked-link">{{ trackedLink }}</code>
+      <button class="btn-copy" (click)="copy(trackedLink)">Copy</button>
+    </div>
+  </section>
+
+  <!-- EMBED SNIPPETS -->
+  <section class="card">
+    <h2>Ready-to-use snippets</h2>
+    <p class="card-desc">Paste any of these on your site — no styling required, they already look right.</p>
+
+    <div class="snippet-block">
+      <div class="snippet-header">
+        <span>Plain text link</span>
+        <button class="btn-copy" (click)="copy(plainLinkSnippet)">Copy</button>
+      </div>
+      <pre class="snippet-code">{{ plainLinkSnippet }}</pre>
+    </div>
+
+    <div class="snippet-block">
+      <div class="snippet-header">
+        <span>Styled badge (self-contained, no CSS needed)</span>
+        <button class="btn-copy" (click)="copy(badgeSnippet)">Copy</button>
+      </div>
+      <pre class="snippet-code">{{ badgeSnippet }}</pre>
+      <div class="snippet-preview" [innerHTML]="badgeSnippet"></div>
+    </div>
+
+    <div class="snippet-block">
+      <div class="snippet-header">
+        <span>Banner image (300×250)</span>
+        <button class="btn-copy" (click)="copy(bannerSnippet)">Copy</button>
+      </div>
+      <pre class="snippet-code">{{ bannerSnippet }}</pre>
+    </div>
+  </section>
+
+  <!-- CONVERSIONS TABLE -->
+  <section class="card">
+    <h2>Conversions</h2>
+    @if (conversions.length === 0) {
+      <p class="card-desc">No conversions yet — once someone buys through your link, it'll show up here.</p>
+    } @else {
+      <table class="conversions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sale amount</th>
+            <th>Your commission</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of conversions; track c.id) {
+            <tr>
+              <td>{{ c.createdDate | date:'mediumDate' }}</td>
+              <td>₹{{ c.saleAmount }}</td>
+              <td>₹{{ c.commissionAmount }}</td>
+              <td><span class="status-badge" [class]="c.status?.toLowerCase()">{{ c.status }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+
+</div>

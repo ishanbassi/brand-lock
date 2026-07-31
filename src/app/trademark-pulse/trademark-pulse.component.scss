@@ -166,6 +166,37 @@ $mark-color: #1e40af;
   }
 }
 
+.tm-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tm-thumb {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  border: 1px solid $border-light;
+  background: $surface;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.tm-card-main {
+  min-width: 0;
+  flex: 1;
+}
+
 .tm-app-no {
   font-size: 10px;
   font-weight: 500;
@@ -178,7 +209,6 @@ $mark-color: #1e40af;
 .tm-name {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

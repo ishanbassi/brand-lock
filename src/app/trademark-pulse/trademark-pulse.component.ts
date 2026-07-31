@@ -7,6 +7,7 @@ import dayjs, { Dayjs } from 'dayjs/esm';
 import { DataService } from '../shared/services/data.service';
 import { TrademarkService } from '../shared/services/trademark.service';
 import { map } from 'rxjs';
+import { environment } from '../../environments/environment';
 dayjs.extend(relativeTime);
 
 
@@ -46,7 +47,8 @@ export class TrademarkPulseComponent implements OnInit {
 
   // ── Replace these with API calls ──────────────────────────────────────
   stats?: TrademarkStats | null;
-  
+  baseUrl = environment.BaseApiUrl;
+
   /** CSS class for status badge */
   statusClass(status?: string|null): string {
     if(!status) return "tag--opposed";

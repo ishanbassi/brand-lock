@@ -39,8 +39,15 @@
   <div class="tm-grid">
     <a class="tm-card" *ngFor="let tm of stats?.recentFilings; let i = index" [routerLink]="tm.url"
       [style.animation-delay]="(i * 60) + 'ms'">
-      <div class="tm-app-no">App #{{ tm.applicationNo }}</div>
-      <div class="tm-name">{{ tm.name }}</div>
+      <div class="tm-card-header">
+        <div class="tm-thumb">
+          <img loading="lazy" [src]="tm.imgUrl ? baseUrl + 'files/' + tm.imgUrl : '/assets/images/trademark.png'" alt="">
+        </div>
+        <div class="tm-card-main">
+          <div class="tm-app-no">App #{{ tm.applicationNo }}</div>
+          <div class="tm-name">{{ tm.name }}</div>
+        </div>
+      </div>
       <div class="tm-meta">
         <span class="tag tag--class">{{classLabel(tm.tmClass) }}</span>
         <span class="tag" [ngClass]="statusClass(tm.trademarkStatus)">{{ tm.trademarkStatus }}</span>

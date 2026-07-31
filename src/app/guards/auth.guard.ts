@@ -40,6 +40,9 @@ export class PermissionsService {
     if (this.authService.hasRole(['ROLE_AGENT'])) {
       return 'agent-portal/dashboard';
     }
+    if (this.authService.hasRole(['ROLE_PARTNER'])) {
+      return 'partner-portal/dashboard';
+    }
     return 'portal/dashboard';
   }
 }
