@@ -52,6 +52,38 @@
         </button>
       </div>
 
+      <!-- CONTACT & OUTREACH -->
+      <div class="detail-card">
+        <h2>Contact &amp; outreach</h2>
+        <p class="page-sub" style="margin-bottom: 1.1rem;">
+          Add an email you've found for the applicant, then send the website/app development pitch.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-control" type="email" [(ngModel)]="emailModel" placeholder="applicant@example.com" />
+        </div>
+
+        <button class="btn-ghost" [disabled]="savingEmail() || !emailChanged" (click)="saveEmail()">
+          {{ savingEmail() ? 'Saving…' : 'Save email' }}
+        </button>
+
+        <button
+          class="btn-primary"
+          style="margin-left: .6rem;"
+          [disabled]="sendingPitch() || emailChanged || !tm.email"
+          (click)="sendPitchEmail()"
+        >
+          {{ sendingPitch() ? 'Sending…' : 'Send website/app pitch email' }}
+        </button>
+
+        @if (!tm.email) {
+          <p class="page-sub" style="margin-top: .6rem;">Add and save an email above before sending.</p>
+        } @else if (emailChanged) {
+          <p class="page-sub" style="margin-top: .6rem;">Save the updated email before sending.</p>
+        }
+      </div>
+
     </div>
   }
 

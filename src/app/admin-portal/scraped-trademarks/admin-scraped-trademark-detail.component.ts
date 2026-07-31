@@ -27,6 +27,9 @@ export class AdminScrapedTrademarkDetailComponent implements OnInit {
   error = signal('');
 
   nameModel = '';
+  emailModel = '';
+  savingEmail = signal(false);
+  sendingPitch = signal(false);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -35,6 +38,7 @@ export class AdminScrapedTrademarkDetailComponent implements OnInit {
         const tm = res.body;
         this.trademark.set(tm);
         this.nameModel = tm?.name ?? '';
+        this.emailModel = tm?.email ?? '';
         this.loading.set(false);
       },
       error: () => {
@@ -64,6 +68,45 @@ export class AdminScrapedTrademarkDetailComponent implements OnInit {
 
   get nameChanged(): boolean {
     return this.nameModel.trim() !== (this.trademark()?.name ?? '') && this.nameModel.trim().length > 0;
+  }
+
+  saveEmail(): void {
+    const current = this.trademark();
+    if (!current) return;
+
+    this.savingEmail.set(true);
+    this.adminScrapedTrademarkService.update({ id: current.id, email: this.emailModel || null }).subscribe({
+      next: res => {
+        this.trademark.set(res.body);
+        this.savingEmail.set(false);
+        this.toast.success('Email updated');
+      },
+      error: () => {
+        this.savingEmail.set(false);
+        this.toast.error('Failed to update email');
+      },
+    });
+  }
+
+  get emailChanged(): boolean {
+    return this.emailModel !== (this.trademark()?.email ?? '');
+  }
+
+  sendPitchEmail(): void {
+    const current = this.trademark();
+    if (!current?.id || !current.email) return;
+
+    this.sendingPitch.set(true);
+    this.adminScrapedTrademarkService.sendPitchEmail(current.id).subscribe({
+      next: () => {
+        this.sendingPitch.set(false);
+        this.toast.success('Pitch email sent to ' + current.email);
+      },
+      error: () => {
+        this.sendingPitch.set(false);
+        this.toast.error('Failed to send pitch email');
+      },
+    });
   }
 
   imgSrc(trademark: ITrademark): string {

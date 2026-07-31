@@ -35,9 +35,4 @@ export class AdminTrademarkService {
       observe: 'response',
     });
   }
-
-  /** Sends the website/app-development pitch email to whatever email is currently on file. */
-  sendPitchEmail(id: number): Observable<HttpResponse<void>> {
-    return this.http.post<void>(`${this.resourceUrl}/${id}/pitch-email`, {}, { observe: 'response' });
-  }
 }
