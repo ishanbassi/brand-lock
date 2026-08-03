@@ -34,6 +34,8 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
       const q = params.get('trademark');
+      const tmClassParam = params.get('tmClass');
+      this.tmClass = tmClassParam ? Number(tmClassParam) : null;
       if (q) {
 
         if (this.isBrowser) {
@@ -41,7 +43,7 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
         }
         this.isLoading = true;
         this.query = q;
-        this.trademarkService.quickSearch(this.query)
+        this.trademarkService.quickSearch(this.query, this.tmClass)
           .pipe(
             finalize(() => {
               if (this.isBrowser) {
@@ -63,6 +65,7 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   }
 
   query?: string;
+  tmClass: number | null = null;
   results: ITrademark[] | null = [];
   baseUrl = environment.BaseApiUrl;
   private isBrowser = false;

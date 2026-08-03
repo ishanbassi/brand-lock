@@ -1,0 +1,70 @@
+<div class="error-page">
+  <div class="error-card">
+    @if (isForbidden) {
+      <div class="error-icon forbidden" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10" width="16" height="10" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+
+      <p class="error-code">Error 403</p>
+      <h1>You don't have access to this page</h1>
+      <p class="error-detail">
+        Your account is signed in, but it isn't permitted to open this section.
+        If you think that's wrong, get in touch and we'll sort it out.
+      </p>
+
+      <div class="error-actions">
+        @if (portalRoute) {
+          <a [routerLink]="portalRoute" class="btn-primary">Go to your dashboard</a>
+        } @else {
+          <a routerLink="/login" class="btn-primary">Sign in</a>
+        }
+        <a routerLink="/contact" class="btn-ghost">Contact support</a>
+      </div>
+    } @else {
+      <div class="error-icon missing" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20 20-3.6-3.6"/>
+        </svg>
+      </div>
+
+      <p class="error-code">Error 404</p>
+      <h1>We couldn't find that page</h1>
+      <p class="error-detail">
+        The link may be broken, or the page may have moved. Here's where most people
+        were heading:
+      </p>
+
+      <ul class="error-links">
+        <li>
+          <a routerLink="/search">
+            <span class="link-title">Free trademark search</span>
+            <span class="link-note">Check whether your brand name is available</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/trademark-status-check">
+            <span class="link-title">Trademark status check</span>
+            <span class="link-note">Track an application by its number</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/trademark-registration">
+            <span class="link-title">Register a trademark</span>
+            <span class="link-note">Start a new filing from ₹1,499</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="error-actions">
+        <a routerLink="/home" class="btn-primary">Back to homepage</a>
+        <a routerLink="/contact" class="btn-ghost">Contact us</a>
+      </div>
+    }
+  </div>
+</div>

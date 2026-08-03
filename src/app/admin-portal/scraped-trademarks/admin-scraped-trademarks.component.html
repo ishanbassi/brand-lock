@@ -3,16 +3,21 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">Scraped trademarks</h1>
-      <p class="page-sub">{{ records().length }} loaded{{ noMore() ? ' · end of results' : '' }}</p>
+      <p class="page-sub">{{ totalItems() }} trademark{{ totalItems() === 1 ? '' : 's' }}</p>
     </div>
   </div>
 
   <!-- FILTERS -->
   <div class="filter-bar">
+    <input class="filter-input" type="text" placeholder="Search brand name…"
+           [(ngModel)]="search" (ngModelChange)="onSearchChange()" />
+
     <label style="display: flex; align-items: center; gap: 0.4rem;">
       <input type="checkbox" [(ngModel)]="ocrOnly" (ngModelChange)="onOcrToggleChange()" />
       OCR-extracted only
     </label>
+
+    <button class="btn-ghost" (click)="clearFilters()">Clear</button>
   </div>
 
   @if (error()) {
@@ -25,20 +30,26 @@
       <thead>
         <tr>
           <th></th>
-          <th>Brand</th>
-          <th>Class</th>
-          <th>App. No.</th>
-          <th>Journal No.</th>
+          <th class="sortable" (click)="toggleSort('id')">ID <span class="sort-arrow">{{ sortIndicator('id') }}</span></th>
+          <th class="sortable" (click)="toggleSort('name')">Brand <span class="sort-arrow">{{ sortIndicator('name') }}</span></th>
+          <th class="sortable" (click)="toggleSort('tmClass')">Class <span class="sort-arrow">{{ sortIndicator('tmClass') }}</span></th>
+          <th class="sortable" (click)="toggleSort('applicationNo')">App. No. <span class="sort-arrow">{{ sortIndicator('applicationNo') }}</span></th>
+          <th class="sortable" (click)="toggleSort('journalNo')">Journal No. <span class="sort-arrow">{{ sortIndicator('journalNo') }}</span></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        @if (records().length === 0 && !loading()) {
-          <tr><td colspan="6" class="empty-cell">No trademarks match these filters.</td></tr>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (records().length === 0) {
+          <tr><td colspan="7" class="empty-cell">No trademarks match these filters.</td></tr>
         } @else {
           @for (tm of records(); track tm.id) {
             <tr>
               <td><img class="tm-thumb" [src]="imgSrc(tm)" alt="" /></td>
+              <td class="muted">{{ tm.id }}</td>
               <td class="cell-strong">
                 {{ tm.name || '—' }}
                 @if (tm.ocrExtracted) { <span class="badge badge-ocr">OCR</span> }
@@ -50,15 +61,17 @@
             </tr>
           }
         }
-        @if (loading()) {
-          @for (i of [1,2,3]; track i) {
-            <tr class="skeleton-row"><td colspan="6"><div class="skeleton-line"></div></td></tr>
-          }
-        }
       </tbody>
     </table>
   </div>
 
-  <div #sentinel></div>
+  <!-- PAGINATION -->
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
 
 </div>

@@ -29,6 +29,13 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    // The 403 card branches on the signed-in role, which only exists in browser
+    // storage — server-rendering it would emit the signed-out variant and then
+    // trip a hydration mismatch when the real role resolves.
+    path: '403',
+    renderMode: RenderMode.Client
+  },
+  {
     path: '**',
     renderMode: RenderMode.Server
   }

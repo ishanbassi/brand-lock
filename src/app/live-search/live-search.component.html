@@ -31,6 +31,13 @@
         </svg>
       </button>
     </div>
+
+    <!-- Class filter (optional) -->
+    <select class="class-select" aria-label="Filter by trademark class" [formControl]="classControl">
+      <option [ngValue]="null">All classes</option>
+      <option *ngFor="let c of trademarkClasses" [ngValue]="c.num">Class {{ c.num }} &ndash; {{ c.name }}</option>
+    </select>
+
     <!-- Search button -->
     <button class="search-btn" type="button" aria-label="Search" (click)="onSearchClick()" [disabled]="!query">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

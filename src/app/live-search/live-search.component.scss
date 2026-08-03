@@ -127,6 +127,31 @@ $radius-md:   12px;
   }
 }
 
+// ─── Class filter ─────────────────────────────────────────────────────────────
+.class-select {
+  flex-shrink: 0;
+  height: 52px;
+  max-width: 200px;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  padding: 0 32px 0 14px;
+  font-size: 14px;
+  color: $text-primary;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
 // ─── Search button ────────────────────────────────────────────────────────────
 .search-btn {
   display: flex;
@@ -316,6 +341,11 @@ $radius-md:   12px;
 }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
+// Two rows on small screens: the input owns row one, the class filter and the
+// button share row two.
+//
+//   [ 🔍  Search Your Trademark here…        ]
+//   [ All classes            ▾ ] [ 🔍 Search ]
 @media (max-width: 640px) {
   .search-wrapper {
     max-width: 100%;
@@ -323,12 +353,27 @@ $radius-md:   12px;
 
   .search-container {
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .search-field {
     height: 46px;
     padding: 0 12px;
     gap: 8px;
+    flex: 1 1 100%;
+  }
+
+  .class-select {
+    height: 46px;
+    max-width: none;
+    // basis 0 + min-width 0, not `1 1 auto`: a native select's intrinsic width
+    // is that of its widest option, and these run to "Class 45 – Legal
+    // services…". Sizing off content pushed the select past the row on its own
+    // and bumped the button onto a third line.
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 13px;
+    text-overflow: ellipsis;
   }
 
   .search-input {
@@ -340,14 +385,11 @@ $radius-md:   12px;
   }
 
   .search-btn {
+    flex: 0 0 auto;
     height: 46px;
-    padding: 0 16px;
+    padding: 0 18px;
     font-size: 14px;
     gap: 6px;
-
-    span {
-      display: none; // Hide text, show icon only
-    }
   }
 
   .result-item {
@@ -367,12 +409,18 @@ $radius-md:   12px;
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 380px) {
   .result-description {
     display: none;
   }
 
-  .search-field{
-    max-width: 270px;
+  // Only at the very narrow end is there not enough room for the label, so the
+  // button falls back to the icon alone rather than squeezing the class filter.
+  .search-btn {
+    padding: 0 14px;
+
+    span {
+      display: none;
+    }
   }
 }

@@ -46,9 +46,12 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
 
   @Input() query?:string;
+  @Input() tmClass?: number | null;
 
+  readonly trademarkClasses = TRADEMARK_CLASSES;
 
   searchControl = new FormControl('');
+  classControl = new FormControl<number | null>(null);
   results: ITrademark[] = [];
   isOpen = false;
   activeIndex = -1;
@@ -68,8 +71,9 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnInit(): void {  
+  ngOnInit(): void {
     this.searchControl.setValue(this.query || null);
+    this.classControl.setValue(this.tmClass ?? null);
   this.searchControl.valueChanges
     .pipe(
       debounceTime(300),
@@ -85,7 +89,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
       filter((query) => (query ?? '').length >= 3),
       tap(() => (this.isLoading = true)),
       switchMap(query =>
-          this.trademarkService.liveSearch(query!.trim())
+          this.trademarkService.liveSearch(query!.trim(), this.classControl.value)
           .pipe(
             finalize(() => {
               this.isLoading = false;
@@ -99,7 +103,16 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
       this.isOpen = this.results.length > 0;
       this.activeIndex = -1;
     });
-  
+
+  this.classControl.valueChanges
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(tmClass => {
+      this.tmClass = tmClass;
+      const query = this.searchControl.value?.trim();
+      if (query && query.length >= 3) {
+        this.search(query);
+      }
+    });
 }
 
 
@@ -118,7 +131,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    this.trademarkService.liveSearch(q)
+    this.trademarkService.liveSearch(q, this.classControl.value)
     .pipe(
       finalize(() => {
         this.isOpen = this.results.length > 0;
@@ -213,7 +226,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   }
 
   onSearchClick() {
-    this.router.navigate(['/search/results'], {queryParams:{trademark:this.query}})
+    this.router.navigate(['/search/results'], {queryParams:{trademark:this.query, tmClass: this.classControl.value ?? null}})
     this.isOpen  = false;
 
   }

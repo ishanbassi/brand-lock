@@ -55,6 +55,26 @@ export class AuthService {
   }
 
   /**
+   * Landing route for the signed-in user, by highest-privilege role — no leading slash.
+   * The four portals are role-exclusive, and the seeded admin also carries ROLE_USER,
+   * so "highest role wins" is what decides which portal an account belongs to. Shared by
+   * the AuthGuard (to redirect out of the wrong portal) and the 403 page (to offer a way
+   * back to the right one), so the two can't disagree.
+   */
+  homeRoute(): string {
+    if (this.hasRole(['ROLE_ADMIN'])) {
+      return 'admin-portal/dashboard';
+    }
+    if (this.hasRole(['ROLE_AGENT'])) {
+      return 'agent-portal/dashboard';
+    }
+    if (this.hasRole(['ROLE_PARTNER'])) {
+      return 'partner-portal/dashboard';
+    }
+    return 'portal/dashboard';
+  }
+
+  /**
    * Contact details for a logged-in customer, when all three are known —
    * used to skip lead-capture fields the account already has on file.
    * Freshly-created accounts only carry {id, authorities} until the portal

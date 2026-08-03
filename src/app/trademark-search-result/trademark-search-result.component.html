@@ -24,7 +24,7 @@
       <div class="results-column">
         <div>
           <div class="search-box-wrapper" #searchBoxWrapper>
-            <app-live-search [query]="query"></app-live-search>
+            <app-live-search [query]="query" [tmClass]="tmClass"></app-live-search>
           </div>
         </div>
 
@@ -88,8 +88,10 @@
                   <span class="meta-pill-label">Class</span>
                   <b>{{ trademark?.tmClass }}</b>
                 </span>
-                <span class="meta-pill meta-pill--applicant" *ngIf="trademark.applicationDate">
-                  <b>{{ trademark?.proprietorName }}</b>
+                <span class="meta-pill meta-pill--applicant" *ngIf="trademark.proprietorName">
+                  <b>
+                    <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark.proprietorName}" title="See all trademarks by this applicant" (click)="$event.stopPropagation()">{{ trademark.proprietorName }}</a>
+                  </b>
                 </span>
               </div>
               <div class="trademark-class">

@@ -7,17 +7,10 @@ import { createRequestOption } from '../../core/request/request-util';
 
 export type PartialUpdateTrademark = Partial<ITrademark> & Pick<ITrademark, 'id'>;
 
-export interface ScrapedTrademarkPageRequest {
-  ocrExtracted?: boolean;
-  cursorId?: number;
-  limit?: number;
-}
-
 /**
  * Admin review of the scraped/journal trademark corpus (unowned rows) - hits the
  * ROLE_ADMIN-gated /api/admin/scraped-trademarks endpoints, distinct from
  * AdminTrademarkService which is scoped to customer-owned applications only.
- * The list endpoint is keyset (id-cursor) paginated, not offset/page based.
  */
 @Injectable({ providedIn: 'root' })
 export class AdminScrapedTrademarkService {
@@ -26,13 +19,9 @@ export class AdminScrapedTrademarkService {
 
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/admin/scraped-trademarks');
 
-  page(req: ScrapedTrademarkPageRequest): Observable<ITrademark[]> {
-    const options = createRequestOption({
-      'ocrExtracted.equals': req.ocrExtracted,
-      cursorId: req.cursorId,
-      limit: req.limit,
-    });
-    return this.http.get<ITrademark[]>(this.resourceUrl, { params: options });
+  query(req?: any): Observable<HttpResponse<ITrademark[]>> {
+    const options = createRequestOption(req);
+    return this.http.get<ITrademark[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
   find(id: number): Observable<HttpResponse<ITrademark>> {

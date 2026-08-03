@@ -44,7 +44,11 @@
           </div>
           <div class="info-row" *ngIf="trademark?.proprietorName">
             <span>Applicant:</span>
-            <strong>{{trademark?.proprietorName}}</strong>
+            <strong>
+              <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark?.proprietorName}" title="See all trademarks filed by this applicant">
+                {{trademark?.proprietorName}}
+              </a>
+            </strong>
           </div>
           <div class="info-row">
             <span>Filing Date:</span>
@@ -56,6 +60,8 @@
 
 
       <app-trademark-status-action [trademark]="trademark"></app-trademark-status-action>
+
+      <app-status-watch-signup [trademark]="trademark"></app-status-watch-signup>
 
       <div class="card details-table">
         <h3>Trademark Information</h3>
@@ -100,7 +106,11 @@
             </tr>
             <tr *ngIf="trademark?.proprietorName">
               <td>Applicant:</td>
-              <td>{{trademark?.proprietorName}}</td>
+              <td>
+                <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark?.proprietorName}" title="See all trademarks filed by this applicant">
+                  {{trademark?.proprietorName}}
+                </a>
+              </td>
             </tr>
             <tr *ngIf="trademark?.proprietorAddress">
               <td>Applicant Address</td>

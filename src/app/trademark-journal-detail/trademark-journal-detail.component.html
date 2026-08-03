@@ -48,7 +48,9 @@
             <td>{{ tm.applicationDate?.format('DD MMM YYYY') }}</td>
             <td>{{ tm.applicationNo }}</td>
             <td>{{ tm.tmClass }}</td>
-            <td>{{ tm.proprietorName }}</td>
+            <td>
+              <a *ngIf="tm.proprietorName" [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: tm.proprietorName}" title="See all trademarks by this applicant">{{ tm.proprietorName }}</a>
+            </td>
             <td>{{ tm.trademarkStatus || 'Unknown' }}</td>
           </tr>
         </tbody>

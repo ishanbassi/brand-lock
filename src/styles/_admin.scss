@@ -122,6 +122,18 @@ $admin-gray-800: #1e293b;
       font-weight: 600;
       border-bottom: 1px solid $admin-gray-100;
       white-space: nowrap;
+
+      &.sortable {
+        cursor: pointer;
+        user-select: none;
+        &:hover { color: $admin-gray-500; }
+      }
+      .sort-arrow {
+        display: inline-block;
+        width: 0.7em;
+        font-size: 0.7rem;
+        color: $admin-accent;
+      }
     }
     td {
       padding: 0.85rem 1rem;

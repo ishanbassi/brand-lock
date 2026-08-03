@@ -20,9 +20,9 @@ export class AboutUsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.title.setTitle('About Us | Trademarx — IP India Authorised Trademark Agents in Ludhiana');
-    this.meta.updateTag({ name: 'description', content: 'Meet the Trademarx team — Anil Bassi (30+ years, 5,000+ marks) and Ishan Bassi (400+ marks). IP India authorised trademark agents based in Ludhiana, Punjab.' });
+    this.meta.updateTag({ name: 'description', content: 'Meet the Trademarx team — Anil Bassi (20+ years, 5,000+ marks) and Ishan Bassi (400+ marks). IP India authorised trademark agents based in Ludhiana, Punjab.' });
     this.meta.updateTag({ property: 'og:title', content: 'About Trademarx — Trademark & ISO Experts in Ludhiana' });
-    this.meta.updateTag({ property: 'og:description', content: 'Authorised trademark agents with 30+ years of experience. Based in Ludhiana, Punjab.' });
+    this.meta.updateTag({ property: 'og:description', content: 'Authorised trademark agents with 20+ years of experience. Based in Ludhiana, Punjab.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/about-us' });
     this.seo.setCanonical('https://trademarx.in/about-us');

@@ -1,0 +1,184 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Backlink Opportunities</h1>
+      <p class="page-sub">{{ totalItems() }} tracked opportunit{{ totalItems() === 1 ? 'y' : 'ies' }} — free directories, resource pages &amp; guest-post targets</p>
+    </div>
+    <button class="btn-primary" (click)="toggleAddForm()">{{ showAddForm() ? 'Cancel' : '+ Add opportunity' }}</button>
+  </div>
+
+  @if (dueForFollowUp().length > 0 && !dueOnly) {
+    <div class="alert-error" style="display:flex; align-items:center; justify-content:space-between; gap: 1rem;">
+      <span>🔔 {{ dueForFollowUp().length }} opportunit{{ dueForFollowUp().length === 1 ? 'y is' : 'ies are' }} due for follow-up.</span>
+      <button class="btn-ghost" (click)="filterToDueOnly()">Show due →</button>
+    </div>
+  }
+
+  @if (dueOnly) {
+    <div class="alert-success" style="display:flex; align-items:center; justify-content:space-between; gap: 1rem;">
+      <span>Showing opportunities due for follow-up.</span>
+      <button class="btn-ghost" (click)="exitDueOnly()">Back to all</button>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert-success">{{ success() }}</div>
+  }
+
+  @if (showAddForm()) {
+    <div class="table-card" style="padding: 1.5rem; margin-bottom: 1.25rem;">
+      <div class="detail-grid">
+        <div>
+          <div class="form-group">
+            <label class="form-label">Site name *</label>
+            <input class="form-control" type="text" [(ngModel)]="addForm.siteName" placeholder="e.g. IndiaFilings Resource Directory" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">URL *</label>
+            <input class="form-control" type="text" [(ngModel)]="addForm.url" placeholder="https://…" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-control" [(ngModel)]="addForm.category">
+              @for (opt of categoryOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quality note</label>
+            <input class="form-control" type="text" [(ngModel)]="addForm.qualityNote" placeholder="Why this is a good link" />
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label class="form-label">Submission method</label>
+            <input class="form-control" type="text" [(ngModel)]="addForm.submissionMethod" placeholder="Self-serve form / email editor / contact form" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact email</label>
+            <input class="form-control" type="text" [(ngModel)]="addForm.contactEmail" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Follow-up reminder date</label>
+            <input class="form-control" type="date" [(ngModel)]="addForm.followUpDate" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="addForm.notes"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" [disabled]="saving()" (click)="submitAddForm()">{{ saving() ? 'Saving…' : 'Add opportunity' }}</button>
+    </div>
+  }
+
+  @if (!dueOnly) {
+    <div class="filter-bar">
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+        <option value="">All statuses</option>
+        @for (opt of statusOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+
+      <select class="filter-select" [(ngModel)]="categoryFilter" (ngModelChange)="onFilterChange()">
+        <option value="">All categories</option>
+        @for (opt of categoryOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+
+      <button class="btn-ghost" (click)="clearFilters()">Clear</button>
+    </div>
+  }
+
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Site</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Follow-up</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5]; track i) {
+            <tr class="skeleton-row"><td colspan="5"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (opportunities().length === 0) {
+          <tr><td colspan="5" class="empty-cell">No backlink opportunities match these filters.</td></tr>
+        } @else {
+          @for (opp of opportunities(); track opp.id) {
+            <tr>
+              <td>
+                <div class="stacked">
+                  <span class="cell-strong">{{ opp.siteName || '—' }}</span>
+                  <a class="muted" [href]="opp.url" target="_blank" rel="noopener" style="font-size: 0.78rem;">{{ opp.url }}</a>
+                </div>
+              </td>
+              <td>{{ categoryLabel(opp.category) }}</td>
+              <td>
+                <select class="filter-select" style="min-width: 140px;" [ngModel]="opp.status" (ngModelChange)="onStatusChange(opp, $event)">
+                  @for (opt of statusOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </td>
+              <td class="muted">{{ opp.followUpDate || '—' }}</td>
+              <td><a class="row-action" (click)="toggleRow(opp)">{{ isExpanded(opp.id) ? 'Close ▲' : 'Details ▾' }}</a></td>
+            </tr>
+            @if (isExpanded(opp.id)) {
+              <tr>
+                <td colspan="5" style="background: #f8fafc;">
+                  <div class="detail-grid" style="padding: 0.5rem 0;">
+                    <div>
+                      <div class="field-row"><span class="field-label">Quality note</span><span class="field-value">{{ opp.qualityNote || '—' }}</span></div>
+                      <div class="field-row"><span class="field-label">Submission method</span><span class="field-value">{{ opp.submissionMethod || '—' }}</span></div>
+                      <div class="field-row"><span class="field-label">Contact email</span><span class="field-value">{{ opp.contactEmail || '—' }}</span></div>
+                    </div>
+                    <div>
+                      <div class="form-group">
+                        <label class="form-label">Follow-up reminder date</label>
+                        <input class="form-control" type="date" [(ngModel)]="editState[opp.id].followUpDate" />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Date submitted</label>
+                        <input class="form-control" type="date" [(ngModel)]="editState[opp.id].dateSubmitted" />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Date live</label>
+                        <input class="form-control" type="date" [(ngModel)]="editState[opp.id].dateLive" />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" rows="2" [(ngModel)]="editState[opp.id].notes"></textarea>
+                      </div>
+                      <button class="btn-primary" (click)="saveExpandedRow(opp)">Save</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!loading() && !dueOnly && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+</div>

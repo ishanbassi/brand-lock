@@ -1,0 +1,41 @@
+<div class="watch-landing-page">
+  <div class="watch-landing-card">
+    <ng-container *ngIf="state === 'loading'">
+      <div class="spinner"></div>
+      <p>{{ mode === 'confirm' ? 'Confirming your subscription…' : 'Unsubscribing…' }}</p>
+    </ng-container>
+
+    <ng-container *ngIf="state === 'success' && mode === 'confirm'">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon success">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <h1>You're subscribed</h1>
+      <p>
+        We'll email you a weekly digest of new filings<span *ngIf="tmClass"> in Class <strong>{{ tmClass }}</strong></span>.
+      </p>
+      <a routerLink="/home" class="watch-landing-link">Back to Trademarx →</a>
+    </ng-container>
+
+    <ng-container *ngIf="state === 'success' && mode === 'unsubscribe'">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon neutral">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+      </svg>
+      <h1>Unsubscribed</h1>
+      <p>You won't receive any more weekly Trademark Pulse digests for this class.</p>
+      <a routerLink="/home" class="watch-landing-link">Back to Trademarx →</a>
+    </ng-container>
+
+    <ng-container *ngIf="state === 'error'">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon error">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h1>This link isn't valid</h1>
+      <p>It may have already been used or has expired. You can subscribe again from the Trademark Pulse page.</p>
+      <a routerLink="/home" class="watch-landing-link">Back to Trademarx →</a>
+    </ng-container>
+  </div>
+</div>

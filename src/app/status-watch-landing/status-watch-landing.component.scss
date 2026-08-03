@@ -1,0 +1,72 @@
+.watch-landing-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px;
+  min-height: 50vh;
+}
+
+.watch-landing-card {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 40px 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 16px 0 10px;
+  }
+
+  p {
+    font-size: 14.5px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.icon {
+  &.success {
+    color: #16a34a;
+  }
+  &.neutral {
+    color: #64748b;
+  }
+  &.error {
+    color: #dc2626;
+  }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 16px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.watch-landing-link {
+  display: inline-block;
+  margin-top: 22px;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

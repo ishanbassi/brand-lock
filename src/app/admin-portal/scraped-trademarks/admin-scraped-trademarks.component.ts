@@ -1,12 +1,14 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ITrademark } from '../../../models/trademark.model';
 import { AdminScrapedTrademarkService } from '../services/admin-scraped-trademark.service';
 import { environment } from '../../../environments/environment';
 
-const PAGE_SIZE = 30;
+type SortField = 'id' | 'name' | 'tmClass' | 'applicationNo' | 'journalNo';
+type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-admin-scraped-trademarks',
@@ -15,84 +17,108 @@ const PAGE_SIZE = 30;
   templateUrl: './admin-scraped-trademarks.component.html',
   styleUrl: './admin-scraped-trademarks.component.scss',
 })
-export class AdminScrapedTrademarksComponent implements AfterViewInit, OnDestroy {
+export class AdminScrapedTrademarksComponent implements OnInit {
   private readonly adminScrapedTrademarkService = inject(AdminScrapedTrademarkService);
 
-  @ViewChild('sentinel') sentinel?: ElementRef<HTMLElement>;
-  private observer?: IntersectionObserver;
-
   records = signal<ITrademark[]>([]);
-  loading = signal(false);
+  loading = signal(true);
   error = signal('');
-  noMore = signal(false);
 
+  // Filters
+  search = '';
   ocrOnly = false;
 
-  private cursorId: number | null = null;
-  private isSentinelVisible = false;
+  // Sorting
+  sortField = signal<SortField>('id');
+  sortDir = signal<SortDir>('asc');
+
+  // Pagination
+  page = signal(0);
+  readonly pageSize = 30;
+  totalItems = signal(0);
+
   private readonly baseUrl = environment.BaseApiUrl;
+  private readonly searchDebounce = new Subject<void>();
 
-  ngAfterViewInit(): void {
-    this.loadMore();
-
-    if (this.sentinel) {
-      this.observer = new IntersectionObserver(entries => {
-        this.isSentinelVisible = entries[0]?.isIntersecting ?? false;
-        if (this.isSentinelVisible) {
-          this.loadMore();
-        }
-      });
-      this.observer.observe(this.sentinel.nativeElement);
-    }
+  ngOnInit(): void {
+    this.searchDebounce.pipe(debounceTime(350), distinctUntilChanged()).subscribe(() => {
+      this.page.set(0);
+      this.load();
+    });
+    this.load();
   }
 
-  ngOnDestroy(): void {
-    this.observer?.disconnect();
-  }
-
-  /**
-   * Also re-triggers itself when a short page still leaves the sentinel inside the
-   * viewport (e.g. a filtered result set shorter than one screen) - otherwise no further
-   * IntersectionObserver callback would ever fire since the intersection state never
-   * actually changes once it's already visible.
-   */
-  loadMore(): void {
-    if (this.loading() || this.noMore()) return;
-
+  load(): void {
     this.loading.set(true);
-    this.adminScrapedTrademarkService
-      .page({
-        ocrExtracted: this.ocrOnly ? true : undefined,
-        cursorId: this.cursorId ?? undefined,
-        limit: PAGE_SIZE,
-      })
-      .subscribe({
-        next: page => {
-          this.records.update(existing => [...existing, ...page]);
-          if (page.length > 0) {
-            this.cursorId = page[page.length - 1].id;
-          }
-          if (page.length < PAGE_SIZE) {
-            this.noMore.set(true);
-          }
-          this.loading.set(false);
-          if (this.isSentinelVisible && !this.noMore()) {
-            this.loadMore();
-          }
-        },
-        error: () => {
-          this.error.set('Failed to load trademarks.');
-          this.loading.set(false);
-        },
-      });
+    const req: any = {
+      page: this.page(),
+      size: this.pageSize,
+      sort: `${this.sortField()},${this.sortDir()}`,
+    };
+    if (this.ocrOnly) req['ocrExtracted.equals'] = true;
+    if (this.search.trim()) req['name.contains'] = this.search.trim();
+
+    this.adminScrapedTrademarkService.query(req).subscribe({
+      next: res => {
+        this.records.set(res.body ?? []);
+        this.totalItems.set(Number(res.headers.get('X-Total-Count')) || 0);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load trademarks.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  onSearchChange(): void {
+    this.searchDebounce.next();
   }
 
   onOcrToggleChange(): void {
-    this.records.set([]);
-    this.cursorId = null;
-    this.noMore.set(false);
-    this.error.set('');
-    this.loadMore();
+    this.page.set(0);
+    this.load();
+  }
+
+  clearFilters(): void {
+    this.search = '';
+    this.ocrOnly = false;
+    this.page.set(0);
+    this.load();
+  }
+
+  toggleSort(field: SortField): void {
+    if (this.sortField() === field) {
+      this.sortDir.update(dir => (dir === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortDir.set('asc');
+    }
+    this.page.set(0);
+    this.load();
+  }
+
+  sortIndicator(field: SortField): string {
+    if (this.sortField() !== field) return '';
+    return this.sortDir() === 'asc' ? '▲' : '▼';
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.totalItems() / this.pageSize));
+  }
+
+  prevPage(): void {
+    if (this.page() > 0) {
+      this.page.update(p => p - 1);
+      this.load();
+    }
+  }
+
+  nextPage(): void {
+    if (this.page() < this.totalPages - 1) {
+      this.page.update(p => p + 1);
+      this.load();
+    }
   }
 
   imgSrc(trademark: ITrademark): string {

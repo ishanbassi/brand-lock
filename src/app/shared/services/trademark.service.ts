@@ -116,9 +116,9 @@ export class TrademarkService {
     return this.http.delete(`${this.resourceUrl}/onboarding/${trademarkId}/documents/${documentId}`, { observe: 'response' });
   }
   
-  liveSearch(query:string): Observable<EntityArrayResponseType> {
+  liveSearch(query:string, tmClass?: number | null): Observable<EntityArrayResponseType> {
     return this.http
-      .get<RestTrademark[]>(`${this.resourceUrl}/live-search`, { observe: 'response',params:{trademark:query} })
+      .get<RestTrademark[]>(`${this.resourceUrl}/live-search`, { observe: 'response',params: createRequestOption({ trademark: query, tmClass }) })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
   deepSearch(query:string): Observable<EntityArrayResponseType> {
@@ -126,9 +126,9 @@ export class TrademarkService {
       .get<RestTrademark[]>(`${this.resourceUrl}/search`, { observe: 'response',params:{trademark:query} })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
-  quickSearch(query:string): Observable<EntityArrayResponseType> {
+  quickSearch(query:string, tmClass?: number | null): Observable<EntityArrayResponseType> {
     return this.http
-      .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params:{trademark:query} })
+      .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params: createRequestOption({ trademark: query, tmClass }) })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
@@ -136,6 +136,19 @@ export class TrademarkService {
     return this.http
       .get<RestTrademark[]>(`${this.resourceUrl}/search-by-application-number`, { observe: 'response',params:{applicationNo} })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  /** Paginated search by proprietor/company name (as stored on the trademark record). */
+  searchByProprietorName(name: string, req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption({ ...req, name });
+    return this.http
+      .get<RestTrademark[]>(`${this.resourceUrl}/search-by-proprietor-name`, { observe: 'response', params: options })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  /** Type-ahead of distinct proprietor/company names for the company-name search page. */
+  proprietorNameSuggestions(name: string, limit = 8): Observable<string[]> {
+    return this.http.get<string[]>(`${this.resourceUrl}/proprietor-name-suggestions`, { params: { name, limit } });
   }
   
   /** Asks the backend to scrape this application from the govt registry ahead of the normal automation. */

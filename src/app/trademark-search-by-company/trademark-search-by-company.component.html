@@ -1,41 +1,58 @@
-<div class="status-check-page">
+<div class="company-search-page">
 
   <div class="hero">
     <div class="container">
       <div class="breadcrumb">
         <a [routerLink]="'/home'">Home</a>
         <span class="sep">›</span>
-        <span class="current">Trademark Search by Application Number</span>
+        <span class="current">Trademark Search by Company Name</span>
       </div>
 
-      <h1 class="hero-title">Trademark Search by Application Number</h1>
-      <p class="hero-subtitle">Enter the application number to check the live status of any trademark filed with the India Trademark Registry — objection, opposition, registered, or pending.</p>
+      <h1 class="hero-title">Trademark Search by Company Name</h1>
+      <p class="hero-subtitle">Enter a company, LLP, firm, or proprietor name to see every trademark it has filed with the India Trademark Registry — mark, class, and current status.</p>
 
-      <form class="search-form" (ngSubmit)="search()">
-        <label for="applicationNo" class="sr-only">Trademark application number</label>
-        <input
-          #applicationNoInput
-          id="applicationNo"
-          type="text"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          maxlength="10"
-          class="search-input"
-          placeholder="e.g., 5678901"
-          [ngModel]="applicationNo"
-          (ngModelChange)="onApplicationNoChange($event)"
-          name="applicationNo"
-          autocomplete="off"
-        >
-        <button type="submit" class="search-btn" [disabled]="isLoading || !applicationNo.trim()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <span>{{ isLoading ? 'Checking…' : 'Check Status' }}</span>
-        </button>
-      </form>
-      <p class="hero-hint">Don't have your application number? <a routerLink="/search">Search by brand name</a> or <a routerLink="/trademark-search-by-company">by company name</a> instead.</p>
+      <div class="search-wrapper" #searchWrapper>
+        <form class="search-form" (ngSubmit)="search()">
+          <label for="companyName" class="sr-only">Company or proprietor name</label>
+          <input
+            #companyNameInput
+            id="companyName"
+            type="text"
+            maxlength="150"
+            class="search-input"
+            placeholder="e.g., Reliance Industries Limited"
+            [formControl]="companyNameControl"
+            autocomplete="off"
+            role="combobox"
+            aria-haspopup="listbox"
+            [attr.aria-expanded]="suggestionsOpen"
+            (keydown)="onKeydown($event)"
+            (focus)="suggestionsOpen = suggestions.length > 0"
+          >
+          <button type="submit" class="search-btn" [disabled]="isLoading || !companyName.trim()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span>{{ isLoading ? 'Searching…' : 'Search' }}</span>
+          </button>
+        </form>
+
+        <!-- Company-name suggestions dropdown -->
+        <div class="suggestions-panel" role="listbox" *ngIf="suggestionsOpen && suggestions.length">
+          <ul>
+            <li *ngFor="let name of suggestions; let i = index"
+                [id]="'suggestion-' + i"
+                role="option"
+                [class.is-active]="activeSuggestionIndex === i"
+                (mouseenter)="activeSuggestionIndex = i"
+                (mousedown)="$event.preventDefault(); selectSuggestion(name)">
+              <span [innerHTML]="highlight(name)"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <p class="hero-hint">Looking for a specific mark instead? <a routerLink="/search">Search by brand name</a> or <a routerLink="/trademark-status-check">by application number</a>.</p>
     </div>
   </div>
 
@@ -43,8 +60,8 @@
 
     <div class="cta-banner">
       <div class="cta-banner-text">
-        <h2>Objected, opposed, or stuck for months?</h2>
-        <p>Our attorneys have handled 5,400+ trademark matters — get a free case review before your deadline passes.</p>
+        <h2>Checking a competitor, partner, or your own portfolio?</h2>
+        <p>Our attorneys have handled 5,400+ trademark matters — get a free case review on anything you find here.</p>
       </div>
       <a href="tel:+916239771006" class="cta-banner-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -56,12 +73,12 @@
 
     <!-- Loading -->
     <div class="loading-state" *ngIf="isLoading">
-      <div class="skeleton-card" *ngFor="let i of [1,2]"></div>
+      <div class="skeleton-card" *ngFor="let i of [1,2,3]"></div>
     </div>
 
     <!-- Results -->
     <div class="results-list" *ngIf="!isLoading && results && results.length > 0">
-      <p class="results-count">{{ results.length }} matching application{{ results.length !== 1 ? 's' : '' }} found</p>
+      <p class="results-count">{{ totalItems }} trademark{{ totalItems !== 1 ? 's' : '' }} found for "{{ companyName }}"</p>
 
       <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById">
         <div class="card-header">
@@ -95,12 +112,19 @@
           </a>
         </div>
       </article>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalItems > pageSize">
+        <button class="btn-secondary" type="button" [disabled]="page === 0" (click)="prevPage()">← Prev</button>
+        <span class="page-info">Page {{ page + 1 }} of {{ totalPages }}</span>
+        <button class="btn-secondary" type="button" [disabled]="page >= totalPages - 1" (click)="nextPage()">Next →</button>
+      </div>
     </div>
 
     <!-- No results -->
     <div class="empty-state" *ngIf="!isLoading && hasSearched && results && results.length === 0">
-      <h3 class="empty-title">No application found for "{{ applicationNo }}"</h3>
-      <p class="empty-note">Double check the application number, or search by brand name instead.</p>
+      <h3 class="empty-title">No trademarks found for "{{ companyName }}"</h3>
+      <p class="empty-note">Try just the distinctive part of the name, double-check the spelling, or search by brand/mark name instead.</p>
       <a routerLink="/search" class="btn-secondary">Search by Trademark Name</a>
     </div>
 
@@ -109,13 +133,12 @@
       <div class="idle-state">
         <div class="idle-icon">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <path d="M9 15l2 2 4-4"/>
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
           </svg>
         </div>
-        <h3 class="idle-title">Check any trademark's status instantly</h3>
-        <p class="idle-note">Enter an application number above to see its live status — objection, opposition, registered, or pending.</p>
+        <h3 class="idle-title">Find every trademark a company has filed</h3>
+        <p class="idle-note">Enter a company, LLP, firm, or proprietor name above to see its full trademark portfolio — mark, class, and current status.</p>
       </div>
 
       <!-- Live feed of the latest applications while idle -->
@@ -124,46 +147,42 @@
 
   </div>
 
-  <!-- What each status means -->
-  <section class="status-meanings-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-badge">Status Guide</span>
-        <h2 class="section-title">What Each Trademark Status Means</h2>
-        <p class="section-description">
-          Every application moves through these stages at the India Trade Marks Registry. Know what yours means — and
-          what to do about it — before a deadline slips past.
-        </p>
-      </div>
-
-      <div class="status-grid">
-        <div class="status-card" *ngFor="let item of statusMeanings" [attr.data-tone]="item.tone">
-          <div class="status-card-head">
-            <span class="status-dot"></span>
-            <h3>{{ item.status }}</h3>
-          </div>
-          <p>{{ item.description }}</p>
-          <a *ngIf="item.serviceLink" [routerLink]="item.serviceLink" class="status-card-link">
-            {{ item.serviceLabel }}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why track your application -->
+  <!-- Why search by company name -->
   <section class="why-track-section">
     <div class="container">
       <div class="section-header">
         <span class="section-badge">Why It Matters</span>
-        <h2 class="section-title">Why You Should Track Your Application's Status</h2>
+        <h2 class="section-title">Why Search Trademarks by Company Name</h2>
       </div>
 
       <div class="why-track-grid">
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+            </svg>
+          </div>
+          <h3>Verify Before You Sign</h3>
+          <p>Entering a franchise, licensing, or distribution deal? Confirm the other party actually owns the registered brand it claims before you commit.</p>
+        </div>
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3>Research Competitors</h3>
+          <p>See which marks and classes a competitor has filed to understand where they're building brand protection — and where the gaps are.</p>
+        </div>
+        <div class="why-track-card">
+          <div class="why-track-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <h3>Audit Your Own Portfolio</h3>
+          <p>Filed under a group company, a subsidiary, or a founder's own name? Pull up every filing at once to confirm nothing has lapsed or been missed.</p>
+        </div>
         <div class="why-track-card">
           <div class="why-track-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -171,35 +190,8 @@
               <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
           </div>
-          <h3>Catch Objections in Time</h3>
-          <p>Miss the 30-day window to reply to an objection and your application can be treated as abandoned — often before you even receive the physical notice.</p>
-        </div>
-        <div class="why-track-card">
-          <div class="why-track-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </div>
-          <h3>Never Miss a Renewal</h3>
-          <p>A registered mark is only protected for 10 years. Track the date so renewal fees never sneak past and hand your brand to a lapse.</p>
-        </div>
-        <div class="why-track-card">
-          <div class="why-track-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </div>
-          <h3>Confirm Before You Grow</h3>
-          <p>Signing a franchise deal, listing on a marketplace, or raising funds? Lenders and partners will ask for proof of status — have it ready.</p>
-        </div>
-        <div class="why-track-card">
-          <div class="why-track-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
-            </svg>
-          </div>
-          <h3>Spot Opposition Early</h3>
-          <p>A competitor opposing your mark has a fixed 2-month reply window. Checking status regularly is the only way to know it's happened.</p>
+          <h3>Spot Conflicts Early</h3>
+          <p>Before you adopt a name close to an existing filer's, see their full class coverage so you know exactly where the risk of an objection or opposition sits.</p>
         </div>
       </div>
     </div>
@@ -233,7 +225,7 @@
   <section class="faq-section">
     <div class="container">
       <div class="section-header">
-        <span class="section-badge">Trademark Status Check</span>
+        <span class="section-badge">Company Name Search</span>
         <h2 class="section-title">Frequently Asked Questions</h2>
       </div>
 
@@ -260,10 +252,10 @@
   <section class="final-cta-section">
     <div class="container">
       <div class="final-cta-content">
-        <h2>Need Help With Your Trademark Application?</h2>
-        <p>From objections to renewals, our attorneys handle every stage so your application doesn't stall.</p>
+        <h2>Found a Conflict, or Ready to File Your Own?</h2>
+        <p>From clearance searches to full filing and defence, our attorneys handle every stage of trademark protection.</p>
         <div class="final-cta-buttons">
-          <button class="btn-primary" type="button" (click)="focusSearchInput()">Check Another Application</button>
+          <button class="btn-primary" type="button" (click)="focusSearchInput()">Search Another Company</button>
           <a class="btn-secondary-solid" href="tel:+916239771006">Talk to an Expert</a>
         </div>
       </div>

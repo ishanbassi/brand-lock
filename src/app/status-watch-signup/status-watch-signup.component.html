@@ -1,0 +1,33 @@
+<div class="watch-signup-strip" *ngIf="!submitted">
+  <div class="ws-copy">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 6l-10 7L2 6"/>
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+    </svg>
+    <span>Get a <strong>free email alert</strong> the moment this application's status changes.</span>
+  </div>
+  <form class="ws-form" [formGroup]="form" (ngSubmit)="submit()">
+    <input
+      type="email"
+      class="ws-input"
+      placeholder="you@email.com"
+      formControlName="email"
+      autocomplete="email"
+      [class.invalid]="form.get('email')?.touched && form.get('email')?.invalid"
+    />
+    <button class="ws-submit" type="submit" [disabled]="isSubmitting">
+      <span *ngIf="!isSubmitting">Notify Me</span>
+      <span *ngIf="isSubmitting">Sending…</span>
+    </button>
+  </form>
+  <p class="ws-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">Please enter a valid email address.</p>
+  <p class="ws-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>
+
+<div class="watch-signup-success" *ngIf="submitted">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+  <span>Check your inbox — confirm the link we just sent to start getting status alerts.</span>
+</div>

@@ -8,13 +8,14 @@ import { DataService } from '../shared/services/data.service';
 import { TrademarkService } from '../shared/services/trademark.service';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PulseSignupComponent } from '../pulse-signup/pulse-signup.component';
 dayjs.extend(relativeTime);
 
 
 @Component({
   selector: 'app-trademark-pulse',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PulseSignupComponent],
   templateUrl: './trademark-pulse.component.html',
   styleUrls: ['./trademark-pulse.component.scss']
 })

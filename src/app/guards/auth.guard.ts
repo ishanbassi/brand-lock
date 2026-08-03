@@ -29,21 +29,23 @@ export class PermissionsService {
       this.router.navigate(['403']);
       return false;
     }
+    // Every route still guarded here is one of the four portal shells, and those are
+    // role-exclusive. The seeded admin also carries ROLE_USER (liquibase
+    // data/user_authority.csv), so the check above would otherwise wave it into the
+    // customer portal — where each endpoint resolves a UserProfile row that admin,
+    // agent and partner accounts don't have, so the dashboard 403s and the account
+    // chip renders blank. Send them to the portal that matches their highest role.
+    const home = this.homeRouteForCurrentUser();
+    if (!state.url.startsWith(`/${home.split('/')[0]}`)) {
+      this.router.navigate([home]);
+      return false;
+    }
     return true;
   }
 
   /** Landing route for an already-authenticated user, by highest-privilege role. */
   private homeRouteForCurrentUser(): string {
-    if (this.authService.hasRole(['ROLE_ADMIN'])) {
-      return 'admin-portal/dashboard';
-    }
-    if (this.authService.hasRole(['ROLE_AGENT'])) {
-      return 'agent-portal/dashboard';
-    }
-    if (this.authService.hasRole(['ROLE_PARTNER'])) {
-      return 'partner-portal/dashboard';
-    }
-    return 'portal/dashboard';
+    return this.authService.homeRoute();
   }
 }
 export const AuthGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {

@@ -93,6 +93,30 @@ export const routes: Routes = [
         title: "Thank You"
     },
     {
+        path: "status-watch/confirm",
+        loadComponent: () => import('./status-watch-landing/status-watch-landing.component').then(m => m.StatusWatchLandingComponent),
+        data: { mode: 'confirm' },
+        title: "Confirm Status Alert | Trademarx"
+    },
+    {
+        path: "status-watch/unsubscribe",
+        loadComponent: () => import('./status-watch-landing/status-watch-landing.component').then(m => m.StatusWatchLandingComponent),
+        data: { mode: 'unsubscribe' },
+        title: "Unsubscribe | Trademarx"
+    },
+    {
+        path: "pulse/confirm",
+        loadComponent: () => import('./pulse-landing/pulse-landing.component').then(m => m.PulseLandingComponent),
+        data: { mode: 'confirm' },
+        title: "Confirm Trademark Pulse Digest | Trademarx"
+    },
+    {
+        path: "pulse/unsubscribe",
+        loadComponent: () => import('./pulse-landing/pulse-landing.component').then(m => m.PulseLandingComponent),
+        data: { mode: 'unsubscribe' },
+        title: "Unsubscribe | Trademarx"
+    },
+    {
         path: "faq",
         loadComponent: () => import('./faq-page/faq-page.component').then(m => m.FaqPageComponent),
         title: "FAQ"
@@ -342,8 +366,15 @@ export const routes: Routes = [
     },
     {
         path: 'not-found',
-        loadComponent: () => import('./page-not-found/page-not-found.component').then(m => m.PageNotFoundComponent),
-        title: "404"
+        loadComponent: () => import('./error-page/error-page.component').then(m => m.ErrorPageComponent),
+        data: { code: 404 },
+    },
+    {
+        // AuthGuard sends role-mismatched users here; before this route existed the
+        // navigation fell through to ** and showed a misleading "page not found".
+        path: '403',
+        loadComponent: () => import('./error-page/error-page.component').then(m => m.ErrorPageComponent),
+        data: { code: 403 },
     },
     {
         path: 'blogs',
@@ -469,6 +500,11 @@ export const routes: Routes = [
         path: "trademark-status-check",
         loadComponent: () => import('./trademark-application-search/trademark-application-search.component').then(m => m.TrademarkApplicationSearchComponent),
         title: "Trademark Status Check by Application Number | Trademarx",
+    },
+    {
+        path: "trademark-search-by-company",
+        loadComponent: () => import('./trademark-search-by-company/trademark-search-by-company.component').then(m => m.TrademarkSearchByCompanyComponent),
+        title: "Trademark Search by Company Name | Trademarx",
     },
     {
         path: "trademark-journal",
