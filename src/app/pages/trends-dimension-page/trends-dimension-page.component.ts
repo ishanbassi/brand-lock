@@ -9,6 +9,15 @@ import { SeoService } from '../../shared/services/seo.service';
 import { IDimensionTrends, TrademarkTrendsService } from '../../shared/services/trademark-trends.service';
 import { buildRecentMonths, RecentMonth } from '../../shared/utils/recent-months.util';
 import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
+import {
+  COLLECTION_LAG_NOTE,
+  FaqItem,
+  SOURCE_NOTE,
+  dateRange,
+  faqSchema,
+  num,
+  share,
+} from '../../shared/utils/trends-copy.util';
 
 /**
  * One programmatic page per state (/trademark-filings/:state) or per NICE class
@@ -40,6 +49,16 @@ export class TrendsDimensionPageComponent implements OnInit, OnDestroy {
 
   /** Last 6 complete months, for a compact "Recent Monthly Reports" links row. */
   readonly recentMonths: RecentMonth[] = buildRecentMonths(6);
+
+  /** Generated-from-the-data prose, so the page's findings exist as quotable sentences. */
+  intro = '';
+  volumeCaption = '';
+  breakdownCaption = '';
+  windowLabel = '';
+  faqs: FaqItem[] = [];
+
+  readonly collectionLagNote = COLLECTION_LAG_NOTE;
+  readonly sourceNote = SOURCE_NOTE;
 
   volumeChartData: ChartData<'line'> = { labels: [], datasets: [] };
   readonly volumeChartOptions: ChartConfiguration<'line'>['options'] = {
@@ -75,10 +94,112 @@ export class TrendsDimensionPageComponent implements OnInit, OnDestroy {
             },
           ],
         };
+        this.buildCopy(res);
         this.setSeoTags(res);
       },
       error: () => this.router.navigateByUrl('/not-found', { skipLocationChange: true }),
     });
+  }
+
+  /**
+   * Turns the DTO into the sentences the page shows. Templated off values that differ per
+   * page (name, totals, leading category) rather than a fixed sentence with a number
+   * swapped in, so the ~80 state and class pages don't read as one duplicated page.
+   */
+  private buildCopy(res: IDimensionTrends): void {
+    const isState = this.dimension === 'state';
+    const top = res.breakdown.find(b => !b.label.startsWith('Other')) ?? null;
+    const second = res.breakdown.filter(b => !b.label.startsWith('Other'))[1] ?? null;
+    this.windowLabel = dateRange(res.windowFrom, res.windowTo);
+
+    const where = isState ? `from applicants in ${res.displayName}` : `in ${res.displayName}`;
+    const lead = `The IP India register holds ${num(res.totalFilings)} trademark applications ${where}, of which ${num(
+      res.filingsInWindow,
+    )} were filed in the ${this.windowLabel} window charted below.`;
+
+    let leader = '';
+    if (top) {
+      leader = isState
+        ? ` The most-filed category is ${top.label}, accounting for ${share(top.count, res.totalFilings)} of the state's filings`
+        : ` Filings are led by ${top.label}, which accounts for ${share(top.count, res.totalFilings)} of the class`;
+      leader += second ? `, followed by ${second.label} at ${share(second.count, res.totalFilings)}.` : '.';
+    }
+
+    this.intro = lead + leader;
+
+    this.volumeCaption = `Monthly trademark applications ${where}, ${this.windowLabel}. ${
+      res.filingVolume.length ? `${res.filingVolume.length} monthly data points.` : ''
+    }`;
+
+    this.breakdownCaption = isState
+      ? `NICE classes ranked by all-time filings from ${res.displayName}, with each class's share of the state total.`
+      : `States ranked by all-time filings in ${res.displayName}, with each state's share of the class total.`;
+
+    this.faqs = isState ? this.stateFaqs(res, top) : this.classFaqs(res, top);
+  }
+
+  private stateFaqs(res: IDimensionTrends, top: { label: string; count: number } | null): FaqItem[] {
+    return [
+      {
+        question: `How many trademarks have been filed in ${res.displayName}?`,
+        answer: `${num(res.totalFilings)} trademark applications from ${res.displayName} appear in the IP India register, ${num(
+          res.filingsInWindow,
+        )} of them in the ${this.windowLabel} window shown on this page.`,
+      },
+      ...(top
+        ? [
+            {
+              question: `Which trademark class is most used in ${res.displayName}?`,
+              answer: `${top.label} is the most-filed class in ${res.displayName}, with ${num(
+                top.count,
+              )} applications — ${share(top.count, res.totalFilings)} of all filings from the state.`,
+            },
+          ]
+        : []),
+      {
+        question: `Do I have to file a trademark in ${res.displayName} to protect it there?`,
+        answer:
+          'No. An Indian trademark registration is national: one application filed at any registry office protects the mark across all of India, ' +
+          `including ${res.displayName}. The state recorded on an application is the applicant's address, not the scope of protection.`,
+      },
+      {
+        question: 'How current is this data?',
+        answer: `${COLLECTION_LAG_NOTE} ${SOURCE_NOTE}`,
+      },
+    ];
+  }
+
+  private classFaqs(res: IDimensionTrends, top: { label: string; count: number } | null): FaqItem[] {
+    return [
+      {
+        question: `How many trademarks are registered under ${res.displayName}?`,
+        answer: `The register holds ${num(res.totalFilings)} applications in ${res.displayName}, ${num(
+          res.filingsInWindow,
+        )} of them filed during ${this.windowLabel}.`,
+      },
+      ...(top
+        ? [
+            {
+              question: `Where are ${res.displayName} trademarks filed from?`,
+              answer: `${top.label} leads filings in ${res.displayName} with ${num(top.count)} applications, ${share(
+                top.count,
+                res.totalFilings,
+              )} of the class total.`,
+            },
+          ]
+        : []),
+      {
+        question: `Do I need more than one class for my ${res.displayName.toLowerCase()} business?`,
+        answer:
+          'Each NICE class covers a distinct set of goods or services, and protection only extends to the classes you file in. ' +
+          'A business that both manufactures and sells, or that offers a service alongside a product, usually needs more than one class — ' +
+          'each is charged as a separate application by the registry.',
+      },
+      {
+        question: 'How current is this data?',
+        answer: `${COLLECTION_LAG_NOTE} ${SOURCE_NOTE}`,
+      },
+    ];
   }
 
   ngOnDestroy(): void {
@@ -130,9 +251,25 @@ export class TrendsDimensionPageComponent implements OnInit, OnDestroy {
           name: title,
           description,
           url,
-          creator: { '@type': 'Organization', name: 'Trademarx' },
+          // Spelled out rather than left to inference: temporal/spatial coverage and the
+          // measured variables are what make a Dataset node eligible for dataset search
+          // and quotable by answer engines.
+          temporalCoverage: `${res.windowFrom}/${res.windowTo}`,
+          spatialCoverage: isState
+            ? { '@type': 'Place', name: `${res.displayName}, India` }
+            : { '@type': 'Place', name: 'India' },
+          variableMeasured: [
+            { '@type': 'PropertyValue', name: 'Trademark applications (all time)', value: res.totalFilings },
+            { '@type': 'PropertyValue', name: 'Trademark applications in charted window', value: res.filingsInWindow },
+          ],
+          dateModified: new Date().toISOString().slice(0, 10),
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+          isAccessibleForFree: true,
+          creator: { '@type': 'Organization', name: 'Trademarx', url: 'https://trademarx.in' },
+          includedInDataCatalog: { '@type': 'DataCatalog', name: 'IP India Trade Marks Register', url: 'https://ipindia.gov.in' },
           isBasedOn: 'https://ipindia.gov.in',
         },
+        faqSchema(this.faqs),
       ],
       'trends-dimension',
     );

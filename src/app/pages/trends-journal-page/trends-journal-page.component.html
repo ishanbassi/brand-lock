@@ -9,13 +9,16 @@
       <h1>Trade Marks Journal No. {{ data.journalNo }}</h1>
       <p class="jr-total">
         <strong>{{ data.totalMarks | number }}</strong> trademark entries recorded from this journal
-        @if (data.publishedDate) {
-          · indexed {{ data.publishedDate | date: 'mediumDate' }}
+        @if (data.indexedDate) {
+          · indexed {{ data.indexedDate | date: 'mediumDate' }}
         }
         @if (monthlyReportLink) {
           · <a [routerLink]="'/trademark-trends/' + monthlyReportLink.slug">See the {{ monthlyReportLink.label }} filing report →</a>
         }
       </p>
+      <div class="page-intro">
+        <p>{{ intro }}</p>
+      </div>
     } @else {
       <h1>Loading journal…</h1>
     }
@@ -24,37 +27,92 @@
   @if (data) {
     <section class="jr-card">
       <h2>Marks by NICE Class</h2>
-      <ul class="bar-list">
-        @for (c of data.classBreakdown; track c.label) {
-          <li class="bar-row">
-            @if (c.label.startsWith('Other')) {
-              <span class="bar-label">{{ c.label }}</span>
-            } @else {
-              <a class="bar-label" [routerLink]="'/trademark-trends/class/' + c.label.split(' ')[1]">{{ c.label }}</a>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="c.percentage"></span></span>
-            <span class="bar-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ classCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">NICE class</th>
+            <th scope="col">Share of journal</th>
+            <th scope="col">Marks</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of data.classBreakdown; track c.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (c.label.startsWith('Other')) {
+                  <span>{{ c.label }}</span>
+                } @else {
+                  <a [routerLink]="'/trademark-trends/class/' + c.label.split(' ')[1]">{{ c.label }}</a>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="c.percentage"></span></td>
+              <td class="bar-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </section>
 
     <section class="jr-card">
       <h2>Marks by State</h2>
-      <ul class="bar-list">
-        @for (s of data.stateBreakdown; track s.label) {
-          <li class="bar-row">
-            @if (s.label.startsWith('Other')) {
-              <span class="bar-label">{{ s.label }}</span>
-            } @else {
-              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="s.percentage"></span></span>
-            <span class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ stateCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">State</th>
+            <th scope="col">Share of journal</th>
+            <th scope="col">Marks</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of data.stateBreakdown; track s.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (s.label.startsWith('Other')) {
+                  <span>{{ s.label }}</span>
+                } @else {
+                  <a [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="s.percentage"></span></td>
+              <td class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </section>
+
+    <section class="methodology">
+      <h2>About this data</h2>
+      <dl>
+        <dt>Source</dt>
+        <dd>{{ sourceNote }}</dd>
+        <dt>Date shown</dt>
+        <dd>
+          When Trademarx first indexed a mark from this issue — a close proxy for, but not the same as, the registry's own publication
+          date. Opposition deadlines run from the registry's date, printed on the journal itself.
+        </dd>
+        <dt>Refreshed</dt>
+        <dd>Hourly.</dd>
+      </dl>
+    </section>
+
+    @if (faqs.length) {
+      <section class="faq-block">
+        <h2>Frequently asked questions</h2>
+        @for (f of faqs; track f.question) {
+          <div class="faq-item">
+            <h3>{{ f.question }}</h3>
+            <p>{{ f.answer }}</p>
+          </div>
+        }
+      </section>
+    }
 
     <section class="jr-cta">
       <h2>Your mark advertised? Watch for oppositions.</h2>

@@ -17,6 +17,16 @@ import {
 } from '../shared/services/trademark-trends.service';
 import { buildRecentMonths, RecentMonth } from '../shared/utils/recent-months.util';
 import { stateSlug as slugifyState } from '../shared/utils/trends-slug.util';
+import {
+  COLLECTION_LAG_NOTE,
+  FaqItem,
+  SOURCE_NOTE,
+  dateRange,
+  faqSchema,
+  num,
+  share,
+  signedPercent,
+} from '../shared/utils/trends-copy.util';
 
 type RangeOption = '30d' | '90d' | '180d' | '365d';
 
@@ -85,6 +95,21 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
 
   /** Last 12 complete calendar months, newest first, for the "Monthly Reports" index links. */
   readonly recentMonths: RecentMonth[] = buildRecentMonths(12);
+
+  // Generated prose. The charts are <canvas> and the headline figures are <div>s — neither
+  // is readable by a crawler or quotable by an answer engine. These are.
+  intro = '';
+  windowLabel = '';
+  volumeCaption = '';
+  classCaption = '';
+  statusCaption = '';
+  classTrendCaption = '';
+  stateCaption = '';
+  wordsCaption = '';
+  faqs: FaqItem[] = [];
+
+  readonly collectionLagNote = COLLECTION_LAG_NOTE;
+  readonly sourceNote = SOURCE_NOTE;
 
   // Extra insight dimensions — rendered as CSS percentage-bar lists (no extra canvases,
   // so no Chart.js overhead or mobile-overflow risk).
@@ -216,6 +241,11 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
             borderWidth: 2,
           })),
         };
+
+        this.buildCopy(res);
+        // Re-inject the schema so the FAQ answers stay consistent with the figures now
+        // on screen (the range toggle re-fetches and the numbers change).
+        this.setSeoTags();
       },
       error: () => {
         this.volumeError = true;
@@ -238,6 +268,99 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     return slugifyState(label);
   }
 
+  /** Label for the currently selected range, for captions ("last 90 days"). */
+  get rangeLabel(): string {
+    return this.rangeOptions.find(o => o.value === this.selectedRange)?.label.toLowerCase() ?? this.selectedRange;
+  }
+
+  /** Turns the response into the sentences and Q&As the page renders. */
+  private buildCopy(res: ITrendsPage): void {
+    const s = res.summary;
+    this.windowLabel = dateRange(s.windowFrom, s.windowTo);
+
+    const topClass = res.classBreakdown.find(c => c.tmClass !== null) ?? null;
+    const topState = res.stateBreakdown.find(x => x.label !== 'Other') ?? null;
+    const topType = res.typeBreakdown[0] ?? null;
+
+    const parts: string[] = [
+      `${num(s.totalFilingsInRange)} trademark applications were filed in India between ${this.windowLabel}` +
+        (s.momChangePercent !== null ? `, ${signedPercent(s.momChangePercent)} on the preceding 30 days.` : '.'),
+    ];
+    if (topClass) {
+      parts.push(
+        `${topClass.className || 'Class ' + topClass.tmClass} is the most active NICE class over the ${this.rangeLabel} shown, ` +
+          `with ${num(topClass.count)} applications (${topClass.percentage.toFixed(1)}% of the period).`,
+      );
+    }
+    if (topState) {
+      parts.push(`${topState.label} files the most applications of any state, ${topState.percentage.toFixed(1)}% of the period's total.`);
+    }
+    if (topType) {
+      parts.push(`${topType.label} marks account for ${topType.percentage.toFixed(1)}% of filings by mark type.`);
+    }
+    this.intro = parts.join(' ');
+
+    this.volumeCaption = `Daily trademark applications filed in India over the ${this.rangeLabel}, counted by application date. ${COLLECTION_LAG_NOTE}`;
+    this.classCaption = `The most-filed NICE classes over the ${this.rangeLabel}, with each class's share of the period's applications.`;
+    this.classTrendCaption = `Monthly application volume for the six most active NICE classes over the ${this.rangeLabel}. Months with no filings in a class are plotted as zero.`;
+    this.stateCaption = `Applicant states ranked by applications filed over the ${this.rangeLabel}.`;
+    this.wordsCaption = `The words appearing most often in Indian trademark names filed over the ${this.rangeLabel}, excluding common company suffixes and filler words.`;
+
+    // The status chart is deliberately computed only from records where the registry has
+    // published a status — the large majority have none. Stating the denominator keeps a
+    // chart summing to 100% from implying it covers the whole register.
+    this.statusCaption =
+      s.registryTotalCount > 0
+        ? `Based on the ${num(s.statusCapturedCount)} applications (${share(
+            s.statusCapturedCount,
+            s.registryTotalCount,
+          )} of ${num(s.registryTotalCount)} records) for which IP India has published a status. Percentages are shares of that subset, ` +
+          'not of the whole register, and this chart is all-time rather than scoped to the range selected above.'
+        : '';
+
+    this.faqs = [
+      {
+        question: 'How many trademarks are filed in India each month?',
+        answer: `${num(s.totalFilingsInRange)} trademark applications were filed between ${this.windowLabel}${
+          s.momChangePercent !== null ? `, ${signedPercent(s.momChangePercent)} on the preceding 30 days` : ''
+        }. Monthly volume varies; this page recalculates from the official register every hour.`,
+      },
+      ...(topClass
+        ? [
+            {
+              question: 'Which trademark class is filed most in India?',
+              answer: `${
+                topClass.className || 'Class ' + topClass.tmClass
+              } leads over the ${this.rangeLabel}, with ${num(topClass.count)} applications — ${topClass.percentage.toFixed(
+                1,
+              )}% of the period. Class 35 (business and retail services) and Class 25 (clothing) are consistently among the busiest.`,
+            },
+          ]
+        : []),
+      ...(topState
+        ? [
+            {
+              question: 'Which Indian state files the most trademarks?',
+              answer: `${topState.label} leads with ${num(topState.count)} applications over the ${this.rangeLabel}, ${topState.percentage.toFixed(
+                1,
+              )}% of the national total. The state recorded is the applicant's address — an Indian trademark registration is national regardless of where it is filed.`,
+            },
+          ]
+        : []),
+      {
+        question: 'Where does this trademark data come from?',
+        answer: `${SOURCE_NOTE} ${COLLECTION_LAG_NOTE}`,
+      },
+      {
+        question: 'Why do so many records show no trademark status?',
+        answer:
+          'The registry does not publish a status for every application in the bulk data we index — only a minority carry one. ' +
+          `The status chart on this page is computed from the ${num(s.statusCapturedCount)} records that do, so its percentages describe ` +
+          'that subset rather than the whole register.',
+      },
+    ];
+  }
+
   private setSeoTags(): void {
     const title = 'India Trademark Filing Trends — Volume, Classes, States & Status Data | Trademarx';
     const description =
@@ -251,31 +374,49 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/trademark-filing-trends' });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
     this.seo.setCanonical('https://trademarx.in/trademark-filing-trends');
-    this.seo.injectJsonLd(
-      [
-        {
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://trademarx.in/' },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: 'Trademark Filing Trends',
-              item: 'https://trademarx.in/trademark-filing-trends',
-            },
-          ],
-        },
-        {
-          '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          name: 'India Trademark Filing Trends',
-          description,
-          url: 'https://trademarx.in/trademark-filing-trends',
-          isPartOf: { '@type': 'WebSite', name: 'Trademarx', url: 'https://trademarx.in' },
-        },
-      ],
-      'trademark-filing-trends',
-    );
+
+    const url = 'https://trademarx.in/trademark-filing-trends';
+    const schema: object[] = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://trademarx.in/' },
+          { '@type': 'ListItem', position: 2, name: 'Trademark Filing Trends', item: url },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        name: 'India Trademark Filing Trends',
+        description,
+        url,
+        spatialCoverage: { '@type': 'Place', name: 'India' },
+        ...(this.summary ? { temporalCoverage: `${this.summary.windowFrom}/${this.summary.windowTo}` } : {}),
+        ...(this.summary
+          ? {
+              variableMeasured: [
+                { '@type': 'PropertyValue', name: 'Trademark applications (last 30 days)', value: this.summary.totalFilingsInRange },
+                { '@type': 'PropertyValue', name: 'Records in national register', value: this.summary.registryTotalCount },
+              ],
+            }
+          : {}),
+        dateModified: new Date().toISOString().slice(0, 10),
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        isAccessibleForFree: true,
+        creator: { '@type': 'Organization', name: 'Trademarx', url: 'https://trademarx.in' },
+        includedInDataCatalog: { '@type': 'DataCatalog', name: 'IP India Trade Marks Register', url: 'https://ipindia.gov.in' },
+        isBasedOn: 'https://ipindia.gov.in',
+        isPartOf: { '@type': 'WebSite', name: 'Trademarx', url: 'https://trademarx.in' },
+      },
+    ];
+    if (this.faqs.length) {
+      schema.push(faqSchema(this.faqs));
+    }
+
+    // injectJsonLd is a no-op when a block with this id is already present, so drop the
+    // previous one first — this runs again once the data (and the range toggle) resolve.
+    this.seo.removeJsonLd('trademark-filing-trends');
+    this.seo.injectJsonLd(schema, 'trademark-filing-trends');
   }
 }

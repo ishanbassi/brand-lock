@@ -50,6 +50,82 @@
     </section>
   }
 
+  <!-- ══ Filing needs the customer ═════════════════════════════════════
+       Our team files on the Registry portal, so the one moment we're blocked
+       on the customer (the eSign OTP) has to be impossible to miss. -->
+  @if (loaded && filingNeedsAttention; as app) {
+    <section class="filing-alert">
+      <span class="filing-alert-dot" aria-hidden="true"></span>
+      <div>
+        <p class="filing-alert-title">{{ filingView(app).label }} — {{ app.name || 'your trademark' }}</p>
+        <p class="filing-alert-sub">{{ filingView(app).detail }}</p>
+      </div>
+    </section>
+  }
+
+  <!-- ══ eSign enrolment ═══════════════════════════════════════════════
+       One-time, per person. Only the applicant can complete it — the video
+       has to show their own face against their own ID — so we prompt and
+       let them self-report; an admin confirms against eMudhra's email. -->
+  @if (showEsignCard) {
+    <section class="esign-card" [class.pending]="esignAwaitingReview">
+      <div class="esign-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17c2.5 0 2.5-9 5-9s2.5 9 5 9 2.5-6 4-6 2 3 4 3"/>
+        </svg>
+      </div>
+
+      <div class="esign-body">
+        @if (esignAwaitingReview) {
+          <p class="esign-eyebrow">Verification in review</p>
+          <h2 class="esign-title">We're confirming your eSign verification</h2>
+          <p class="esign-sub">
+            eMudhra usually verifies within a few minutes. We'll start your filing as soon
+            as it clears — nothing more is needed from you right now.
+          </p>
+        } @else {
+          <p class="esign-eyebrow">{{ esignRejected ? 'Action needed' : 'One-time step' }}</p>
+          <h2 class="esign-title">
+            {{ esignRejected ? 'Your verification needs re-recording' : 'Verify your identity to file' }}
+          </h2>
+          <p class="esign-sub">
+            The Trade Marks Registry requires you to sign your application yourself. It's a
+            one-time, two-minute video verification with eMudhra — you record it, holding
+            your <strong>original PAN card</strong> and <strong>address proof</strong> to the
+            camera. You'll only ever do this once; every future filing and renewal reuses it.
+          </p>
+
+          <ul class="esign-tips">
+            <li>Keep your original PAN and address proof in hand</li>
+            <li>Record in good light, with your face clearly visible</li>
+            <li>Read the on-screen code out loud — keep it under 25 seconds</li>
+          </ul>
+
+          <div class="esign-actions">
+            <a class="btn-primary" href="https://emudhradigital.com/" target="_blank" rel="noopener noreferrer">
+              Start verification
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
+            </a>
+          </div>
+
+          <div class="esign-confirm">
+            <label class="esign-label" for="signerId">Already done it? Enter your Signer ID</label>
+            <div class="esign-confirm-row">
+              <input id="signerId" class="esign-input" type="text" [(ngModel)]="esignSignerIdInput"
+                     placeholder="eMudhra Signer ID (optional)" autocomplete="off" />
+              <button class="btn-ghost" type="button" [disabled]="esignSubmitting"
+                      (click)="reportEsignSubmitted()">
+                {{ esignSubmitting ? 'Saving…' : "I've completed it" }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
   <!-- ══ Main grid ═════════════════════════════════════════════════════ -->
   <div class="dash-grid">
     <div class="dash-main">
@@ -98,6 +174,37 @@
                  stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>
           </a>
         </article>
+      }
+
+      <!-- Registry submission tracker -->
+      @if (filingApplications.length > 0) {
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="card-eyebrow">Registry submission</p>
+              <h2 class="panel-title">Filing with the Trade Marks Registry</h2>
+            </div>
+          </div>
+
+          @for (app of filingApplications; track app.id) {
+            <div class="filing-row" [class.needs-you]="filingView(app).needsCustomer">
+              <div class="filing-row-head">
+                <span class="filing-mark">{{ app.name || 'Your trademark' }}</span>
+                <span class="filing-chip" [class.urgent]="filingView(app).needsCustomer">
+                  {{ filingView(app).label }}
+                </span>
+              </div>
+              <div class="filing-bar" role="progressbar"
+                   [attr.aria-valuenow]="filingView(app).progress" aria-valuemin="0" aria-valuemax="100">
+                <span class="filing-bar-fill" [style.width.%]="filingView(app).progress"></span>
+              </div>
+              <p class="filing-note">{{ filingView(app).detail }}</p>
+              @if (app.applicationNo) {
+                <p class="filing-appno">Registry application no. <strong>{{ app.applicationNo }}</strong></p>
+              }
+            </div>
+          }
+        </section>
       }
 
       <!-- All filings -->

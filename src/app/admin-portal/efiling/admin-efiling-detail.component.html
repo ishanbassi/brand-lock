@@ -1,0 +1,272 @@
+<div class="admin-page">
+
+  <a class="back-link" routerLink="/admin-portal/efiling">← Back to filing queue</a>
+
+  @if (loading()) {
+    <div class="skeleton-line" style="height: 28px; margin: 1rem 0;"></div>
+    <div class="skeleton-line" style="height: 180px;"></div>
+  } @else if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  } @else {
+    @if (checklist(); as c) {
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ c.markName || 'Untitled mark' }}</h1>
+        <p class="page-sub">
+          Assisted self-filing for {{ c.applicantName || 'this applicant' }}
+          <span class="badge" [class]="badgeClass(c.efilingStatus)">{{ statusLabel(c.efilingStatus) }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- READINESS -->
+    @if (c.blockers.length > 0) {
+      <div class="blocker-panel">
+        <h3>Not ready to file — {{ c.blockers.length }} item{{ c.blockers.length === 1 ? '' : 's' }} outstanding</h3>
+        <ul>
+          @for (b of c.blockers; track b) {
+            <li>{{ b }}</li>
+          }
+        </ul>
+      </div>
+    } @else {
+      <div class="ready-panel">
+        Everything needed is on file. You can start the registration on IP India.
+      </div>
+    }
+
+    <a class="portal-link" [href]="ipIndiaRegistrationUrl" target="_blank" rel="noopener noreferrer">
+      Open IP India new-user registration ↗
+    </a>
+
+    <div class="detail-grid" style="margin-top: 1.25rem;">
+
+      <!-- STEP 1: PROPRIETOR CODE -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">1</span>
+          <h2 style="margin: 0;">Proprietor Code</h2>
+        </div>
+        <p class="step-hint">
+          On the registration form, choose the applicant type and search by proprietor name.
+          If no row matches this exact person and address, use <strong>Add New</strong> and
+          create one from the details below. Record the code here — every later mark for this
+          customer reuses it.
+        </p>
+
+        <div class="copy-row">
+          <span class="copy-label">Search name</span>
+          <span class="copy-value" [class.is-empty]="!c.applicantName">{{ c.applicantName || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'name'"
+                  (click)="copy('name', c.applicantName)">
+            {{ copiedKey() === 'name' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Address</span>
+          <span class="copy-value" [class.is-empty]="!c.applicantAddress">{{ c.applicantAddress || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'addr'"
+                  (click)="copy('addr', c.applicantAddress)">
+            {{ copiedKey() === 'addr' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">City / State / PIN</span>
+          <span class="copy-value">
+            {{ c.applicantCity || '—' }} / {{ c.applicantState || '—' }} / {{ c.applicantZipCode || '—' }}
+          </span>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Proprietor category</span>
+          <span class="copy-value" [class.is-empty]="!c.organizationType">{{ c.organizationType || 'Not set' }}</span>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="propCode">Proprietor Code (from IP India)</label>
+          <input id="propCode" class="form-control" type="text" [(ngModel)]="proprietorCodeModel"
+                 placeholder="e.g. 3393783" />
+        </div>
+      </div>
+
+      <!-- STEP 2: eSIGN -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">2</span>
+          <h2 style="margin: 0;">eSign / Signer ID</h2>
+        </div>
+        <p class="step-hint">
+          Signup Mode = <strong>Electronic Signature</strong>, ESign Vendor = <strong>E-Mudhra</strong>.
+          The Signer ID comes from the applicant's own one-time eMudhra enrolment — they must
+          complete the video KYC themselves. Mark this Verified only once eMudhra has confirmed it.
+        </p>
+
+        <div class="field-row">
+          <span class="field-label">Current</span>
+          <span class="field-value">
+            <span class="badge" [class]="signerBadgeClass(c.signerIdStatus)">{{ signerLabel(c.signerIdStatus) }}</span>
+          </span>
+        </div>
+        @if (c.signerIdVerifiedDate) {
+          <div class="field-row">
+            <span class="field-label">Verified on</span>
+            <span class="field-value">{{ c.signerIdVerifiedDate | date: 'dd MMM yyyy' }}</span>
+          </div>
+        }
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="signerStatus">Signer ID status</label>
+          <select id="signerStatus" class="form-control" [(ngModel)]="signerIdStatusModel">
+            @for (opt of signerStatusOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signerId">Signer ID</label>
+          <input id="signerId" class="form-control" type="text" [(ngModel)]="esignSignerIdModel"
+                 placeholder="eMudhra eSign ID" />
+        </div>
+      </div>
+
+      <!-- STEP 3: ACCOUNT -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">3</span>
+          <h2 style="margin: 0;">E-filing account</h2>
+        </div>
+        <p class="step-hint">
+          Pick a User ID (max 10 characters) and check availability. When "Register with ESign"
+          is pressed, IP India sends an OTP to the applicant's Aadhaar-linked mobile — set the
+          status to <em>Awaiting applicant OTP</em> and call them to read it out. The password
+          is the applicant's own; we don't store it.
+        </p>
+
+        <div class="copy-row">
+          <span class="copy-label">Email</span>
+          <span class="copy-value" [class.is-empty]="!c.applicantEmail">{{ c.applicantEmail || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'email'"
+                  (click)="copy('email', c.applicantEmail)">
+            {{ copiedKey() === 'email' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Mobile</span>
+          <span class="copy-value" [class.is-empty]="!c.applicantPhone">{{ c.applicantPhone || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'phone'"
+                  (click)="copy('phone', c.applicantPhone)">
+            {{ copiedKey() === 'phone' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="efilingUser">IP India User ID</label>
+          <input id="efilingUser" class="form-control" type="text" maxlength="10"
+                 [(ngModel)]="efilingUserIdModel" placeholder="max 10 characters" />
+        </div>
+      </div>
+
+      <!-- STEP 4: THE MARK -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">4</span>
+          <h2 style="margin: 0;">The mark</h2>
+        </div>
+        <p class="step-hint">
+          Signed in as the applicant, file the TM-A with these details.
+        </p>
+
+        <div class="copy-row">
+          <span class="copy-label">Mark name</span>
+          <span class="copy-value" [class.is-empty]="!c.markName">{{ c.markName || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'mark'"
+                  (click)="copy('mark', c.markName)">
+            {{ copiedKey() === 'mark' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Type</span>
+          <span class="copy-value" [class.is-empty]="!c.markType">{{ c.markType || 'Not set' }}</span>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Class</span>
+          <span class="copy-value" [class.is-empty]="!c.tmClass">{{ c.tmClass || 'Not set' }}</span>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Goods / services</span>
+          <span class="copy-value" [class.is-empty]="!c.goodsDescription">{{ c.goodsDescription || 'Not set' }}</span>
+          <button class="copy-btn" [class.copied]="copiedKey() === 'goods'"
+                  (click)="copy('goods', c.goodsDescription)">
+            {{ copiedKey() === 'goods' ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+        <div class="copy-row">
+          <span class="copy-label">Use since</span>
+          <span class="copy-value" [class.is-empty]="!c.usage">{{ c.usage || 'Proposed to be used' }}</span>
+        </div>
+      </div>
+
+      <!-- STEP 5: DOCUMENTS -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">5</span>
+          <h2 style="margin: 0;">Documents to upload</h2>
+        </div>
+        @if (c.documents.length === 0) {
+          <p class="step-hint" style="margin-bottom: 0;">No documents uploaded for this application yet.</p>
+        } @else {
+          <ul class="doc-list">
+            @for (doc of c.documents; track doc.id) {
+              <li class="doc-item">
+                <span>
+                  <strong>{{ doc.documentType }}</strong>
+                  <span class="muted"> — {{ doc.fileName || 'file' }}</span>
+                </span>
+                @if (doc.fileUrl) {
+                  <a [href]="doc.fileUrl" target="_blank" rel="noopener noreferrer">Download</a>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <!-- STEP 6: RECORD OUTCOME -->
+      <div class="detail-card">
+        <div class="step-head">
+          <span class="step-num">6</span>
+          <h2 style="margin: 0;">Record outcome</h2>
+        </div>
+        <p class="step-hint">
+          Entering the application number here also feeds the existing status-tracking and
+          renewal reminders for this mark.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="efStatus">Filing status</label>
+          <select id="efStatus" class="form-control" [(ngModel)]="efilingStatusModel">
+            @for (opt of statusOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="appNo">IP India application number</label>
+          <input id="appNo" class="form-control" type="number" [(ngModel)]="applicationNoModel"
+                 placeholder="returned after submission" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Notes</label>
+          <textarea id="notes" class="form-control" rows="4" [(ngModel)]="notesModel"
+                    placeholder="Where this stalled, portal quirks, what to do next…"></textarea>
+        </div>
+
+        <button class="btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Save progress' }}
+        </button>
+      </div>
+
+    </div>
+    }
+  }
+
+</div>

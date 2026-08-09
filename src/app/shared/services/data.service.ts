@@ -110,6 +110,15 @@ import { TrademarkStats } from "../../../models/trademark-stats.dto";
       return this.getRecords("api/portal/dashboard/stats");
     }
 
+    /**
+     * The applicant confirming they've recorded their one-time eMudhra eSign video.
+     * eMudhra verifies asynchronously with no callback to us, so this only moves the
+     * profile to VIDEO_SUBMITTED and surfaces it to an admin to confirm.
+     */
+    reportEsignVideoSubmitted(esignSignerId?: string):Observable<HttpResponse<{ signerIdStatus: string }>>{
+      return this.saveRecord("api/portal/esign/video-submitted", { esignSignerId: esignSignerId ?? null });
+    }
+
     
     forgotPassword(data: any) {
       return this.saveRecord('api/portal/account/reset-password/init', data);

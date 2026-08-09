@@ -33,8 +33,13 @@ export interface UserSummaryDTO {
     onboardedDate:dayjs.Dayjs;
     profileComplete: boolean;
     planType:string;
-    phoneNumber:string
+    phoneNumber:string;
+    /** eMudhra eSign enrolment state — see SignerIdStatus. Always sent; never null. */
+    signerIdStatus?:SignerIdStatus;
 }
+
+/** Mirrors the backend SignerIdStatus enum. One-time, per person, not per mark. */
+export type SignerIdStatus = 'NOT_STARTED' | 'INVITED' | 'VIDEO_SUBMITTED' | 'VERIFIED' | 'REJECTED';
 
 export interface TaskDTO {
     title:string; 

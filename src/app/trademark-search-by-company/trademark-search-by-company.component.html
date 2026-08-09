@@ -47,9 +47,21 @@
                 [class.is-active]="activeSuggestionIndex === i"
                 (mouseenter)="activeSuggestionIndex = i"
                 (mousedown)="$event.preventDefault(); selectSuggestion(name)">
-              <span [innerHTML]="highlight(name)"></span>
+              <span class="suggestion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" />
+                  <path d="M9 9h.01M9 13h.01M9 17h.01" />
+                </svg>
+              </span>
+              <span class="suggestion-body">
+                <span class="suggestion-name" [innerHTML]="highlight(name)"></span>
+                <span class="suggestion-meta">See all trademarks filed</span>
+              </span>
             </li>
           </ul>
+          <div class="suggestions-footer">
+            ↑↓ navigate &nbsp;·&nbsp; ↵ select &nbsp;·&nbsp; esc close
+          </div>
         </div>
       </div>
       <p class="hero-hint">Looking for a specific mark instead? <a routerLink="/search">Search by brand name</a> or <a routerLink="/trademark-status-check">by application number</a>.</p>

@@ -180,3 +180,6 @@ app-root {
 
 // Auth pages shared styles (scoped under .auth-page)
 @import 'styles/auth';
+
+// Public filing-trends pages: breakdown tables, generated prose, methodology, FAQ
+@import 'styles/trends-data';

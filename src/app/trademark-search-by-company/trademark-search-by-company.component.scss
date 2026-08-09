@@ -91,30 +91,64 @@ $radius-lg: 14px;
   border: 1.5px solid $border;
   border-radius: $radius-md;
   overflow: hidden;
-  z-index: 1000;
+  // Below the navbar's z-index (1000) so the panel tucks behind it instead of
+  // painting over it when the page is scrolled with the dropdown still open.
+  z-index: 500;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
   text-align: left;
+  animation: suggestionsDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   ul {
     list-style: none;
     margin: 0;
     padding: 6px;
-    max-height: 320px;
+    max-height: 360px;
     overflow-y: auto;
   }
 
   li {
-    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.92rem;
-    color: $text;
     transition: background 0.12s;
 
     &:hover,
     &.is-active {
       background: rgba(37, 99, 235, 0.08);
     }
+  }
+
+  .suggestion-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 8px;
+    color: $text-light;
+  }
+
+  .suggestion-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .suggestion-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     ::ng-deep mark {
       background: rgba(37, 99, 235, 0.18);
@@ -122,6 +156,33 @@ $radius-lg: 14px;
       border-radius: 3px;
       padding: 0 1px;
     }
+  }
+
+  .suggestion-meta {
+    font-size: 0.75rem;
+    color: $text-light;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestions-footer {
+    padding: 7px 14px;
+    font-size: 0.68rem;
+    color: $text-light;
+    border-top: 1px solid $border;
+    letter-spacing: 0.03em;
+  }
+}
+
+@keyframes suggestionsDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

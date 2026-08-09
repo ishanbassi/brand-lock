@@ -290,4 +290,133 @@ $admin-gray-800: #1e293b;
     &--reject   { color: darken($admin-danger, 4%);  border-color: rgba($admin-danger, 0.4);  &:hover:not(:disabled) { background: rgba($admin-danger, 0.1); } }
     &--reupload { color: darken($admin-warning, 18%); border-color: rgba($admin-warning, 0.5); &:hover:not(:disabled) { background: rgba($admin-warning, 0.12); } }
   }
+
+  // ── ASSISTED E-FILING ──────────────────────────────
+  // The checklist screen is worked side-by-side with ipindiaonline.gov.in, so it
+  // optimises for scanning and copying rather than density.
+
+  .ready-flag { font-size: 0.78rem; font-weight: 700; color: darken($admin-success, 10%); }
+  .blocker-count {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: darken($admin-warning, 20%);
+    cursor: help;
+    border-bottom: 1px dotted rgba($admin-warning, 0.6);
+  }
+
+  .blocker-panel {
+    border: 1px solid rgba($admin-warning, 0.35);
+    background: rgba($admin-warning, 0.07);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.25rem;
+
+    h3 { margin: 0 0 0.5rem; font-size: 0.9rem; font-weight: 700; color: darken($admin-warning, 25%); }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li { font-size: 0.83rem; color: $admin-gray-600; line-height: 1.55; }
+  }
+
+  .ready-panel {
+    border: 1px solid rgba($admin-success, 0.35);
+    background: rgba($admin-success, 0.07);
+    border-radius: 10px;
+    padding: 0.8rem 1.1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: darken($admin-success, 14%);
+  }
+
+  // A field the admin copies straight into the government form.
+  .copy-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid $admin-gray-100;
+
+    &:last-child { border-bottom: none; }
+  }
+  .copy-label {
+    flex: 0 0 40%;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $admin-gray-500;
+    padding-top: 0.15rem;
+  }
+  .copy-value {
+    flex: 1 1 auto;
+    font-size: 0.86rem;
+    color: $admin-gray-800;
+    word-break: break-word;
+
+    &.is-empty { color: $admin-gray-400; font-style: italic; }
+  }
+  .copy-btn {
+    flex: 0 0 auto;
+    border: 1px solid $admin-gray-200;
+    background: #fff;
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $admin-gray-500;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+    &:hover { border-color: $admin-accent; color: $admin-accent; background: rgba($admin-accent, 0.06); }
+    &.copied { border-color: $admin-success; color: darken($admin-success, 10%); background: rgba($admin-success, 0.1); }
+  }
+
+  // Numbered walk-through of the IP India registration/filing sequence.
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.35rem;
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border-radius: 50%;
+    background: $admin-accent;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .step-hint {
+    font-size: 0.78rem;
+    color: $admin-gray-400;
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+  }
+
+  .doc-list { list-style: none; margin: 0; padding: 0; }
+  .doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $admin-gray-100;
+    font-size: 0.83rem;
+
+    &:last-child { border-bottom: none; }
+    a { color: $admin-accent; font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+  }
+
+  .portal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $admin-accent;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
 }

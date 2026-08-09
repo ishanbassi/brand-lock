@@ -196,6 +196,244 @@
   &.lg { padding: 14px 26px; font-size: 1rem; }
 }
 
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink2);
+  font-weight: 600;
+  font-size: .88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, background .15s, color .15s;
+  &:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+// ── Registry filing tracker ───────────────────────────────────────────
+// Our team files on the Registry portal, so the customer's only window into it is
+// here. The alert band is reserved for states where we're actually blocked on them.
+
+.filing-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--red-soft);
+  background: var(--red-soft);
+  box-shadow: var(--shadow);
+}
+
+.filing-alert-dot {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 4px rgba(164, 48, 43, .16);
+}
+
+.filing-alert-title {
+  margin: 0 0 4px;
+  font-size: .98rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.filing-alert-sub {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+.filing-row {
+  padding: 16px 0;
+  border-top: 1px solid var(--line2);
+
+  &:first-of-type { border-top: none; padding-top: 4px; }
+}
+
+.filing-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.filing-mark {
+  font-size: .94rem;
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filing-chip {
+  flex: 0 0 auto;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+
+  &.urgent { background: var(--red-soft); color: var(--red); }
+}
+
+.filing-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line2);
+  overflow: hidden;
+}
+
+.filing-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--blue);
+  transition: width .35s ease;
+
+  .filing-row.needs-you & { background: var(--red); }
+}
+
+.filing-note {
+  margin: 9px 0 0;
+  font-size: .85rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.filing-appno {
+  margin: 6px 0 0;
+  font-size: .82rem;
+  color: var(--ink2);
+  strong { font-family: var(--mono); }
+}
+
+// ── eSign enrolment prompt ────────────────────────────────────────────
+// Amber (a task for the customer) until they report it done, then blue-neutral
+// while eMudhra reviews — so a pending state never reads as still-outstanding.
+.esign-card {
+  display: flex;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--amber-line);
+  background: var(--amber-soft);
+  box-shadow: var(--shadow);
+
+  &.pending {
+    border-color: var(--line);
+    background: var(--blue-soft);
+  }
+}
+
+.esign-icon {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .7);
+  color: var(--amber);
+
+  svg { width: 22px; height: 22px; }
+
+  .esign-card.pending & { color: var(--blue); }
+}
+
+.esign-body { flex: 1 1 auto; min-width: 0; }
+
+.esign-eyebrow {
+  margin: 0 0 5px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--amber);
+
+  .esign-card.pending & { color: var(--blue); }
+}
+
+.esign-title {
+  margin: 0 0 8px;
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.esign-sub {
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+.esign-tips {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  li {
+    font-size: .85rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+}
+
+.esign-actions { margin-top: 16px; }
+
+.esign-confirm {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--amber-line);
+}
+
+.esign-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.esign-confirm-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.esign-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-size: .88rem;
+  color: var(--ink);
+  outline: none;
+  &:focus { border-color: var(--blue); }
+}
+
+@media (max-width: 640px) {
+  .esign-card { flex-direction: column; gap: 14px; padding: 18px; }
+  .esign-confirm-row .btn-ghost { width: 100%; }
+}
+
 // ── Grid ──────────────────────────────────────────────────────────────
 .dash-grid {
   display: grid;

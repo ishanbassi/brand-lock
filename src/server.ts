@@ -158,10 +158,14 @@ app.get('/sitemap.xml', async (_req, res) => {
       <lastmod>${p.lastmod}</lastmod>
     </url>`);
 
+    // Trends pages are live SSR queries recomputed on every render, so their lastmod is
+    // genuinely today — unlike the hand-maintained TODAY constant used for static pages,
+    // which had gone stale and was making every trends URL claim an old change date.
+    const trendsLastmod = new Date().toISOString().slice(0, 10);
     const trendsUrls = trendsPaths.map(path => `
     <url>
       <loc>${SITE_URL}${path}</loc>
-      <lastmod>${TODAY}</lastmod>
+      <lastmod>${trendsLastmod}</lastmod>
     </url>`);
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -227,11 +231,24 @@ app.get('/og-image-proxy', (req, res) => {
  * Handle all other requests by rendering the Angular application.
  */
 app.use('/**', (req, res, next) => {
+  // Mutable context the app can write to during render (Angular exposes it via
+  // REQUEST_CONTEXT; see SsrStatusService). Without it every route — including
+  // /not-found — answered 200, so dead URLs read as soft 404s to crawlers.
+  const ssrContext: { statusCode?: number } = {};
+
   angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .handle(req, ssrContext)
+    .then((response) => {
+      if (!response) {
+        next();
+        return undefined;
+      }
+      const status = ssrContext.statusCode;
+      // Response.status is read-only, so re-wrap when the app asked for a different code.
+      const finalResponse =
+        status && status !== response.status ? new Response(response.body, { status, headers: response.headers }) : response;
+      return writeResponseToNodeResponse(finalResponse, res);
+    })
     .catch(next);
 });
 

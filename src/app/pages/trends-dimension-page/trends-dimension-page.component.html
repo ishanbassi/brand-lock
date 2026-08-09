@@ -21,6 +21,11 @@
           in this NICE class.
         }
       </p>
+      <!-- Generated from the same figures the charts plot: a canvas cannot be read by a
+           crawler or quoted in an AI answer, a sentence can. -->
+      <div class="page-intro">
+        <p>{{ intro }}</p>
+      </div>
     } @else {
       <h1>Loading trademark trends…</h1>
     }
@@ -38,27 +43,65 @@
     } @else {
       <p class="muted">Not enough dated filings to plot a volume trend.</p>
     }
+    @if (volumeCaption) {
+      <p class="chart-caption">{{ volumeCaption }}</p>
+    }
   </section>
 
-  <!-- Breakdown -->
+  <!-- Breakdown. A real <table> rather than a list: this is the structured figure search
+       and answer engines lift from the page. -->
   @if (data && data.breakdown.length) {
     <section class="dim-card">
       <h2>{{ data.breakdownLabel }}</h2>
-      <ul class="bar-list">
-        @for (b of data.breakdown; track b.label) {
-          <li class="bar-row">
-            @if (b.label.startsWith('Other')) {
-              <span class="bar-label">{{ b.label }}</span>
-            } @else if (dimension === 'state') {
-              <a class="bar-label" [routerLink]="'/trademark-trends/class/' + b.label.split(' ')[1]">{{ b.label }}</a>
-            } @else {
-              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(b.label)">{{ b.label }}</a>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="b.percentage"></span></span>
-            <span class="bar-value">{{ b.count | number }} ({{ b.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ breakdownCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ dimension === 'state' ? 'NICE class' : 'State' }}</th>
+            <th scope="col">Share of total</th>
+            <th scope="col">Filings</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of data.breakdown; track b.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (b.label.startsWith('Other')) {
+                  <span>{{ b.label }}</span>
+                } @else if (dimension === 'state') {
+                  <a [routerLink]="'/trademark-trends/class/' + b.label.split(' ')[1]">{{ b.label }}</a>
+                } @else {
+                  <a [routerLink]="'/trademark-filings/' + stateSlug(b.label)">{{ b.label }}</a>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="b.percentage"></span></td>
+              <td class="bar-value">{{ b.count | number }} ({{ b.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <!-- How this data is produced, and where it falls short. E-E-A-T signal, and the honest
+       framing for a series whose most recent points are always incomplete. -->
+  @if (data) {
+    <section class="methodology">
+      <h2>About this data</h2>
+      <dl>
+        <dt>Source</dt>
+        <dd>{{ sourceNote }}</dd>
+        <dt>Counted by</dt>
+        <dd>Application date as recorded by the registry — not the date we indexed the record.</dd>
+        <dt>Charted window</dt>
+        <dd>{{ windowLabel }} ({{ data.filingsInWindow | number }} filings). The all-time total above also includes older and undated records.</dd>
+        <dt>Refreshed</dt>
+        <dd>Hourly.</dd>
+        <dt>Known limitation</dt>
+        <dd>{{ collectionLagNote }}</dd>
+      </dl>
     </section>
   }
 
@@ -71,6 +114,20 @@
       }
     </div>
   </section>
+
+  <!-- FAQ. Kept as visible <h3>/<p> rather than a disclosure widget so the answers are in
+       the rendered text, matching the FAQPage schema this component injects. -->
+  @if (faqs.length) {
+    <section class="faq-block">
+      <h2>Frequently asked questions</h2>
+      @for (f of faqs; track f.question) {
+        <div class="faq-item">
+          <h3>{{ f.question }}</h3>
+          <p>{{ f.answer }}</p>
+        </div>
+      }
+    </section>
+  }
 
   <!-- CTA -->
   <section class="dim-cta">

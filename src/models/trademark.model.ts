@@ -40,6 +40,9 @@ export interface ITrademark {
   email?: string | null;
   organizationType?: string | null;
   filingMode?: string | null;
+  /** Assisted self-filing progress. Internal ops vocabulary — never render it raw
+   *  to a customer; translate via efiling-customer-status.util.ts first. */
+  efilingStatus?: string | null;
   trademarkClasses?: Pick<ITrademarkClass, 'id'>[] | null;
   trademarkPlan?: Pick<ITrademarkPlan, 'id' | 'name'> | null;
   documents?: Pick<IDocuments, 'id'| 'documentType'>[] | null;

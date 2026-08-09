@@ -29,6 +29,7 @@ export class AdminPortalShellComponent {
     { label: 'Dashboard',    icon: '📊', route: '/admin-portal/dashboard' },
     { label: 'Leads',        icon: '🎯', route: '/admin-portal/leads' },
     { label: 'Applications', icon: '™️', route: '/admin-portal/trademarks' },
+    { label: 'E-filing',     icon: '🖊️', route: '/admin-portal/efiling' },
     { label: 'Documents',    icon: '📄', route: '/admin-portal/documents' },
     { label: 'Payments',     icon: '💳', route: '/admin-portal/payments' },
     { label: 'Agents',       icon: '🧑‍⚖️', route: '/admin-portal/agents' },

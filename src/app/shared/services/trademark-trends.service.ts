@@ -42,6 +42,14 @@ export interface ITrendsSummary {
   topClassName: string | null;
   topStatusBucket: string | null;
   lastUpdated: string;
+  /** Bounds of the 30-day headline window, stated on the page rather than implied. */
+  windowFrom: string;
+  windowTo: string;
+  previousWindowFrom: string;
+  previousWindowTo: string;
+  /** Rows behind the status chart vs. all registry rows — the chart covers only the former. */
+  statusCapturedCount: number;
+  registryTotalCount: number;
 }
 
 export interface INamedBreakdown {
@@ -75,8 +83,12 @@ export interface IDimensionTrends {
   dimension: 'state' | 'class';
   value: string;
   displayName: string;
+  /** All-time, including rows the registry never dated. Always >= filingsInWindow. */
   totalFilings: number;
   filingVolume: IFilingVolumePoint[];
+  windowFrom: string;
+  windowTo: string;
+  filingsInWindow: number;
   breakdownLabel: string;
   breakdown: INamedBreakdown[];
 }
@@ -87,6 +99,9 @@ export interface IMonthlyReport {
   monthLabel: string;
   totalFilings: number;
   momChangePercent: number | null;
+  /** Month still running: totals are month-to-date and MoM is a same-day-range comparison. */
+  partial: boolean;
+  coverageThrough: string;
   classBreakdown: INamedBreakdown[];
   stateBreakdown: INamedBreakdown[];
   typeBreakdown: INamedBreakdown[];
@@ -94,7 +109,8 @@ export interface IMonthlyReport {
 
 export interface IJournalDetail {
   journalNo: number;
-  publishedDate: string | null;
+  /** When we first indexed a mark from this journal — not the registry's publication date. */
+  indexedDate: string | null;
   totalMarks: number;
   classBreakdown: INamedBreakdown[];
   stateBreakdown: INamedBreakdown[];

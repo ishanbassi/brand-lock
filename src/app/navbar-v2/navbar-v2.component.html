@@ -89,8 +89,8 @@
 
             <li><a routerLink="/blogs" routerLinkActive="active">Articles</a></li>
 
-            <li *ngIf="!isLoggedIn" class="nav-auth-link"><a routerLink="/login" routerLinkActive="active">Login</a></li>
-            <li *ngIf="!isLoggedIn" class="nav-auth-link nav-auth-cta"><a routerLink="/create-account" routerLinkActive="active">Sign Up</a></li>
+            <!-- <li *ngIf="!isLoggedIn" class="nav-auth-link"><a routerLink="/login" routerLinkActive="active">Login</a></li>
+            <li *ngIf="!isLoggedIn" class="nav-auth-link nav-auth-cta"><a routerLink="/create-account" routerLinkActive="active">Sign Up</a></li> -->
             <li *ngIf="isLoggedIn" class="nav-auth-link"><a routerLink="/portal/dashboard">Dashboard</a></li>
         </ul>
 

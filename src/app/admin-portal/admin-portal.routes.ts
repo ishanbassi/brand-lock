@@ -27,6 +27,16 @@ export const adminPortalRoutes: Routes = [
     title: 'Application | Admin',
   },
   {
+    path: 'efiling',
+    loadComponent: () => import('./efiling/admin-efiling.component').then(m => m.AdminEfilingComponent),
+    title: 'E-filing Queue | Admin',
+  },
+  {
+    path: 'efiling/:id',
+    loadComponent: () => import('./efiling/admin-efiling-detail.component').then(m => m.AdminEfilingDetailComponent),
+    title: 'File on IP India | Admin',
+  },
+  {
     path: 'documents',
     loadComponent: () => import('./documents/admin-documents.component').then(m => m.AdminDocumentsComponent),
     title: 'Document Review | Admin',

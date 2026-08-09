@@ -9,6 +9,15 @@
     </div>
   </header>
 
+  <!-- Lead paragraph generated from the same response the charts plot. Charts render to
+       <canvas>, which crawlers and AI answer engines cannot read; this is where the page
+       states its findings in extractable sentences. -->
+  @if (intro) {
+    <div class="page-intro">
+      <p>{{ intro }}</p>
+    </div>
+  }
+
   <!-- Headline stat cards -->
   <section class="stats-grid">
     @if (summaryLoading) {
@@ -18,7 +27,7 @@
     } @else if (summary) {
       <div class="stat-card">
         <div class="stat-value">{{ summary.totalFilingsInRange | number }}</div>
-        <div class="stat-label">Filings — last 30 days</div>
+        <div class="stat-label">Filings — {{ windowLabel }}</div>
       </div>
       <div class="stat-card">
         <div class="stat-value" [class.text-success]="(summary.momChangePercent ?? 0) >= 0" [class.text-danger]="(summary.momChangePercent ?? 0) < 0">
@@ -28,7 +37,7 @@
             —
           }
         </div>
-        <div class="stat-label">Month-over-month change</div>
+        <div class="stat-label">vs preceding 30 days</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">{{ summary.topClassName || (summary.topClass ? 'Class ' + summary.topClass : '—') }}</div>
@@ -36,7 +45,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-value">{{ summary.topStatusBucket || '—' }}</div>
-        <div class="stat-label">Most common status</div>
+        <div class="stat-label">Most common recorded status</div>
       </div>
     }
   </section>
@@ -68,10 +77,14 @@
         <canvas baseChart [data]="volumeChartData" [options]="volumeChartOptions" type="line"></canvas>
       </div>
     }
+    @if (volumeCaption) {
+      <p class="chart-caption">{{ volumeCaption }}</p>
+    }
   </section>
 
   <div class="content-grid">
-    <!-- Class breakdown -->
+    <!-- Class breakdown. The canvas stays behind the browser gate; the table does NOT —
+         it is the only form of this data a crawler ever sees. -->
     <section class="content-card">
       <div class="card-header">
         <h2 class="card-title">Top NICE Classes</h2>
@@ -79,24 +92,43 @@
 
       @if (classError) {
         <div class="alert-error">Couldn't load class breakdown right now.</div>
-      } @else if (classLoading || !isBrowser) {
-        <div class="chart-container chart-container--sm skeleton"></div>
       } @else {
-        <div class="chart-container chart-container--sm">
-          <canvas baseChart [data]="classChartData" [options]="classChartOptions" type="bar"></canvas>
-        </div>
-        <ul class="breakdown-list">
-          @for (c of classBreakdown; track c.tmClass) {
-            <li class="breakdown-row">
-              @if (c.tmClass) {
-                <a class="breakdown-label" [routerLink]="'/trademark-trends/class/' + c.tmClass">{{ c.className || 'Class ' + c.tmClass }}</a>
-              } @else {
-                <span class="breakdown-label">Other</span>
+        @if (classLoading || !isBrowser) {
+          <div class="chart-container chart-container--sm skeleton"></div>
+        } @else {
+          <div class="chart-container chart-container--sm">
+            <canvas baseChart [data]="classChartData" [options]="classChartOptions" type="bar"></canvas>
+          </div>
+        }
+        @if (classBreakdown.length) {
+          <table class="data-table data-table--rows">
+            <caption class="data-caption">
+              {{ classCaption }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">NICE class</th>
+                <th scope="col">Filings</th>
+                <th scope="col">Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of classBreakdown; track c.tmClass) {
+                <tr class="breakdown-row">
+                  <th scope="row" class="breakdown-label">
+                    @if (c.tmClass) {
+                      <a [routerLink]="'/trademark-trends/class/' + c.tmClass">{{ c.className || 'Class ' + c.tmClass }}</a>
+                    } @else {
+                      <span>Other</span>
+                    }
+                  </th>
+                  <td class="breakdown-value">{{ c.count | number }}</td>
+                  <td class="breakdown-value">{{ c.percentage | number: '1.0-1' }}%</td>
+                </tr>
               }
-              <span class="breakdown-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
-            </li>
-          }
-        </ul>
+            </tbody>
+          </table>
+        }
       }
     </section>
 
@@ -108,20 +140,37 @@
 
       @if (statusError) {
         <div class="alert-error">Couldn't load status breakdown right now.</div>
-      } @else if (statusLoading || !isBrowser) {
-        <div class="chart-container chart-container--sm skeleton"></div>
       } @else {
-        <div class="chart-container chart-container--sm">
-          <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" type="doughnut"></canvas>
-        </div>
-        <ul class="breakdown-list">
-          @for (s of statusBreakdown; track s.bucket) {
-            <li class="breakdown-row">
-              <span class="breakdown-label">{{ s.bucket }}</span>
-              <span class="breakdown-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
-            </li>
-          }
-        </ul>
+        @if (statusLoading || !isBrowser) {
+          <div class="chart-container chart-container--sm skeleton"></div>
+        } @else {
+          <div class="chart-container chart-container--sm">
+            <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" type="doughnut"></canvas>
+          </div>
+        }
+        @if (statusBreakdown.length) {
+          <table class="data-table data-table--rows">
+            <caption class="data-caption">
+              {{ statusCaption }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Applications</th>
+                <th scope="col">Share of recorded statuses</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of statusBreakdown; track s.bucket) {
+                <tr class="breakdown-row">
+                  <th scope="row" class="breakdown-label">{{ s.bucket }}</th>
+                  <td class="breakdown-value">{{ s.count | number }}</td>
+                  <td class="breakdown-value">{{ s.percentage | number: '1.0-1' }}%</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
       }
     </section>
   </div>
@@ -140,6 +189,9 @@
     } @else {
       <div class="empty-state"><p>Not enough data to plot class trends for this range.</p></div>
     }
+    @if (classTrendCaption) {
+      <p class="chart-caption">{{ classTrendCaption }}</p>
+    }
   </section>
 
   <!-- Filings by state -->
@@ -148,19 +200,33 @@
       <h2 class="card-title">Filings by State</h2>
     </div>
     @if (stateBreakdown.length) {
-      <ul class="bar-list">
-        @for (s of stateBreakdown; track s.label) {
-          <li class="bar-row">
-            @if (s.label === 'Other') {
-              <span class="bar-label">{{ s.label }}</span>
-            } @else {
-              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="s.percentage"></span></span>
-            <span class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ stateCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">State</th>
+            <th scope="col">Share of period</th>
+            <th scope="col">Filings</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of stateBreakdown; track s.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (s.label === 'Other') {
+                  <span>{{ s.label }}</span>
+                } @else {
+                  <a [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="s.percentage"></span></td>
+              <td class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     } @else {
       <div class="empty-state"><p>State data unavailable for this range.</p></div>
     }
@@ -171,15 +237,28 @@
     <section class="content-card">
       <div class="card-header"><h2 class="card-title">Wordmark vs Logo &amp; Other Types</h2></div>
       @if (typeBreakdown.length) {
-        <ul class="bar-list">
-          @for (t of typeBreakdown; track t.label) {
-            <li class="bar-row">
-              <span class="bar-label">{{ t.label }}</span>
-              <span class="bar-track"><span class="bar-fill" [style.width.%]="t.percentage"></span></span>
-              <span class="bar-value">{{ t.percentage | number: '1.0-1' }}%</span>
-            </li>
-          }
-        </ul>
+        <table class="data-table">
+          <caption class="data-caption">
+            Share of applications by mark type over the {{ rangeLabel }}. A word mark protects the text itself; a device mark protects a logo or
+            stylised representation.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Mark type</th>
+              <th scope="col">Share</th>
+              <th scope="col">Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of typeBreakdown; track t.label) {
+              <tr class="bar-row">
+                <th scope="row" class="bar-label">{{ t.label }}</th>
+                <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="t.percentage"></span></td>
+                <td class="bar-value">{{ t.percentage | number: '1.0-1' }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
         <div class="empty-state"><p>Type data unavailable.</p></div>
       }
@@ -189,15 +268,28 @@
     <section class="content-card">
       <div class="card-header"><h2 class="card-title">Applicant Type</h2></div>
       @if (orgTypeBreakdown.length) {
-        <ul class="bar-list">
-          @for (o of orgTypeBreakdown; track o.label) {
-            <li class="bar-row">
-              <span class="bar-label">{{ o.label }}</span>
-              <span class="bar-track"><span class="bar-fill" [style.width.%]="o.percentage"></span></span>
-              <span class="bar-value">{{ o.percentage | number: '1.0-1' }}%</span>
-            </li>
-          }
-        </ul>
+        <table class="data-table">
+          <caption class="data-caption">
+            Share of applications by the applicant's constitution — individual, proprietorship, company, LLP and so on — over the
+            {{ rangeLabel }}.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Applicant type</th>
+              <th scope="col">Share</th>
+              <th scope="col">Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of orgTypeBreakdown; track o.label) {
+              <tr class="bar-row">
+                <th scope="row" class="bar-label">{{ o.label }}</th>
+                <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="o.percentage"></span></td>
+                <td class="bar-value">{{ o.percentage | number: '1.0-1' }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
         <div class="empty-state"><p>Applicant-type data unavailable.</p></div>
       }
@@ -207,15 +299,27 @@
     <section class="content-card">
       <div class="card-header"><h2 class="card-title">Filing Mode (e-Filing vs Physical)</h2></div>
       @if (filingModeBreakdown.length) {
-        <ul class="bar-list">
-          @for (f of filingModeBreakdown; track f.label) {
-            <li class="bar-row">
-              <span class="bar-label">{{ f.label }}</span>
-              <span class="bar-track"><span class="bar-fill" [style.width.%]="f.percentage"></span></span>
-              <span class="bar-value">{{ f.percentage | number: '1.0-1' }}%</span>
-            </li>
-          }
-        </ul>
+        <table class="data-table">
+          <caption class="data-caption">
+            Share of applications filed electronically versus on paper at a registry office, over the {{ rangeLabel }}.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Filing mode</th>
+              <th scope="col">Share</th>
+              <th scope="col">Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (f of filingModeBreakdown; track f.label) {
+              <tr class="bar-row">
+                <th scope="row" class="bar-label">{{ f.label }}</th>
+                <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="f.percentage"></span></td>
+                <td class="bar-value">{{ f.percentage | number: '1.0-1' }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
         <div class="empty-state"><p>Filing-mode data unavailable.</p></div>
       }
@@ -225,15 +329,28 @@
     <section class="content-card">
       <div class="card-header"><h2 class="card-title">Usage Basis</h2></div>
       @if (usageBreakdown.length) {
-        <ul class="bar-list">
-          @for (u of usageBreakdown; track u.label) {
-            <li class="bar-row">
-              <span class="bar-label">{{ u.label }}</span>
-              <span class="bar-track"><span class="bar-fill" [style.width.%]="u.percentage"></span></span>
-              <span class="bar-value">{{ u.percentage | number: '1.0-1' }}%</span>
-            </li>
-          }
-        </ul>
+        <table class="data-table">
+          <caption class="data-caption">
+            Share of applications claiming prior use of the mark versus those filed on a "proposed to be used" basis, over the
+            {{ rangeLabel }}.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Usage basis</th>
+              <th scope="col">Share</th>
+              <th scope="col">Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of usageBreakdown; track u.label) {
+              <tr class="bar-row">
+                <th scope="row" class="bar-label">{{ u.label }}</th>
+                <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="u.percentage"></span></td>
+                <td class="bar-value">{{ u.percentage | number: '1.0-1' }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
         <div class="empty-state"><p>Usage data unavailable.</p></div>
       }
@@ -251,6 +368,7 @@
           <span class="word-chip">{{ w.label }} <em>{{ w.count | number }}</em></span>
         }
       </div>
+      <p class="chart-caption">{{ wordsCaption }}</p>
     } @else {
       <div class="empty-state"><p>Word-frequency data unavailable for this range.</p></div>
     }
@@ -269,14 +387,28 @@
     } @else if (!journalActivity.length) {
       <div class="empty-state"><p>No journal activity data available.</p></div>
     } @else {
-      <ul class="breakdown-list">
-        @for (j of journalActivity; track j.journalNo) {
-          <li class="breakdown-row">
-            <a class="breakdown-label" [routerLink]="'/trademark-journal/' + j.journalNo">Journal {{ j.journalNo }}</a>
-            <span class="breakdown-value">{{ j.count | number }} filings</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table data-table--rows">
+        <caption class="data-caption">
+          The most recent issues of the Trade Marks Journal in our index, with the number of marks advertised in each. Publication starts a
+          four-month opposition window for every mark listed.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Journal</th>
+            <th scope="col">Marks advertised</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (j of journalActivity; track j.journalNo) {
+            <tr class="breakdown-row">
+              <th scope="row" class="breakdown-label">
+                <a [routerLink]="'/trademark-journal/' + j.journalNo">Journal {{ j.journalNo }}</a>
+              </th>
+              <td class="breakdown-value">{{ j.count | number }} filings</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     }
   </section>
 
@@ -291,4 +423,37 @@
       }
     </div>
   </section>
+
+  <!-- Methodology: source, cadence, what is counted, and the limits of the figures above.
+       E-E-A-T signal and the honest framing for a lagging series. -->
+  <section class="methodology">
+    <h2>About this data</h2>
+    <dl>
+      <dt>Source</dt>
+      <dd>{{ sourceNote }}</dd>
+      <dt>Counted by</dt>
+      <dd>Application date as recorded by the registry — not the date the record was indexed.</dd>
+      <dt>Refreshed</dt>
+      <dd>Hourly. Headline window: {{ windowLabel || 'the last 30 days' }}.</dd>
+      <dt>Collection lag</dt>
+      <dd>{{ collectionLagNote }}</dd>
+      <dt>Status coverage</dt>
+      <dd>
+        {{ statusCaption || 'The status chart covers only records for which the registry has published a status.' }}
+      </dd>
+    </dl>
+  </section>
+
+  <!-- FAQ, visible rather than collapsed, matching the FAQPage schema this page injects. -->
+  @if (faqs.length) {
+    <section class="faq-block">
+      <h2>Frequently asked questions</h2>
+      @for (f of faqs; track f.question) {
+        <div class="faq-item">
+          <h3>{{ f.question }}</h3>
+          <p>{{ f.answer }}</p>
+        </div>
+      }
+    </section>
+  }
 </div>

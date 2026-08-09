@@ -112,9 +112,17 @@ h1 {
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &:hover {
-    color: $accent;
-    text-decoration: underline;
+  text-align: left;
+
+  // The link moved inside the <th> when the bar lists became real tables.
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: $accent;
+      text-decoration: underline;
+    }
   }
 }
 

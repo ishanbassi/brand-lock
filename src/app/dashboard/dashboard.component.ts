@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../shared/services/data.service';
-import { DashboardStats, ServiceOrderDTO } from '../../models/dashboard-stats.model';
+import { DashboardStats, ServiceOrderDTO, SignerIdStatus } from '../../models/dashboard-stats.model';
 import { TrademarkStatusPipe } from '../shared/pipe/trademark-status-translate.pipe';
 import { LoadingService } from '../common/loading.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { OnboardingStateService } from '../shared/services/onboarding-state.service';
 import { AuthService } from '../../models/auth.services';
 import { ITrademark } from '../../models/trademark.model';
+import { CustomerFilingView, customerFilingView, hasFilingProgress } from '../shared/efiling-customer-status.util';
 
 interface DiscoverService {
   title: string;
@@ -22,7 +24,7 @@ interface DiscoverService {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, TrademarkStatusPipe],
+  imports: [CommonModule, RouterModule, FormsModule, TrademarkStatusPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -46,6 +48,10 @@ export class DashboardComponent implements OnInit {
     { title: 'ISO 9001:2015', blurb: 'Quality-management certification for your business.', price: '₹1,499', route: '/iso/iso-9001-2015' },
     { title: 'IEC (Import Export Code)', blurb: 'Required to import or export from India.', price: '₹1,499', route: '/iec-registration' },
   ];
+
+  // eSign enrolment prompt state
+  esignSignerIdInput = '';
+  esignSubmitting = false;
 
   showAllTasks = false;
   maxVisibleTasks = 3;
@@ -96,6 +102,65 @@ export class DashboardComponent implements OnInit {
     if (h < 12) return 'Good morning';
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
+  }
+
+  // ── Assisted filing tracker ────────────────────────────────────────────
+  // Filing happens on the Registry's portal with our team typing, so the customer
+  // otherwise has no visibility — including at the one moment we're blocked on them
+  // (the eSign OTP). This surfaces that instead of relying on a phone call landing.
+
+  /** Applications currently moving through the Registry filing flow. */
+  get filingApplications(): ITrademark[] {
+    return (this.dashboardStats?.recentApplications ?? []).filter(a => hasFilingProgress(a.efilingStatus));
+  }
+
+  filingView(app: ITrademark): CustomerFilingView {
+    return customerFilingView(app.efilingStatus);
+  }
+
+  /** Any application waiting on the customer right now — drives the urgent banner. */
+  get filingNeedsAttention(): ITrademark | null {
+    return this.filingApplications.find(a => this.filingView(a).needsCustomer) ?? null;
+  }
+
+  // ── eSign enrolment ────────────────────────────────────────────────────
+  // One-time per person, and only the applicant can do it: eMudhra's video KYC has to
+  // show their own face against their own PAN/address proof, so we prompt rather than
+  // handle it for them.
+
+  get signerIdStatus(): SignerIdStatus {
+    return this.dashboardStats?.userSummary?.signerIdStatus ?? 'NOT_STARTED';
+  }
+
+  /** Hidden once verified, and until they actually have a filing that needs it. */
+  get showEsignCard(): boolean {
+    return this.loaded && this.hasApplications && this.signerIdStatus !== 'VERIFIED';
+  }
+
+  get esignAwaitingReview(): boolean {
+    return this.signerIdStatus === 'VIDEO_SUBMITTED';
+  }
+
+  get esignRejected(): boolean {
+    return this.signerIdStatus === 'REJECTED';
+  }
+
+  reportEsignSubmitted(): void {
+    if (this.esignSubmitting) return;
+    this.esignSubmitting = true;
+    this.dataService
+      .reportEsignVideoSubmitted(this.esignSignerIdInput.trim() || undefined)
+      .pipe(finalize(() => (this.esignSubmitting = false)))
+      .subscribe({
+        next: res => {
+          const status = res.body?.signerIdStatus as SignerIdStatus | undefined;
+          if (this.dashboardStats?.userSummary && status) {
+            this.dashboardStats.userSummary.signerIdStatus = status;
+          }
+          this.toastService.success("Thanks — we'll confirm your verification shortly.");
+        },
+        error: () => this.toastService.error('Could not record that. Please try again.'),
+      });
   }
 
   // ── Portfolio ledger ───────────────────────────────────────────────────

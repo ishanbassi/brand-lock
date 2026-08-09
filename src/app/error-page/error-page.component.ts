@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../models/auth.services';
+import { SsrStatusService } from '../shared/services/ssr-status.service';
 
 export type ErrorPageCode = 403 | 404;
 
@@ -19,6 +20,8 @@ export type ErrorPageCode = 403 | 404;
   styleUrl: './error-page.component.scss',
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
+  private readonly ssrStatus = inject(SsrStatusService);
+
   code: ErrorPageCode = 404;
 
   /** The signed-in visitor's own portal, or null when signed out. */
@@ -33,6 +36,11 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.code = (this.route.snapshot.data['code'] as ErrorPageCode) ?? 404;
+    // Send the real HTTP status, not a 200 with a "not found" card. Every dead URL on the
+    // site funnels through this component (the ** route redirects here, and the trends
+    // pages navigate here when their API 404s), so this one line is what stops Google
+    // classifying the whole set as soft 404s.
+    this.ssrStatus.setStatus(this.code);
     // A 403 always means somebody is signed in but in the wrong portal, so offer the
     // portal their role does own rather than a generic "go home".
     this.portalRoute = this.authService.hasValidToken() ? `/${this.authService.homeRoute()}` : null;

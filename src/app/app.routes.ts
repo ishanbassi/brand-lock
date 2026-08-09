@@ -559,8 +559,12 @@ export const routes: Routes = [
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
+        // Renders the error page in place rather than redirecting to /not-found: a dead URL
+        // should answer 404 at its own address. Redirecting made SSR emit a 302 to a page
+        // that then 404s, which costs crawlers an extra round trip per dead link.
         path: "**",
-        redirectTo: "not-found"
+        loadComponent: () => import('./error-page/error-page.component').then(m => m.ErrorPageComponent),
+        data: { code: 404 },
     }
 ]
     }

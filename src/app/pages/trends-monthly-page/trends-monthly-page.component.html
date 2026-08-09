@@ -6,7 +6,12 @@
       <span>{{ data?.monthLabel || '…' }}</span>
     </div>
     @if (data) {
-      <h1>India Trademark Filings — {{ data.monthLabel }}</h1>
+      <h1>
+        India Trademark Filings — {{ data.monthLabel }}
+        @if (data.partial) {
+          <span class="partial-notice">Month to date</span>
+        }
+      </h1>
       <div class="rep-stats">
         <div class="rep-stat">
           <div class="rep-stat-val">{{ data.totalFilings | number }}</div>
@@ -17,9 +22,15 @@
             <div class="rep-stat-val" [class.up]="data.momChangePercent >= 0" [class.down]="data.momChangePercent < 0">
               {{ data.momChangePercent > 0 ? '+' : '' }}{{ data.momChangePercent | number: '1.0-1' }}%
             </div>
-            <div class="rep-stat-lbl">vs previous month</div>
+            <!-- A running month is compared against the same day range of the previous
+                 month; labelling both "vs previous month" would imply a like-for-like
+                 comparison that isn't one. -->
+            <div class="rep-stat-lbl">{{ data.partial ? 'vs same period last month' : 'vs previous month' }}</div>
           </div>
         }
+      </div>
+      <div class="page-intro">
+        <p>{{ intro }}</p>
       </div>
     } @else {
       <h1>Loading monthly report…</h1>
@@ -29,50 +40,126 @@
   @if (data) {
     <section class="rep-card">
       <h2>Top NICE Classes</h2>
-      <ul class="bar-list">
-        @for (c of data.classBreakdown; track c.label) {
-          <li class="bar-row">
-            @if (classLink(c.label); as link) {
-              <a class="bar-label" [routerLink]="link">{{ c.label }}</a>
-            } @else {
-              <span class="bar-label">{{ c.label }}</span>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="c.percentage"></span></span>
-            <span class="bar-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ classCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">NICE class</th>
+            <th scope="col">Share of month</th>
+            <th scope="col">Filings</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of data.classBreakdown; track c.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (classLink(c.label); as link) {
+                  <a [routerLink]="link">{{ c.label }}</a>
+                } @else {
+                  <span>{{ c.label }}</span>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="c.percentage"></span></td>
+              <td class="bar-value">{{ c.count | number }} ({{ c.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </section>
 
     <section class="rep-card">
       <h2>Filings by State</h2>
-      <ul class="bar-list">
-        @for (s of data.stateBreakdown; track s.label) {
-          <li class="bar-row">
-            @if (s.label === 'Other') {
-              <span class="bar-label">{{ s.label }}</span>
-            } @else {
-              <a class="bar-label" [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
-            }
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="s.percentage"></span></span>
-            <span class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ stateCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">State</th>
+            <th scope="col">Share of month</th>
+            <th scope="col">Filings</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of data.stateBreakdown; track s.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (s.label === 'Other') {
+                  <span>{{ s.label }}</span>
+                } @else {
+                  <a [routerLink]="'/trademark-filings/' + stateSlug(s.label)">{{ s.label }}</a>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="s.percentage"></span></td>
+              <td class="bar-value">{{ s.count | number }} ({{ s.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </section>
 
     <section class="rep-card">
       <h2>Mark Types</h2>
-      <ul class="bar-list">
-        @for (t of data.typeBreakdown; track t.label) {
-          <li class="bar-row">
-            <span class="bar-label">{{ t.label }}</span>
-            <span class="bar-track"><span class="bar-fill" [style.width.%]="t.percentage"></span></span>
-            <span class="bar-value">{{ t.percentage | number: '1.0-1' }}%</span>
-          </li>
-        }
-      </ul>
+      <table class="data-table">
+        <caption class="data-caption">
+          {{ typeCaption }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Mark type</th>
+            <th scope="col">Share of month</th>
+            <th scope="col">Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of data.typeBreakdown; track t.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">{{ t.label }}</th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="t.percentage"></span></td>
+              <td class="bar-value">{{ t.percentage | number: '1.0-1' }}%</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </section>
+
+    <section class="methodology">
+      <h2>About this report</h2>
+      <dl>
+        <dt>Source</dt>
+        <dd>{{ sourceNote }}</dd>
+        <dt>Counted by</dt>
+        <dd>Application date as recorded by the registry.</dd>
+        <dt>Period covered</dt>
+        <dd>
+          1 {{ data.monthLabel }} to {{ data.coverageThrough | date: 'longDate' }}{{ data.partial ? ' — the month is still running' : '' }}.
+        </dd>
+        <dt>Comparison</dt>
+        <dd>
+          {{
+            data.partial
+              ? 'Month-over-month change compares the same day range of the previous month, not the full month.'
+              : 'Month-over-month change compares the full previous calendar month.'
+          }}
+        </dd>
+        <dt>Known limitation</dt>
+        <dd>{{ collectionLagNote }}</dd>
+      </dl>
+    </section>
+
+    @if (faqs.length) {
+      <section class="faq-block">
+        <h2>Frequently asked questions</h2>
+        @for (f of faqs; track f.question) {
+          <div class="faq-item">
+            <h3>{{ f.question }}</h3>
+            <p>{{ f.answer }}</p>
+          </div>
+        }
+      </section>
+    }
 
     <section class="rep-cta">
       <h2>Filing a trademark this month?</h2>

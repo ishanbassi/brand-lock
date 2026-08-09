@@ -1,0 +1,210 @@
+// Shared presentation for the public trademark filing-trends pages
+// (/trademark-filing-trends, /trademark-filings/:state, /trademark-trends/class/:n,
+// /trademark-trends/:yearMonth, /trademark-journal/:no).
+//
+// Global rather than component-scoped on purpose: all five pages render the same
+// breakdown/prose/FAQ blocks, and the per-component SCSS already owns the bar-row grid.
+// Element selectors from a global sheet still apply inside component templates.
+
+$td-accent: #0ea5e9;
+$td-purple: #8b5cf6;
+$td-gray-100: #f1f5f9;
+$td-gray-200: #e2e8f0;
+$td-gray-400: #94a3b8;
+$td-gray-500: #64748b;
+$td-gray-600: #475569;
+$td-gray-800: #1e293b;
+
+// Visually hidden but present for crawlers and screen readers. Used for the column
+// headers of the breakdown tables, whose meaning is obvious sighted but not otherwise.
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// A real <table> laid out as stacked bar rows. Tables (not <ul>s) are what search engines
+// and AI answer engines lift structured figures from, so the markup stays tabular even
+// though the presentation is not a grid of cells.
+.data-table {
+  display: block;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+
+  thead {
+    // .sr-only on the element itself would be overridden by the display:block above.
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  // Variant for the divider-separated rows (.breakdown-row) rather than the spaced bar
+  // rows — those carry their own padding and bottom border, so the gap would double up.
+  &.data-table--rows tbody {
+    gap: 0;
+  }
+
+  // The bar row itself keeps whatever grid the host component defines for .bar-row;
+  // these only neutralise the default table-cell rendering.
+  th,
+  td {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-weight: inherit;
+    text-align: inherit;
+    vertical-align: middle;
+  }
+}
+
+.data-caption {
+  display: block;
+  caption-side: top;
+  text-align: left;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: $td-gray-500;
+  margin-bottom: 0.85rem;
+}
+
+// One-line statement of what a chart shows and over what window. Charts render to
+// <canvas>, which is opaque to crawlers — this caption is the only machine-readable
+// description of the series.
+.chart-caption {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: $td-gray-500;
+  margin: 0.75rem 0 0;
+}
+
+// Lead paragraph(s) generated from the same figures the charts plot, so the page states
+// its findings in sentences a search result or AI answer can quote.
+.page-intro {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: $td-gray-600;
+  margin: 0 0 1.5rem;
+  max-width: 68ch;
+
+  strong {
+    color: $td-gray-800;
+    font-weight: 650;
+  }
+
+  p + p {
+    margin-top: 0.75rem;
+  }
+}
+
+// Source, cadence, what is counted, and the two caveats that matter (collection lag and
+// partial status coverage). Both an E-E-A-T signal and the honest framing for figures
+// that would otherwise overstate their own precision.
+.methodology {
+  border: 1px solid $td-gray-200;
+  border-radius: 12px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.25rem;
+  background: #fcfdff;
+
+  h2 {
+    font-size: 1rem;
+    margin: 0 0 0.75rem;
+    color: $td-gray-800;
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(120px, max-content) 1fr;
+    gap: 0.45rem 1rem;
+    font-size: 0.83rem;
+    line-height: 1.6;
+  }
+
+  dt {
+    color: $td-gray-800;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    color: $td-gray-600;
+  }
+
+  @media (max-width: 560px) {
+    dl {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    dd {
+      margin-bottom: 0.6rem;
+    }
+  }
+}
+
+// Plain <h3>/<p> pairs rather than <details>: content collapsed behind a disclosure is
+// discounted by some answer engines, and these answers are the page's most quotable text.
+.faq-block {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.15rem;
+    margin: 0 0 1rem;
+    color: $td-gray-800;
+  }
+}
+
+.faq-item {
+  padding: 0.9rem 0;
+  border-top: 1px solid $td-gray-100;
+
+  &:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  h3 {
+    font-size: 0.93rem;
+    font-weight: 650;
+    color: $td-gray-800;
+    margin: 0 0 0.35rem;
+  }
+
+  p {
+    font-size: 0.87rem;
+    line-height: 1.65;
+    color: $td-gray-600;
+    margin: 0;
+    max-width: 72ch;
+  }
+}
+
+// Flags a month-to-date report so the headline total is not read as a finished month.
+.partial-notice {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
