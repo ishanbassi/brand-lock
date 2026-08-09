@@ -30,7 +30,8 @@
         }
       </div>
       <div class="page-intro">
-        <p>{{ intro }}</p>
+        <!-- Generated markup: figures are wrapped by hl() so they stand out. -->
+        <p [innerHTML]="intro"></p>
       </div>
     } @else {
       <h1>Loading monthly report…</h1>
@@ -116,7 +117,7 @@
         <tbody>
           @for (t of data.typeBreakdown; track t.label) {
             <tr class="bar-row">
-              <th scope="row" class="bar-label">{{ t.label }}</th>
+              <th scope="row" class="bar-label">{{ markType(t.label) }}</th>
               <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="t.percentage"></span></td>
               <td class="bar-value">{{ t.percentage | number: '1.0-1' }}%</td>
             </tr>

@@ -15,6 +15,7 @@ import {
   SOURCE_NOTE,
   dateRange,
   faqSchema,
+  hl,
   num,
   share,
 } from '../../shared/utils/trends-copy.util';
@@ -112,17 +113,18 @@ export class TrendsDimensionPageComponent implements OnInit, OnDestroy {
     const second = res.breakdown.filter(b => !b.label.startsWith('Other'))[1] ?? null;
     this.windowLabel = dateRange(res.windowFrom, res.windowTo);
 
+    // HTML: hl() lifts each figure out of the running text. See trends-copy.util.
     const where = isState ? `from applicants in ${res.displayName}` : `in ${res.displayName}`;
-    const lead = `The IP India register holds ${num(res.totalFilings)} trademark applications ${where}, of which ${num(
-      res.filingsInWindow,
-    )} were filed in the ${this.windowLabel} window charted below.`;
+    const lead =
+      `The IP India register holds ${hl(num(res.totalFilings))} trademark applications ${where}, ` +
+      `of which ${hl(num(res.filingsInWindow))} were filed in the ${hl(this.windowLabel)} window charted below.`;
 
     let leader = '';
     if (top) {
       leader = isState
-        ? ` The most-filed category is ${top.label}, accounting for ${share(top.count, res.totalFilings)} of the state's filings`
-        : ` Filings are led by ${top.label}, which accounts for ${share(top.count, res.totalFilings)} of the class`;
-      leader += second ? `, followed by ${second.label} at ${share(second.count, res.totalFilings)}.` : '.';
+        ? ` The most-filed category is ${hl(top.label)}, accounting for ${hl(share(top.count, res.totalFilings))} of the state's filings`
+        : ` Filings are led by ${hl(top.label)}, which accounts for ${hl(share(top.count, res.totalFilings))} of the class`;
+      leader += second ? `, followed by ${hl(second.label)} at ${hl(share(second.count, res.totalFilings))}.` : '.';
     }
 
     this.intro = lead + leader;

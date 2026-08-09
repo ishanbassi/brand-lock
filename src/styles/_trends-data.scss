@@ -97,18 +97,36 @@ $td-gray-800: #1e293b;
 // its findings in sentences a search result or AI answer can quote.
 .page-intro {
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.8;
   color: $td-gray-600;
   margin: 0 0 1.5rem;
   max-width: 68ch;
 
-  strong {
-    color: $td-gray-800;
-    font-weight: 650;
-  }
-
   p + p {
     margin-top: 0.75rem;
+  }
+
+  // The figures are the reason anyone reads this paragraph; as plain running text they
+  // disappear into it. Weight plus a slightly darker tone lifts them out without turning
+  // the sentence into a ransom note.
+  .figure {
+    color: $td-gray-800;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    &--up {
+      color: #047857;
+    }
+
+    &--down {
+      color: #b91c1c;
+    }
+
+    // A flat month is neither good nor bad — leave it in the default ink.
+    &--flat {
+      color: $td-gray-800;
+    }
   }
 }
 

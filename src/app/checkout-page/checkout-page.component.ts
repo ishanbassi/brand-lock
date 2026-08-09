@@ -35,6 +35,15 @@ import { ReferralAttributionService } from '../shared/services/referral-attribut
 const GOVT_FEE_STANDARD = 9000;
 const GOVT_FEE_CONCESSION = 4500;
 
+/**
+ * One-time charge for executing the general power of attorney that authorises us to act
+ * before the registry. Collected once per order, not per class, and — like the govt. fee —
+ * at filing rather than in today's Razorpay payment.
+ */
+const ESTAMP_TOTAL = 2500;
+/** The statutory Punjab e-stamp duty inside ESTAMP_TOTAL; the balance covers execution. */
+const ESTAMP_DUTY = 2000;
+
 @Component({
   selector: 'app-checkout-page',
   imports: [SharedModule],
@@ -186,6 +195,23 @@ export class CheckoutPageComponent implements OnInit {
 
   get govtFeeConcessionApplies(): boolean {
     return !this.isIndividualApplicant && this.hasMsmeCertificate;
+  }
+
+  /** One-time e-stamp charge payable at filing (informational — not collected today). */
+  get estampTotal(): number {
+    return ESTAMP_TOTAL;
+  }
+
+  /** Statutory portion of {@link estampTotal}, disclosed in the explainer tooltip. */
+  get estampDuty(): number {
+    return ESTAMP_DUTY;
+  }
+
+  /** Tooltip visibility for the e-stamp explainer — tap on touch, hover/focus on desktop. */
+  estampInfoOpen = false;
+
+  toggleEstampInfo(): void {
+    this.estampInfoOpen = !this.estampInfoOpen;
   }
 
   get selectedPlanId(): number | null {

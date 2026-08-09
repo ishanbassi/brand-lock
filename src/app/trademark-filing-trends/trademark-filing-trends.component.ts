@@ -23,9 +23,13 @@ import {
   SOURCE_NOTE,
   dateRange,
   faqSchema,
+  hl,
+  hlTrend,
+  markTypeLabel,
   num,
   share,
   signedPercent,
+  stripHl,
 } from '../shared/utils/trends-copy.util';
 
 type RangeOption = '30d' | '90d' | '180d' | '365d';
@@ -273,6 +277,11 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     return this.rangeOptions.find(o => o.value === this.selectedRange)?.label.toLowerCase() ?? this.selectedRange;
   }
 
+  /** "IMAGEMARK" -> "Logo / device". The registry enum name is not visitor-facing copy. */
+  markType(label: string): string {
+    return markTypeLabel(label);
+  }
+
   /** Turns the response into the sentences and Q&As the page renders. */
   private buildCopy(res: ITrendsPage): void {
     const s = res.summary;
@@ -282,21 +291,28 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     const topState = res.stateBreakdown.find(x => x.label !== 'Other') ?? null;
     const topType = res.typeBreakdown[0] ?? null;
 
+    // Built as HTML so the figures can be lifted out of the running text — see hl(). The
+    // plain-text twin (stripHl) is what goes into meta descriptions and schema.org values.
     const parts: string[] = [
-      `${num(s.totalFilingsInRange)} trademark applications were filed in India between ${this.windowLabel}` +
-        (s.momChangePercent !== null ? `, ${signedPercent(s.momChangePercent)} on the preceding 30 days.` : '.'),
+      `${hl(num(s.totalFilingsInRange))} trademark applications were filed in India between ${hl(this.windowLabel)}` +
+        (s.momChangePercent !== null ? `, ${hlTrend(s.momChangePercent)} on the preceding 30 days.` : '.'),
     ];
     if (topClass) {
       parts.push(
-        `${topClass.className || 'Class ' + topClass.tmClass} is the most active NICE class over the ${this.rangeLabel} shown, ` +
-          `with ${num(topClass.count)} applications (${topClass.percentage.toFixed(1)}% of the period).`,
+        `${hl(topClass.className || 'Class ' + topClass.tmClass)} is the most active NICE class over the ${this.rangeLabel} shown, ` +
+          `with ${hl(num(topClass.count))} applications (${hl(topClass.percentage.toFixed(1) + '%')} of the period).`,
       );
     }
     if (topState) {
-      parts.push(`${topState.label} files the most applications of any state, ${topState.percentage.toFixed(1)}% of the period's total.`);
+      parts.push(
+        `${hl(topState.label)} files the most applications of any state, ` +
+          `${hl(topState.percentage.toFixed(1) + '%')} of the period's total.`,
+      );
     }
     if (topType) {
-      parts.push(`${topType.label} marks account for ${topType.percentage.toFixed(1)}% of filings by mark type.`);
+      parts.push(
+        `${hl(markTypeLabel(topType.label))} marks account for ${hl(topType.percentage.toFixed(1) + '%')} of filings by mark type.`,
+      );
     }
     this.intro = parts.join(' ');
 
@@ -363,6 +379,8 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
 
   private setSeoTags(): void {
     const title = 'India Trademark Filing Trends — Volume, Classes, States & Status Data | Trademarx';
+    // Meta and schema always take the plain-text form; the highlighted markup is display-only.
+    const introText = stripHl(this.intro);
     const description =
       'Live India trademark filing trends: daily filing volume, most active NICE classes over time, filings by state, applicant & filing-mode splits, the most common words in trademarks, status breakdown and journal activity — sourced from the official IP India registry, updated hourly.';
     this.title.setTitle(title);
@@ -389,7 +407,9 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
         '@context': 'https://schema.org',
         '@type': 'Dataset',
         name: 'India Trademark Filing Trends',
-        description,
+        // Prefer the live summary once it exists — a Dataset node that carries the actual
+        // figures is far more useful to answer engines than the static boilerplate.
+        description: introText || description,
         url,
         spatialCoverage: { '@type': 'Place', name: 'India' },
         ...(this.summary ? { temporalCoverage: `${this.summary.windowFrom}/${this.summary.windowTo}` } : {}),

@@ -13,6 +13,41 @@ export interface FaqItem {
   answer: string;
 }
 
+/**
+ * Escapes text before it goes into a generated HTML string. Labels come from scraped
+ * registry data (state and class names), so they are treated as untrusted even though
+ * Angular's sanitiser would also strip anything dangerous from [innerHTML].
+ */
+function esc(value: string | number): string {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * Wraps a figure so it stands out inside a paragraph of generated prose. A wall of plain
+ * sentences hides exactly the numbers the reader came for; these render as bolded,
+ * slightly tinted spans (see .page-intro .figure in styles/_trends-data.scss).
+ */
+export function hl(value: string | number): string {
+  return `<strong class="figure">${esc(value)}</strong>`;
+}
+
+/** Highlighted figure with a direction colour, for the month-over-month movement. */
+export function hlTrend(value: number | null | undefined): string {
+  if (value === null || value === undefined) return esc(signedPercent(value));
+  const dir = Math.abs(value) < 0.05 ? 'flat' : value > 0 ? 'up' : 'down';
+  return `<strong class="figure figure--${dir}">${esc(signedPercent(value))}</strong>`;
+}
+
+/** Plain text form of the same content, for meta descriptions and schema.org values. */
+export function stripHl(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"');
+}
+
 /** 12345 -> "12,345" in the Indian grouping the rest of the site uses. */
 export function num(value: number | null | undefined): string {
   return (value ?? 0).toLocaleString('en-IN');
@@ -55,6 +90,24 @@ export function share(part: number | null | undefined, whole: number | null | un
   const pct = ((part ?? 0) * 100) / whole;
   if (pct > 0 && pct < 0.1) return '<0.1%';
   return `${pct.toFixed(1)}%`;
+}
+
+/**
+ * Registry mark types arrive as raw enum names (TrademarkType). Rendering "IMAGEMARK" at a
+ * visitor is jargon leaking out of the database, so the breakdown rows and the generated
+ * prose both go through this.
+ */
+const MARK_TYPE_LABELS: Record<string, string> = {
+  IMAGEMARK: 'Logo / device',
+  TRADEMARK: 'Word mark',
+  TRADEMARK_WITH_IMAGE: 'Word mark with logo',
+  SOUNDMARK: 'Sound mark',
+  SLOGAN: 'Slogan',
+};
+
+export function markTypeLabel(raw: string | null | undefined): string {
+  if (!raw) return 'Unspecified';
+  return MARK_TYPE_LABELS[raw.toUpperCase()] ?? raw;
 }
 
 /** Schema.org FAQPage node for a set of Q&As. */

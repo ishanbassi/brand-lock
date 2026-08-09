@@ -96,16 +96,159 @@
       color: #6b7280 ;
     }
   }
+
+  /* The status row carries a stacked block (value + progress bar + caption) rather than a
+     single value, so it opts out of the baseline-aligned two-column layout the other rows
+     use, and stacks entirely once there isn't room for both columns. */
+  .info-row--status {
+    align-items: flex-start;
+
+    .status-cell {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    @media (max-width: 560px) {
+      flex-direction: column;
+      gap: 6px;
+
+      .status-cell {
+        width: 100%;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .live-progress {
+        max-width: none;
+      }
+    }
+  }
 }
 
-/* live status fetch indicator (quick-info + details table) */
-.status.fetching {
-  color: #2563eb;
+/* ── Live status block (quick-info + details table) ───────────────────────────
+   The old indicator was a single nowrap line. This one stacks a status value, a
+   four-phase progress bar and a step caption, so every rule here is written to wrap
+   rather than push the row wider — an overflowing status cell was what broke the
+   quick-info panel on narrow phones. */
+
+/* Left-aligned by default (details table); the quick-info panel flips it right below. */
+.status-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0; // flex children default to min-width:auto and refuse to shrink
+  flex: 1 1 auto;
+}
+
+.status-value {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  min-width: 0;
+  overflow-wrap: anywhere; // registry statuses can be long, unbroken phrases
+
+  &.is-unknown {
+    color: #6b7280;
+    font-weight: 500;
+  }
+}
+
+/* "last known" qualifier on the value shown while a refresh is in flight. */
+.status-tag {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.live-progress {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f5f9ff;
+  text-align: left;
+}
+
+.live-progress__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.live-progress__title {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.live-progress__bar {
+  display: flex;
+  gap: 3px;
+}
+
+.live-progress__seg {
+  flex: 1 1 0;
+  min-width: 0; // lets four segments share any width without forcing a scrollbar
+  height: 4px;
+  border-radius: 999px;
+  background: #dbeafe;
+  transition: background 0.3s ease;
+
+  &.is-done {
+    background: #2563eb;
+  }
+
+  &.is-active {
+    background: #2563eb;
+    animation: live-pulse 1.2s ease-in-out infinite;
+  }
+}
+
+.live-progress__step {
+  margin: 0;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+/* "was X", "unchanged", "couldn't reach the registry" */
+.status-note {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #6b7280;
+  overflow-wrap: anywhere;
+
+  s {
+    color: #9ca3af;
+  }
+
+  &--changed {
+    color: #b45309;
+  }
+
+  &--stale {
+    color: #9ca3af;
+  }
 }
 
 .status.registered {

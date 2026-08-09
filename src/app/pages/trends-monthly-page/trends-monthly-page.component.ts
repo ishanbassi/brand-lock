@@ -11,7 +11,10 @@ import {
   FaqItem,
   SOURCE_NOTE,
   faqSchema,
+  hl,
+  hlTrend,
   longDate,
+  markTypeLabel,
   num,
   share,
   signedPercent,
@@ -80,23 +83,29 @@ export class TrendsMonthlyPageComponent implements OnInit, OnDestroy {
     const topType = res.typeBreakdown[0] ?? null;
     const scope = res.partial ? `so far in ${res.monthLabel} (to ${longDate(res.coverageThrough)})` : `in ${res.monthLabel}`;
 
-    const parts: string[] = [`${num(res.totalFilings)} trademark applications were filed in India ${scope}.`];
+    // HTML: hl() lifts each figure out of the running text. See trends-copy.util.
+    const parts: string[] = [`${hl(num(res.totalFilings))} trademark applications were filed in India ${scope}.`];
 
     if (res.momChangePercent !== null) {
       parts.push(
         res.partial
-          ? `That is ${signedPercent(res.momChangePercent)} against the same stretch of the previous month.`
-          : `That is ${signedPercent(res.momChangePercent)} on the previous month.`,
+          ? `That is ${hlTrend(res.momChangePercent)} against the same stretch of the previous month.`
+          : `That is ${hlTrend(res.momChangePercent)} on the previous month.`,
       );
     }
     if (topClass) {
-      parts.push(`${topClass.label} was the most-filed category at ${share(topClass.count, res.totalFilings)} of the month's filings.`);
+      parts.push(
+        `${hl(topClass.label)} was the most-filed category at ${hl(share(topClass.count, res.totalFilings))} of the month's filings.`,
+      );
     }
     if (topState) {
-      parts.push(`${topState.label} led by applicant location with ${num(topState.count)} applications.`);
+      parts.push(`${hl(topState.label)} led by applicant location with ${hl(num(topState.count))} applications.`);
     }
     if (topType) {
-      parts.push(`${topType.label} marks made up ${topType.percentage.toFixed(1)}% of the month's applications by mark type.`);
+      parts.push(
+        `${hl(markTypeLabel(topType.label))} marks made up ${hl(topType.percentage.toFixed(1) + '%')} ` +
+          `of the month's applications by mark type.`,
+      );
     }
 
     this.intro = parts.join(' ');
@@ -153,6 +162,11 @@ export class TrendsMonthlyPageComponent implements OnInit, OnDestroy {
   /** "Tamil Nadu" -> "tamil-nadu", matching the backend's slugify so the link round-trips. */
   stateSlug(label: string): string {
     return slugifyState(label);
+  }
+
+  /** "IMAGEMARK" -> "Logo / device". The registry enum name is not visitor-facing copy. */
+  markType(label: string): string {
+    return markTypeLabel(label);
   }
 
   ngOnDestroy(): void {

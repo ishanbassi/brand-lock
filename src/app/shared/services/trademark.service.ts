@@ -39,9 +39,30 @@ export type EntityResponseType = HttpResponse<ITrademark>;
 export type EntityArrayResponseType = HttpResponse<ITrademark[]>;
 
 export type LiveRefreshState = 'FRESH' | 'QUEUED' | 'BUSY' | 'NONE' | 'FETCHING' | 'COMPLETED' | 'NOT_FOUND' | 'FAILED';
+
+/**
+ * Where the shared scraping session is. Mirrors PriorityScrapeQueueService.ScrapeStage.
+ * The registry forces a captcha + emailed OTP login before any lookup, which is most of the
+ * wait, so the detail page reports the stage instead of an unqualified spinner.
+ */
+export type ScrapeStage =
+  | 'IDLE'
+  | 'STARTING'
+  | 'OPENING_PORTAL'
+  | 'SOLVING_CAPTCHA'
+  | 'OTP_SENT'
+  | 'OTP_RECEIVED'
+  | 'SIGNED_IN'
+  | 'SEARCHING'
+  | 'READING_RECORD'
+  | 'SAVING';
+
 export interface ILiveRefreshStatus {
   state: LiveRefreshState;
   trademark?: RestTrademark | null;
+  stage?: ScrapeStage | null;
+  /** 0 when this application is being fetched now, 1-based while waiting, null otherwise. */
+  queuePosition?: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

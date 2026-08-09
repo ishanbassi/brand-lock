@@ -241,6 +241,35 @@
                   Payable separately when your application is filed, not today.
                 </p>
               </div>
+
+              <!-- One-time e-stamp charge for the power of attorney. Sits in the same
+                   "payable at filing" box as the govt. fee: it is disclosed here so there
+                   are no surprises later, but it is not part of today's Razorpay amount. -->
+              <div class="govt-fee-box estamp-box">
+                <div class="fee-line govt-line">
+                  <span class="fee-key">
+                    E-stamp duty — at filing
+                    <button
+                      type="button"
+                      class="info-btn"
+                      [class.is-open]="estampInfoOpen"
+                      [attr.aria-expanded]="estampInfoOpen"
+                      aria-label="What is the e-stamp duty?"
+                      (click)="toggleEstampInfo()"
+                    >
+                      ?
+                    </button>
+                  </span>
+                  <span class="fee-val">₹{{ estampTotal | number }}</span>
+                </div>
+                <p class="govt-fee-note">One-time charge for the whole application, not per class.</p>
+                <div class="info-pop" *ngIf="estampInfoOpen" role="note">
+                  To act for you before the registry we need a general power of attorney, and that has to be executed on stamp paper. The
+                  Punjab e-stamp duty of <strong>₹{{ estampDuty | number }}</strong> is paid to the government when the power of attorney is
+                  attested; the balance covers execution and notarisation. It is charged once per application, whatever the number of
+                  classes.
+                </div>
+              </div>
             </div>
 
             <!-- Pay button -->

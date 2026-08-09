@@ -6,7 +6,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from '../../shared/services/seo.service';
 import { IJournalDetail, TrademarkTrendsService } from '../../shared/services/trademark-trends.service';
 import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
-import { FaqItem, SOURCE_NOTE, faqSchema, longDate, num, share } from '../../shared/utils/trends-copy.util';
+import { FaqItem, SOURCE_NOTE, faqSchema, hl, longDate, num, share } from '../../shared/utils/trends-copy.util';
 
 /**
  * Per-journal page at /trademark-journal/:no. Each Trade Marks Journal is a real, dated event
@@ -66,15 +66,18 @@ export class TrendsJournalPageComponent implements OnInit, OnDestroy {
     const topState = res.stateBreakdown.find(s => !s.label.startsWith('Other')) ?? null;
     const indexed = longDate(res.indexedDate);
 
+    // HTML: hl() lifts each figure out of the running text. See trends-copy.util.
     const parts: string[] = [
-      `Trade Marks Journal No. ${res.journalNo} carries ${num(res.totalMarks)} trademark entries advertised by the Indian registry` +
-        (indexed ? `, first indexed by Trademarx on ${indexed}.` : '.'),
+      `Trade Marks Journal No. ${hl(res.journalNo)} carries ${hl(num(res.totalMarks))} trademark entries advertised by the Indian registry` +
+        (indexed ? `, first indexed by Trademarx on ${hl(indexed)}.` : '.'),
     ];
     if (topClass) {
-      parts.push(`${topClass.label} is the largest category in this issue at ${share(topClass.count, res.totalMarks)} of its entries.`);
+      parts.push(
+        `${hl(topClass.label)} is the largest category in this issue at ${hl(share(topClass.count, res.totalMarks))} of its entries.`,
+      );
     }
     if (topState) {
-      parts.push(`Applicants from ${topState.label} account for the most entries, ${num(topState.count)} in total.`);
+      parts.push(`Applicants from ${hl(topState.label)} account for the most entries, ${hl(num(topState.count))} in total.`);
     }
     parts.push(
       'Publication in the journal opens a four-month window in which any third party may oppose a mark, ' +

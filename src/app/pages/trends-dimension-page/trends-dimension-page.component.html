@@ -24,7 +24,8 @@
       <!-- Generated from the same figures the charts plot: a canvas cannot be read by a
            crawler or quoted in an AI answer, a sentence can. -->
       <div class="page-intro">
-        <p>{{ intro }}</p>
+        <!-- Generated markup: figures are wrapped by hl() so they stand out. -->
+        <p [innerHTML]="intro"></p>
       </div>
     } @else {
       <h1>Loading trademark trends…</h1>

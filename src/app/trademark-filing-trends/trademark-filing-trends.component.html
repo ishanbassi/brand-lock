@@ -14,7 +14,9 @@
        states its findings in extractable sentences. -->
   @if (intro) {
     <div class="page-intro">
-      <p>{{ intro }}</p>
+      <!-- Generated markup, not user input: figures are wrapped in <strong class="figure">
+           by hl() so they stand out of the sentence. -->
+      <p [innerHTML]="intro"></p>
     </div>
   }
 
@@ -252,7 +254,7 @@
           <tbody>
             @for (t of typeBreakdown; track t.label) {
               <tr class="bar-row">
-                <th scope="row" class="bar-label">{{ t.label }}</th>
+                <th scope="row" class="bar-label">{{ markType(t.label) }}</th>
                 <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="t.percentage"></span></td>
                 <td class="bar-value">{{ t.percentage | number: '1.0-1' }}%</td>
               </tr>

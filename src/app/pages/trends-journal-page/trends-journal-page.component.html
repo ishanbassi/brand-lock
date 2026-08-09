@@ -17,7 +17,8 @@
         }
       </p>
       <div class="page-intro">
-        <p>{{ intro }}</p>
+        <!-- Generated markup: figures are wrapped by hl() so they stand out. -->
+        <p [innerHTML]="intro"></p>
       </div>
     } @else {
       <h1>Loading journal…</h1>
