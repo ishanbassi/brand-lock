@@ -29,7 +29,20 @@ const __dirname = path.dirname(serverDistFolder);
 
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+// @angular/ssr >= 19.2.20 validates the request Host against an allowlist to prevent SSRF. When it
+// does not match it does NOT error — it silently falls back to client-side rendering and returns
+// 200 with the empty app shell, which is how every route on this site served 0 words to crawlers.
+// nginx terminates TLS and proxies here, so the real host arrives via X-Forwarded-*; without
+// trustProxyHeaders those are ignored and the check fails on the internal host too.
+// Equivalent env vars (no rebuild needed) are NG_ALLOWED_HOSTS and NG_TRUST_PROXY_HEADERS.
+// NOTE: once this list is non-empty a non-matching Host is a hard 400, not a CSR fallback — so
+// localhost/127.0.0.1 stay listed to keep `node dist/.../server.mjs` runs and any health check
+// that hits the port directly from breaking. nginx sends `proxy_set_header Host $host`, and
+// www.trademarx.in is 301'd to the apex before it ever reaches this process.
+const angularApp = new AngularNodeAppEngine({
+  allowedHosts: ['trademarx.in', 'www.trademarx.in', 'localhost', '127.0.0.1'],
+  trustProxyHeaders: true,
+});
 const SITE_URL = 'https://trademarx.in';
 
 // Security headers
