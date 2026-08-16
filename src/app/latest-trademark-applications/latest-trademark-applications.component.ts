@@ -9,6 +9,7 @@ import { SeoService } from '../shared/services/seo.service';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
+import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 
 interface SortableColumn {
   field: string;
@@ -128,6 +129,11 @@ export class LatestTrademarkApplicationsComponent implements OnInit, OnDestroy {
 
   imgSrc(trademark: ITrademark): string {
     return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+  }
+
+  /** That applicant's own portfolio page; falls back to the search hub for unusable names. */
+  portfolioUrl(proprietorName?: string | null): string {
+    return proprietorUrl(proprietorName) ?? '/trademark-search-by-company';
   }
 
   private setSeoTags(): void {

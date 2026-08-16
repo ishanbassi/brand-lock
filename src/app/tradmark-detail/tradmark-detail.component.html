@@ -89,7 +89,7 @@
           <div class="info-row" *ngIf="trademark?.proprietorName">
             <span>Applicant:</span>
             <strong>
-              <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark?.proprietorName}" title="See all trademarks filed by this applicant">
+              <a [routerLink]="applicantPortfolioUrl" title="See all trademarks filed by this applicant">
                 {{trademark?.proprietorName}}
               </a>
             </strong>
@@ -147,7 +147,7 @@
             <tr *ngIf="trademark?.proprietorName">
               <td>Applicant:</td>
               <td>
-                <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark?.proprietorName}" title="See all trademarks filed by this applicant">
+                <a [routerLink]="applicantPortfolioUrl" title="See all trademarks filed by this applicant">
                   {{trademark?.proprietorName}}
                 </a>
               </td>

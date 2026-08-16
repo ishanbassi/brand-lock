@@ -1,0 +1,432 @@
+// Presentation for /trademarks-by/:slug. Deliberately the same visual language as the
+// filing-trends pages — the breakdown tables, prose intro, methodology block and FAQ all
+// come from the shared styles/_trends-data.scss partial, so only the page shell, the stat
+// row and the mark list are defined here.
+
+$accent: #0ea5e9;
+$purple: #8b5cf6;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-500: #64748b;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #fff;
+
+* {
+  box-sizing: border-box;
+}
+
+.prop-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  overflow-x: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: $gray-800;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.82rem;
+  color: $gray-400;
+  margin-bottom: 1rem;
+
+  a {
+    color: $accent;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.prop-header h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  line-height: 1.25;
+  // Registry names are unbounded free text and run long ("LIMITED LIABILITY COMPANY …").
+  overflow-wrap: anywhere;
+}
+
+.prop-total {
+  color: $gray-600;
+  font-size: 1rem;
+  margin: 0 0 1.5rem;
+
+  strong {
+    color: $accent;
+  }
+}
+
+// The other spellings the registry holds for this entity. Shown because a visitor
+// searching one variant needs to see that the page covers the others too.
+.name-variants {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1.5rem;
+  font-size: 0.82rem;
+}
+
+.variants-label {
+  color: $gray-500;
+  font-weight: 600;
+}
+
+.variant-chip {
+  padding: 0.22rem 0.6rem;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: 999px;
+  color: $gray-600;
+  overflow-wrap: anywhere;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1rem 1.15rem;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 12px;
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $gray-800;
+}
+
+.stat-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: $gray-400;
+}
+
+.prop-card {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Shared bar-row grid for the breakdown tables (the .data-table wrapper itself lives in
+// styles/_trends-data.scss, which neutralises the default table-cell rendering).
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.8fr) 2fr minmax(90px, auto);
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.25rem;
+
+    .bar-track {
+      grid-column: 1 / -1;
+      order: 3;
+    }
+  }
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  color: $gray-600;
+  font-weight: 500;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: $accent;
+      text-decoration: underline;
+    }
+  }
+}
+
+.bar-track {
+  position: relative;
+  height: 8px;
+  background: $gray-100;
+  border-radius: 999px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, $accent, $purple);
+  border-radius: 999px;
+}
+
+.bar-value {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+// ── The portfolio list ───────────────────────────────────────────────────────
+
+// An <ol> with a `start` offset rather than a bare list: the numbering continues across
+// pages, which is the honest reading of "mark 21 of 412".
+.mark-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mark-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid $gray-100;
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 44px 1fr;
+    row-gap: 0.4rem;
+
+    .status-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+
+  &.skeleton {
+    display: block;
+    height: 58px;
+    border-radius: 10px;
+    border-top: 0;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.mark-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  background: $white;
+
+  @media (max-width: 560px) {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.mark-body {
+  min-width: 0;
+}
+
+.mark-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: $gray-800;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: $accent;
+    text-decoration: underline;
+  }
+}
+
+.mark-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.75rem;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: $gray-500;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-badge {
+  padding: 0.24rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: $gray-100;
+  color: $gray-600;
+
+  &.status-active {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  &.status-pending {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  &.status-expired {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $gray-100;
+}
+
+.page-btn {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $gray-600;
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+
+  &:hover {
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
+.page-info {
+  font-size: 0.82rem;
+  color: $gray-500;
+  font-variant-numeric: tabular-nums;
+}
+
+// ── CTA / footer ─────────────────────────────────────────────────────────────
+
+.prop-cta {
+  background: linear-gradient(135deg, $accent, $purple);
+  color: $white;
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    color: $white;
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    opacity: 0.92;
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+  }
+}
+
+.prop-cta-btns {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-ghost {
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.btn-primary {
+  background: $white;
+  color: $accent;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.15);
+  color: $white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.muted {
+  color: $gray-400;
+  font-size: 0.875rem;
+}
+
+.prop-source {
+  margin-top: 1.5rem;
+
+  a {
+    color: $accent;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

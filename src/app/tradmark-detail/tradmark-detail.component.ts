@@ -15,6 +15,7 @@ import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-sect
 import { TrademarkStatusActionComponent } from '../trademark-status-action/trademark-status-action.component';
 import { StatusWatchSignupComponent } from '../status-watch-signup/status-watch-signup.component';
 import { DataUtils } from '../shared/services/data-util.service';
+import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 
 
 @Component({
@@ -26,6 +27,17 @@ import { DataUtils } from '../shared/services/data-util.service';
 export class TradmarkDetailComponent implements OnInit, OnDestroy {
   trademark?: ITrademark | null;
   private isBrowser = false;
+
+  /**
+   * The applicant's own portfolio page, or the company-search hub when the recorded name is
+   * unusable as a slug. Deliberately a real /trademarks-by/ URL rather than a pre-filled
+   * search: it is a crawlable destination with its own content, so this link passes
+   * something on instead of pointing at a query string.
+   */
+  get applicantPortfolioUrl(): string {
+    return proprietorUrl(this.trademark?.proprietorName) ?? '/trademark-search-by-company';
+  }
+
   baseUrl = environment.BaseApiUrl;
   whatsappQuery:string = '';
   private faqSchemaScript!: HTMLScriptElement;

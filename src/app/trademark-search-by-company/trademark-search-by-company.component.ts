@@ -10,6 +10,7 @@ import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
+import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 
 interface Faq {
   question: string;
@@ -234,6 +235,15 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
 
   imgSrc(trademark: ITrademark): string {
     return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+  }
+
+  /**
+   * That applicant's own /trademarks-by/ page. This search box matches on any part of the
+   * recorded name, so a result's applicant is often not the name that was typed — the link
+   * is how a visitor gets from a partial-match hit to that specific company's full portfolio.
+   */
+  portfolioUrl(proprietorName?: string | null): string {
+    return proprietorUrl(proprietorName) ?? '/trademark-search-by-company';
   }
 
   getStatusClass(status?: string): string {

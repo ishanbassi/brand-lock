@@ -110,7 +110,10 @@
             <div class="meta-item">Application No: <b>{{ trademark.applicationNo }}</b></div>
             <div class="meta-item" *ngIf="trademark.applicationDate">Filed: <b>{{ trademark.applicationDate.format('DD MMM YYYY') }}</b></div>
             <div class="meta-item" *ngIf="trademark.tmClass">Class: <b>{{ trademark.tmClass }}</b></div>
-            <div class="meta-item" *ngIf="trademark.proprietorName">Applicant: <b>{{ trademark.proprietorName }}</b></div>
+            <div class="meta-item" *ngIf="trademark.proprietorName">
+              Applicant:
+              <b><a [routerLink]="portfolioUrl(trademark.proprietorName)" title="See this applicant's full trademark portfolio">{{ trademark.proprietorName }}</a></b>
+            </div>
           </div>
         </div>
 

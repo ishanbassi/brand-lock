@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://trademarx.in/sitemap.xml
+Sitemap: https://trademarx.in/sitemap-companies.xml

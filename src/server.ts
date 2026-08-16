@@ -196,6 +196,89 @@ ${trademarkUrls.join('')}
     res.status(500).send('Sitemap error');
   }
 });
+// ─────────────────────────────────────────────────────────────────────────────
+// Proprietor portfolio pages (/trademarks-by/:slug).
+//
+// These live in their own sitemap index rather than in /sitemap.xml: there is one URL per
+// distinct applicant with 2+ public filings, which is far past the 50,000-URL cap a single
+// urlset is allowed. The backend holds the qualifying slug list (cached, recomputed hourly)
+// and hands out one shard per request.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const COMPANY_SITEMAP_SHARD_SIZE = 45000;
+const ADMIN_API = 'https://admin.trademarx.in/api/trademarks';
+
+interface ProprietorSitemapShard {
+  slugs: string[];
+  total: number;
+  page: number;
+  size: number;
+  totalPages: number;
+}
+
+async function fetchProprietorShard(page: number): Promise<ProprietorSitemapShard> {
+  const res = await fetch(`${ADMIN_API}/proprietors/sitemap?page=${page}&size=${COMPANY_SITEMAP_SHARD_SIZE}`);
+  if (!res.ok) {
+    throw new Error(`proprietor sitemap shard ${page} responded ${res.status}`);
+  }
+  return (await res.json()) as ProprietorSitemapShard;
+}
+
+/** Sitemap index listing the company shards. Referenced from robots.txt. */
+app.get('/sitemap-companies.xml', async (_req, res) => {
+  try {
+    // Shard 0 doubles as the "how many shards are there" probe, so the index costs one call.
+    const first = await fetchProprietorShard(0);
+    const lastmod = new Date().toISOString().slice(0, 10);
+    const shards = Array.from({ length: Math.max(1, first.totalPages) }, (_unused, i) => `
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-companies-${i}.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>`);
+
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${shards.join('')}
+</sitemapindex>`);
+  } catch (err) {
+    console.error('❌ Company sitemap index error:', err);
+    res.status(500).send('Sitemap error');
+  }
+});
+
+app.get('/sitemap-companies-:shard.xml', async (req, res) => {
+  const shard = Number(req.params['shard']);
+  if (!Number.isInteger(shard) || shard < 0) {
+    res.status(404).send('Not found');
+    return;
+  }
+
+  try {
+    const { slugs } = await fetchProprietorShard(shard);
+    if (!slugs.length) {
+      res.status(404).send('Not found');
+      return;
+    }
+
+    const lastmod = new Date().toISOString().slice(0, 10);
+    const urls = slugs.map(slug => `
+  <url>
+    <loc>${SITE_URL}/trademarks-by/${encodeURIComponent(slug)}</loc>
+    <lastmod>${lastmod}</lastmod>
+  </url>`);
+
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('')}
+</urlset>`);
+  } catch (err) {
+    console.error(`❌ Company sitemap shard ${shard} error:`, err);
+    res.status(500).send('Sitemap error');
+  }
+});
+
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
   res.send(`
@@ -203,6 +286,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://trademarx.in/sitemap.xml
+Sitemap: https://trademarx.in/sitemap-companies.xml
 `);
 });
 app.get('/og-image-proxy', (req, res) => {

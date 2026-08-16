@@ -507,6 +507,13 @@ export const routes: Routes = [
         title: "Trademark Search by Company Name | Trademarx",
     },
     {
+        // One page per proprietor: every mark the public register holds under that applicant
+        // name. The slug is a slugified proprietor name (proprietor-slug.util.ts), so all the
+        // spellings the registry stores for one entity land on the same page.
+        path: "trademarks-by/:slug",
+        loadComponent: () => import('./pages/proprietor-portfolio-page/proprietor-portfolio-page.component').then(m => m.ProprietorPortfolioPageComponent),
+    },
+    {
         path: "trademark-journal",
         loadComponent: () => import('./trademark-journal-list/trademark-journal-list.component').then(m => m.TrademarkJournalListComponent),
         title: "Trademark Journal | Latest India Trademark Registry Publications",

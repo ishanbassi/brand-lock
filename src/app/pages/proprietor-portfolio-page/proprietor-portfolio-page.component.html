@@ -1,0 +1,233 @@
+<div class="prop-page">
+  <header class="prop-header">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a> &rsaquo;
+      <a routerLink="/trademark-search-by-company">Search by Company</a> &rsaquo;
+      <span>{{ profile?.displayName || '…' }}</span>
+    </nav>
+
+    @if (profile; as p) {
+      <h1>Trademarks Filed by {{ p.displayName }}</h1>
+      <p class="prop-total">
+        <strong>{{ p.totalFilings | number }}</strong> trademark application{{ p.totalFilings === 1 ? '' : 's' }}
+        recorded in the national registry under this applicant name.
+      </p>
+
+      <!-- Generated from the same figures the tables below hold: a stat tile is a div with a
+           number in it, a sentence is something a search result or AI answer can quote. -->
+      <div class="page-intro">
+        <p [innerHTML]="intro"></p>
+      </div>
+
+      @if (p.nameVariants.length) {
+        <p class="name-variants">
+          <span class="variants-label">Also recorded as:</span>
+          @for (variant of p.nameVariants; track variant) {
+            <span class="variant-chip">{{ variant }}</span>
+          }
+        </p>
+      }
+
+      <div class="stat-row">
+        <div class="stat-tile">
+          <span class="stat-value">{{ p.totalFilings | number }}</span>
+          <span class="stat-label">Applications</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-value">{{ p.classBreakdown.length }}</span>
+          <span class="stat-label">Classes covered</span>
+        </div>
+        @if (p.firstFilingDate) {
+          <div class="stat-tile">
+            <span class="stat-value">{{ p.firstFilingDate | date: 'MMM y' }}</span>
+            <span class="stat-label">First filing</span>
+          </div>
+        }
+        @if (p.latestFilingDate) {
+          <div class="stat-tile">
+            <span class="stat-value">{{ p.latestFilingDate | date: 'MMM y' }}</span>
+            <span class="stat-label">Latest filing</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <h1>Loading trademark portfolio…</h1>
+    }
+  </header>
+
+  <!-- Class coverage. A real <table>: this is the structured figure search and answer engines
+       lift from the page. -->
+  @if (profile && profile.classBreakdown.length) {
+    <section class="prop-card">
+      <h2>Classes {{ profile.displayName }} Has Filed In</h2>
+      <table class="data-table">
+        <caption class="data-caption">
+          NICE classes ranked by applications filed under this name. Indian trademark protection extends only to the
+          classes actually filed in — a class absent from this table is not covered by these registrations.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">NICE class</th>
+            <th scope="col">Share of portfolio</th>
+            <th scope="col">Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of profile.classBreakdown; track b.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label">
+                @if (classNumber(b.label); as cls) {
+                  <a [routerLink]="'/trademark-trends/class/' + cls">{{ b.label }}</a>
+                } @else {
+                  <span>{{ b.label }}</span>
+                }
+              </th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="b.percentage"></span></td>
+              <td class="bar-value">{{ b.count | number }} ({{ b.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <!-- Registry status mix -->
+  @if (profile && profile.statusBreakdown.length) {
+    <section class="prop-card">
+      <h2>Registry Status of These Filings</h2>
+      <table class="data-table">
+        <caption class="data-caption">
+          Status is the free-text value the registry records against each application. "Unknown" means no status had
+          been published for that record at the last refresh.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Share of portfolio</th>
+            <th scope="col">Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of profile.statusBreakdown; track b.label) {
+            <tr class="bar-row">
+              <th scope="row" class="bar-label"><span>{{ b.label }}</span></th>
+              <td class="bar-track" aria-hidden="true"><span class="bar-fill" [style.width.%]="b.percentage"></span></td>
+              <td class="bar-value">{{ b.count | number }} ({{ b.percentage | number: '1.0-1' }}%)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <!-- The portfolio itself -->
+  @if (profile; as p) {
+    <section class="prop-card">
+      <h2>All Trademarks Filed by {{ p.displayName }}</h2>
+      <p class="chart-caption">{{ portfolioCaption }}</p>
+
+      @if (loading) {
+        <div class="mark-list">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="mark-row skeleton"></div>
+          }
+        </div>
+      } @else {
+        <ol class="mark-list" [start]="page * pageSize + 1">
+          @for (mark of marks; track mark.applicationNo) {
+            <li class="mark-row">
+              <img class="mark-img" [src]="imgSrc(mark)" alt="" loading="lazy" width="56" height="56" />
+              <div class="mark-body">
+                <a class="mark-name" [routerLink]="mark.url">{{ mark.name || 'Application No. ' + mark.applicationNo }}</a>
+                <div class="mark-meta">
+                  <span>App. No. {{ mark.applicationNo }}</span>
+                  @if (mark.tmClass) {
+                    <span>Class {{ mark.tmClass }}</span>
+                  }
+                  @if (mark.applicationDate) {
+                    <span>Filed {{ mark.applicationDate.format('DD MMM YYYY') }}</span>
+                  }
+                </div>
+              </div>
+              @if (mark.trademarkStatus) {
+                <span class="status-badge" [class]="'status-badge ' + getStatusClass(mark.trademarkStatus)">{{ mark.trademarkStatus }}</span>
+              }
+            </li>
+          }
+        </ol>
+      }
+
+      <!-- Real links, not buttons: page 2+ of a large portfolio has to be crawlable. -->
+      @if (totalPages > 1) {
+        <nav class="pagination" aria-label="Portfolio pages">
+          @if (humanPage > 1) {
+            <a class="page-btn" [routerLink]="pageLink" [queryParams]="pageQueryParams(humanPage - 1)" rel="prev">&larr; Previous</a>
+          }
+          <span class="page-info">Page {{ humanPage }} of {{ totalPages | number }}</span>
+          @if (humanPage < totalPages) {
+            <a class="page-btn" [routerLink]="pageLink" [queryParams]="pageQueryParams(humanPage + 1)" rel="next">Next &rarr;</a>
+          }
+        </nav>
+      }
+    </section>
+  }
+
+  <!-- How this data is produced, and where it falls short. -->
+  @if (profile; as p) {
+    <section class="methodology">
+      <h2>About this data</h2>
+      <dl>
+        <dt>Source</dt>
+        <dd>{{ sourceNote }}</dd>
+        <dt>Grouped by</dt>
+        <dd>
+          The applicant name recorded on each application, normalised for case, spacing and punctuation — so
+          "{{ p.displayName }}" and its other recorded spellings appear together on this page.
+        </dd>
+        @if (p.primaryState && p.primaryStateSlug) {
+          <dt>Filed from</dt>
+          <dd>
+            Mostly {{ p.primaryState }} —
+            <a [routerLink]="['/trademark-filings', p.primaryStateSlug]">see all filings from {{ p.primaryState }}</a>.
+          </dd>
+        }
+        <dt>Refreshed</dt>
+        <dd>Hourly.</dd>
+        <dt>Known limitation</dt>
+        <dd>
+          Marks a business holds under a group company, a subsidiary, or a founder's personal name are recorded
+          against those names and appear on their own pages, not here.
+        </dd>
+      </dl>
+    </section>
+  }
+
+  <!-- FAQ. Visible <h3>/<p> rather than a disclosure widget, so the answers are in the
+       rendered text and match the FAQPage schema this component injects. -->
+  @if (faqs.length) {
+    <section class="faq-block">
+      <h2>Frequently asked questions</h2>
+      @for (f of faqs; track f.question) {
+        <div class="faq-item">
+          <h3>{{ f.question }}</h3>
+          <p>{{ f.answer }}</p>
+        </div>
+      }
+    </section>
+  }
+
+  <section class="prop-cta">
+    <h2>Checking a competitor, a partner, or your own portfolio?</h2>
+    <p>Free clearance search, IP India authorised agents, filing from ₹1,499 + govt. fees.</p>
+    <div class="prop-cta-btns">
+      <a routerLink="/search" class="btn-primary">Free Trademark Search</a>
+      <a routerLink="/trademark" class="btn-ghost">Register a Trademark</a>
+    </div>
+  </section>
+
+  <p class="prop-source muted">
+    Data sourced from the official <a href="https://ipindia.gov.in" target="_blank" rel="noopener noreferrer">IP India</a>
+    trademark registry and Trade Marks Journal, refreshed continuously.
+    <a routerLink="/trademark-search-by-company">Search another company &rarr;</a>
+  </p>
+</div>
