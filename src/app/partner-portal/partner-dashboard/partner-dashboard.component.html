@@ -10,24 +10,33 @@
   </header>
 
   <!-- STAT TILES -->
-  <div class="stat-grid">
-    <div class="stat-tile">
-      <span class="stat-label">Total conversions</span>
-      <span class="stat-value">{{ stats?.totalConversions ?? 0 }}</span>
+  @if (stats && profile) {
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <span class="stat-label">Total conversions</span>
+        <span class="stat-value">{{ stats?.totalConversions ?? 0 }}</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label">Commission pending</span>
+        <span class="stat-value">₹{{ stats?.totalCommissionPending ?? 0 }}</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label">Commission paid</span>
+        <span class="stat-value">₹{{ stats?.totalCommissionPaid ?? 0 }}</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label">Your rate</span>
+        <span class="stat-value">{{ (profile?.commissionRateBps ?? 0) / 100 }}%</span>
+      </div>
     </div>
-    <div class="stat-tile">
-      <span class="stat-label">Commission pending</span>
-      <span class="stat-value">₹{{ stats?.totalCommissionPending ?? 0 }}</span>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-tile" *ngFor="let i of [1,2,3,4]">
+        <app-skeleton height="12px" width="90px" marginBottom="8px"></app-skeleton>
+        <app-skeleton height="22px" width="60px"></app-skeleton>
+      </div>
     </div>
-    <div class="stat-tile">
-      <span class="stat-label">Commission paid</span>
-      <span class="stat-value">₹{{ stats?.totalCommissionPaid ?? 0 }}</span>
-    </div>
-    <div class="stat-tile">
-      <span class="stat-label">Your rate</span>
-      <span class="stat-value">{{ (profile?.commissionRateBps ?? 0) / 100 }}%</span>
-    </div>
-  </div>
+  }
 
   <!-- TRACKED LINK -->
   <section class="card">
@@ -73,7 +82,26 @@
   <!-- CONVERSIONS TABLE -->
   <section class="card">
     <h2>Conversions</h2>
-    @if (conversions.length === 0) {
+    @if (!conversionsLoaded) {
+      <table class="conversions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sale amount</th>
+            <th>Your commission</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of [1,2,3,4]">
+            <td><app-skeleton width="90px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="60px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="60px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="70px" height="18px"></app-skeleton></td>
+          </tr>
+        </tbody>
+      </table>
+    } @else if (conversions.length === 0) {
       <p class="card-desc">No conversions yet — once someone buys through your link, it'll show up here.</p>
     } @else {
       <table class="conversions-table">

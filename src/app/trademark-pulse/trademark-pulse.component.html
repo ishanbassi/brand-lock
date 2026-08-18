@@ -1,4 +1,5 @@
 <div class="">
+  <ng-container *ngIf="stats; else pulseSkeleton">
   <div class="pulse-bar">
 
     <div class="pulse-stat">
@@ -13,7 +14,7 @@
     </div>
 
     <div class="pulse-divider" aria-hidden="true"></div>
-    <!-- 
+    <!--
   <div class="pulse-stat">
     <span class="pulse-label">In Our Database</span>
     <span class="pulse-value">{{ stats.inDatabase | number }}</span>
@@ -56,6 +57,41 @@
       </div>
     </a>
   </div>
+  </ng-container>
+
+  <ng-template #pulseSkeleton>
+    <div class="pulse-bar">
+      <div class="pulse-stat">
+        <app-skeleton height="12px" width="80px" marginBottom="8px"></app-skeleton>
+        <app-skeleton height="26px" width="60px" marginBottom="8px"></app-skeleton>
+        <app-skeleton height="11px" width="100px"></app-skeleton>
+      </div>
+      <div class="pulse-divider" aria-hidden="true"></div>
+      <div class="pulse-stat">
+        <app-skeleton height="12px" width="50px" marginBottom="8px"></app-skeleton>
+        <app-skeleton height="26px" width="90px" marginBottom="8px"></app-skeleton>
+        <app-skeleton height="11px" width="140px"></app-skeleton>
+      </div>
+    </div>
+
+    <div class="tm-grid">
+      <div class="tm-card" *ngFor="let i of [1,2,3,4]">
+        <div class="tm-card-header">
+          <div class="tm-thumb">
+            <app-skeleton width="100%" height="100%"></app-skeleton>
+          </div>
+          <div class="tm-card-main">
+            <app-skeleton height="11px" width="70px" marginBottom="8px"></app-skeleton>
+            <app-skeleton height="15px" width="90%"></app-skeleton>
+          </div>
+        </div>
+        <div class="tm-meta">
+          <app-skeleton height="20px" width="60px"></app-skeleton>
+          <app-skeleton height="20px" width="70px"></app-skeleton>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 
 
   <!-- ── 3. Today's Breakdown ──────────────────────────────── -->

@@ -9,13 +9,14 @@ import { TrademarkService } from '../shared/services/trademark.service';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PulseSignupComponent } from '../pulse-signup/pulse-signup.component';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 dayjs.extend(relativeTime);
 
 
 @Component({
   selector: 'app-trademark-pulse',
   standalone: true,
-  imports: [CommonModule, RouterModule, PulseSignupComponent],
+  imports: [CommonModule, RouterModule, PulseSignupComponent, SkeletonComponent],
   templateUrl: './trademark-pulse.component.html',
   styleUrls: ['./trademark-pulse.component.scss']
 })

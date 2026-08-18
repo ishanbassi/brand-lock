@@ -10,6 +10,7 @@ import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 interface SortableColumn {
   field: string;
@@ -18,7 +19,7 @@ interface SortableColumn {
 
 @Component({
   selector: 'app-latest-trademark-applications',
-  imports: [SharedModule, FormsModule, MobileBottomNavbarComponent],
+  imports: [SharedModule, FormsModule, MobileBottomNavbarComponent, SkeletonComponent],
   templateUrl: './latest-trademark-applications.component.html',
   styleUrl: './latest-trademark-applications.component.scss',
 })

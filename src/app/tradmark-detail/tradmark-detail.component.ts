@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { ScrapeStage, TrademarkService } from '../shared/services/trademark.service';
 import { ITrademark } from '../../models/trademark.model';
-import { LoadingService } from '../common/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, finalize, switchMap, take, tap, timer } from 'rxjs';
 import dayjs from 'dayjs/esm';
@@ -16,11 +15,12 @@ import { TrademarkStatusActionComponent } from '../trademark-status-action/trade
 import { StatusWatchSignupComponent } from '../status-watch-signup/status-watch-signup.component';
 import { DataUtils } from '../shared/services/data-util.service';
 import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 
 @Component({
   selector: 'app-tradmark-detail',
-  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent],
+  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent, SkeletonComponent],
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })
@@ -90,7 +90,6 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
     private title: Title,
     private meta: Meta,
     private trademarkService: TrademarkService,
-    private loadingService: LoadingService,
     private toastService: ToastrService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -107,20 +106,12 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
     this.refreshPollSub?.unsubscribe();
   }
   ngOnInit(): void {
-    if(this.isBrowser){
-      this.loadingService.show();
-    }
     const url = this.route.snapshot.paramMap.get('url')!;
     this.trademarkService.findBySlug(url)
       .pipe(
         tap(res => {
           this.setSeoTags(res.body);
           this.whatsappQuery = `Application Number: ${res.body?.applicationNo?.toString()}`
-        }),
-        finalize(() => {
-          if(this.isBrowser){
-            this.loadingService.hide();
-          }
         })
       )
       .subscribe(res => {

@@ -4,10 +4,11 @@ import { Blog } from '../../models/blog.model';
 import { BlogService } from '../shared/services/blog-service.service';
 import dayjs from 'dayjs/esm';
 import { SharedModule } from '../shared/shared.module';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-recent-posts',
-  imports: [SharedModule],
+  imports: [SharedModule, SkeletonComponent],
   templateUrl: './recent-posts.component.html',
   styleUrl: './recent-posts.component.scss'
 })

@@ -1,5 +1,22 @@
 <div class="dash">
 
+  <!-- ══ Loading skeleton ═══════════════════════════════════════════════ -->
+  @if (!loaded) {
+    <section class="ledger">
+      <div class="ledger-intro">
+        <app-skeleton height="14px" width="140px" marginBottom="10px"></app-skeleton>
+        <app-skeleton height="28px" width="60%" marginBottom="10px"></app-skeleton>
+        <app-skeleton height="14px" width="80%"></app-skeleton>
+      </div>
+      <div class="ledger-figures">
+        <div class="fig" *ngFor="let i of [1,2,3]">
+          <app-skeleton height="26px" width="40px" marginBottom="6px"></app-skeleton>
+          <app-skeleton height="12px" width="70px"></app-skeleton>
+        </div>
+      </div>
+    </section>
+  }
+
   <!-- ══ Portfolio ledger ═══════════════════════════════════════════════ -->
   @if (loaded && hasApplications) {
     <section class="ledger">

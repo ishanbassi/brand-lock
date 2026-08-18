@@ -8,11 +8,12 @@ import { BlogService } from '../shared/services/blog-service.service';
 import { SharedModule } from '../shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 
 @Component({
   selector: 'app-blog-list',
-  imports: [SharedModule,RecentPostsComponent, FirmBannerComponent],
+  imports: [SharedModule,RecentPostsComponent, FirmBannerComponent, SkeletonComponent],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })
@@ -24,6 +25,7 @@ export class BlogListComponent implements OnInit{
     pageSize = 20;
     totalPages = 0;
     pages: number[] = [];
+    readonly blogSkeletons = Array.from({ length: 6 });
 
 
 

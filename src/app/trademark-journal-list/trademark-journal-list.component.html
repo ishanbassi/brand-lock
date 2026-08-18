@@ -5,6 +5,16 @@
       <p class="subtitle">Browse trademarks published in each India Trademark Registry journal.</p>
     </div>
 
+    <div class="row" *ngIf="loading">
+      <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let i of [1,2,3,4,5,6,7,8,9]">
+        <div class="journal-card">
+          <app-skeleton height="16px" width="60%" marginBottom="10px"></app-skeleton>
+          <app-skeleton height="12px" width="45%" marginBottom="10px"></app-skeleton>
+          <app-skeleton height="14px" width="35%"></app-skeleton>
+        </div>
+      </div>
+    </div>
+
     <div class="row" *ngIf="!loading && journals.length">
       <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let journal of journals">
         <a class="journal-card" [routerLink]="['/trademark-journal', journal.journalNo, 'browse']">

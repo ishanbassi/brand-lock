@@ -7,6 +7,7 @@ import { SeoService } from '../../shared/services/seo.service';
 import { IJournalDetail, TrademarkTrendsService } from '../../shared/services/trademark-trends.service';
 import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
 import { FaqItem, SOURCE_NOTE, faqSchema, hl, longDate, num, share } from '../../shared/utils/trends-copy.util';
+import { SkeletonComponent } from '../../shared/skeleton/skeleton.component';
 
 /**
  * Per-journal page at /trademark-journal/:no. Each Trade Marks Journal is a real, dated event
@@ -15,7 +16,7 @@ import { FaqItem, SOURCE_NOTE, faqSchema, hl, longDate, num, share } from '../..
 @Component({
   selector: 'app-trends-journal-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SkeletonComponent],
   templateUrl: './trends-journal-page.component.html',
   styleUrl: './trends-journal-page.component.scss',
 })

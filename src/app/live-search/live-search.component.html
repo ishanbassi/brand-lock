@@ -92,4 +92,19 @@
     <span>No results for <strong>"{{ searchControl.value }}"</strong></span>
   </div>
 
+  <!-- First search in flight — no stale results to keep showing -->
+  <div class="results-panel" role="listbox" *ngIf="isLoading && !isOpen && (query?.length || 0) >= 3">
+    <ul>
+      <li *ngFor="let i of [1,2,3,4]">
+        <span class="result-item">
+          <span class="result-icon"><app-skeleton width="100%" height="100%"></app-skeleton></span>
+          <span class="result-body">
+            <app-skeleton height="13px" width="60%" marginBottom="6px"></app-skeleton>
+            <app-skeleton height="11px" width="85%"></app-skeleton>
+          </span>
+        </span>
+      </li>
+    </ul>
+  </div>
+
 </div>

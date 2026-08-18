@@ -5,6 +5,21 @@
         <div class="row items-start">
             <div class="col-lg-8 m-15px-tb">
                 <div class="row">
+                    <ng-container *ngIf="!blogs">
+                        <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let i of blogSkeletons">
+                            <div class="blog-grid">
+                                <div class="blog-img">
+                                    <app-skeleton height="220px" radius="0"></app-skeleton>
+                                </div>
+                                <div class="blog-info">
+                                    <app-skeleton height="18px" width="90%" marginBottom="10px"></app-skeleton>
+                                    <app-skeleton height="12px" width="60%" marginBottom="14px"></app-skeleton>
+                                    <app-skeleton height="12px" width="100%" marginBottom="6px"></app-skeleton>
+                                    <app-skeleton height="12px" width="80%"></app-skeleton>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
                     <div class="col-sm-12 col-md-6 col-xl-4" *ngFor="let blog of blogs?.data">
                         <div class="blog-grid">
                             <div class="blog-img">

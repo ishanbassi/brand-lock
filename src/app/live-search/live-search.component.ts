@@ -30,6 +30,7 @@ import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { TRADEMARK_CLASSES } from '../pages/trademark-classes/trademark-classes.component';
 import { TrademarkTypeValues } from '../enumerations/trademark-type.model';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 
 
@@ -37,7 +38,7 @@ import { TrademarkTypeValues } from '../enumerations/trademark-type.model';
 @Component({
   selector: 'app-live-search',
   standalone: true,
-  imports: [ReactiveFormsModule, SharedModule],
+  imports: [ReactiveFormsModule, SharedModule, SkeletonComponent],
   templateUrl: './live-search.component.html',
   styleUrls: ['./live-search.component.scss'],
 })

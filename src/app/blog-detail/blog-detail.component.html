@@ -5,6 +5,7 @@
     <div class="progress-fill" [style.width.%]="readProgress"></div>
 </div>
 
+<ng-container *ngIf="blog; else blogDetailSkeleton">
 <header class="blog-hero" [ngStyle]="{'background': blog?.backgroundColor}">
     <div class="blog-hero__container">
         <nav class="breadcrumb">
@@ -166,6 +167,39 @@
         </div>
     </div>
 </div>
+</ng-container>
+
+<ng-template #blogDetailSkeleton>
+    <header class="blog-hero">
+        <div class="blog-hero__container">
+            <app-skeleton height="14px" width="220px" marginBottom="18px"></app-skeleton>
+            <app-skeleton height="34px" width="70%" marginBottom="14px"></app-skeleton>
+            <app-skeleton height="14px" width="320px"></app-skeleton>
+        </div>
+    </header>
+    <div class="blog-single">
+        <div class="container">
+            <div class="row justify-center">
+                <div class="col-lg-8 col-xl-8 col-xxl-8 m-15px-tb">
+                    <article class="article">
+                        <div class="article-img">
+                            <app-skeleton height="360px" radius="var(--radius-md, 8px)"></app-skeleton>
+                        </div>
+                        <div class="article-content">
+                            <app-skeleton height="14px" width="100%" marginBottom="10px" *ngFor="let i of [1,2,3,4,5,6,7,8]"></app-skeleton>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-xxl-4 m-15px-tb blog-aside">
+                    <aside>
+                        <app-skeleton height="220px" radius="var(--radius-md, 8px)" marginBottom="20px"></app-skeleton>
+                        <app-skeleton height="160px" radius="var(--radius-md, 8px)"></app-skeleton>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
 
 <!-- Back to top (desktop) -->
 <button type="button" class="back-to-top" [class.is-visible]="showBackToTop" (click)="scrollToTop()" aria-label="Back to top">

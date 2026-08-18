@@ -57,6 +57,7 @@
     <span class="current">{{trademark?.slug}}</span>
   </div>
 
+  <ng-container *ngIf="trademark !== undefined; else detailSkeleton">
   <!-- Header -->
   <div class="page-header">
     <h1 >{{trademark?.name || 'Application Number ' + (trademark?.applicationNo || '') }} (Class {{trademark?.tmClass || ''}})</h1>
@@ -192,5 +193,45 @@
       <app-search-cta-section [query]="whatsappQuery"></app-search-cta-section>
     </div>
   </div>
+  </ng-container>
+
+  <!-- Loading skeleton — mirrors the header + logo/info-card + details-table layout above -->
+  <ng-template #detailSkeleton>
+    <div class="page-header">
+      <app-skeleton height="32px" width="60%"></app-skeleton>
+    </div>
+
+    <div class="content-grid">
+      <div class="left-col">
+        <div class="row card flex-row">
+          <div class="col-12 col-sm-12 col-md-4 logo-card">
+            <app-skeleton height="140px" radius="var(--radius-md, 8px)"></app-skeleton>
+          </div>
+          <div class="col-12 col-sm-12 col-md-8 quick-info">
+            <div class="info-row" *ngFor="let i of [1,2,3,4,5]">
+              <app-skeleton width="120px" height="14px"></app-skeleton>
+              <app-skeleton width="45%" height="14px"></app-skeleton>
+            </div>
+          </div>
+        </div>
+
+        <div class="card details-table">
+          <app-skeleton width="220px" height="18px" marginBottom="16px"></app-skeleton>
+          <table>
+            <tbody>
+              <tr *ngFor="let i of [1,2,3,4,5,6,7,8]">
+                <td><app-skeleton width="70%" height="12px"></app-skeleton></td>
+                <td><app-skeleton width="85%" height="12px"></app-skeleton></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <app-skeleton height="220px" radius="var(--radius-md, 8px)"></app-skeleton>
+      </div>
+    </div>
+  </ng-template>
 </div>
 <app-mobile-bottom-navbar [showReportButton]="true"></app-mobile-bottom-navbar>

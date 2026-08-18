@@ -12,12 +12,13 @@ import { SharedModule } from '../shared/shared.module';
 import { SeoService } from '../shared/services/seo.service';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { ServiceType } from '../../models/service-order.model';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 const WORDS_PER_MINUTE = 200;
 
 @Component({
   selector: 'app-blog-detail',
-  imports: [RouterLink, SharedModule, BlogMarkdownComponent, LeadFormComponent],
+  imports: [RouterLink, SharedModule, BlogMarkdownComponent, LeadFormComponent, SkeletonComponent],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
 })

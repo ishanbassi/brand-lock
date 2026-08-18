@@ -6,6 +6,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from '../../shared/services/seo.service';
 import { IMonthlyReport, TrademarkTrendsService } from '../../shared/services/trademark-trends.service';
 import { stateSlug as slugifyState } from '../../shared/utils/trends-slug.util';
+import { SkeletonComponent } from '../../shared/skeleton/skeleton.component';
 import {
   COLLECTION_LAG_NOTE,
   FaqItem,
@@ -27,7 +28,7 @@ import {
 @Component({
   selector: 'app-trends-monthly-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SkeletonComponent],
   templateUrl: './trends-monthly-page.component.html',
   styleUrl: './trends-monthly-page.component.scss',
 })

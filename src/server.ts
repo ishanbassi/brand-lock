@@ -59,6 +59,11 @@ app.use((_req, res, next) => {
 // Permanent redirect for previously indexed dead URL
 app.get('/articles', (_req, res) => res.redirect(301, '/blogs'));
 
+// /iso-9001/:city was the old URL shape for the ISO 9001 city landing pages, since renamed
+// to /iso/:city (see STATIC_PAGES below). Google still has dozens of the old URLs indexed
+// as soft 404s; redirecting preserves that link equity instead of sending crawlers to a 404.
+app.get('/iso-9001/:city', (req, res) => res.redirect(301, `/iso/${req.params['city']}`));
+
 
 export function walk(dir: string, urlPath = '') {
   const files = fs.readdirSync(dir);
@@ -214,7 +219,7 @@ interface ProprietorSitemapShard {
   page: number;
   size: number;
   totalPages: number;
-}
+}   
 
 async function fetchProprietorShard(page: number): Promise<ProprietorSitemapShard> {
   const res = await fetch(`${ADMIN_API}/proprietors/sitemap?page=${page}&size=${COMPANY_SITEMAP_SHARD_SIZE}`);

@@ -34,9 +34,27 @@
         <p [innerHTML]="intro"></p>
       </div>
     } @else {
-      <h1>Loading monthly report…</h1>
+      <app-skeleton height="30px" width="55%" marginBottom="14px"></app-skeleton>
+      <app-skeleton height="16px" width="70%" marginBottom="18px"></app-skeleton>
+      <app-skeleton height="14px" width="100%" marginBottom="8px"></app-skeleton>
+      <app-skeleton height="14px" width="90%"></app-skeleton>
     }
   </header>
+
+  @if (!data) {
+    <section class="rep-card">
+      <app-skeleton height="20px" width="200px" marginBottom="16px"></app-skeleton>
+      <app-skeleton height="240px"></app-skeleton>
+    </section>
+    <section class="rep-card">
+      <app-skeleton height="20px" width="180px" marginBottom="16px"></app-skeleton>
+      <app-skeleton height="240px"></app-skeleton>
+    </section>
+    <section class="rep-card">
+      <app-skeleton height="20px" width="150px" marginBottom="16px"></app-skeleton>
+      <app-skeleton height="160px"></app-skeleton>
+    </section>
+  }
 
   @if (data) {
     <section class="rep-card">

@@ -23,13 +23,14 @@ import { SharedModule } from '../shared/shared.module';
 import { VerticalStepperComponent } from '../vertical-stepper/vertical-stepper.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { SeoService } from '../shared/services/seo.service';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-iso-9001',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, CountUpDirective, FaqComponent, 
-    BlogMarkdownComponent, LeadFormComponent, RatingReviewComponent,FirmBannerComponent
+    MatProgressSpinnerModule, CountUpDirective, FaqComponent,
+    BlogMarkdownComponent, LeadFormComponent, RatingReviewComponent,FirmBannerComponent,SkeletonComponent
   ],
   templateUrl: './iso-9001.component.html',
   styleUrl: './iso-9001.component.scss'

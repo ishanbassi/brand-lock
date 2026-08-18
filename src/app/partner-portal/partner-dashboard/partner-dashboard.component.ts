@@ -3,11 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { PartnerDataService } from '../../shared/services/partner-data.service';
 import { PartnerDashboardStats, PartnerProfile, ReferralConversionSummary } from '../../../models/partner.model';
+import { SkeletonComponent } from '../../shared/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-partner-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SkeletonComponent],
   templateUrl: './partner-dashboard.component.html',
   styleUrl: './partner-dashboard.component.scss',
 })
@@ -19,6 +20,7 @@ export class PartnerDashboardComponent implements OnInit {
   profile?: PartnerProfile;
   stats?: PartnerDashboardStats;
   conversions: ReferralConversionSummary[] = [];
+  conversionsLoaded = false;
   siteOrigin = 'https://trademarx.in';
 
   ngOnInit(): void {
@@ -35,7 +37,10 @@ export class PartnerDashboardComponent implements OnInit {
     });
 
     this.partnerDataService.getConversions().subscribe({
-      next: (res) => (this.conversions = res.body ?? []),
+      next: (res) => {
+        this.conversions = res.body ?? [];
+        this.conversionsLoaded = true;
+      },
     });
   }
 

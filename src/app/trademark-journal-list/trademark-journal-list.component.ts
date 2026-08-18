@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkService } from '../shared/services/trademark.service';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 interface JournalSummary {
   journalNo: number;
@@ -12,7 +13,7 @@ interface JournalSummary {
 
 @Component({
   selector: 'app-trademark-journal-list',
-  imports: [SharedModule],
+  imports: [SharedModule, SkeletonComponent],
   templateUrl: './trademark-journal-list.component.html',
   styleUrl: './trademark-journal-list.component.scss',
 })

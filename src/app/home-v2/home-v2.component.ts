@@ -13,10 +13,11 @@ import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { LiveSearchComponent } from '../live-search/live-search.component';
 import { FaqComponent } from '../faq/faq.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent],
+  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent, SkeletonComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })

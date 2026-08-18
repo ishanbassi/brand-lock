@@ -22,6 +22,28 @@
       />
     </div>
 
+    <div class="table-wrap" *ngIf="loading">
+      <table class="tm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let col of columns">{{ col.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
+            <td class="logo-cell"><app-skeleton width="36px" height="36px"></app-skeleton></td>
+            <td><app-skeleton width="80%" height="14px"></app-skeleton></td>
+            <td><app-skeleton width="90px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="70px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="30px" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="70%" height="12px"></app-skeleton></td>
+            <td><app-skeleton width="80px" height="12px"></app-skeleton></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="table-wrap" *ngIf="!loading && trademarks.length">
       <table class="tm-table">
         <thead>

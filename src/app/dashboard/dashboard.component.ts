@@ -7,12 +7,12 @@ import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../shared/services/data.service';
 import { DashboardStats, ServiceOrderDTO, SignerIdStatus } from '../../models/dashboard-stats.model';
 import { TrademarkStatusPipe } from '../shared/pipe/trademark-status-translate.pipe';
-import { LoadingService } from '../common/loading.service';
 import { SessionStorageService } from '../shared/services/session-storage.service';
 import { OnboardingStateService } from '../shared/services/onboarding-state.service';
 import { AuthService } from '../../models/auth.services';
 import { ITrademark } from '../../models/trademark.model';
 import { CustomerFilingView, customerFilingView, hasFilingProgress } from '../shared/efiling-customer-status.util';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 interface DiscoverService {
   title: string;
@@ -24,7 +24,7 @@ interface DiscoverService {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TrademarkStatusPipe],
+  imports: [CommonModule, RouterModule, FormsModule, TrademarkStatusPipe, SkeletonComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -62,7 +62,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private readonly dataService: DataService,
     private readonly router: Router,
-    private readonly loadingService: LoadingService,
     private readonly toastService: ToastrService,
     private readonly sessionStorageService: SessionStorageService,
     private readonly onboardingStateService: OnboardingStateService,
@@ -76,9 +75,8 @@ export class DashboardComponent implements OnInit {
     this.sessionStorageService.remove('payment_id');
     this.onboardingStateService.clear();
 
-    this.loadingService.show();
     this.dataService.getDashboardStats()
-      .pipe(finalize(() => { this.loadingService.hide(); this.loaded = true; }))
+      .pipe(finalize(() => { this.loaded = true; }))
       .subscribe({
         next: (response) => {
           this.dashboardStats = response.body;

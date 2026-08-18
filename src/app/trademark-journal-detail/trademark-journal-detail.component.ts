@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { TrademarkService } from '../shared/services/trademark.service';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
+import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 
 interface SortableColumn {
   field: string;
@@ -15,7 +16,7 @@ interface SortableColumn {
 
 @Component({
   selector: 'app-trademark-journal-detail',
-  imports: [SharedModule, FormsModule],
+  imports: [SharedModule, FormsModule, SkeletonComponent],
   templateUrl: './trademark-journal-detail.component.html',
   styleUrl: './trademark-journal-detail.component.scss',
 })

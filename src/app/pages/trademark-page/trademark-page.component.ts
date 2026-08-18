@@ -28,6 +28,7 @@ import { FaqComponent } from '../../faq/faq.component';
 import { LimitedOfferDialogComponent } from '../../limited-offer-dialog/limited-offer-dialog.component';
 import { RatingReviewComponent } from '../../rating-review/rating-review.component';
 import { CountUpDirective } from '../../shared/directives/count-up.directive';
+import { SkeletonComponent } from '../../shared/skeleton/skeleton.component';
 import { BlogService } from '../../shared/services/blog-service.service';
 import { GoogleConversionTrackingService } from '../../shared/services/google-conversion-tracking.service';
 import { LeadService } from '../../shared/services/lead.service';
@@ -52,7 +53,7 @@ declare let gtag: Function;
   selector: 'app-home',
   imports: [ReactiveFormsModule, MatInputModule, SharedModule, MatIcon, MatStepperModule,
     VerticalStepperComponent, MatCardModule, MatToolbarModule, MatButtonModule, MatIconModule,
-    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent,LiveSearchComponent
+    NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, FaqComponent,RatingReviewComponent,TrademarkPlanCardsComponent, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent,LiveSearchComponent,SkeletonComponent
   ],
   standalone: true,
   templateUrl: './trademark-page.component.html',
