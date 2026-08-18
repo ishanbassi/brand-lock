@@ -120,6 +120,14 @@ body { margin: 0}
     html{
         font-size: 14px;
     }
+    /* iOS Safari auto-zooms on focus when a form control renders below 16px.
+       Root font-size drops to 14px above, so rem-based inputs (e.g. 0.95rem)
+       fall under that threshold — force the real 16px floor here. */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
 }
 html,
 body {

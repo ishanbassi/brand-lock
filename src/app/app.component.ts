@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ApplicationConfigService } from './core/config/application-config.service';
 import { environment } from '../environments/environment';
 import { ReferralAttributionService } from './shared/services/referral-attribution.service';
+import { LoadingService } from './common/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,8 @@ export class AppComponent {
   constructor(
     private readonly applicationConfigService:ApplicationConfigService,
     private readonly router: Router,
-    private readonly referralAttributionService: ReferralAttributionService
+    private readonly referralAttributionService: ReferralAttributionService,
+    private readonly loadingService: LoadingService
   ){
     this.applicationConfigService.setEndpointPrefix(environment.BaseApiUrl)
 
@@ -27,6 +29,21 @@ export class AppComponent {
       const refCode = this.router.routerState.snapshot.root.queryParamMap.get('ref');
       if (refCode) {
         this.referralAttributionService.captureFromUrl(refCode, this.router.url);
+      }
+    });
+
+    // Shows the global loading overlay for the duration of route navigation
+    // (including lazy chunk fetch + guards/resolvers) so users don't see a
+    // frozen screen while the next page loads.
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.loadingService.show();
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.loadingService.hide();
       }
     });
   }
