@@ -1,0 +1,16 @@
+<div class="card embed-widget" *ngIf="trademark?.applicationNo">
+  <button type="button" class="embed-widget__toggle" (click)="toggle()">
+    <span>🔗 Embed this trademark on your site</span>
+    <span class="embed-widget__chevron" [class.is-open]="expanded()">▾</span>
+  </button>
+
+  <div class="embed-widget__body" *ngIf="expanded()">
+    <p class="embed-widget__hint">
+      Free to embed — the status stays live. Just keep the link to this page in the snippet.
+    </p>
+    <pre class="embed-widget__snippet">{{ snippetHtml }}</pre>
+    <button type="button" class="embed-widget__copy" (click)="copy()">
+      {{ copied() ? 'Copied ✓' : 'Copy embed code' }}
+    </button>
+  </div>
+</div>

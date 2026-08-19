@@ -1,0 +1,108 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">API Consumers</h1>
+      <p class="page-sub">{{ totalItems() }} signup{{ totalItems() === 1 ? '' : 's' }} for the free trademark-data API</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert-success">{{ success() }}</div>
+  }
+
+  <div class="filter-bar">
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All statuses</option>
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <button class="btn-ghost" (click)="clearFilters()">Clear</button>
+  </div>
+
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Consumer</th>
+          <th>Domain</th>
+          <th>Status</th>
+          <th>Tier</th>
+          <th>Last used</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5]; track i) {
+            <tr class="skeleton-row"><td colspan="6"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (consumers().length === 0) {
+          <tr><td colspan="6" class="empty-cell">No API signups match these filters.</td></tr>
+        } @else {
+          @for (c of consumers(); track c.id) {
+            <tr>
+              <td>
+                <div class="stacked">
+                  <span class="cell-strong">{{ c.name || '—' }}</span>
+                  <span class="muted" style="font-size: 0.78rem;">{{ c.email }}</span>
+                </div>
+              </td>
+              <td>
+                <a class="muted" [href]="'https://' + c.registeredDomain" target="_blank" rel="noopener" style="font-size: 0.85rem;">{{ c.registeredDomain }}</a>
+              </td>
+              <td>
+                <select class="filter-select" style="min-width: 130px;" [ngModel]="c.status" (ngModelChange)="onStatusChange(c, $event)">
+                  @for (opt of statusOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <select class="filter-select" style="min-width: 100px;" [ngModel]="c.tier" (ngModelChange)="onTierChange(c, $event)">
+                  @for (opt of tierOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </td>
+              <td class="muted">{{ c.lastUsedDate ? ($any(c.lastUsedDate) | date: 'MMM d, y, h:mm a') : 'Never' }}</td>
+              <td><a class="row-action" (click)="toggleRow(c)">{{ isExpanded(c.id) ? 'Close ▲' : 'Details ▾' }}</a></td>
+            </tr>
+            @if (isExpanded(c.id)) {
+              <tr>
+                <td colspan="6" style="background: #f8fafc;">
+                  <div class="detail-grid" style="padding: 0.5rem 0;">
+                    <div>
+                      <div class="field-row"><span class="field-label">Company</span><span class="field-value">{{ c.companyName || '—' }}</span></div>
+                      <div class="field-row"><span class="field-label">Key prefix</span><span class="field-value">{{ c.apiKeyPrefix || '—' }}</span></div>
+                      <div class="field-row"><span class="field-label">Use case</span><span class="field-value">{{ c.useCase || '—' }}</span></div>
+                    </div>
+                    <div>
+                      <div class="field-row"><span class="field-label">Attribution fail streak</span><span class="field-value">{{ c.verificationFailCount ?? 0 }}</span></div>
+                      <div class="field-row"><span class="field-label">Last verified</span><span class="field-value">{{ c.lastVerifiedDate ? ($any(c.lastVerifiedDate) | date: 'MMM d, y') : 'Never' }}</span></div>
+                      <div class="field-row"><span class="field-label">Signed up</span><span class="field-value">{{ c.createdDate ? ($any(c.createdDate) | date: 'MMM d, y') : '—' }}</span></div>
+                      <button class="btn-primary" style="background:#dc2626;border-color:#dc2626;" (click)="revoke(c)">Revoke access</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+</div>

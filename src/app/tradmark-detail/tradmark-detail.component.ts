@@ -16,11 +16,12 @@ import { StatusWatchSignupComponent } from '../status-watch-signup/status-watch-
 import { DataUtils } from '../shared/services/data-util.service';
 import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
+import { EmbedWidgetComponent } from '../embed-widget/embed-widget.component';
 
 
 @Component({
   selector: 'app-tradmark-detail',
-  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent, SkeletonComponent],
+  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent, SkeletonComponent, EmbedWidgetComponent],
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })

@@ -39,6 +39,12 @@ export const routes: Routes = [
         data: { roles: ['ROLE_PARTNER'] }
     },
     {
+        // Standalone page — no public navbar/footer, own minimal header (see component).
+        path: 'developers',
+        loadComponent: () => import('./developer-portal/developer-portal.component').then(m => m.DeveloperPortalComponent),
+        title: "Trademark Data API for Developers | Trademarx",
+    },
+    {
         path: "",
         loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
         children:[

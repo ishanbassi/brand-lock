@@ -57,6 +57,11 @@ export const adminPortalRoutes: Routes = [
     title: 'Backlink Opportunities | Admin',
   },
   {
+    path: 'api-consumers',
+    loadComponent: () => import('./api-consumers/admin-api-consumers.component').then(m => m.AdminApiConsumersComponent),
+    title: 'API Consumers | Admin',
+  },
+  {
     path: 'scraped-trademarks',
     loadComponent: () =>
       import('./scraped-trademarks/admin-scraped-trademarks.component').then(m => m.AdminScrapedTrademarksComponent),
