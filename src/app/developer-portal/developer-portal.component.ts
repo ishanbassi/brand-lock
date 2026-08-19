@@ -31,20 +31,22 @@ export class DeveloperPortalComponent {
   keyCopied = signal(false);
   snippetCopied = signal(false);
 
+  // Absolute, not bare paths: the API answers on admin.trademarx.in, so a reader who copies a
+  // path off this page and appends it to the domain they are reading it on gets a 404.
   endpoints = [
     {
       method: 'GET',
-      path: '/api/public/v1/trademarks/search?name=nike&class=25',
+      path: 'https://admin.trademarx.in/api/public/v1/trademarks/search?name=nike&class=25',
       description: 'Keyword search across the public register — filter by mark name and/or NICE class.',
     },
     {
       method: 'GET',
-      path: '/api/public/v1/trademarks/journal?journalNo=2145',
+      path: 'https://admin.trademarx.in/api/public/v1/trademarks/journal?journalNo=2145',
       description: 'A journal’s published filings, or the latest filings if journalNo is omitted.',
     },
     {
       method: 'GET',
-      path: '/api/public/v1/trademarks/5348291/status',
+      path: 'https://admin.trademarx.in/api/public/v1/trademarks/5348291/status',
       description: 'Current status of a single trademark by application number.',
     },
   ];
