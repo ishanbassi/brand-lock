@@ -1,50 +1,11 @@
 
 <!--
-  Shared status block, rendered in both the quick-info panel and the details table.
-
-  While a live fetch runs it keeps the last known status on screen instead of replacing it
-  with a spinner — visitors arrive here to read a status, and blanking it out for the couple
-  of minutes the registry login takes is the worst possible moment to hide it. Underneath, it
-  reports what the automation is actually doing (portal, security check, OTP, lookup) so the
-  wait is legible, and once the fetch lands it says what the status moved from.
+  Shared status block, rendered in both the quick-info panel and the details table. It always
+  shows the status we currently hold; a background registry refresh may swap in a newer one
+  while the page is open, with no in-flight reporting of its own.
 -->
 <ng-template #statusBlock>
-  <ng-container *ngIf="liveStatus === 'fetching'; else settledStatus">
-    <span class="status-value" [class.is-unknown]="!lastKnownStatus">
-      {{ lastKnownStatus || 'Not published yet' }}
-      <span class="status-tag">last known</span>
-    </span>
-
-    <div class="live-progress" role="status" aria-live="polite">
-      <div class="live-progress__head">
-        <span class="live-dot"></span>
-        <span class="live-progress__title">Fetching live status from IP India</span>
-      </div>
-      <div class="live-progress__bar" aria-hidden="true">
-        <span
-          *ngFor="let p of livePhases"
-          class="live-progress__seg"
-          [class.is-done]="p < livePhase"
-          [class.is-active]="p === livePhase"
-        ></span>
-      </div>
-      <p class="live-progress__step">{{ liveStageLabel }}</p>
-    </div>
-  </ng-container>
-
-  <ng-template #settledStatus>
-    <span class="status status-value registered">
-      {{ trademark?.trademarkStatus || 'Unknown' }}
-      <span *ngIf="liveStatus === 'updated'" class="live-badge">Live</span>
-    </span>
-    <p *ngIf="liveStatus === 'updated' && statusChanged" class="status-note status-note--changed">
-      Just updated — was <s>{{ previousStatus }}</s>
-    </p>
-    <p *ngIf="liveStatus === 'updated' && !statusChanged" class="status-note">Checked against the registry just now — unchanged.</p>
-    <p *ngIf="liveStatus === 'failed'" class="status-note status-note--stale">
-      Couldn't reach the registry just now — showing the last saved value.
-    </p>
-  </ng-template>
+  <span class="status status-value registered">{{ trademark?.trademarkStatus || 'Unknown' }}</span>
 </ng-template>
 
 <div class="tm-page">
@@ -104,11 +65,11 @@
 
 
 
-      <app-trademark-status-action [trademark]="trademark"></app-trademark-status-action>
+      <!-- <app-trademark-status-action [trademark]="trademark"></app-trademark-status-action> -->
 
       <app-status-watch-signup [trademark]="trademark"></app-status-watch-signup>
 
-      <app-embed-widget [trademark]="trademark"></app-embed-widget>
+      <!-- <app-embed-widget [trademark]="trademark"></app-embed-widget> -->
 
       <div class="card details-table">
         <h3>Trademark Information</h3>
@@ -135,7 +96,7 @@
               <td>Nature/Scope of business</td>
               <td>{{trademark?.details}}</td>
             </tr>
-            <tr>
+            <tr *ngIf="trademark?.journalNo">
               <td>Publication</td>
               <td>In Journal No. {{trademark?.journalNo}}</td>
             </tr>

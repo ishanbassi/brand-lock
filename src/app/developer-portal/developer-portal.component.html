@@ -17,8 +17,8 @@
       </span>
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Trademark Data API</h1>
       <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-        Search, journal and status-lookup access to India's trademark registry — free to use in exchange for one small attribution link back
-        to TradeMarx on your site.
+        Search and journal access to India's trademark registry — free to use in exchange for one small attribution link back to TradeMarx
+        on your site.
       </p>
 
       <ul class="flex flex-col sm:flex-row flex-wrap justify-center gap-x-8 gap-y-3 max-w-3xl mx-auto">
@@ -63,9 +63,34 @@
       ><code>curl "https://admin.trademarx.in/api/public/v1/trademarks/search?name=nike&class=25" \
   -H "X-API-Key: tmx_live_your_key_here"</code></pre>
 
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Response fields</h2>
+      <p class="text-sm text-gray-600 mb-3">Both endpoints return an array of records in this shape.</p>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full text-sm text-left border border-gray-200 rounded-lg">
+          <thead class="bg-gray-50 text-gray-700">
+            <tr>
+              <th class="px-3 py-2 font-medium">Field</th>
+              <th class="px-3 py-2 font-medium">Notes</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600">
+            <tr *ngFor="let f of responseFields" class="border-t border-gray-100">
+              <td class="px-3 py-2 align-top">
+                <code class="text-gray-800 whitespace-nowrap">{{ f.field }}</code>
+              </td>
+              <td class="px-3 py-2">{{ f.notes }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-gray-500 mb-10">
+        Treat every field except <code>applicationNo</code>, <code>tmClass</code> and <code>url</code> as nullable — this is as-published
+        registry data, and the registry does not fill in every column for every filing.
+      </p>
+
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Limits &amp; the one condition</h2>
       <ul class="text-sm text-gray-600 space-y-2 mb-2 list-disc pl-5">
-        <li><strong>Free tier:</strong> 200 requests/day on search and journal, 500/day on status-lookup.</li>
+        <li><strong>Free tier:</strong> 200 requests/day on each of search and journal.</li>
         <li><strong>Results are capped</strong> at 20 rows per page — this is a lookup/search API, not a bulk export.</li>
         <li>
           <strong>Pagination depth</strong> stops at <code>page=49</code> (the first 1,000 matches). Follow the <code>Link</code> header's

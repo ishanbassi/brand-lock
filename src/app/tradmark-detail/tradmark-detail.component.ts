@@ -2,10 +2,10 @@ import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core
 import { SharedModule } from '../shared/shared.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { ScrapeStage, TrademarkService } from '../shared/services/trademark.service';
+import { TrademarkService } from '../shared/services/trademark.service';
 import { ITrademark } from '../../models/trademark.model';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription, finalize, switchMap, take, tap, timer } from 'rxjs';
+import { Subscription, switchMap, take, tap, timer } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
@@ -42,49 +42,10 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
   baseUrl = environment.BaseApiUrl;
   whatsappQuery:string = '';
   private faqSchemaScript!: HTMLScriptElement;
-  /** State of the live registry fetch shown next to the trademark status. */
-  liveStatus: 'idle' | 'fetching' | 'updated' | 'failed' = 'idle';
-
-  /** Where the shared scraping session is, so the wait is explained rather than just spun. */
-  liveStage: ScrapeStage | null = null;
-  /** 0 = being fetched now, >0 = that many places back in the queue. */
-  queuePosition: number | null = null;
-
-  /**
-   * The status as it stood before the refresh. Held separately from trademark.trademarkStatus
-   * because that field is overwritten when the fetch lands — this is what lets the page show
-   * "was Advertised → now Registered" instead of silently swapping the value.
-   */
-  previousStatus: string | null = null;
-  /** True once a refresh has landed and it actually moved the status. */
-  statusChanged = false;
-
   private refreshPollSub?: Subscription;
   /** Poll every 5s for up to 5 minutes — a fresh automation session needs to log in (OTP) first. */
   private static readonly POLL_INTERVAL_MS = 5000;
   private static readonly MAX_POLLS = 60;
-
-  /**
-   * Copy and progress phase per stage. Four phases rather than ten steps: the bar has to stay
-   * legible on a phone, and the visitor only cares about connecting → security → sign-in →
-   * fetch, not each Selenium hop.
-   */
-  private static readonly STAGE_INFO: Record<ScrapeStage, { label: string; phase: number }> = {
-    IDLE: { label: 'Waiting for a registry session to start…', phase: 1 },
-    STARTING: { label: 'Starting a secure session with the registry…', phase: 1 },
-    OPENING_PORTAL: { label: 'Connecting to the IP India portal…', phase: 1 },
-    SOLVING_CAPTCHA: { label: "Solving the registry's security check…", phase: 2 },
-    OTP_SENT: { label: 'Security check passed — registry has sent a one-time password…', phase: 3 },
-    OTP_RECEIVED: { label: 'One-time password received, signing in…', phase: 3 },
-    SIGNED_IN: { label: 'Signed in to the registry…', phase: 3 },
-    SEARCHING: { label: 'Looking up this application number…', phase: 4 },
-    READING_RECORD: { label: 'Reading the current registry record…', phase: 4 },
-    SAVING: { label: 'Saving the updated details…', phase: 4 },
-  };
-
-  readonly livePhases = [1, 2, 3, 4];
-
-
 
   constructor(
     private route: ActivatedRoute,
@@ -127,7 +88,10 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
         })
   }
 
-  /** Kicks off a live registry fetch when the status is unknown or the record is older than a day. */
+  /**
+   * Kicks off a background registry fetch when the status is unknown or the record is older
+   * than a day. Nothing about it is shown to the visitor — if it lands, the status updates.
+   */
   private maybeStartLiveRefresh(): void {
     const applicationNo = this.trademark?.applicationNo;
     if (!this.isBrowser || !applicationNo) {
@@ -141,97 +105,45 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Snapshot before anything can overwrite it, so the page can show what the status was
-    // as well as what it becomes.
-    this.previousStatus = this.trademark?.trademarkStatus?.trim() || null;
-    this.liveStatus = 'fetching';
     this.trademarkService.requestLiveRefresh(applicationNo).subscribe({
       next: res => {
+        // Anything else — FRESH (someone just refreshed it) or BUSY (queue full) — leaves the
+        // status we already have on screen, which is the point: the page never says it is
+        // waiting on anything.
         if (res.state === 'QUEUED') {
-          this.applyProgress(res.stage, res.queuePosition);
           this.pollLiveRefresh(applicationNo);
-        } else {
-          // FRESH (someone just refreshed it) or BUSY (queue full) — keep what we have.
-          this.liveStatus = 'idle';
         }
       },
       error: () => {
-        this.liveStatus = 'failed';
+        // Nothing to report to the visitor; the stored status stays as it is.
       },
     });
   }
 
+  /**
+   * Polls until the priority scrape lands, then swaps the fresher registry data in. Silent by
+   * design: the visitor keeps reading the stored status until there is a newer one to show,
+   * and a failed or abandoned fetch simply leaves that status in place.
+   */
   private pollLiveRefresh(applicationNo: number): void {
     this.refreshPollSub = timer(TradmarkDetailComponent.POLL_INTERVAL_MS, TradmarkDetailComponent.POLL_INTERVAL_MS)
       .pipe(
         take(TradmarkDetailComponent.MAX_POLLS),
-        switchMap(() => this.trademarkService.getLiveRefreshStatus(applicationNo)),
-        finalize(() => {
-          if (this.liveStatus === 'fetching') {
-            this.liveStatus = 'failed';
-          }
-        })
+        switchMap(() => this.trademarkService.getLiveRefreshStatus(applicationNo))
       )
       .subscribe(res => {
-        this.applyProgress(res.stage, res.queuePosition);
         if (res.state === 'COMPLETED') {
           if (res.trademark) {
             // Keep page-only fields (faqs, slug, schema) and overlay the refreshed registry data.
             this.trademark = { ...this.trademark, ...this.trademarkService.convertDateFromServer(res.trademark) };
           }
-          const fresh = this.trademark?.trademarkStatus?.trim() || null;
-          this.statusChanged = !!this.previousStatus && !!fresh && this.previousStatus !== fresh;
-          this.liveStatus = 'updated';
-          this.liveStage = null;
-          this.queuePosition = null;
           this.refreshPollSub?.unsubscribe();
         } else if (res.state === 'FAILED' || res.state === 'NOT_FOUND' || res.state === 'NONE') {
-          this.liveStatus = 'failed';
-          this.liveStage = null;
-          this.queuePosition = null;
           this.refreshPollSub?.unsubscribe();
         }
       });
   }
 
-  private applyProgress(stage: ScrapeStage | null | undefined, queuePosition: number | null | undefined): void {
-    this.liveStage = stage ?? null;
-    this.queuePosition = queuePosition ?? null;
-  }
-
-  // ── Live-progress view helpers ────────────────────────────────────────────
-
-  /**
-   * What the visitor is actually waiting on. While the session is still logging in, that is
-   * the login step — it blocks everyone in the queue. Once it is signed in and working
-   * through other requests, the honest answer is the queue position, not whichever record
-   * it happens to be reading for somebody else.
-   */
-  get liveStageLabel(): string {
-    const stage = this.liveStage ?? 'IDLE';
-    const isLoginPhase = TradmarkDetailComponent.STAGE_INFO[stage].phase < 4;
-    if (!isLoginPhase && this.queuePosition !== null && this.queuePosition > 0) {
-      return this.queuePosition === 1
-        ? 'Signed in — one request ahead of yours…'
-        : `Signed in — ${this.queuePosition} requests ahead of yours…`;
-    }
-    return TradmarkDetailComponent.STAGE_INFO[stage].label;
-  }
-
-  /** 1–4, for the progress bar. Queued-behind-others stays at the sign-in phase. */
-  get livePhase(): number {
-    const stage = this.liveStage ?? 'IDLE';
-    const phase = TradmarkDetailComponent.STAGE_INFO[stage].phase;
-    if (phase === 4 && this.queuePosition !== null && this.queuePosition > 0) {
-      return 3;
-    }
-    return phase;
-  }
-
-  /** Status to display while a refresh is in flight — the last known one, never a blank. */
-  get lastKnownStatus(): string | null {
-    return this.previousStatus ?? this.trademark?.trademarkStatus?.trim() ?? null;
-  }
   setSeoTags(tm: ITrademark | null) {
     if(!tm) return;
       this.title.setTitle(`${tm.name || ''} Trademark Status, Class ${tm.tmClass} & Application Details`);

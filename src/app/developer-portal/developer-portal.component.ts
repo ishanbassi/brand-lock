@@ -44,11 +44,26 @@ export class DeveloperPortalComponent {
       path: 'https://admin.trademarx.in/api/public/v1/trademarks/journal?journalNo=2145',
       description: 'A journal’s published filings, or the latest filings if journalNo is omitted.',
     },
+  ];
+
+  responseFields = [
     {
-      method: 'GET',
-      path: 'https://admin.trademarx.in/api/public/v1/trademarks/5348291/status',
-      description: 'Current status of a single trademark by application number.',
+      field: 'name',
+      notes: 'The mark as filed. Frequently null — device/figurative marks are often filed without a word element.',
     },
+    { field: 'applicationNo', notes: 'The registry application number. Always present; this is the stable identifier to key on.' },
+    { field: 'tmClass', notes: 'NICE class, 1–45.' },
+    { field: 'details', notes: 'The goods/services specification text as published.' },
+    {
+      field: 'trademarkStatus',
+      notes:
+        'Free text as shown by the registry ("Registered", "Abandoned", "Formalities Chk Pass"…). There is no fixed vocabulary — match loosely. Null for the majority of the register, where the registry has not published a status — read null as "not published", not as "no status exists".',
+    },
+    { field: 'proprietorName', notes: 'Applicant/owner name as filed.' },
+    { field: 'applicationDate', notes: 'Filing date, YYYY-MM-DD.' },
+    { field: 'imgUrl', notes: 'Absolute URL to the mark image, or null for word marks.' },
+    { field: 'type', notes: 'TRADEMARK, IMAGEMARK, or null where not classified.' },
+    { field: 'url', notes: "Canonical trademarx.in page for the record — handy if you're linking out for the attribution requirement." },
   ];
 
   constructor(
