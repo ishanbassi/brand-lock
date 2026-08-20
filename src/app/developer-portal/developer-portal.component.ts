@@ -46,6 +46,8 @@ export class DeveloperPortalComponent {
     },
   ];
 
+  specUrl = 'https://admin.trademarx.in/v3/api-docs/public-api';
+
   responseFields = [
     {
       field: 'name',
@@ -82,8 +84,26 @@ export class DeveloperPortalComponent {
       .pipe(finalize(() => (this.submitting = false)))
       .subscribe({
         next: res => this.result.set(res),
-        error: err => this.toastr.error(err?.error?.message || err?.error?.detail || 'Registration failed. Please try again.'),
+        error: err => this.toastr.error(this.readableError(err)),
       });
+  }
+
+  /**
+   * Server errors arrive in three shapes and only two of them are fit to show a person:
+   * bean-validation failures carry a `fieldErrors` array, business rejections carry a `detail`
+   * sentence, and `message` is the machine-readable i18n key ("error.emailexists"). Reading
+   * `message` first — as this used to — put that raw key in front of the user.
+   */
+  private readableError(err: any): string {
+    const fieldErrors = err?.error?.fieldErrors;
+    if (Array.isArray(fieldErrors) && fieldErrors.length) {
+      return fieldErrors.map((f: any) => `${f.field}: ${f.message}`).join('. ');
+    }
+    const detail = err?.error?.detail;
+    if (typeof detail === 'string' && detail.trim() && !detail.startsWith('4') && !detail.includes('ProblemDetail')) {
+      return detail;
+    }
+    return 'Registration failed. Please try again.';
   }
 
   copyKey(): void {
