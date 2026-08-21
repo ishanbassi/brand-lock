@@ -1,14 +1,20 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Meta, Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { SeoService } from '../shared/services/seo.service';
 import { finalize } from 'rxjs';
 import {
   ApiConsumerRegistration,
   ApiConsumerRegistrationResult,
   DeveloperPortalDataService,
 } from '../shared/services/developer-portal-data.service';
+
+const PAGE_URL = 'https://trademarx.in/developers';
+const OG_IMAGE = 'https://trademarx.in/assets/images/trademarx.png';
+const SCHEMA_ID = 'developer-portal-api';
 
 @Component({
   selector: 'app-developer-portal',
@@ -17,7 +23,7 @@ import {
   templateUrl: './developer-portal.component.html',
   styleUrl: './developer-portal.component.scss',
 })
-export class DeveloperPortalComponent {
+export class DeveloperPortalComponent implements OnInit, OnDestroy {
   formData: ApiConsumerRegistration = {
     name: '',
     email: '',
@@ -71,7 +77,75 @@ export class DeveloperPortalComponent {
   constructor(
     private readonly developerPortalDataService: DeveloperPortalDataService,
     private readonly toastr: ToastrService,
+    private readonly meta: Meta,
+    private readonly title: Title,
+    private readonly seo: SeoService,
   ) {}
+
+  /**
+   * This page sits outside the public layout, so unlike every other page no shared component
+   * puts head tags in for it — everything Google, an LLM crawler or a link unfurler reads has
+   * to be set here. The route title is kept in sync with the one set below; the route value is
+   * what SSR emits before this runs.
+   */
+  ngOnInit(): void {
+      const title = 'Free Trademark Search API for India — Trademarks & Journal Data | Trademarx';
+    // Kept under ~155 chars so Google shows the whole sentence rather than clipping mid-word.
+    const description =
+      "India's only free trademark API. Search 3M+ IP India filings by name and NICE class, " +
+      'browse every Trade Marks Journal. Instant key, no card.';
+
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large' });
+
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:url', content: PAGE_URL });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'Trademarx' });
+    this.meta.updateTag({ property: 'og:locale', content: 'en_IN' });
+    this.meta.updateTag({ property: 'og:image', content: OG_IMAGE });
+    this.meta.updateTag({ property: 'og:image:secure_url', content: OG_IMAGE });
+    this.meta.updateTag({ property: 'og:image:alt', content: 'Trademarx — free trademark data API for India' });
+
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:image', content: OG_IMAGE });
+
+    this.seo.setCanonical(PAGE_URL);
+    this.seo.injectJsonLd(
+      [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebAPI',
+          'name': 'Trademarx Trademark Data API',
+          'description': description,
+          'url': PAGE_URL,
+          'documentation': PAGE_URL,
+          'termsOfService': 'https://trademarx.in/terms-and-conditions',
+          'provider': { '@type': 'Organization', 'name': 'Trademarx', 'url': 'https://trademarx.in' },
+          'areaServed': { '@type': 'Country', 'name': 'India' },
+          'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'INR' },
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trademarx.in/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Developer API', 'item': PAGE_URL },
+          ],
+        },
+      ],
+      SCHEMA_ID,
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.seo.removeJsonLd(SCHEMA_ID);
+    this.seo.removeCanonical();
+  }
 
   submit(): void {
     if (!this.formData.name || !this.formData.email || !this.formData.registeredDomain) {

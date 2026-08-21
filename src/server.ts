@@ -1,9 +1,4 @@
-import {
-  AngularNodeAppEngine,
-  createNodeRequestHandler,
-  isMainModule,
-  writeResponseToNodeResponse,
-} from '@angular/ssr/node';
+import { AngularNodeAppEngine, createNodeRequestHandler, isMainModule, writeResponseToNodeResponse } from '@angular/ssr/node';
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,15 +13,11 @@ import { ALL_INDUSTRY_SLUGS } from './app/pages/trademark-industry-page/industry
 import { ALL_COMPARISON_SLUGS } from './app/pages/comparison-page/comparison-data';
 import { guideSlugs } from './app/pages/guide-page/guide-sources';
 
-let staticUrls: string[] = []
-
-
-
+let staticUrls: string[] = [];
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 const __dirname = path.dirname(serverDistFolder);
-
 
 const app = express();
 // @angular/ssr >= 19.2.20 validates the request Host against an allowlist to prevent SSRF. When it
@@ -52,7 +43,10 @@ app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in https://checkout.razorpay.com https://cdn.razorpay.com ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self'${devOrigins} https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.google-analytics.com https://analytics.google.com https://www.google.com https://www.googleadservices.com https://*.doubleclick.net https://api.razorpay.com https://checkout.razorpay.com https://lumberjack.razorpay.com ; frame-src https://www.google.com https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';`);
+  res.setHeader(
+    'Content-Security-Policy',
+    `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in https://checkout.razorpay.com https://cdn.razorpay.com ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self'${devOrigins} https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.google-analytics.com https://analytics.google.com https://www.google.com https://www.googleadservices.com https://*.doubleclick.net https://api.razorpay.com https://checkout.razorpay.com https://lumberjack.razorpay.com ; frame-src https://www.google.com https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';`,
+  );
   next();
 });
 
@@ -63,7 +57,6 @@ app.get('/articles', (_req, res) => res.redirect(301, '/blogs'));
 // to /iso/:city (see STATIC_PAGES below). Google still has dozens of the old URLs indexed
 // as soft 404s; redirecting preserves that link equity instead of sending crawlers to a 404.
 app.get('/iso-9001/:city', (req, res) => res.redirect(301, `/iso/${req.params['city']}`));
-
 
 export function walk(dir: string, urlPath = '') {
   const files = fs.readdirSync(dir);
@@ -81,8 +74,6 @@ export function walk(dir: string, urlPath = '') {
     }
   }
 }
-
-
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -110,28 +101,33 @@ app.use(
 const TODAY = '2026-06-08';
 
 const CORE_PAGES = [
-  { loc: `${SITE_URL}/`,                   lastmod: TODAY },
-  { loc: `${SITE_URL}/trademark`,          lastmod: TODAY },
-  { loc: `${SITE_URL}/trademark-classes`,  lastmod: TODAY },
-  { loc: `${SITE_URL}/msme-registration`,  lastmod: TODAY },
-  { loc: `${SITE_URL}/iec-registration`,   lastmod: TODAY },
-  { loc: `${SITE_URL}/iso`,               lastmod: TODAY },
+  { loc: `${SITE_URL}/`, lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark`, lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark-classes`, lastmod: TODAY },
+  { loc: `${SITE_URL}/msme-registration`, lastmod: TODAY },
+  { loc: `${SITE_URL}/iec-registration`, lastmod: TODAY },
+  { loc: `${SITE_URL}/iso`, lastmod: TODAY },
   { loc: `${SITE_URL}/iso/iso-9001-2015`, lastmod: TODAY },
-  { loc: `${SITE_URL}/search`,            lastmod: TODAY },
-  { loc: `${SITE_URL}/about-us`,          lastmod: TODAY },
-  { loc: `${SITE_URL}/blogs`,             lastmod: TODAY },
-  { loc: `${SITE_URL}/contact`,           lastmod: TODAY },
-  { loc: `${SITE_URL}/privacy-policy`,    lastmod: TODAY },
+  { loc: `${SITE_URL}/search`, lastmod: TODAY },
+  { loc: `${SITE_URL}/about-us`, lastmod: TODAY },
+  { loc: `${SITE_URL}/blogs`, lastmod: TODAY },
+  { loc: `${SITE_URL}/contact`, lastmod: TODAY },
+  { loc: `${SITE_URL}/privacy-policy`, lastmod: TODAY },
   { loc: `${SITE_URL}/terms-and-conditions`, lastmod: TODAY },
   { loc: `${SITE_URL}/trademark-filing-trends`, lastmod: TODAY },
+  // The developer/API page sits outside the public layout (its own minimal header, no site
+  // footer), so it picks up no internal links from the rest of the site the way every other
+  // page does. Without an entry here it was reachable only by typing the URL — orphaned from
+  // both the crawl graph and the sitemap.
+  { loc: `${SITE_URL}/developers`, lastmod: TODAY },
 ];
 
 const STATIC_PAGES = [
   ...CORE_PAGES,
-  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/${s}`,         lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/${s}`, lastmod: TODAY })),
   ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/msme-registration/${s}`, lastmod: TODAY })),
-  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iec-registration/${s}`,  lastmod: TODAY })),
-  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iso/${s}`,               lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iec-registration/${s}`, lastmod: TODAY })),
+  ...ALL_CITY_SLUGS.map(s => ({ loc: `${SITE_URL}/iso/${s}`, lastmod: TODAY })),
   ...ALL_INDUSTRY_SLUGS.map(s => ({ loc: `${SITE_URL}/trademark/industry/${s}`, lastmod: TODAY })),
   { loc: `${SITE_URL}/compare`, lastmod: TODAY },
   ...ALL_COMPARISON_SLUGS.map(s => ({ loc: `${SITE_URL}/compare/${s}`, lastmod: TODAY })),
@@ -139,11 +135,16 @@ const STATIC_PAGES = [
   ...guideSlugs('status').map(s => ({ loc: `${SITE_URL}/trademark-status/${s}`, lastmod: TODAY })),
   { loc: `${SITE_URL}/how-to-trademark`, lastmod: TODAY },
   ...guideSlugs('usecase').map(s => ({ loc: `${SITE_URL}/how-to-trademark/${s}`, lastmod: TODAY })),
-  { loc: `${SITE_URL}/trademark-filing-trends`, lastmod: TODAY },
 ];
 
-interface RawBlogEntry { slug: string; updatedAt: string; }
-interface TrademarkSitemapEntry { slug: string; lastmod: string; }
+interface RawBlogEntry {
+  slug: string;
+  updatedAt: string;
+}
+interface TrademarkSitemapEntry {
+  slug: string;
+  lastmod: string;
+}
 
 app.get('/sitemap.xml', async (_req, res) => {
   try {
@@ -158,33 +159,41 @@ app.get('/sitemap.xml', async (_req, res) => {
     const tmEntries: TrademarkSitemapEntry[] = await tmResponse.json();
     const trendsPaths: string[] = trendsResponse && trendsResponse.ok ? await trendsResponse.json() : [];
 
-    const blogUrls = blogJson.data.map(blog => `
+    const blogUrls = blogJson.data.map(
+      blog => `
     <url>
       <loc>${SITE_URL}/blogs/${blog.slug}</loc>
       <lastmod>${new Date(blog.updatedAt).toISOString().split('T')[0]}</lastmod>
-    </url>`);
+    </url>`,
+    );
 
-    const trademarkUrls = tmEntries.map(e => `
+    const trademarkUrls = tmEntries.map(
+      e => `
     <url>
       <loc>${SITE_URL}/trademarks/${e.slug}</loc>
       <lastmod>${e.lastmod}</lastmod>
-    </url>`);
+    </url>`,
+    );
 
-    const staticUrlEntries = STATIC_PAGES.map(p => `
+    const staticUrlEntries = STATIC_PAGES.map(
+      p => `
     <url>
       <loc>${p.loc}</loc>
       <lastmod>${p.lastmod}</lastmod>
-    </url>`);
+    </url>`,
+    );
 
     // Trends pages are live SSR queries recomputed on every render, so their lastmod is
     // genuinely today — unlike the hand-maintained TODAY constant used for static pages,
     // which had gone stale and was making every trends URL claim an old change date.
     const trendsLastmod = new Date().toISOString().slice(0, 10);
-    const trendsUrls = trendsPaths.map(path => `
+    const trendsUrls = trendsPaths.map(
+      path => `
     <url>
       <loc>${SITE_URL}${path}</loc>
       <lastmod>${trendsLastmod}</lastmod>
-    </url>`);
+    </url>`,
+    );
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -219,7 +228,7 @@ interface ProprietorSitemapShard {
   page: number;
   size: number;
   totalPages: number;
-}   
+}
 
 async function fetchProprietorShard(page: number): Promise<ProprietorSitemapShard> {
   const res = await fetch(`${ADMIN_API}/proprietors/sitemap?page=${page}&size=${COMPANY_SITEMAP_SHARD_SIZE}`);
@@ -235,11 +244,14 @@ app.get('/sitemap-companies.xml', async (_req, res) => {
     // Shard 0 doubles as the "how many shards are there" probe, so the index costs one call.
     const first = await fetchProprietorShard(0);
     const lastmod = new Date().toISOString().slice(0, 10);
-    const shards = Array.from({ length: Math.max(1, first.totalPages) }, (_unused, i) => `
+    const shards = Array.from(
+      { length: Math.max(1, first.totalPages) },
+      (_unused, i) => `
   <sitemap>
     <loc>${SITE_URL}/sitemap-companies-${i}.xml</loc>
     <lastmod>${lastmod}</lastmod>
-  </sitemap>`);
+  </sitemap>`,
+    );
 
     res.header('Content-Type', 'application/xml');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
@@ -267,11 +279,13 @@ app.get('/sitemap-companies-:shard.xml', async (req, res) => {
     }
 
     const lastmod = new Date().toISOString().slice(0, 10);
-    const urls = slugs.map(slug => `
+    const urls = slugs.map(
+      slug => `
   <url>
     <loc>${SITE_URL}/trademarks-by/${encodeURIComponent(slug)}</loc>
     <lastmod>${lastmod}</lastmod>
-  </url>`);
+  </url>`,
+    );
 
     res.header('Content-Type', 'application/xml');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
@@ -281,6 +295,54 @@ ${urls.join('')}
   } catch (err) {
     console.error(`❌ Company sitemap shard ${shard} error:`, err);
     res.status(500).send('Sitemap error');
+  }
+});
+
+/**
+ * Stable public URL for the OpenAPI definition of the free trademark-data API.
+ *
+ * The document itself is generated by springdoc and lives at
+ * admin.trademarx.in/v3/api-docs/public-api, but that is an implementation detail: it moves if the
+ * springdoc group is renamed or the admin host changes. API directories key their record on the URL
+ * you hand them and mostly give you no way to update it later, so submissions must point here.
+ *
+ * Cached in-process, and the last good copy is kept forever as a fallback: a directory that polls
+ * during a tmadmin restart would otherwise record this URL as dead.
+ */
+const OPENAPI_UPSTREAM = 'https://admin.trademarx.in/v3/api-docs/public-api';
+const OPENAPI_TTL_MS = 60 * 60 * 1000;
+let openApiCache: { body: string; fetchedAt: number } | null = null;
+
+app.get('/openapi.json', async (_req, res) => {
+  res.type('application/json');
+  // Browser-based tooling (Swagger Editor, ReDoc demos, directory validators) fetches this
+  // cross-origin; without CORS they fail with an opaque network error.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  if (openApiCache && Date.now() - openApiCache.fetchedAt < OPENAPI_TTL_MS) {
+    res.send(openApiCache.body);
+    return;
+  }
+
+  try {
+    const upstream = await fetch(OPENAPI_UPSTREAM);
+    if (!upstream.ok) {
+      throw new Error(`upstream responded ${upstream.status}`);
+    }
+    const body = await upstream.text();
+    // Parse before caching: springdoc answers 200 with an HTML error page in some failure modes,
+    // and serving that as application/json is what breaks a directory's importer.
+    JSON.parse(body);
+    openApiCache = { body, fetchedAt: Date.now() };
+    res.send(body);
+  } catch (err) {
+    console.error('❌ /openapi.json upstream error:', err);
+    if (openApiCache) {
+      res.send(openApiCache.body);
+      return;
+    }
+    res.status(503).json({ error: 'OpenAPI definition temporarily unavailable' });
   }
 });
 
@@ -297,7 +359,7 @@ Sitemap: https://trademarx.in/sitemap-companies.xml
 app.get('/og-image-proxy', (req, res) => {
   const imageUrl = req.query['src'] as string;
   if (!imageUrl) {
-     res.status(400).send('Missing src parameter');
+    res.status(400).send('Missing src parameter');
   }
 
   // Security: only allow your CMS subdomain
@@ -307,27 +369,28 @@ app.get('/og-image-proxy', (req, res) => {
   try {
     parsedUrl = new URL(imageUrl);
   } catch {
-     res.status(400).send('Invalid URL');
-     return;
+    res.status(400).send('Invalid URL');
+    return;
   }
-  console.log(allowedHosts, parsedUrl)
+  console.log(allowedHosts, parsedUrl);
   if (!allowedHosts.some(host => host.includes(host))) {
-     res.status(403).send('Forbidden host');
+    res.status(403).send('Forbidden host');
   }
 
   const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
-  protocol.get(imageUrl, (imageRes) => {
-    // Forward content-type and cache headers
-    res.setHeader('Content-Type', imageRes.headers['content-type'] || 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // cache 1 day
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    imageRes.pipe(res);
-  }).on('error', () => {
-    res.status(500).send('Failed to fetch image');
-  });
+  protocol
+    .get(imageUrl, imageRes => {
+      // Forward content-type and cache headers
+      res.setHeader('Content-Type', imageRes.headers['content-type'] || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // cache 1 day
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      imageRes.pipe(res);
+    })
+    .on('error', () => {
+      res.status(500).send('Failed to fetch image');
+    });
 });
-
 
 /**
  * Handle all other requests by rendering the Angular application.
@@ -340,7 +403,7 @@ app.use('/**', (req, res, next) => {
 
   angularApp
     .handle(req, ssrContext)
-    .then((response) => {
+    .then(response => {
       if (!response) {
         next();
         return undefined;

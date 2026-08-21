@@ -42,7 +42,7 @@ export const routes: Routes = [
         // Standalone page — no public navbar/footer, own minimal header (see component).
         path: 'developers',
         loadComponent: () => import('./developer-portal/developer-portal.component').then(m => m.DeveloperPortalComponent),
-        title: "Trademark Data API for Developers | Trademarx",
+        title: "Free Trademark API India — Trademarks & Journal Data | Trademarx",
     },
     {
         path: "",
