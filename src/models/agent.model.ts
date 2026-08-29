@@ -167,6 +167,41 @@ export interface AgentImportSummary {
 }
 
 
+/**
+ * A file the agent has attached to one mark.
+ *
+ * Note there is no path or URL here: documents are stored outside every web-served directory and
+ * only leave through the ownership-checked download endpoint, so the client never holds a location.
+ */
+export interface AgentDocument {
+  id: number;
+  agentPortfolioItemId?: number;
+  documentType?: string;
+  originalFileName?: string;
+  fileContentType?: string;
+  fileSizeBytes?: number;
+  notes?: string;
+  /** The date on the document itself, not when it was uploaded. */
+  documentDate?: string;
+  uploadedBy?: string;
+  uploadedDate?: string;
+}
+
+/** Document kinds an agent actually files against a mark. */
+export const AGENT_DOCUMENT_TYPES: { value: string; label: string }[] = [
+  { value: 'EXAMINATION_REPORT', label: 'Examination report' },
+  { value: 'REPLY_FILED', label: 'Reply filed' },
+  { value: 'HEARING_NOTICE', label: 'Hearing notice' },
+  { value: 'OPPOSITION_NOTICE', label: 'Opposition notice' },
+  { value: 'COUNTER_STATEMENT', label: 'Counter statement' },
+  { value: 'EVIDENCE_AFFIDAVIT', label: 'Evidence / affidavit' },
+  { value: 'REGISTRATION_CERTIFICATE', label: 'Registration certificate' },
+  { value: 'RENEWAL_RECEIPT', label: 'Renewal receipt' },
+  { value: 'POA', label: 'Power of attorney' },
+  { value: 'CLIENT_CORRESPONDENCE', label: 'Client correspondence' },
+  { value: 'OTHER', label: 'Other' },
+];
+
 /** One conflicting mark found in a journal against a mark in the portfolio. */
 export interface AgentJournalConflict {
   journalNo: number;

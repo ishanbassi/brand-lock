@@ -32,6 +32,14 @@ export const agentPortalRoutes: Routes = [
     title: 'Import Portfolio | Agent Portal',
   },
   {
+    // Must stay below the literal 'portfolio/...' paths above, or 'add' / 'claim' / 'upload'
+    // would each match :id and route to the detail screen instead.
+    path: 'portfolio/:id',
+    loadComponent: () =>
+      import('./agent-trademark-detail/agent-trademark-detail.component').then(m => m.AgentTrademarkDetailComponent),
+    title: 'Trademark | Agent Portal',
+  },
+  {
     path: 'portfolio/:id/edit',
     loadComponent: () => import('./agent-portfolio-form/agent-portfolio-form.component').then(m => m.AgentPortfolioFormComponent),
     title: 'Edit Trademark | Agent Portal',

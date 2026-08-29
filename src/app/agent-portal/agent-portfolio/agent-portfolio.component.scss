@@ -565,3 +565,18 @@ $white: #ffffff;
   align-items: center;
   justify-content: center;
 }
+
+// One clear way into a mark, replacing the old inline action cluster.
+.view-details-btn {
+  display: inline-block;
+  padding: 0.3125rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #475569;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover { border-color: #6366f1; color: #6366f1; }
+}

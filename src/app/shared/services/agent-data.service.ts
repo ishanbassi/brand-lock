@@ -7,6 +7,7 @@ import {
   AgentClaimResult,
   AgentDashboardStats,
   AgentDirectoryEntry,
+  AgentDocument,
   AgentImportSummary,
   AgentJournalWatchResult,
   AgentImportResult,
@@ -109,6 +110,37 @@ export class AgentDataService {
   /** The caller's own upload history — backs the "we're checking your file" banner. */
   getOwnImports(): Observable<AgentImportSummary[]> {
     return this.http.get<AgentImportSummary[]>(`${this.base}/agent-portal/imports`);
+  }
+
+  // ── Documents ────────────────────────────────────────────────────────────
+
+  listDocuments(trademarkId: number): Observable<AgentDocument[]> {
+    return this.http.get<AgentDocument[]>(`${this.base}/agent-portal/portfolio/${trademarkId}/documents`);
+  }
+
+  uploadDocument(
+    trademarkId: number,
+    file: File,
+    meta: { documentType?: string; notes?: string; documentDate?: string },
+  ): Observable<AgentDocument> {
+    const form = new FormData();
+    form.append('file', file);
+    if (meta.documentType) form.append('documentType', meta.documentType);
+    if (meta.notes) form.append('notes', meta.notes);
+    if (meta.documentDate) form.append('documentDate', meta.documentDate);
+    return this.http.post<AgentDocument>(`${this.base}/agent-portal/portfolio/${trademarkId}/documents`, form);
+  }
+
+  /**
+   * Fetches the bytes rather than linking to them. These files sit outside every web-served
+   * directory on purpose, so there is no URL to point an anchor at — the browser gets a blob.
+   */
+  downloadDocument(documentId: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/documents/${documentId}/download`, { responseType: 'blob' });
+  }
+
+  deleteDocument(documentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/documents/${documentId}`);
   }
 
   // ── Registry sync & agent notes ──────────────────────────────────────────

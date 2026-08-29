@@ -1,0 +1,171 @@
+<div class="detail-page">
+  <a routerLink="/agent-portal/portfolio" class="back-link">&lsaquo; Back to portfolio</a>
+
+  @if (loading()) {
+    <div class="loading-state">Loading trademark…</div>
+  } @else if (!mark()) {
+    <div class="alert-error">{{ error() || 'Trademark not found.' }}</div>
+  } @else {
+
+    <header class="detail-header">
+      <div class="title-block">
+        <h1>{{ mark()!.name || 'Untitled mark' }}</h1>
+        <div class="title-meta">
+          @if (mark()!.applicationNo) { <span>Application {{ mark()!.applicationNo }}</span> }
+          @if (mark()!.tmClass) { <span>Class {{ mark()!.tmClass }}</span> }
+          <span class="status-chip">{{ mark()!.trademarkStatus || 'Unknown' }}</span>
+        </div>
+      </div>
+
+      <!--
+        Every action for this mark lives here rather than in the list. Refresh and remove are
+        consequential enough that they need the surrounding context to decide on.
+      -->
+      <div class="detail-actions">
+        @if (mark()!.applicationNo) {
+          <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
+            {{ refreshing() ? 'Requesting…' : '🔄 Refresh from register' }}
+          </button>
+        }
+        <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'watch']" class="btn-ghost">👁 Check conflicts</a>
+        @if (editable()) {
+          <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']" class="btn-ghost">✏️ Edit</a>
+        }
+        <button class="btn-danger-ghost" (click)="confirmRemove.set(true)">Remove</button>
+      </div>
+    </header>
+
+    @if (notice()) {
+      <div class="alert-info">{{ notice() }}<button class="alert-dismiss" (click)="notice.set('')">&times;</button></div>
+    }
+    @if (error()) {
+      <div class="alert-error">{{ error() }}<button class="alert-dismiss" (click)="error.set('')">&times;</button></div>
+    }
+
+    <!--
+      "Remove from portfolio", never "delete". For a register-sourced mark this drops only this
+      agent's link — the record is public data and stays. Saying "delete" would misdescribe it.
+    -->
+    @if (confirmRemove()) {
+      <div class="confirm-panel">
+        <strong>Remove this mark from your portfolio?</strong>
+        <p>
+          @if (mark()!.editable) {
+            You added this mark yourself, so it will be removed entirely.
+          } @else {
+            This mark comes from the public register. Only your link to it is removed — the record
+            itself, and anything other firms hold, is unaffected.
+          }
+          Your notes and documents for it will no longer be shown.
+        </p>
+        <div class="confirm-actions">
+          <button class="btn-danger" (click)="removeFromPortfolio()" [disabled]="removing()">
+            {{ removing() ? 'Removing…' : 'Yes, remove' }}
+          </button>
+          <button class="btn-ghost" (click)="confirmRemove.set(false)">Cancel</button>
+        </div>
+      </div>
+    }
+
+    @if (!editable()) {
+      <div class="source-banner">
+        🔒 Maintained from the IP India register
+        @if (mark()!.registrySyncedDate) {
+          — last confirmed {{ mark()!.registrySyncedDate | date:'dd MMM yyyy' }}
+        }
+      </div>
+    }
+
+    <!-- ── DETAILS ──────────────────────────────────────────────────── -->
+    <section class="card">
+      <h2>Details</h2>
+      <dl class="detail-grid">
+        <div><dt>Proprietor</dt><dd>{{ mark()!.proprietorName || '—' }}</dd></div>
+        <div><dt>Class</dt><dd>{{ mark()!.tmClass || '—' }}</dd></div>
+        <div><dt>Status</dt><dd>{{ mark()!.trademarkStatus || 'Unknown' }}</dd></div>
+        <div><dt>Type</dt><dd>{{ mark()!.type || '—' }}</dd></div>
+        <div><dt>Filed</dt><dd>{{ mark()!.applicationDate ? (mark()!.applicationDate | date:'dd MMM yyyy') : '—' }}</dd></div>
+        <div><dt>Renewal due</dt><dd>{{ mark()!.renewalDate ? (mark()!.renewalDate | date:'dd MMM yyyy') : '—' }}</dd></div>
+        <div><dt>State</dt><dd>{{ mark()!.state || '—' }}</dd></div>
+        <div><dt>Source</dt><dd>{{ mark()!.source || '—' }}</dd></div>
+      </dl>
+      @if (mark()!.details) {
+        <div class="goods"><dt>Goods / services</dt><p>{{ mark()!.details }}</p></div>
+      }
+    </section>
+
+    <!-- ── DOCUMENTS ────────────────────────────────────────────────── -->
+    <section class="card">
+      <h2>Documents</h2>
+      <p class="card-hint">
+        Examination reports, hearing notices, replies, client correspondence. Private to you — never
+        shown on the public register, and invisible to any other firm holding this mark.
+      </p>
+
+      @if (documentsLoading()) {
+        <div class="loading-inline">Loading documents…</div>
+      } @else if (documents().length === 0) {
+        <div class="empty-inline">Nothing attached to this mark yet.</div>
+      } @else {
+        <ul class="doc-list">
+          @for (doc of documents(); track doc.id) {
+            <li class="doc-row">
+              <div class="doc-main">
+                <span class="doc-name">{{ doc.originalFileName }}</span>
+                <span class="doc-meta">
+                  {{ documentTypeLabel(doc.documentType) }} · {{ formatSize(doc.fileSizeBytes) }}
+                  @if (doc.documentDate) { · dated {{ doc.documentDate | date:'dd MMM yyyy' }} }
+                </span>
+                @if (doc.notes) { <span class="doc-notes">{{ doc.notes }}</span> }
+              </div>
+              <div class="doc-actions">
+                <button class="btn-ghost-xs" (click)="download(doc)">Download</button>
+                <button class="btn-danger-xs" (click)="deleteDocument(doc)" [disabled]="deletingDocId() === doc.id">
+                  {{ deletingDocId() === doc.id ? '…' : 'Delete' }}
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="upload-row">
+        <input type="file" (change)="onFileSelected($event)" />
+        <select [(ngModel)]="uploadMeta.documentType" name="documentType">
+          @for (t of documentTypes; track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
+        <input type="date" [(ngModel)]="uploadMeta.documentDate" name="documentDate" title="Date on the document" />
+        <input type="text" [(ngModel)]="uploadMeta.notes" name="docNotes" placeholder="Note (optional)" />
+        <button class="btn-primary" (click)="upload()" [disabled]="!selectedFile || uploading()">
+          {{ uploading() ? 'Uploading…' : 'Attach' }}
+        </button>
+      </div>
+      <p class="card-hint small">PDF, Word, Excel, images, email files. Up to 25 MB.</p>
+    </section>
+
+    <!-- ── PRIVATE NOTES ────────────────────────────────────────────── -->
+    <section class="card">
+      <h2>Your private notes</h2>
+      <p class="card-hint">Stored against your copy of this mark. Editable even when the mark itself is not.</p>
+
+      <label class="field">
+        <span>Client reference</span>
+        <input type="text" [(ngModel)]="notes.clientReference" name="clientReference"
+               placeholder="Your matter or client number" />
+      </label>
+      <label class="field">
+        <span>Notes</span>
+        <textarea rows="4" [(ngModel)]="notes.agentNotes" name="agentNotes"
+                  placeholder="Anything you want to remember about this mark"></textarea>
+      </label>
+      <div class="notes-actions">
+        <button class="btn-primary" (click)="saveNotes()" [disabled]="savingNotes()">
+          {{ savingNotes() ? 'Saving…' : 'Save notes' }}
+        </button>
+        @if (notesSaved()) { <span class="saved-flag">Saved</span> }
+      </div>
+    </section>
+  }
+</div>
