@@ -1,0 +1,214 @@
+$accent: #6366f1;
+$accent-light: #818cf8;
+$danger: #ef4444;
+$warning: #f59e0b;
+$success: #10b981;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+$gray-800: #1e293b;
+$white: #ffffff;
+
+* { box-sizing: border-box; }
+
+.watch-page {
+  padding: 2rem;
+  max-width: 1000px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: $gray-800;
+
+  @media (max-width: 768px) { padding: 1.25rem; }
+}
+
+.watch-header {
+  margin-bottom: 1.5rem;
+
+  h1 { font-size: 1.625rem; font-weight: 700; margin: 0 0 0.375rem; }
+
+  .subtitle {
+    margin: 0;
+    color: $gray-600;
+    font-size: 0.9375rem;
+    max-width: 62ch;
+    line-height: 1.55;
+  }
+}
+
+.alert-error {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.25);
+  color: darken($danger, 12%);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.run-card {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.journal-select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: $gray-600;
+
+  select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $gray-200;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    min-width: 14rem;
+    background: $white;
+  }
+}
+
+.loading-inline { color: $gray-400; font-size: 0.875rem; padding: 0.5rem 0; }
+
+.btn-primary {
+  background: $accent;
+  border: 1px solid $accent;
+  color: $white;
+  border-radius: 10px;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: $accent-light; border-color: $accent-light; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.running-note {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background: $gray-50;
+  border-radius: 10px;
+  color: $gray-600;
+  font-size: 0.875rem;
+}
+
+// ── RESULTS ─────────────────────────────────────────────
+.results { margin-top: 1.5rem; }
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid $gray-200;
+  flex-wrap: wrap;
+
+  .summary-main { font-size: 1rem; strong { font-size: 1.375rem; margin-right: 0.25rem; } }
+  .summary-meta { color: $gray-400; font-size: 0.8125rem; }
+}
+
+.empty-note {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+
+  &.good { background: rgba($success, 0.08); border: 1px solid rgba($success, 0.25); color: darken($success, 14%); }
+  &.warn { background: rgba($warning, 0.08); border: 1px solid rgba($warning, 0.25); color: #92400e; }
+}
+
+.risk-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.125rem 0;
+  flex-wrap: wrap;
+
+  button {
+    border: 1px solid $gray-200;
+    background: $white;
+    color: $gray-600;
+    border-radius: 999px;
+    padding: 0.3125rem 0.875rem;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    cursor: pointer;
+
+    &.active { background: $gray-800; border-color: $gray-800; color: $white; }
+    &.risk-high.active { background: $danger; border-color: $danger; }
+    &.risk-medium.active { background: $warning; border-color: $warning; }
+  }
+}
+
+.conflict-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.conflict-card {
+  display: flex;
+  gap: 1.25rem;
+  align-items: stretch;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-left-width: 4px;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+
+  &.risk-high { border-left-color: $danger; }
+  &.risk-medium { border-left-color: $warning; }
+  &.risk-low { border-left-color: $gray-400; }
+}
+
+.conflict-score {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 4.5rem;
+
+  .score-value { font-size: 1.25rem; font-weight: 700; color: $gray-800; }
+  .score-label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.05em; color: $gray-400; }
+}
+
+.conflict-body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 12rem;
+  flex: 1;
+}
+
+.side-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $gray-400;
+  font-weight: 600;
+}
+
+.mark-name { font-size: 0.9375rem; font-weight: 600; color: $gray-800; }
+.mark-meta { font-size: 0.8125rem; color: $gray-600; }
+.proprietor { font-size: 0.8125rem; color: $gray-400; }
+
+.versus {
+  color: $gray-400;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}

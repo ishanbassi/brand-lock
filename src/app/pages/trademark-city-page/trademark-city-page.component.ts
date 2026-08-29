@@ -40,8 +40,8 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     this.city = data;
     this.registryOffice = getRegistryOffice(data.state);
     this.otherCities = Object.values(CITY_DATA).filter(c => c.slug !== slug);
-    const pageTitle = `Trademark Registration in ${data.name}, ${data.state} — ₹1,499 + Govt. Fees | Trademarx`;
-    const desc = `Register your trademark in ${data.name} from ₹1,499. IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.`;
+    const pageTitle = `Trademark Registration in ${data.name}, ${data.state} — ₹1,999 + Govt. Fees | Trademarx`;
+    const desc = `Register your trademark in ${data.name} from ₹1,999. IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.`;
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: desc });
@@ -77,7 +77,7 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Government filing fees of ₹4,500–₹9,000 additional.',
           'url': `https://trademarx.in/trademark/${data.slug}`,

@@ -25,7 +25,7 @@ export const GUIDE_SOURCES: Record<string, GuideSourceConfig> = {
     urlPrefix: '/how-to-trademark',
     breadcrumbLabel: 'Trademark Guides',
     hubMetaTitle: 'How to Trademark Your Business — Guides by Business Type | Trademarx',
-    hubMetaDesc: 'Step-by-step trademark guides for specific business types — home bakery, Instagram page, podcast, mobile app, NGO, YouTube channel. Find the right class and file from ₹1,499.',
+    hubMetaDesc: 'Step-by-step trademark guides for specific business types — home bakery, Instagram page, podcast, mobile app, NGO, YouTube channel. Find the right class and file from ₹1,999.',
     hubH1: 'Trademark Registration Guides by Business Type',
     hubIntro: 'Not sure which trademark class your business needs or how to protect your brand? These practical guides cover specific business types — from home bakeries to mobile apps — with the right class, cost, and a step-by-step filing process for each.',
     ctaWhatsappText: 'Hi%2C%20I%20want%20to%20register%20a%20trademark%20for%20my%20business',

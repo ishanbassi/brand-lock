@@ -419,4 +419,60 @@ $admin-gray-800: #1e293b;
     text-decoration: none;
     &:hover { text-decoration: underline; }
   }
+
+  // ── AGENT IMPORT REVIEW (expandable detail row) ─────────────────
+  .detail-row > td {
+    background: $admin-gray-50;
+    padding: 1rem 1.1rem;
+  }
+
+  .import-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .detail-block { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .detail-heading {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $admin-gray-500;
+  }
+
+  .detail-warn {
+    margin: 0;
+    padding: 0.6rem 0.8rem;
+    border-left: 3px solid $admin-danger;
+    border-radius: 4px;
+    background: rgba($admin-danger, 0.07);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: darken($admin-danger, 12%);
+  }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  .col-chip {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid $admin-gray-200;
+    border-radius: 6px;
+    background: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.74rem;
+    color: $admin-gray-500;
+  }
+
+  .error-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: $admin-gray-500;
+  }
 }

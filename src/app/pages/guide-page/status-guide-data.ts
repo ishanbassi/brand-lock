@@ -8,7 +8,7 @@ import { GuidePage } from './guide.model';
 
 const STATUS_RELATED = [
   { title: 'Trademark Objection Reply', route: '/trademark-objection-reply', icon: 'fas fa-reply', desc: 'Expert examination-report replies from ₹2,999' },
-  { title: 'Trademark Registration', route: '/trademark', icon: 'fas fa-trademark', desc: 'File a new trademark from ₹1,499' },
+  { title: 'Trademark Registration', route: '/trademark', icon: 'fas fa-trademark', desc: 'File a new trademark from ₹1,999' },
   { title: 'Check Your Live Status', route: '/trademark-status-check', icon: 'fas fa-magnifying-glass-chart', desc: 'Track your application by number' },
   { title: 'Search by Company Name', route: '/trademark-search-by-company', icon: 'fas fa-building', desc: "See every mark a company has filed" },
   { title: 'All Status Meanings', route: '/trademark-status', icon: 'fas fa-list-check', desc: 'Every registry status explained' },
@@ -135,7 +135,7 @@ export const STATUS_GUIDES: Record<string, GuidePage> = {
     ],
     relatedLinks: STATUS_RELATED,
     ctaHeading: 'Filing a Logo? Protect the Name Too',
-    ctaText: 'A logo filing mainly protects the design. Talk to our IP team about also registering your brand name as a wordmark for the broadest protection — from ₹1,499.',
+    ctaText: 'A logo filing mainly protects the design. Talk to our IP team about also registering your brand name as a wordmark for the broadest protection — from ₹1,999.',
     leadComment: 'Status page inquiry - Send to Vienna Codification',
   },
 

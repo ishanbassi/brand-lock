@@ -14,6 +14,10 @@ import { LiveSearchComponent } from '../live-search/live-search.component';
 import { FaqComponent } from '../faq/faq.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
+import { SeoService } from '../shared/services/seo.service';
+
+/** Canonical address of the homepage. Trailing slash is significant — it must match exactly one form. */
+const HOME_URL = 'https://trademarx.in/';
 
 @Component({
   selector: 'app-home-v2',
@@ -33,7 +37,7 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
   homeFaqs = [
     {
       question: 'How much does trademark registration cost in India?',
-      answer: 'Our professional fee is ₹1,499. Government filing fees are additional — ₹4,500 per class for individuals, startups and MSMEs, and ₹9,000 per class for other entities.'
+      answer: 'Our professional fee is ₹1,999. Government filing fees are additional — ₹4,500 per class for individuals, startups and MSMEs, and ₹9,000 per class for other entities.'
     },
     {
       question: 'Can I use the ™ symbol before registration is complete?',
@@ -57,6 +61,7 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
     private blogService: BlogService,
     private title: Title,
     private meta: Meta,
+    private seo: SeoService,
     private el: ElementRef,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -208,8 +213,13 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
     this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration India — Fast, Simple & Affordable | Trademarx' });
     this.meta.updateTag({ property: 'og:description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 500+ businesses across India.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
-    this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/' });
+    this.meta.updateTag({ property: 'og:url', content: HOME_URL });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
+    // The homepage is the single URL every API attribution backlink points at, and each consumer
+    // gets its own ?utm_source=api&utm_content=<id> variant (DeveloperPortalService). Without a
+    // self-referencing canonical those are distinct URLs to a crawler, so the links accumulate
+    // authority across dozens of near-duplicate homepages instead of onto this one.
+    this.seo.setCanonical(HOME_URL);
     this.injectJsonLd();
   }
 

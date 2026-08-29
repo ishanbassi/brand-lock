@@ -3,7 +3,12 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  AgentClaimRequest,
+  AgentClaimResult,
   AgentDashboardStats,
+  AgentDirectoryEntry,
+  AgentImportSummary,
+  AgentJournalWatchResult,
   AgentImportResult,
   AgentPortfolioTrademark,
   AgentProfile,
@@ -73,10 +78,12 @@ export class AgentDataService {
     return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form);
   }
 
-  confirmImport(file: File): Observable<AgentImportResult> {
+  /** batchId comes from the preview response so both calls share one retained-upload record. */
+  confirmImport(file: File, batchId?: number): Observable<AgentImportResult> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, form);
+    const url = `${this.base}/agent-portal/portfolio/import`;
+    return this.http.post<AgentImportResult>(batchId != null ? `${url}?batchId=${batchId}` : url, form);
   }
 
   // Trademark watch
@@ -99,6 +106,63 @@ export class AgentDataService {
   }
 
   // Phase 2 — Portfolio export
+  /** The caller's own upload history — backs the "we're checking your file" banner. */
+  getOwnImports(): Observable<AgentImportSummary[]> {
+    return this.http.get<AgentImportSummary[]>(`${this.base}/agent-portal/imports`);
+  }
+
+  // ── Registry sync & agent notes ──────────────────────────────────────────
+
+  /**
+   * Asks the registry for the latest on one mark. Returns the queue state — the fetch is served
+   * asynchronously, so the caller re-loads to see the result rather than blocking on it.
+   */
+  refreshFromRegistry(trademarkId: number): Observable<{ state: string }> {
+    return this.http.post<{ state: string }>(`${this.base}/agent-portal/portfolio/${trademarkId}/refresh`, {});
+  }
+
+  /** Updates the agent's private notes for a mark. Allowed whatever the mark's provenance. */
+  updatePortfolioLink(
+    trademarkId: number,
+    updates: { agentNotes?: string; clientReference?: string },
+  ): Observable<Record<string, unknown>> {
+    return this.http.patch<Record<string, unknown>>(`${this.base}/agent-portal/portfolio/${trademarkId}/link`, updates);
+  }
+
+  // ── Journal watch ────────────────────────────────────────────────────────
+
+  /** Journal issues available to check, newest first. */
+  getWatchJournals(limit = 24): Observable<number[]> {
+    return this.http.get<number[]>(`${this.base}/agent-portal/watch/journals?limit=${limit}`);
+  }
+
+  /** Scores the whole portfolio against one journal issue. */
+  runJournalWatch(journalNo: number): Observable<AgentJournalWatchResult> {
+    return this.http.post<AgentJournalWatchResult>(`${this.base}/agent-portal/watch/journals/${journalNo}`, {});
+  }
+
+  // ── Discovery: find and claim marks already in our data ──────────────────
+
+  /** Type-ahead over the agent-name directory. */
+  searchAgents(q: string, limit = 20): Observable<AgentDirectoryEntry[]> {
+    return this.http.get<AgentDirectoryEntry[]>(
+      `${this.base}/agent-portal/discover/agents?q=${encodeURIComponent(q)}&limit=${limit}`,
+    );
+  }
+
+  /** The marks filed under one exact agent name. */
+  discoverTrademarks(agentName: string, page = 0, size = 100): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
+    return this.http.get<AgentPortfolioTrademark[]>(
+      `${this.base}/agent-portal/discover/trademarks?agentName=${encodeURIComponent(agentName)}&page=${page}&size=${size}`,
+      { observe: 'response' },
+    );
+  }
+
+  /** Links the selected marks into the caller's portfolio. */
+  claimTrademarks(request: AgentClaimRequest): Observable<AgentClaimResult> {
+    return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/claim`, request);
+  }
+
   exportPortfolioExcel(): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, { responseType: 'blob' });
   }

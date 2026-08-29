@@ -14,6 +14,7 @@ export enum BacklinkStatus {
   LIVE = 'LIVE',
   REJECTED = 'REJECTED',
   SKIPPED = 'SKIPPED',
+  DO_NOT_ATTEMPT = 'DO_NOT_ATTEMPT',
 }
 
 export interface IBacklinkOpportunity {

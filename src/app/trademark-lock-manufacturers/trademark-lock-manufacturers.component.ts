@@ -56,8 +56,8 @@ export class TrademarkLockManufacturersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Lock & Padlock Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for lock, padlock, and hardware fitting manufacturers in Aligarh, Uttar Pradesh and Northern India. Protect your brand — Class 6 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Lock & Padlock Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for lock, padlock, and hardware fitting manufacturers in Aligarh, Uttar Pradesh and Northern India. Protect your brand — Class 6 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for lock manufacturers aligarh, padlock trademark uttar pradesh, lock brand registration india, door lock trademark northern india, trademark class 6 locks, brand protection lock manufacturing units aligarh, hardware fittings trademark registration up, cabinet lock trademark india, IP india trademark class 6 metal locks, trademark for lock exporters aligarh india';
 
     this.title.setTitle(pageTitle);
@@ -93,7 +93,7 @@ export class TrademarkLockManufacturersComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

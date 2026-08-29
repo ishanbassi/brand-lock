@@ -153,11 +153,11 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
     // Check initial scroll position
     this.checkScrollPosition();
 
-    this.title.setTitle('Trademark Registration in India — ₹1,499 + Govt. Fees | Trademarx');
-    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,499. Expert filing by IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.' });
+    this.title.setTitle('Trademark Registration in India — ₹1,999 + Govt. Fees | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,999. Expert filing by IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark registration india, trademark registration, trademark filing india, ip india trademark, online trademark registration, trademarx' });
-    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in India — ₹1,499 + Govt. Fees | Trademarx' });
-    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark in India from ₹1,499 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
+    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in India — ₹1,999 + Govt. Fees | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark in India from ₹1,999 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/trademark' });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
@@ -180,7 +180,7 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
         'areaServed': { '@type': 'Country', 'name': 'India' },
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Government filing fees of ₹4,500–₹9,000 additional.',
           'url': 'https://trademarx.in/trademark'

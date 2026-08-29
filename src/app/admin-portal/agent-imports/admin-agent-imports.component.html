@@ -1,0 +1,296 @@
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Agent Imports</h1>
+      <p class="page-sub">
+        {{ totalItems() }} retained upload{{ totalItems() === 1 ? '' : 's' }} — download the original file or replay it through the current parser
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">All statuses</option>
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <input class="filter-input" type="number" placeholder="Agent ID"
+           [(ngModel)]="agentIdFilter" (ngModelChange)="onFilterChange()" />
+  </div>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Agent</th>
+          <th>Sheets</th>
+          <th>Rows</th>
+          <th>Imported</th>
+          <th>Uploaded</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (i of [1,2,3,4,5]; track i) {
+            <tr class="skeleton-row"><td colspan="8"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (imports().length === 0) {
+          <tr><td colspan="8" class="empty-cell">No uploads in this view.</td></tr>
+        } @else {
+          @for (b of imports(); track b.id) {
+            <tr>
+              <td class="cell-strong">
+                <div class="stacked">
+                  <span>{{ b.originalFileName || '—' }}</span>
+                  <span class="muted">{{ bytes(b.fileSizeBytes) }}</span>
+                </div>
+              </td>
+              <td class="muted">#{{ b.tmAgentId }}</td>
+              <td>
+                @if (hasIgnoredSheets(b)) {
+                  <span class="badge badge--danger" title="The parser reads only the first sheet — the rest were ignored">
+                    {{ b.sheetCount }} ⚠
+                  </span>
+                } @else {
+                  <span class="muted">{{ b.sheetCount ?? '—' }}</span>
+                }
+              </td>
+              <td class="muted">{{ b.totalRows ?? 0 }}</td>
+              <td>
+                @if (parsedNothing(b)) {
+                  <span class="badge badge--danger" title="The parser found nothing importable in this file">0 ⚠</span>
+                } @else {
+                  <span>{{ b.imported ?? 0 }} / {{ b.importable ?? 0 }}</span>
+                }
+              </td>
+              <td class="muted">{{ b.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+              <td><span class="badge" [class]="badgeClass(b.status)">{{ statusLabel(b.status) }}</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="act" (click)="toggleDetail(b.id)">
+                    {{ expandedId() === b.id ? 'Hide' : 'Details' }}
+                  </button>
+                  <button class="act" [disabled]="busyId() === b.id || !b.storedPath" (click)="download(b)">Download</button>
+                  <button class="act" [disabled]="busyId() === b.id || !b.storedPath" (click)="reparse(b)">Reparse</button>
+                  <button class="act act-primary" [disabled]="!b.storedPath" (click)="openMapping(b)">Fix columns</button>
+                  <button class="act act--approve" [disabled]="busyId() === b.id || b.status === 'REVIEWED'"
+                          (click)="markReviewed(b)">Reviewed</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- DETAIL ROW -->
+            @if (expandedId() === b.id) {
+              <tr class="detail-row">
+                <td colspan="8">
+                  <div class="import-detail">
+
+                    <div class="detail-block">
+                      <p class="detail-heading">Columns the parser resolved</p>
+                      @if (mapping(b.columnMapping).length === 0) {
+                        <p class="detail-warn">
+                          No columns matched. The header row did not match any known heading —
+                          download the file to see what the agent actually used.
+                        </p>
+                      } @else {
+                        <div class="chip-row">
+                          @for (m of mapping(b.columnMapping); track m) {
+                            <span class="col-chip">{{ m }}</span>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    @if (hasIgnoredSheets(b)) {
+                      <div class="detail-block">
+                        <p class="detail-warn">
+                          ⚠ This workbook has {{ b.sheetCount }} sheets and the parser read only the first.
+                          The remaining {{ (b.sheetCount ?? 1) - 1 }} were never imported.
+                        </p>
+                      </div>
+                    }
+
+                    <div class="detail-block">
+                      <p class="detail-heading">Counts</p>
+                      <div class="chip-row">
+                        <span class="col-chip">total {{ b.totalRows ?? 0 }}</span>
+                        <span class="col-chip">importable {{ b.importable ?? 0 }}</span>
+                        <span class="col-chip">imported {{ b.imported ?? 0 }}</span>
+                        <span class="col-chip">skipped {{ b.skipped ?? 0 }}</span>
+                        <span class="col-chip">errors {{ b.errors ?? 0 }}</span>
+                      </div>
+                    </div>
+
+                    @if (rowErrors(b.errorMessages).length > 0) {
+                      <div class="detail-block">
+                        <p class="detail-heading">Row errors</p>
+                        <ul class="error-list">
+                          @for (msg of rowErrors(b.errorMessages); track msg) {
+                            <li>{{ msg }}</li>
+                          }
+                        </ul>
+                      </div>
+                    }
+
+                    @if (b.reviewedBy) {
+                      <p class="muted">Reviewed by {{ b.reviewedBy }} on {{ b.reviewedDate | date:'dd MMM yyyy' }}</p>
+                    }
+
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  }
+
+
+  <!--
+    COLUMN MAPPING REPAIR
+    The parser guesses sheet, header row and columns; this is where a wrong guess gets corrected.
+    Showing the real cells alongside the dropdowns is the point — mapping blind from field names is
+    how columns end up pointed at the wrong data.
+  -->
+  @if (mappingBatch) {
+    <div class="mapping-backdrop" (click)="closeMapping()"></div>
+    <aside class="mapping-panel">
+      <header class="mapping-header">
+        <div>
+          <h2>Fix columns</h2>
+          <p class="mapping-file">{{ mappingBatch.originalFileName }}</p>
+        </div>
+        <button class="btn-ghost" (click)="closeMapping()">Close</button>
+      </header>
+
+      @if (gridLoading) {
+        <p class="mapping-loading">Reading the file…</p>
+      }
+
+      @if (grid && !gridLoading) {
+        @if (grid.fileUnreadable) {
+          <p class="mapping-error">
+            This file could not be opened at all — it is corrupt or not a real Excel workbook. The
+            agent needs to send a replacement; there is no mapping that will fix it.
+          </p>
+        } @else {
+          <div class="mapping-controls">
+            <label>
+              <span>Sheet</span>
+              <select [value]="mappingSheetIndex" (change)="onSheetChange($any($event.target).value)">
+                @for (name of grid.sheetNames; track $index) {
+                  <option [value]="$index">{{ name }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Header row</span>
+              <select [value]="mappingHeaderRow" (change)="mappingHeaderRow = $any($event.target).value; dryRun = null">
+                @for (row of grid.rows; track $index) {
+                  <option [value]="$index">Row {{ $index + 1 }}</option>
+                }
+              </select>
+            </label>
+          </div>
+
+          <!-- Raw cells, so columns can be matched against real data rather than guessed. -->
+          <div class="grid-scroll">
+            <table class="grid-table">
+              <thead>
+                <tr>
+                  <th class="rownum"></th>
+                  @for (c of columnIndexes; track c) {
+                    <th>{{ columnLetter(c) }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of grid.rows; track $index) {
+                  <tr [class.is-header]="$index === +mappingHeaderRow">
+                    <td class="rownum">{{ $index + 1 }}</td>
+                    @for (c of columnIndexes; track c) {
+                      <td>{{ row[c] }}</td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="field-map">
+            <h3>Point each field at a column</h3>
+            @for (f of mappableFields; track f.value) {
+              <label class="field-row">
+                <span class="field-label">{{ f.label }}</span>
+                <select [value]="columnFor(f.value)" (change)="setFieldColumn(f.value, $any($event.target).value)">
+                  <option value="">— not in this file —</option>
+                  @for (c of columnIndexes; track c) {
+                    <option [value]="c">{{ columnLabel(c) }}</option>
+                  }
+                </select>
+              </label>
+            }
+          </div>
+
+          <label class="learn-toggle">
+            <input type="checkbox" [checked]="learnAliases" (change)="learnAliases = $any($event.target).checked" />
+            <span>
+              Remember these header names
+              <em>so the next agent who uploads this format parses automatically</em>
+            </span>
+          </label>
+
+          @if (dryRun) {
+            <div class="dry-run">
+              <strong>{{ dryRun.importable }} row(s) would be imported</strong>
+              <span>{{ dryRun.skipped }} skipped · {{ dryRun.errors }} errors</span>
+              @if (dryRun.columnConfidence) {
+                <ul class="confidence-list">
+                  @for (f of mappableFields; track f.value) {
+                    @if (dryRun.columnConfidence[f.value]) {
+                      <li [class.needs-check]="confidenceNeedsCheck(dryRun.columnConfidence[f.value])">
+                        {{ f.label }}: {{ confidenceLabel(dryRun.columnConfidence[f.value]) }}
+                      </li>
+                    }
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <footer class="mapping-actions">
+            <button class="btn-ghost" [disabled]="mappingBusy" (click)="runDryRun()">Preview result</button>
+            <button class="btn-primary" [disabled]="mappingBusy || !dryRun" (click)="applyImport()">
+              Import into agent's portfolio
+            </button>
+          </footer>
+          @if (!dryRun) {
+            <p class="mapping-hint">Preview first — importing writes straight into the agent's live portfolio.</p>
+          }
+        }
+      }
+    </aside>
+  }
+
+</div>

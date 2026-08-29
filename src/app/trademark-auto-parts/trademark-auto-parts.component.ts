@@ -61,8 +61,8 @@ export class TrademarkAutoPartsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Auto Parts Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for auto parts, spare parts and components manufacturers in Ludhiana, Punjab and across Northern India. Protect your brand from counterfeit parts — Class 7 & 12 filing from ₹1,499. IP India authorised agents, 100% online.';
+    const pageTitle = 'Trademark Registration for Auto Parts Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for auto parts, spare parts and components manufacturers in Ludhiana, Punjab and across Northern India. Protect your brand from counterfeit parts — Class 7 & 12 filing from ₹1,999. IP India authorised agents, 100% online.';
     const keywords = 'trademark registration for auto parts manufacturers, auto parts brand registration ludhiana, spare parts company trademark punjab, trademark for automotive components business, brand protection auto ancillary units india, trademark class 12 auto parts, trademark for forging and casting units, counterfeit auto parts trademark india';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkAutoPartsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

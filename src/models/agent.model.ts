@@ -47,6 +47,22 @@ export interface AgentPortfolioTrademark {
   email?: string;
   state?: string;
   filingMode?: string;
+
+  /**
+   * Whether the agent may edit the mark's own fields.
+   *
+   * False for anything the register backs — either a mark claimed from our data, or one the agent
+   * entered that the registry has since answered for. Editing those would be silently overwritten
+   * by the next refresh and would present the agent's values as registry fact.
+   */
+  editable?: boolean;
+
+  /** When the registry last confirmed this row. Null means we still only have the agent's word. */
+  registrySyncedDate?: string | null;
+
+  /** Agent-private annotation. Lives on the portfolio link, so it is always editable. */
+  agentNotes?: string;
+  clientReference?: string;
 }
 
 export interface AgentImportResult {
@@ -57,6 +73,12 @@ export interface AgentImportResult {
   errors: number;
   errorMessages?: string[];
   previewRows: AgentPortfolioTrademark[];
+  /** Sheets in the workbook. The parser reads only the first, so >1 means data was ignored. */
+  sheetCount?: number;
+  /** Field name to zero-based column index, as resolved from the header row. */
+  detectedColumns?: Record<string, number>;
+  /** Identifies the retained upload, so confirm updates the preview's record. */
+  batchId?: number;
 }
 
 export interface AgentDashboardStats {
@@ -101,4 +123,76 @@ export interface AgentPublicProfile {
   website?: string;
   profileStatus?: string;
   portfolioCount?: number;
+}
+
+/**
+ * One agent name in the discovery directory.
+ *
+ * Sourced from the aggregate of `trademark.agent_name`, which is free-text registry data — the
+ * same firm appears under several spellings, so an agent may need to claim more than one entry.
+ */
+export interface AgentDirectoryEntry {
+  nameNormalized: string;
+  displayName: string;
+  markCount: number;
+  latestFilingDate?: string;
+}
+
+export interface AgentClaimRequest {
+  agentName: string;
+  trademarkIds?: number[];
+  /** Claim every mark under the name instead of listing ids, for large firms. */
+  claimAllUnderName?: boolean;
+}
+
+export interface AgentClaimResult {
+  claimed: number;
+  alreadyHeld: number;
+  rejected: number;
+  autoVerified: number;
+  portfolioTotal: number;
+}
+
+/** One of the caller's own portfolio uploads, as shown on the portfolio page. */
+export interface AgentImportSummary {
+  id: number;
+  originalFileName?: string;
+  status?: string;
+  totalRows?: number;
+  importable?: number;
+  imported?: number;
+  createdDate?: string;
+  /** Still awaiting an admin or the agent's own confirmation. */
+  pending?: boolean;
+}
+
+
+/** One conflicting mark found in a journal against a mark in the portfolio. */
+export interface AgentJournalConflict {
+  journalNo: number;
+  score: number;
+  riskLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+
+  portfolioTrademarkId: number;
+  portfolioTrademarkName?: string;
+  portfolioApplicationNo?: number;
+  portfolioTmClass?: number;
+
+  conflictingTrademarkId: number;
+  conflictingTrademarkName?: string;
+  conflictingApplicationNo?: number;
+  conflictingTmClass?: number;
+  conflictingProprietorName?: string;
+  conflictingApplicationDate?: string;
+  conflictingImgUrl?: string;
+}
+
+export interface AgentJournalWatchResult {
+  journalNo: number;
+  /** Candidate pairs actually scored — distinguishes "no conflicts" from "nothing comparable". */
+  pairsScored: number;
+  conflicts: AgentJournalConflict[];
+  /** True when the result cap was hit, so the list is not exhaustive. */
+  truncated: boolean;
+  durationMs: number;
 }

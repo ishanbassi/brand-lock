@@ -56,8 +56,8 @@ export class TrademarkScientificInstrumentsComponent implements OnInit, OnDestro
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Scientific & Laboratory Instruments Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for scientific and laboratory instrument manufacturers in Ambala, Haryana and Northern India. Protect your lab equipment or instrument brand — Class 9 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Scientific & Laboratory Instruments Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for scientific and laboratory instrument manufacturers in Ambala, Haryana and Northern India. Protect your lab equipment or instrument brand — Class 9 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for scientific instruments manufacturers ambala, laboratory instrument manufacturer trademark haryana, scientific equipment brand registration india, lab glassware trademark registration ambala, trademark class 9 scientific instruments, brand protection scientific instruments manufacturers northern india, physics chemistry biology apparatus trademark ambala, educational charts trademark registration india, scientific instrument exporters trademark ambala, lab equipment brand registration haryana, trademark for teaching models manufacturers ambala, measuring instruments manufacturer trademark';
 
     this.title.setTitle(pageTitle);
@@ -94,7 +94,7 @@ export class TrademarkScientificInstrumentsComponent implements OnInit, OnDestro
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

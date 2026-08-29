@@ -61,8 +61,8 @@ export class TrademarkAgriculturalEquipmentComponent implements OnInit, OnDestro
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Agricultural Equipment & Farm Machinery Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for combine harvester, thresher, rotavator and farm machinery manufacturers in Malerkotla, Punjab and Northern India. Protect your brand from copycats — Class 7 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Agricultural Equipment & Farm Machinery Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for combine harvester, thresher, rotavator and farm machinery manufacturers in Malerkotla, Punjab and Northern India. Protect your brand from copycats — Class 7 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for agricultural equipment manufacturers, farm machinery brand registration punjab, combine harvester trademark malerkotla, trademark for rotavator manufacturers india, agricultural implements trademark northern india, trademark class 7 farm machinery, brand protection tractor trailer punjab, trademark registration agri equipment exporters, thresher manufacturer trademark malerkotla, IP india trademark agricultural machinery';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkAgriculturalEquipmentComponent implements OnInit, OnDestro
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

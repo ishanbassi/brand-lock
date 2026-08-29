@@ -158,17 +158,17 @@
           </p>
 
           <div class="next-steps">
-            <div class="next-step-card" (click)="goToDashboard()">
-              <span class="ns-icon">📊</span>
+            <div class="next-step-card next-step-primary" routerLink="/agent-portal/portfolio/claim">
+              <span class="ns-icon">🔎</span>
               <div>
-                <strong>View Dashboard</strong>
-                <p>See your portfolio overview</p>
+                <strong>Find your trademarks</strong>
+                <p>Search the register by your firm name — no file needed</p>
               </div>
             </div>
             <div class="next-step-card" routerLink="/agent-portal/portfolio/upload">
               <span class="ns-icon">📤</span>
               <div>
-                <strong>Import Portfolio</strong>
+                <strong>Import a spreadsheet</strong>
                 <p>Upload your Excel file</p>
               </div>
             </div>
@@ -181,7 +181,8 @@
             </div>
           </div>
 
-          <button class="btn-primary" (click)="goToDashboard()">Go to Dashboard →</button>
+          <button class="btn-primary" routerLink="/agent-portal/portfolio/claim">Find my trademarks →</button>
+          <button class="btn-text-secondary" (click)="goToDashboard()">Skip to dashboard</button>
         </div>
       }
 

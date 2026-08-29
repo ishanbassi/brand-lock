@@ -5,6 +5,7 @@ import { ApplicationConfigService } from './core/config/application-config.servi
 import { environment } from '../environments/environment';
 import { ReferralAttributionService } from './shared/services/referral-attribution.service';
 import { LoadingService } from './common/loading.service';
+import { SeoService } from './shared/services/seo.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent {
     private readonly applicationConfigService:ApplicationConfigService,
     private readonly router: Router,
     private readonly referralAttributionService: ReferralAttributionService,
-    private readonly loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly seo: SeoService
   ){
     this.applicationConfigService.setEndpointPrefix(environment.BaseApiUrl)
 
@@ -30,6 +32,26 @@ export class AppComponent {
       if (refCode) {
         this.referralAttributionService.captureFromUrl(refCode, this.router.url);
       }
+    });
+
+    // Canonical tags used to be set per-component, which meant a page had one only where somebody
+    // remembered — /trademark-search, /blogs, /contact-us and /trademark-registration had none, and
+    // every new page started out the same way. This applies a self-referencing canonical from the
+    // route as the default; a component that calls seo.setCanonical() in ngOnInit still wins,
+    // because ngOnInit runs before NavigationEnd. Registered here rather than in a route guard so
+    // it covers every route, including the lazy-loaded ones.
+    this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
+      this.seo.beginNavigation();
+    });
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      let route = this.router.routerState.snapshot.root;
+      while (route.firstChild) {
+        route = route.firstChild;
+      }
+      // The 404/403 routes are the ones carrying a `code` in their route data. A canonical on a
+      // dead URL tells a crawler the URL is real, which is the opposite of what a 404 is for.
+      const isErrorPage = route.data['code'] !== undefined;
+      this.seo.applyRouteCanonical(this.router.url, isErrorPage);
     });
 
     // Shows the global loading overlay for the duration of route navigation

@@ -66,6 +66,10 @@
             <span class="col-chip">{{ col }}</span>
           }
         </div>
+        <p class="retention-note">
+          🔒 We keep a copy of your file so our team can help if the import misses anything.
+          It is private to your account and never shared.
+        </p>
       </div>
 
     </div>
@@ -162,6 +166,33 @@
   }
 
   <!-- PHASE: IMPORTING -->
+  <!--
+    The parser found nothing importable. This is a mapping problem on our side, so the agent is
+    reassured and moved on rather than being asked to fix a file that is probably fine.
+  -->
+  @if (phase() === 'handoff') {
+    <div class="handoff-card">
+      <div class="handoff-icon" aria-hidden="true">&#128340;</div>
+      <h2>We've received your file</h2>
+      <p class="handoff-lead">
+        <strong>{{ selectedFile()?.name }}</strong> is laid out differently from the formats we read
+        automatically, so our team is checking it now.
+      </p>
+      <p class="handoff-detail">
+        You don't need to do anything — and you don't need to upload it again. Your trademarks will
+        appear in your portfolio as soon as it's processed, usually within one business day.
+      </p>
+      <div class="handoff-actions">
+        <button type="button" class="btn-primary" (click)="continueToPortfolio()">
+          Go to my portfolio
+        </button>
+        <a routerLink="/agent-portal/portfolio/claim" class="btn-secondary">
+          Find my marks by firm name instead
+        </a>
+      </div>
+    </div>
+  }
+
   @if (phase() === 'importing') {
     <div class="loading-card">
       <div class="spinner-lg"></div>

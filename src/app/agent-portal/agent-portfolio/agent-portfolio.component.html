@@ -15,6 +15,9 @@
       <button class="btn-ghost" (click)="exportPdf()" [disabled]="exportingPdf()" title="Download as PDF">
         <span>📄</span> {{ exportingPdf() ? 'Exporting…' : 'Export PDF' }}
       </button>
+      <a routerLink="/agent-portal/watch/journal" class="btn-outline">
+        <span>🛡️</span> Trademark Watch
+      </a>
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
         <span>📤</span> Import Excel
       </a>
@@ -60,6 +63,41 @@
       </button>
     }
   </div>
+
+  <!-- PENDING IMPORTS -->
+  <!--
+    Without this an agent whose spreadsheet failed to parse sees an empty portfolio and assumes the
+    upload silently failed. The file is retained and queued for an admin; this says so.
+  -->
+  @if (pendingImports().length > 0) {
+    <div class="alert-pending">
+      <span class="pending-icon" aria-hidden="true">&#128340;</span>
+      <div>
+        <strong>We're checking your uploaded file</strong>
+        @for (imp of pendingImports(); track imp.id) {
+          <p class="pending-file">
+            {{ imp.originalFileName || 'Your spreadsheet' }}
+            @if (imp.status === 'NEEDS_ADMIN_REVIEW') {
+              — our team is mapping its columns
+            } @else {
+              — waiting for you to confirm the import
+            }
+          </p>
+        }
+        <p class="pending-note">
+          Your trademarks will appear here once it's processed. There's no need to upload it again.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- REGISTRY REFRESH FEEDBACK -->
+  @if (refreshMessage()) {
+    <div class="alert-info">
+      {{ refreshMessage() }}
+      <button class="alert-dismiss" (click)="refreshMessage.set('')" aria-label="Dismiss">&times;</button>
+    </div>
+  }
 
   <!-- ERROR -->
   @if (error()) {
@@ -149,9 +187,36 @@
                     <a [routerLink]="['/agent-portal/portfolio', tm.id, 'watch']" class="action-btn watch-btn" title="Trademark Watch">
                       👁
                     </a>
-                    <a [routerLink]="['/agent-portal/portfolio', tm.id, 'edit']" class="action-btn edit-btn" title="Edit">
-                      ✏️
-                    </a>
+
+                    <!--
+                      Pulls the latest from the IP India register. Only meaningful once the mark has
+                      an application number — without one there is nothing to look up.
+                    -->
+                    @if (tm.applicationNo) {
+                      <button
+                        class="action-btn refresh-btn"
+                        (click)="refreshFromRegistry(tm)"
+                        [disabled]="refreshingId() === tm.id"
+                        [title]="refreshingId() === tm.id ? 'Requesting…' : 'Refresh from register'">
+                        {{ refreshingId() === tm.id ? '⏳' : '🔄' }}
+                      </button>
+                    }
+
+                    <!--
+                      Editing is only offered while the agent is still the best source we have. Once
+                      the register answers, the row holds registry data and an edit would be both
+                      overwritten and misleading — so the button becomes a lock rather than
+                      disappearing, which would just look like a missing feature.
+                    -->
+                    @if (tm.editable) {
+                      <a [routerLink]="['/agent-portal/portfolio', tm.id, 'edit']" class="action-btn edit-btn" title="Edit">
+                        ✏️
+                      </a>
+                    } @else {
+                      <span class="action-btn locked-btn" title="From the public register — add a note instead of editing">
+                        🔒
+                      </span>
+                    }
                     <button class="action-btn delete-btn" (click)="startDelete(tm.id!)" title="Delete"
                       [disabled]="deletingId() === tm.id">
                       🗑️

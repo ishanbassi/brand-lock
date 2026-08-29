@@ -61,8 +61,8 @@ export class TrademarkSurgicalInstrumentsComponent implements OnInit, OnDestroy 
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Surgical Instruments Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for surgical, dental, veterinary and beauty instrument manufacturers in Jalandhar, Punjab and Northern India. Protect your export brand — Class 10 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Surgical Instruments Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for surgical, dental, veterinary and beauty instrument manufacturers in Jalandhar, Punjab and Northern India. Protect your export brand — Class 10 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for surgical instruments manufacturers jalandhar, surgical instrument trademark punjab, dental instrument brand registration india, veterinary instrument trademark northern india, trademark class 10 surgical instruments, brand protection surgical instrument exporters jalandhar, beauty grooming instrument trademark registration punjab, manicure pedicure instrument trademark india, IP india trademark class 10 medical instruments, trademark for surgical instrument exporters punjab india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkSurgicalInstrumentsComponent implements OnInit, OnDestroy 
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

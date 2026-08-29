@@ -485,3 +485,91 @@ $white: #ffffff;
   margin-top: 1rem;
   font-size: 0.875rem;
 }
+
+.retention-note {
+  margin: 0.85rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+
+// ── HANDOFF (unparseable file) ──────────────────────────
+// Shown instead of the preview table when the parser found nothing importable.
+.handoff-card {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin: 0 0 0.75rem;
+  }
+}
+
+.handoff-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: rgba($warning, 0.12);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.handoff-lead {
+  color: $gray-800;
+  font-size: 0.9375rem;
+  margin: 0 auto 0.75rem;
+  max-width: 48ch;
+  line-height: 1.6;
+}
+
+.handoff-detail {
+  color: $gray-600;
+  font-size: 0.875rem;
+  margin: 0 auto 1.5rem;
+  max-width: 50ch;
+  line-height: 1.6;
+}
+
+.handoff-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .btn-primary,
+  .btn-secondary {
+    border-radius: 10px;
+    padding: 0.6875rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary {
+    background: $accent;
+    border: 1px solid $accent;
+    color: $white;
+
+    &:hover { background: $accent-light; border-color: $accent-light; }
+  }
+
+  .btn-secondary {
+    background: $white;
+    border: 1px solid $gray-200;
+    color: $gray-600;
+
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}

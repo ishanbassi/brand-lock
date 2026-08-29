@@ -90,7 +90,7 @@ export const SERVICE_CONFIG: Record<ServiceType, { name: string; price: number; 
   },
   TRADEMARK_REGISTRATION:{
     name: 'Trademark Filing',
-    price: 1499,
+    price: 1999,
     description: 'Trademark Filing Service'
   }
 };

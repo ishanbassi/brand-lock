@@ -1,10 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentImportResult, AgentPortfolioTrademark } from '../../../models/agent.model';
 
-type UploadPhase = 'select' | 'preview' | 'importing' | 'done' | 'error';
+type UploadPhase = 'select' | 'preview' | 'importing' | 'done' | 'error' | 'handoff';
 
 @Component({
   selector: 'app-agent-portfolio-upload',
@@ -68,6 +68,12 @@ export class AgentPortfolioUploadComponent {
     this.agentDataService.previewImport(file).subscribe({
       next: (result) => {
         this.previewResult.set(result);
+        // Nothing importable means our parser could not read the layout — not that the agent picked
+        // the wrong file. Sending them back to retry would fail identically, so the file (already
+        // retained server-side) goes to an admin and the agent moves on to their portfolio.
+        if ((result.importable ?? 0) === 0) {
+          this.phase.set('handoff');
+        }
       },
       error: (err) => {
         this.errorMessage.set(err?.error?.message || 'Failed to parse the file. Check the format and try again.');
@@ -80,7 +86,7 @@ export class AgentPortfolioUploadComponent {
     const file = this.selectedFile();
     if (!file) return;
     this.phase.set('importing');
-    this.agentDataService.confirmImport(file).subscribe({
+    this.agentDataService.confirmImport(file, this.previewResult()?.batchId).subscribe({
       next: (result) => {
         this.importResult.set(result);
         this.phase.set('done');
@@ -110,5 +116,13 @@ export class AgentPortfolioUploadComponent {
     return this.previewResult()?.previewRows ?? [];
   }
 
-  constructor(private readonly agentDataService: AgentDataService) {}
+  /** Leaves the upload screen for the portfolio, where the pending-import banner takes over. */
+  continueToPortfolio(): void {
+    this.router.navigate(['/agent-portal/portfolio']);
+  }
+
+  constructor(
+    private readonly agentDataService: AgentDataService,
+    private readonly router: Router,
+  ) {}
 }

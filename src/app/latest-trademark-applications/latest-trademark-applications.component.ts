@@ -140,7 +140,7 @@ export class LatestTrademarkApplicationsComponent implements OnInit, OnDestroy {
   private setSeoTags(): void {
     const title = 'Latest Trademark Applications Filed in India | Live Registry Updates — Trademarx';
     const description =
-      'Browse the latest trademark applications filed with the India Trademark Registry. Search by brand name, check class, applicant and status — updated daily. File your own trademark from ₹1,499.';
+      'Browse the latest trademark applications filed with the India Trademark Registry. Search by brand name, check class, applicant and status — updated daily. File your own trademark from ₹1,999.';
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });

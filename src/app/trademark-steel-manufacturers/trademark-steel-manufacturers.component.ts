@@ -61,8 +61,8 @@ export class TrademarkSteelManufacturersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Steel Manufacturers & Re-rolling Mills — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for steel re-rolling mills, TMT bar manufacturers, and steel product units in Mandi Gobindgarh, Punjab and Northern India. Protect your brand — Class 6 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Steel Manufacturers & Re-rolling Mills — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for steel re-rolling mills, TMT bar manufacturers, and steel product units in Mandi Gobindgarh, Punjab and Northern India. Protect your brand — Class 6 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for steel manufacturers mandi gobindgarh, steel re-rolling mill trademark punjab, TMT bar brand registration india, trademark for steel products manufacturers northern india, trademark class 6 steel products, brand protection steel mills punjab, mandi gobindgarh trademark registration, MS structural steel trademark india, steel exporter brand registration punjab, IP india trademark steel manufacturer';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkSteelManufacturersComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

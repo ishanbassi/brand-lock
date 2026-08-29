@@ -492,3 +492,76 @@ $white: #ffffff;
     th:nth-child(3), td:nth-child(3) { display: none; } // class
   }
 }
+
+
+// ── PENDING IMPORT BANNER ───────────────────────────────
+.alert-pending {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+
+  strong {
+    display: block;
+    color: #9a3412;
+    font-size: 0.9375rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.pending-icon { font-size: 1.125rem; line-height: 1.4; }
+
+.pending-file {
+  margin: 0.125rem 0;
+  color: #9a3412;
+  font-size: 0.875rem;
+}
+
+.pending-note {
+  margin: 0.5rem 0 0;
+  color: #b45309;
+  font-size: 0.8125rem;
+}
+
+// ── REGISTRY REFRESH / LOCK ─────────────────────────────
+.alert-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #3730a3;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.alert-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+
+  &:hover { opacity: 1; }
+}
+
+.refresh-btn:disabled { opacity: 0.5; cursor: wait; }
+
+// A lock rather than a hidden button: an absent control reads as a missing feature, whereas this
+// says the mark is register-backed and invites the note instead.
+.locked-btn {
+  opacity: 0.4;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

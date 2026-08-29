@@ -379,3 +379,12 @@ $white: #ffffff;
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
 }
+
+// Journal watch is the time-critical action on this screen — the opposition window closes whether
+// or not anyone checked — so it is visually led rather than sitting level with the rest.
+.qa-item.qa-primary {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.06);
+
+  .qa-text strong { color: #4f46e5; }
+}

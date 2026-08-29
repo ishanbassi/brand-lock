@@ -61,8 +61,8 @@ export class TrademarkHosieryKnitwearComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Hosiery & Knitwear Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for hosiery, knitwear, woollen sweater, socks and thermal wear manufacturers in Ludhiana, Punjab and Northern India. Protect your garment brand from copycats — Class 25 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Hosiery & Knitwear Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for hosiery, knitwear, woollen sweater, socks and thermal wear manufacturers in Ludhiana, Punjab and Northern India. Protect your garment brand from copycats — Class 25 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for hosiery manufacturers ludhiana, knitwear brand registration punjab, woollen sweater trademark ludhiana, socks manufacturer trademark india, hosiery exporter brand protection northern india, trademark class 25 knitwear, brand registration thermal wear ludhiana, trademark registration garment manufacturers punjab, hosiery brand trademark IP india, knitwear trademark registration ludhiana';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkHosieryKnitwearComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

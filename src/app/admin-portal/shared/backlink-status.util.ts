@@ -12,6 +12,7 @@ export const BACKLINK_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: 'LIVE', label: 'Live' },
   { value: 'REJECTED', label: 'Rejected' },
   { value: 'SKIPPED', label: 'Skipped' },
+  { value: 'DO_NOT_ATTEMPT', label: 'Do not attempt' },
 ];
 
 export const BACKLINK_CATEGORY_OPTIONS: { value: string; label: string }[] = [
@@ -26,6 +27,8 @@ export function backlinkStatusBadgeClass(status: string | null | undefined): str
     case 'LIVE':
       return 'badge--success';
     case 'REJECTED':
+    // DO_NOT_ATTEMPT is a standing warning (blacklist/COI risk), not a soft "maybe later" like SKIPPED.
+    case 'DO_NOT_ATTEMPT':
       return 'badge--danger';
     case 'OUTREACH_SENT':
       return 'badge--warning';

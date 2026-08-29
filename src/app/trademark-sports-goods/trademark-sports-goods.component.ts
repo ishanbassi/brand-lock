@@ -61,8 +61,8 @@ export class TrademarkSportsGoodsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Sports Goods Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for sports goods manufacturers in Jalandhar, Punjab and Northern India. Protect your cricket bat, football, boxing equipment or hockey stick brand — Class 28 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Sports Goods Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for sports goods manufacturers in Jalandhar, Punjab and Northern India. Protect your cricket bat, football, boxing equipment or hockey stick brand — Class 28 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for sports goods manufacturers jalandhar, sports goods brand registration punjab, cricket bat trademark jalandhar, football manufacturer trademark india, hockey stick brand registration northern india, trademark class 28 sporting goods, boxing equipment trademark ludhiana punjab, sports goods exporter brand protection, trademark registration jalandhar sports goods, IP india trademark sports equipment';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkSportsGoodsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

@@ -61,8 +61,8 @@ export class TrademarkDieselEngineManufacturersComponent implements OnInit, OnDe
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Diesel Engine & Genset Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for diesel engine, generator set, and engine pump set manufacturers in Ludhiana, Punjab and Northern India. Protect your engine brand — Class 7 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Diesel Engine & Genset Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for diesel engine, generator set, and engine pump set manufacturers in Ludhiana, Punjab and Northern India. Protect your engine brand — Class 7 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for diesel engine manufacturers ludhiana, diesel engine trademark punjab, generator set brand registration india, genset manufacturer trademark northern india, trademark class 7 diesel engines, brand protection diesel engine manufacturers ludhiana, engine pump set trademark registration punjab, diesel engine spare parts trademark india, IP india trademark class 7 engines gensets, trademark for diesel engine exporters punjab india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkDieselEngineManufacturersComponent implements OnInit, OnDe
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

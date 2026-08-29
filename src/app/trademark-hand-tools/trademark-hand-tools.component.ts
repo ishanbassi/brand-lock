@@ -61,8 +61,8 @@ export class TrademarkHandToolsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Hand Tools Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for hand tools, wrenches, pliers, spanner and screwdriver manufacturers in Jalandhar, Punjab and Northern India. Protect your brand from copycats — Class 8 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Hand Tools Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for hand tools, wrenches, pliers, spanner and screwdriver manufacturers in Jalandhar, Punjab and Northern India. Protect your brand from copycats — Class 8 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for hand tools manufacturers, hand tools brand registration jalandhar, wrenches and spanners trademark punjab, trademark for pliers manufacturers india, hand tools exporter trademark northern india, trademark class 8 hand tools, brand protection hand tools jalandhar, trademark registration tool forging units punjab, hardware tools trademark jalandhar, IP india trademark hand tools';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkHandToolsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

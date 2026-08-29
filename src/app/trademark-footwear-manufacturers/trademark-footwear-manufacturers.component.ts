@@ -56,8 +56,8 @@ export class TrademarkFootwearManufacturersComponent implements OnInit, OnDestro
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Footwear Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for footwear and leather goods manufacturers in Agra, Uttar Pradesh and Northern India. Protect your shoe, sandal, or leather brand — Class 25 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Footwear Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for footwear and leather goods manufacturers in Agra, Uttar Pradesh and Northern India. Protect your shoe, sandal, or leather brand — Class 25 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for footwear manufacturers agra, shoe manufacturer trademark uttar pradesh, footwear brand registration india, leather shoes trademark registration up, trademark class 25 footwear, brand protection footwear manufacturers northern india, sports shoes manufacturer trademark agra, leather goods trademark registration india, footwear exporters trademark agra, shoe brand registration uttar pradesh, trademark for leather bags manufacturers agra, chappal and sandal manufacturer trademark';
 
     this.title.setTitle(pageTitle);
@@ -93,7 +93,7 @@ export class TrademarkFootwearManufacturersComponent implements OnInit, OnDestro
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

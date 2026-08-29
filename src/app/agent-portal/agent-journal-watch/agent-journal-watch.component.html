@@ -1,0 +1,136 @@
+<div class="watch-page">
+  <header class="watch-header">
+    <div>
+      <h1>Trademark Watch</h1>
+      <p class="subtitle">
+        Check your portfolio against a published journal issue. Marks advertised in a journal are
+        open to opposition for four months from the date of advertisement.
+      </p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <section class="run-card">
+    <label class="journal-select">
+      <span>Journal issue</span>
+      @if (loadingJournals()) {
+        <span class="loading-inline">Loading…</span>
+      } @else {
+        <select
+          [value]="selectedJournal()"
+          (change)="selectedJournal.set(+$any($event.target).value)"
+          [disabled]="running()"
+        >
+          @for (j of journals(); track j) {
+            <option [value]="j">Journal {{ j }}</option>
+          }
+        </select>
+      }
+    </label>
+
+    <button class="btn-primary" [disabled]="running() || selectedJournal() === null" (click)="run()">
+      {{ running() ? 'Checking…' : 'Run check' }}
+    </button>
+  </section>
+
+  @if (running()) {
+    <div class="running-note">
+      Comparing every mark in your portfolio against this issue. A large portfolio can take a
+      moment.
+    </div>
+  }
+
+  @if (result()) {
+    <section class="results">
+      <div class="summary">
+        <div class="summary-main">
+          <strong>{{ counts().total }}</strong>
+          possible conflict{{ counts().total === 1 ? '' : 's' }} in Journal {{ result()!.journalNo }}
+        </div>
+        <div class="summary-meta">
+          {{ result()!.pairsScored | number }} comparison{{ result()!.pairsScored === 1 ? '' : 's' }}
+          in {{ (result()!.durationMs / 1000).toFixed(1) }}s
+        </div>
+      </div>
+
+      <!--
+        pairsScored = 0 means nothing was even comparable — usually an empty portfolio or marks
+        that have not been tokenised — which is a very different situation from a clean result.
+      -->
+      @if (counts().total === 0 && result()!.pairsScored === 0) {
+        <div class="empty-note warn">
+          Nothing in your portfolio could be compared against this issue. If you have just added
+          marks, they may not be indexed yet.
+        </div>
+      } @else if (counts().total === 0) {
+        <div class="empty-note good">
+          No conflicting marks found in this issue. Nothing to oppose.
+        </div>
+      }
+
+      @if (result()!.truncated) {
+        <div class="empty-note warn">
+          Showing the strongest matches only — there were more results than we display at once.
+        </div>
+      }
+
+      @if (counts().total > 0) {
+        <div class="risk-filters">
+          <button [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">
+            All ({{ counts().total }})
+          </button>
+          <button class="risk-high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">
+            High ({{ counts().high }})
+          </button>
+          <button class="risk-medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">
+            Medium ({{ counts().medium }})
+          </button>
+          <button class="risk-low" [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">
+            Low ({{ counts().low }})
+          </button>
+        </div>
+
+        <div class="conflict-list">
+          @for (c of visibleConflicts(); track c.conflictingTrademarkId) {
+            <article class="conflict-card" [class]="'risk-' + c.riskLevel.toLowerCase()">
+              <div class="conflict-score">
+                <span class="score-value">{{ scorePercent(c.score) }}%</span>
+                <span class="score-label">{{ c.riskLevel }}</span>
+              </div>
+
+              <div class="conflict-body">
+                <!-- The agent's own mark first: with hundreds of clients, "which of mine?" is the
+                     first question, and a list of journal marks alone is unactionable. -->
+                <div class="side yours">
+                  <span class="side-label">Your mark</span>
+                  <span class="mark-name">{{ c.portfolioTrademarkName || '—' }}</span>
+                  <span class="mark-meta">
+                    @if (c.portfolioApplicationNo) { App {{ c.portfolioApplicationNo }} · }
+                    Class {{ c.portfolioTmClass || '—' }}
+                  </span>
+                </div>
+
+                <div class="versus" aria-hidden="true">vs</div>
+
+                <div class="side theirs">
+                  <span class="side-label">Advertised in Journal {{ c.journalNo }}</span>
+                  <span class="mark-name">{{ c.conflictingTrademarkName || '—' }}</span>
+                  <span class="mark-meta">
+                    @if (c.conflictingApplicationNo) { App {{ c.conflictingApplicationNo }} · }
+                    Class {{ c.conflictingTmClass || '—' }}
+                  </span>
+                  @if (c.conflictingProprietorName) {
+                    <span class="proprietor">{{ c.conflictingProprietorName }}</span>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>

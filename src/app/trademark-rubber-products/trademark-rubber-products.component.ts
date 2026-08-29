@@ -61,8 +61,8 @@ export class TrademarkRubberProductsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Rubber Products Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for rubber products manufacturers in Ludhiana, Punjab and Northern India. Protect your rubber seals, O-rings, gaskets, rubber hoses, rubber belts, or industrial rubber goods brand — Class 17 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Rubber Products Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for rubber products manufacturers in Ludhiana, Punjab and Northern India. Protect your rubber seals, O-rings, gaskets, rubber hoses, rubber belts, or industrial rubber goods brand — Class 17 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for rubber products ludhiana, rubber seal manufacturer trademark punjab, O-ring gasket brand registration india, trademark for rubber goods manufacturers northern india, trademark class 17 rubber products, brand protection rubber manufacturers ludhiana, industrial rubber goods trademark registration punjab, rubber moulding unit trademark india, rubber extrusion manufacturer trademark punjab, trademark for rubber exporters india, rubber belt manufacturer trademark registration, automotive rubber components trademark india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkRubberProductsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

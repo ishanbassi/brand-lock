@@ -61,8 +61,8 @@ export class TrademarkFastenersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Fasteners, Nuts & Bolts Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for fasteners, nuts, bolts, screws and cold forging manufacturers in Ludhiana, Punjab and Northern India. Protect your brand from copycats — Class 6 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Fasteners, Nuts & Bolts Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for fasteners, nuts, bolts, screws and cold forging manufacturers in Ludhiana, Punjab and Northern India. Protect your brand from copycats — Class 6 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for fasteners manufacturers, nuts and bolts brand registration ludhiana, fastener trademark punjab, trademark for screws manufacturers india, cold forging unit trademark northern india, trademark class 6 fasteners, brand protection nuts bolts ludhiana, trademark registration fastener exporters punjab, hardware industry trademark ludhiana, IP india trademark fasteners';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkFastenersComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

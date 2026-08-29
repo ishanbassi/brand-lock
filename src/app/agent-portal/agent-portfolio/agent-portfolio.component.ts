@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentPortfolioTrademark } from '../../../models/agent.model';
+import { AgentImportSummary, AgentPortfolioTrademark } from '../../../models/agent.model';
 
 @Component({
   selector: 'app-agent-portfolio',
@@ -34,6 +34,15 @@ export class AgentPortfolioComponent implements OnInit {
   deletingId = signal<number | null>(null);
   confirmDeleteId = signal<number | null>(null);
 
+  // Registry refresh
+  refreshingId = signal<number | null>(null);
+  refreshMessage = signal('');
+
+  // Uploads still being processed. An agent whose spreadsheet could not be parsed is sent here
+  // rather than left on the upload screen, so this is the only place they learn their marks are
+  // on the way — without it the portfolio just looks empty and broken.
+  pendingImports = signal<AgentImportSummary[]>([]);
+
   // Export
   exportingExcel = signal(false);
   exportingPdf = signal(false);
@@ -48,9 +57,54 @@ export class AgentPortfolioComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    this.loadPendingImports();
     this.searchSubject.pipe(debounceTime(350), distinctUntilChanged()).subscribe(() => {
       this.page = 0;
       this.load();
+    });
+  }
+
+  /**
+   * Queues a fetch from the IP India register for one mark.
+   *
+   * The fetch is served asynchronously by the shared priority queue, so this reports what happened
+   * to the request rather than pretending to return fresh data. Anything else would have the agent
+   * staring at unchanged values wondering whether the button worked.
+   */
+  refreshFromRegistry(tm: AgentPortfolioTrademark): void {
+    if (!tm.id || this.refreshingId() !== null) return;
+    this.refreshingId.set(tm.id);
+    this.refreshMessage.set('');
+
+    this.agentDataService.refreshFromRegistry(tm.id).subscribe({
+      next: res => {
+        this.refreshingId.set(null);
+        switch (res.state) {
+          case 'QUEUED':
+            this.refreshMessage.set(`Requested an update for ${tm.name || 'this mark'}. It usually lands within a few minutes.`);
+            break;
+          case 'BUSY':
+            this.refreshMessage.set('The register queue is busy right now — please try again shortly.');
+            break;
+          case 'NO_APPLICATION_NO':
+            this.refreshMessage.set('This mark has no application number, so there is nothing to look up yet.');
+            break;
+          default:
+            this.refreshMessage.set('Update requested.');
+        }
+      },
+      error: () => {
+        this.refreshingId.set(null);
+        this.refreshMessage.set('Could not request an update. Please try again.');
+      },
+    });
+  }
+
+  loadPendingImports(): void {
+    this.agentDataService.getOwnImports().subscribe({
+      // A failure here must not disturb the portfolio itself; the banner is supplementary.
+      next: (imports) => this.pendingImports.set(imports.filter((i) => i.pending)),
+      error: () => this.pendingImports.set([]),
     });
   }
 

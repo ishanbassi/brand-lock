@@ -17,6 +17,16 @@ export const agentPortalRoutes: Routes = [
     title: 'Add Trademark | Agent Portal',
   },
   {
+    path: 'watch/journal',
+    loadComponent: () => import('./agent-journal-watch/agent-journal-watch.component').then(m => m.AgentJournalWatchComponent),
+    title: 'Trademark Watch | Agent Portal',
+  },
+  {
+    path: 'portfolio/claim',
+    loadComponent: () => import('./agent-portfolio-claim/agent-portfolio-claim.component').then(m => m.AgentPortfolioClaimComponent),
+    title: 'Find Your Trademarks | Agent Portal',
+  },
+  {
     path: 'portfolio/upload',
     loadComponent: () => import('./agent-portfolio-upload/agent-portfolio-upload.component').then(m => m.AgentPortfolioUploadComponent),
     title: 'Import Portfolio | Agent Portal',

@@ -1,0 +1,153 @@
+<div class="claim-page">
+  <header class="claim-header">
+    <div>
+      <h1>Find your trademarks</h1>
+      <p class="subtitle">
+        Search for your firm as it appears on the register, then add those marks to your portfolio.
+        No spreadsheet needed.
+      </p>
+    </div>
+    <a routerLink="/agent-portal/portfolio/upload" class="btn-link-subtle">Import a spreadsheet instead</a>
+  </header>
+
+  <div class="alert-error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+  <!-- ── Search ─────────────────────────────────────────────────────────── -->
+  <section class="card" *ngIf="phase() === 'search'">
+    <label class="search-field">
+      <span class="search-icon" aria-hidden="true">&#128269;</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Start typing your firm or agent name…"
+        [ngModel]="query"
+        (ngModelChange)="onQueryChange($event)"
+        autocomplete="off"
+        aria-label="Search for your agent name"
+      />
+      <span class="spinner" *ngIf="searching()" aria-label="Searching"></span>
+    </label>
+
+    <p class="hint" *ngIf="query.trim().length < 2">Type at least two characters.</p>
+
+    <ul class="agent-list" *ngIf="agents().length > 0">
+      <li *ngFor="let agent of agents()">
+        <button type="button" class="agent-row" (click)="openAgent(agent)">
+          <span class="agent-name">{{ agent.displayName }}</span>
+          <span class="agent-meta">
+            <span class="mark-count">{{ agent.markCount | number }} marks</span>
+            <span class="chev" aria-hidden="true">&rsaquo;</span>
+          </span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="empty" *ngIf="searched() && agents().length === 0 && !searching()">
+      <p>No agent found matching “{{ query }}”.</p>
+      <p class="hint">
+        Firms often appear on the register under a slightly different spelling — try a shorter part
+        of the name. If your marks genuinely aren’t in our data yet, you can
+        <a routerLink="/agent-portal/portfolio/upload">import a spreadsheet</a> instead.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Browse and select ──────────────────────────────────────────────── -->
+  <section class="card" *ngIf="phase() === 'browse' || phase() === 'claiming'">
+    <div class="browse-header">
+      <button type="button" class="btn-back" (click)="backToSearch()">&lsaquo; Back to search</button>
+      <div class="browse-title">
+        <h2>{{ selectedAgent()?.displayName }}</h2>
+        <p class="hint">{{ totalMarks() | number }} marks filed under this name</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <label class="select-all">
+        <input type="checkbox" [checked]="allOnPageSelected()" (change)="toggleAllOnPage()" />
+        <span>Select all on this page</span>
+      </label>
+      <span class="selected-count" *ngIf="selectedCount() > 0">{{ selectedCount() | number }} selected</span>
+    </div>
+
+    <div class="loading" *ngIf="loadingMarks()">Loading trademarks…</div>
+
+    <div class="table-scroll" *ngIf="!loadingMarks()">
+      <table class="marks-table">
+        <thead>
+          <tr>
+            <th class="col-check"><span class="sr-only">Select</span></th>
+            <th>Mark</th>
+            <th>Application no.</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Proprietor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let mark of marks()"
+            [class.selected]="isSelected(mark.id)"
+            (click)="toggle(mark.id)"
+          >
+            <td class="col-check">
+              <input type="checkbox" [checked]="isSelected(mark.id)" (click)="$event.stopPropagation()" (change)="toggle(mark.id)" />
+            </td>
+            <td class="mark-name">{{ mark.name || '—' }}</td>
+            <td>{{ mark.applicationNo || '—' }}</td>
+            <td>{{ mark.tmClass || '—' }}</td>
+            <td>{{ mark.trademarkStatus || 'Unknown' }}</td>
+            <td class="proprietor">{{ mark.proprietorName || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager" *ngIf="totalPages() > 1">
+      <button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 0">Previous</button>
+      <span>Page {{ page() + 1 }} of {{ totalPages() | number }}</span>
+      <button type="button" (click)="goToPage(page() + 1)" [disabled]="page() + 1 >= totalPages()">Next</button>
+    </div>
+
+    <footer class="actions">
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="selectedCount() === 0 || phase() === 'claiming'"
+        (click)="claimSelected()"
+      >
+        {{ phase() === 'claiming' ? 'Adding…' : 'Add ' + (selectedCount() | number) + ' to my portfolio' }}
+      </button>
+      <button type="button" class="btn-secondary" [disabled]="phase() === 'claiming'" (click)="claimAll()">
+        Add all {{ totalMarks() | number }} under this name
+      </button>
+    </footer>
+  </section>
+
+  <!-- ── Done ───────────────────────────────────────────────────────────── -->
+  <section class="card done" *ngIf="phase() === 'done'">
+    <div class="done-icon" aria-hidden="true">&#10003;</div>
+    <h2>{{ result()?.claimed | number }} marks added to your portfolio</h2>
+
+    <ul class="result-detail">
+      <li *ngIf="(result()?.alreadyHeld ?? 0) > 0">
+        {{ result()?.alreadyHeld | number }} were already in your portfolio and were skipped.
+      </li>
+      <li *ngIf="(result()?.autoVerified ?? 0) > 0">
+        {{ result()?.autoVerified | number }} were automatically verified against the register.
+      </li>
+      <li>Your portfolio now holds {{ result()?.portfolioTotal | number }} claimed marks.</li>
+    </ul>
+
+    <p class="hint variants-hint">
+      Firms are often on the register under more than one spelling. If some of your marks are
+      missing, search again for the other variant — you can add to your portfolio as many times as
+      you need.
+    </p>
+
+    <div class="actions">
+      <button type="button" class="btn-primary" (click)="goToPortfolio()">Go to my portfolio</button>
+      <button type="button" class="btn-secondary" (click)="claimAnotherName()">Search another name</button>
+    </div>
+  </section>
+</div>

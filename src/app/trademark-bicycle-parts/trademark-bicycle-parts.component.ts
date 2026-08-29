@@ -61,8 +61,8 @@ export class TrademarkBicyclePartsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Bicycle Parts Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for bicycle parts and cycle components manufacturers in Ludhiana, Punjab and Northern India. Protect your brand from copycats — Class 12 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Bicycle Parts Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for bicycle parts and cycle components manufacturers in Ludhiana, Punjab and Northern India. Protect your brand from copycats — Class 12 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for bicycle parts manufacturers, bicycle parts brand registration ludhiana, cycle components trademark punjab, trademark for cycle parts business india, bicycle manufacturer trademark northern india, trademark class 12 bicycle parts, brand protection cycle parts ludhiana, trademark registration bicycle accessories manufacturers punjab, cycle industry trademark ludhiana, IP india trademark bicycle parts';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkBicyclePartsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

@@ -61,8 +61,8 @@ export class TrademarkPlasticPvcManufacturersComponent implements OnInit, OnDest
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Plastic & PVC Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for plastic and PVC product manufacturers in Ludhiana, Punjab and Northern India. Protect your PVC pipes, CPVC pipes, HDPE pipes, plastic fittings, or injection-moulded plastic components brand — Class 17 & 20 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Plastic & PVC Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for plastic and PVC product manufacturers in Ludhiana, Punjab and Northern India. Protect your PVC pipes, CPVC pipes, HDPE pipes, plastic fittings, or injection-moulded plastic components brand — Class 17 & 20 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for plastic manufacturers ludhiana, PVC pipe manufacturer trademark punjab, CPVC pipe brand registration india, trademark for plastic products manufacturers northern india, trademark class 17 plastic pipes, brand protection plastic manufacturers ludhiana, HDPE pipe manufacturer trademark registration punjab, injection moulded plastic components trademark india, plastic fittings manufacturer trademark punjab, trademark for plastic exporters india, PVC fittings manufacturer trademark registration, plastic moulding unit trademark india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkPlasticPvcManufacturersComponent implements OnInit, OnDest
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

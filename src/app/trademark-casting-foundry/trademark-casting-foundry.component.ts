@@ -61,8 +61,8 @@ export class TrademarkCastingFoundryComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Casting & Foundry Units — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for casting and foundry units in Ludhiana, Punjab and Northern India. Protect your grey iron, ductile iron, aluminium die casting, sand casting, or investment casting brand — Class 6 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Casting & Foundry Units — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for casting and foundry units in Ludhiana, Punjab and Northern India. Protect your grey iron, ductile iron, aluminium die casting, sand casting, or investment casting brand — Class 6 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for casting foundry ludhiana, foundry unit trademark punjab, grey iron casting brand registration india, trademark for casting manufacturers northern india, trademark class 6 cast metal products, brand protection foundry units ludhiana, aluminium die casting trademark registration punjab, ductile iron casting trademark india, sand casting manufacturer trademark punjab, trademark for foundry exporters india, investment casting trademark registration, pressure die casting brand protection india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkCastingFoundryComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

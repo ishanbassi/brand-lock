@@ -13,11 +13,38 @@
       <p>Loading trademark…</p>
     </div>
   } @else {
-    <form class="form-card" (ngSubmit)="save()" #f="ngForm">
+    <!--
+      A register-backed mark is shown read-only rather than hidden. The agent still needs to see the
+      details; what they must not do is edit values the next refresh would overwrite.
+    -->
+    @if (locked()) {
+      <div class="locked-banner">
+        <span class="locked-icon" aria-hidden="true">🔒</span>
+        <div>
+          <strong>This mark comes from the public register</strong>
+          <p>
+            Its details are maintained from the IP India register
+            @if (registrySyncedDate()) {
+              — last confirmed {{ registrySyncedDate() | date:'dd MMM yyyy' }}
+            }
+            and can't be edited here. Your own notes and client reference are below, and they stay
+            private to you.
+          </p>
+        </div>
+      </div>
+    }
+
+    <form class="form-card" (ngSubmit)="save()" #f="ngForm" [class.is-locked]="locked()">
 
       @if (error()) {
         <div class="alert-error">{{ error() }}</div>
       }
+
+      <!--
+        A native disabled fieldset rather than styling: it takes the inputs out of the tab order and
+        stops keyboard entry too, which pointer-events alone would not.
+      -->
+      <fieldset [disabled]="locked()" class="form-fieldset">
 
       <div class="form-grid">
 
@@ -146,19 +173,58 @@
 
       </div>
 
+      </fieldset>
+
       <!-- FORM ACTIONS -->
       <div class="form-actions">
-        <a routerLink="/agent-portal/portfolio" class="btn-ghost">Cancel</a>
-        <button type="submit" class="btn-primary" [disabled]="saving()">
-          @if (saving()) {
-            <span class="btn-spinner"></span> Saving…
-          } @else {
-            {{ isEdit ? 'Save Changes' : 'Add to Portfolio' }}
-          }
-        </button>
+        <a routerLink="/agent-portal/portfolio" class="btn-ghost">
+          {{ locked() ? 'Back to portfolio' : 'Cancel' }}
+        </a>
+        @if (!locked()) {
+          <button type="submit" class="btn-primary" [disabled]="saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span> Saving…
+            } @else {
+              {{ isEdit ? 'Save Changes' : 'Add to Portfolio' }}
+            }
+          </button>
+        }
       </div>
 
     </form>
+
+    <!--
+      Notes live on the portfolio link rather than the mark, so they are editable for every mark in
+      the portfolio — including register-backed ones — and are private to this agent even when
+      another firm holds the same canonical record.
+    -->
+    @if (isEdit) {
+      <section class="notes-card">
+        <h2>Your private notes</h2>
+        <p class="notes-hint">Only you can see these. They are never shown on the public register.</p>
+
+        <label class="field">
+          <span>Client reference</span>
+          <input type="text" [(ngModel)]="notes.clientReference" name="clientReference"
+                 placeholder="Your matter or client number" />
+        </label>
+
+        <label class="field">
+          <span>Notes</span>
+          <textarea rows="4" [(ngModel)]="notes.agentNotes" name="agentNotes"
+                    placeholder="Anything you want to remember about this mark"></textarea>
+        </label>
+
+        <div class="notes-actions">
+          <button type="button" class="btn-primary" [disabled]="savingNotes()" (click)="saveNotes()">
+            {{ savingNotes() ? 'Saving…' : 'Save notes' }}
+          </button>
+          @if (notesSaved()) {
+            <span class="notes-saved">Saved</span>
+          }
+        </div>
+      </section>
+    }
   }
 
 </div>

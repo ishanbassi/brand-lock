@@ -38,8 +38,8 @@ export class TrademarkIndustryPageComponent implements OnInit, OnDestroy {
     this.otherIndustries = Object.values(INDUSTRY_DATA).filter(i => i.slug !== slug).slice(0, 10);
     this.schemaId = `trademark-industry-${slug}`;
 
-    const pageTitle = `Trademark Registration for ${data.displayName} in India — ₹1,499 | Trademarx`;
-    const desc = `Register a trademark for your ${data.name} business from ₹1,499. ${data.whyMatters} IP India authorised agents, 100% online.`;
+    const pageTitle = `Trademark Registration for ${data.displayName} in India — ₹1,999 | Trademarx`;
+    const desc = `Register a trademark for your ${data.name} business from ₹1,999. ${data.whyMatters} IP India authorised agents, 100% online.`;
     const pageUrl = `https://trademarx.in/trademark/industry/${slug}`;
 
     this.title.setTitle(pageTitle);
@@ -70,7 +70,7 @@ export class TrademarkIndustryPageComponent implements OnInit, OnDestroy {
         'areaServed': { '@type': 'Country', 'name': 'India' },
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'url': pageUrl,
         },

@@ -61,8 +61,8 @@ export class TrademarkMachineToolsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Machine Tools Manufacturers — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for machine tools, lathe, milling and CNC machining manufacturers in Ludhiana, Punjab and Northern India. Protect your industrial brand from copycats — Class 7 & 8 filing from ₹1,499. IP India authorised agents, 100% online.';
+    const pageTitle = 'Trademark Registration for Machine Tools Manufacturers — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for machine tools, lathe, milling and CNC machining manufacturers in Ludhiana, Punjab and Northern India. Protect your industrial brand from copycats — Class 7 & 8 filing from ₹1,999. IP India authorised agents, 100% online.';
     const keywords = 'trademark registration for machine tools manufacturers, machine tools brand registration ludhiana, lathe machine company trademark punjab, trademark for CNC machining businesses india, industrial machinery trademark northern india, trademark class 7 machine tools, brand protection machine tools ludhiana, trademark registration for engineering goods manufacturers punjab';
 
     this.title.setTitle(pageTitle);
@@ -97,7 +97,7 @@ export class TrademarkMachineToolsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl

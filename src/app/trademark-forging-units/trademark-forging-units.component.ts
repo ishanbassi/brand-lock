@@ -61,8 +61,8 @@ export class TrademarkForgingUnitsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Trademark Registration for Forging Units — ₹1,499 | Trademarx';
-    const desc = 'Trademark registration for forging units and forged components manufacturers in Ludhiana, Punjab and Northern India. Protect your drop forging, closed-die forging, crankshaft, flange, or forged ring brand — Class 6 filing from ₹1,499. IP India authorised agents, 100% online process.';
+    const pageTitle = 'Trademark Registration for Forging Units — ₹1,999 | Trademarx';
+    const desc = 'Trademark registration for forging units and forged components manufacturers in Ludhiana, Punjab and Northern India. Protect your drop forging, closed-die forging, crankshaft, flange, or forged ring brand — Class 6 filing from ₹1,999. IP India authorised agents, 100% online process.';
     const keywords = 'trademark registration for forging units ludhiana, forging manufacturer trademark punjab, drop forging brand registration india, trademark for forged components manufacturers northern india, trademark class 6 forged metal products, brand protection forging units ludhiana, closed-die forging trademark registration punjab, crankshaft manufacturer trademark india, flange manufacturer trademark punjab, trademark for forging exporters india';
 
     this.title.setTitle(pageTitle);
@@ -98,7 +98,7 @@ export class TrademarkForgingUnitsComponent implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '1999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. Govt. fees additional, no hidden charges.',
           'url': this.pageUrl
