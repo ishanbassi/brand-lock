@@ -45,6 +45,24 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
   readonly pageSize = 10;
   totalItems = 0;
 
+  /**
+   * Mirrors TrademarkRepository.PROPRIETOR_SEARCH_COUNT_CAP. The backend stops counting matches
+   * at this many, because an exact count on a broad term costs seconds of a database connection
+   * to produce a number nobody pages to the end of. The count query stops at cap + 1, so a total
+   * above the cap means "at least this many", which the UI shows as "1000+".
+   */
+  private readonly countCap = 1000;
+
+  /**
+   * Mirrors TrademarkService.MIN_PROPRIETOR_SEARCH_LENGTH. Below this the backend returns an
+   * empty page by design (a shorter term cannot use the trigram index), so firing the request
+   * would only ever render an empty dropdown.
+   */
+  readonly minQueryLength = 3;
+
+  /** Set when the typed term is shorter than {@link minQueryLength}; drives the hint in the template. */
+  queryTooShort = false;
+
   get companyName(): string {
     return this.companyNameControl.value ?? '';
   }
@@ -105,12 +123,12 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
         debounceTime(300),
         distinctUntilChanged(),
         tap(value => {
-          if ((value ?? '').trim().length < 2) {
+          if ((value ?? '').trim().length < this.minQueryLength) {
             this.suggestions = [];
             this.suggestionsOpen = false;
           }
         }),
-        filter(value => (value ?? '').trim().length >= 2),
+        filter(value => (value ?? '').trim().length >= this.minQueryLength),
         switchMap(value => this.trademarkService.proprietorNameSuggestions(value!.trim())),
         takeUntil(this.destroy$),
       )
@@ -184,6 +202,16 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
     if (!value) {
       return;
     }
+    // Below the backend floor the server returns an empty page by design, which would render as
+    // "No trademarks found" and read as "this company has none" rather than "keep typing".
+    if (value.length < this.minQueryLength) {
+      this.results = [];
+      this.totalItems = 0;
+      this.hasSearched = false;
+      this.queryTooShort = true;
+      return;
+    }
+    this.queryTooShort = false;
     if (resetPage) {
       this.page = 0;
     }
@@ -205,6 +233,16 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
           this.totalItems = 0;
         },
       });
+  }
+
+  /** True when the backend hit its count cap, so totalItems is a floor rather than an exact total. */
+  get isCountCapped(): boolean {
+    return this.totalItems > this.countCap;
+  }
+
+  /** "1000+" once the count is capped, otherwise the exact figure. */
+  get totalItemsLabel(): string {
+    return this.isCountCapped ? `${this.countCap}+` : `${this.totalItems}`;
   }
 
   get totalPages(): number {

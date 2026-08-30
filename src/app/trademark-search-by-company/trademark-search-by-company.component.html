@@ -90,7 +90,7 @@
 
     <!-- Results -->
     <div class="results-list" *ngIf="!isLoading && results && results.length > 0">
-      <p class="results-count">{{ totalItems }} trademark{{ totalItems !== 1 ? 's' : '' }} found for "{{ companyName }}"</p>
+      <p class="results-count">{{ totalItemsLabel }} trademark{{ totalItems !== 1 ? 's' : '' }} found for "{{ companyName }}"</p>
 
       <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById">
         <div class="card-header">
@@ -137,6 +137,11 @@
     </div>
 
     <!-- No results -->
+    <div class="empty-state" *ngIf="queryTooShort">
+      <h3 class="empty-title">Keep typing</h3>
+      <p class="empty-note">Enter at least {{ minQueryLength }} characters of the company name to search.</p>
+    </div>
+
     <div class="empty-state" *ngIf="!isLoading && hasSearched && results && results.length === 0">
       <h3 class="empty-title">No trademarks found for "{{ companyName }}"</h3>
       <p class="empty-note">Try just the distinctive part of the name, double-check the spelling, or search by brand/mark name instead.</p>
@@ -144,7 +149,7 @@
     </div>
 
     <!-- Idle -->
-    <div class="idle-block" *ngIf="!isLoading && !hasSearched">
+    <div class="idle-block" *ngIf="!isLoading && !hasSearched && !queryTooShort">
       <div class="idle-state">
         <div class="idle-icon">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
