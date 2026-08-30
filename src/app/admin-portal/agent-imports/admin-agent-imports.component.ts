@@ -283,6 +283,38 @@ export class AdminAgentImportsComponent implements OnInit {
     });
   }
 
+  /** Set while an inline delete confirmation is showing for one row. */
+  confirmDeleteId = signal<number | null>(null);
+
+  /**
+   * Deletes the stored spreadsheet, and optionally the batch record with it.
+   *
+   * Marks already imported into the agent's portfolio are untouched — those are theirs now, and
+   * removing the source file is cleanup, not a reversal of the import.
+   */
+  deleteFile(batch: IAdminAgentImport, purgeRecord: boolean): void {
+    this.busyId.set(batch.id);
+    this.service.deleteImport(batch.id, purgeRecord).subscribe({
+      next: res => {
+        this.toast.success(
+          res.fileDeleted
+            ? purgeRecord
+              ? 'File deleted and record removed'
+              : 'File deleted'
+            : 'No stored file was found — the record was updated',
+        );
+        this.busyId.set(null);
+        this.confirmDeleteId.set(null);
+        this.load();
+      },
+      error: () => {
+        this.toast.error('Could not delete the file');
+        this.busyId.set(null);
+        this.confirmDeleteId.set(null);
+      },
+    });
+  }
+
   markReviewed(batch: IAdminAgentImport): void {
     this.busyId.set(batch.id);
     this.service.review(batch.id, 'REVIEWED', batch.adminNotes ?? '').subscribe({

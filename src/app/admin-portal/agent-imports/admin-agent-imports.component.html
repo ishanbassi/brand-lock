@@ -86,6 +86,28 @@
                   <button class="act act-primary" [disabled]="!b.storedPath" (click)="openMapping(b)">Fix columns</button>
                   <button class="act act--approve" [disabled]="busyId() === b.id || b.status === 'REVIEWED'"
                           (click)="markReviewed(b)">Reviewed</button>
+
+                  <!--
+                    Deletes the stored spreadsheet. These are client lists, so removing them once an
+                    import is dealt with is a privacy measure. Confirmed inline because it destroys
+                    the only copy of what the agent actually sent.
+                  -->
+                  @if (confirmDeleteId() === b.id) {
+                    <span class="confirm-inline">
+                      <span class="confirm-text">Delete file?</span>
+                      <button class="act act--danger" [disabled]="busyId() === b.id" (click)="deleteFile(b, false)">
+                        File only
+                      </button>
+                      <button class="act act--danger" [disabled]="busyId() === b.id" (click)="deleteFile(b, true)">
+                        File + record
+                      </button>
+                      <button class="act" (click)="confirmDeleteId.set(null)">Cancel</button>
+                    </span>
+                  } @else {
+                    <button class="act act--danger" [disabled]="!b.storedPath" (click)="confirmDeleteId.set(b.id)">
+                      Delete file
+                    </button>
+                  }
                 </div>
               </td>
             </tr>

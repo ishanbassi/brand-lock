@@ -54,6 +54,20 @@ export class AdminAgentImportService {
     return this.http.delete<void>(`${this.resourceUrl}/header-aliases/${aliasId}`);
   }
 
+  /**
+   * Deletes the retained spreadsheet. These are agents' client lists, so removing them once an
+   * import is dealt with is a privacy measure, not just tidying.
+   *
+   * @param purgeRecord also hide the batch record. Off by default — the counts and column mapping
+   *                    are the audit trail for what was imported, and stay useful after the file
+   *                    itself is gone.
+   */
+  deleteImport(id: number, purgeRecord = false): Observable<{ fileDeleted: boolean; recordPurged: boolean }> {
+    return this.http.delete<{ fileDeleted: boolean; recordPurged: boolean }>(
+      `${this.resourceUrl}/${id}?purgeRecord=${purgeRecord}`,
+    );
+  }
+
   review(id: number, status?: string, notes?: string): Observable<HttpResponse<IAdminAgentImport>> {
     let params = new HttpParams();
     if (status) params = params.set('status', status);
