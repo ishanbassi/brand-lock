@@ -1,8 +1,8 @@
 
 <!--
-  Shared status block, rendered in both the quick-info panel and the details table. It always
-  shows the status we currently hold; a background registry refresh may swap in a newer one
-  while the page is open, with no in-flight reporting of its own.
+  Shared status block, rendered in both the quick-info panel and the details table. It shows the
+  status we currently hold; pressing "Fetch Latest Status" may swap in a newer one from the
+  registry, in which case both copies update together.
 -->
 <ng-template #statusBlock>
   <span class="status status-value registered">{{ trademark?.trademarkStatus || 'Unknown' }}</span>
@@ -59,6 +59,25 @@
           <div class="info-row">
             <span>Filing Date:</span>
             <strong>{{ trademark?.applicationDate?.format('ddd, DD MMM YYYY') }}</strong>
+          </div>
+
+          <!--
+            Registry lookups are on demand: the page shows the stored record until the visitor
+            asks for a fresh reading, and every outcome is reported right here rather than
+            silently changing the status above.
+          -->
+          <div class="refresh-block" *ngIf="trademark?.applicationNo">
+            <button type="button" class="btn-refresh" (click)="fetchLatestStatus()"
+              [disabled]="refreshState === 'fetching'">
+              <span class="spinner" *ngIf="refreshState === 'fetching'" aria-hidden="true"></span>
+              {{ refreshState === 'fetching' ? 'Fetching latest status…' : 'Fetch Latest Status' }}
+            </button>
+
+            <p class="refresh-msg" *ngIf="refreshMessage" role="status" aria-live="polite"
+              [class.is-success]="refreshState === 'updated' || refreshState === 'fresh'"
+              [class.is-warning]="refreshState === 'busy' || refreshState === 'failed'">
+              {{ refreshMessage }}
+            </p>
           </div>
         </div>
       </div>

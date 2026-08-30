@@ -97,8 +97,9 @@
     }
   }
 
-  /* Registry statuses are long enough to wrap, so the row stays top-aligned and stacks
-     entirely once there isn't room for both columns. */
+  /* Registry statuses are long enough to wrap, so the row stays top-aligned — but it keeps the
+     label-left/value-right shape of every other row at all widths, including phones, where the
+     status used to drop onto its own line and read as a different kind of field. */
   .info-row--status {
     align-items: flex-start;
 
@@ -106,17 +107,75 @@
       align-items: flex-end;
       text-align: right;
     }
+  }
+}
 
-    @media (max-width: 560px) {
-      flex-direction: column;
-      gap: 6px;
+/* "Fetch Latest Status" — the only thing on the page that triggers a registry lookup. */
+.refresh-block {
+  padding-top: 14px;
+}
 
-      .status-cell {
-        width: 100%;
-        align-items: flex-start;
-        text-align: left;
-      }
-    }
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #2563eb;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  &:disabled {
+    cursor: default;
+    border-color: #cbd5e1;
+    color: #6b7280;
+  }
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: refresh-spin 0.7s linear infinite;
+}
+
+@keyframes refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+.refresh-msg {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #6b7280;
+
+  &.is-success {
+    color: #16a34a;
+  }
+
+  &.is-warning {
+    color: #b45309;
   }
 }
 
