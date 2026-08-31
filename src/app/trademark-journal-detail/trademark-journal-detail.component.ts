@@ -68,7 +68,11 @@ export class TrademarkJournalDetailComponent implements OnInit {
     });
 
     this.route.queryParams.subscribe(params => {
-      this.currentPage = params['page'] ? +params['page'] : 1;
+      // Clamp to a real page number. A hand-edited or crawler-invented ?page=-5 used to reach
+      // the API as page=-6, where Spring silently floors it to 0 — so every bogus value served
+      // page-1 content under its own URL, both an unvalidated input and duplicate content.
+      const requestedPage = Math.trunc(Number(params['page']));
+      this.currentPage = Number.isFinite(requestedPage) && requestedPage >= 1 ? requestedPage : 1;
       this.searchTerm = params['q'] || '';
       const [field, dir] = (params['sort'] || 'applicationNo,desc').split(',');
       this.sortField = field;

@@ -231,3 +231,13 @@ export interface AgentJournalWatchResult {
   truncated: boolean;
   durationMs: number;
 }
+
+
+/** Outcome of adding a mark by application number. */
+export interface AgentAddByNumberResult {
+  /** ADDED = we already held it. FETCHING/QUEUE_BUSY = requested from the register. */
+  state: 'ADDED' | 'FETCHING' | 'QUEUE_BUSY' | 'INVALID';
+  trademarkId?: number;
+  name?: string;
+  message: string;
+}

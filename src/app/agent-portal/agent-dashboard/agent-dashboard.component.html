@@ -87,7 +87,12 @@
         } @else {
           <div class="trademark-list">
             @for (tm of s.recentAdditions; track tm.id; let i = $index) {
-              <div class="tm-row">
+              <!--
+                The whole row opens the mark's detail screen, where its actions live. Per-row
+                action icons were removed: they put consequential operations one mis-click apart in
+                a dense list, without the context needed to choose between them.
+              -->
+              <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-row">
                 <div class="tm-index">{{ i + 1 }}</div>
                 <div class="tm-main">
                   <div class="tm-name">{{ tm.name || '—' }}</div>
@@ -100,8 +105,7 @@
                 <span class="status-badge" [class]="'status--' + getStatusBadge(tm.trademarkStatus)">
                   {{ tm.trademarkStatus || 'Unknown' }}
                 </span>
-                <a [routerLink]="['/agent-portal/portfolio', tm.id, 'watch']" class="watch-btn" title="Find conflicts">👁</a>
-              </div>
+              </a>
             }
           </div>
         }

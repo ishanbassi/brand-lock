@@ -22,11 +22,15 @@ export class AgentPortalShellComponent {
   activeRoute = signal('');
 
   navItems: NavItem[] = [
-    { label: 'Dashboard',      icon: '📊', route: '/agent-portal/dashboard' },
-    { label: 'My Portfolio',   icon: '📂', route: '/agent-portal/portfolio' },
-    { label: 'Import Excel',   icon: '📤', route: '/agent-portal/portfolio/upload' },
-    { label: 'Add Trademark',  icon: '➕', route: '/agent-portal/portfolio/add' },
-    { label: 'My Profile',     icon: '👤', route: '/agent-portal/profile' },
+    { label: 'Dashboard',        icon: '📊', route: '/agent-portal/dashboard' },
+    { label: 'My Portfolio',     icon: '📂', route: '/agent-portal/portfolio' },
+    // Time-critical: marks advertised in a journal are open to opposition for four months, and
+    // that window closes whether or not anyone checked. It belongs in the nav, not buried.
+    { label: 'Trademark Watch',  icon: '🛡️', route: '/agent-portal/watch/journal' },
+    { label: 'Find My Marks',    icon: '🔎', route: '/agent-portal/portfolio/claim' },
+    { label: 'Import Excel',     icon: '📤', route: '/agent-portal/portfolio/upload' },
+    { label: 'Add Trademark',    icon: '➕', route: '/agent-portal/portfolio/add' },
+    { label: 'My Profile',       icon: '👤', route: '/agent-portal/profile' },
   ];
 
   constructor(
@@ -39,8 +43,19 @@ export class AgentPortalShellComponent {
     this.activeRoute.set(this.router.url);
   }
 
+  /**
+   * Highlights the most specific matching nav item, not every one that happens to be a prefix.
+   *
+   * A plain startsWith lights up "My Portfolio" as well as "Import Excel" whenever the URL is
+   * /portfolio/upload, because one route is a prefix of the other. With Find My Marks and the
+   * upload and add screens all living under /portfolio, that would be three highlighted at once.
+   */
   isActive(route: string): boolean {
-    return this.activeRoute().startsWith(route);
+    const url = this.activeRoute();
+    const matches = this.navItems.filter(i => url === i.route || url.startsWith(i.route + '/')).map(i => i.route);
+    if (matches.length === 0) return false;
+    const longest = matches.reduce((a, b) => (b.length > a.length ? b : a));
+    return route === longest;
   }
 
   toggleSidebar(): void {

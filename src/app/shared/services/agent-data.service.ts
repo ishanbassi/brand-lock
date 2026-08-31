@@ -3,6 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  AgentAddByNumberResult,
   AgentClaimRequest,
   AgentClaimResult,
   AgentDashboardStats,
@@ -110,6 +111,19 @@ export class AgentDataService {
   /** The caller's own upload history — backs the "we're checking your file" banner. */
   getOwnImports(): Observable<AgentImportSummary[]> {
     return this.http.get<AgentImportSummary[]>(`${this.base}/agent-portal/imports`);
+  }
+
+  /**
+   * Adds a mark by application number, with everything else pulled from the register.
+   *
+   * Returns a state rather than a trademark: ADDED when we already held it, FETCHING when it has
+   * been queued with the registry. The agent is never blocked on the fetch.
+   */
+  addByApplicationNo(applicationNo: string, clientReference?: string): Observable<AgentAddByNumberResult> {
+    return this.http.post<AgentAddByNumberResult>(`${this.base}/agent-portal/portfolio/by-application-no`, {
+      applicationNo,
+      clientReference,
+    });
   }
 
   // ── Documents ────────────────────────────────────────────────────────────

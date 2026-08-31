@@ -16,7 +16,24 @@ export const serverRoutes: ServerRoute[] = [
   },
 
   {
+    // The four portal shells are all guarded by AuthGuard, which reads the JWT from
+    // localStorage. That does not exist on the server, so a server render always evaluates
+    // the guard as signed-out and redirects to /login - the browser then paints the login
+    // page, hydrates, re-runs the guard with the real token and bounces back. Rendering
+    // these on the client skips that flash entirely. None of them have SEO value.
     path: 'portal/**',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'agent-portal/**',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'admin-portal/**',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'partner-portal/**',
     renderMode: RenderMode.Client
   },
   {

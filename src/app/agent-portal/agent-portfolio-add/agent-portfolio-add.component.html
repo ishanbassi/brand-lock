@@ -1,0 +1,80 @@
+<div class="add-page">
+  <a routerLink="/agent-portal/portfolio" class="back-link">&lsaquo; Back to portfolio</a>
+
+  <header class="add-header">
+    <h1>Add a trademark</h1>
+    <p class="subtitle">
+      Enter the application number and we'll pull the rest from the IP India register — name, class,
+      proprietor, status and dates. Nothing else to type.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <section class="card">
+    <label class="field">
+      <span>Application number</span>
+      <input
+        type="text"
+        [(ngModel)]="applicationNo"
+        name="applicationNo"
+        placeholder="e.g. 1123784"
+        autocomplete="off"
+        (keyup.enter)="submit()"
+      />
+      <!-- Registry values are copied straight out of spreadsheets, where they carry prefixes and
+           separators. The server strips anything that isn't a digit, so say so rather than
+           rejecting what they pasted. -->
+      <small class="field-hint">Prefixes and spaces are fine — "A 1123784" works too.</small>
+    </label>
+
+    <label class="field">
+      <span>Client reference <em>(optional)</em></span>
+      <input
+        type="text"
+        [(ngModel)]="clientReference"
+        name="clientReference"
+        placeholder="Your matter or client number"
+        autocomplete="off"
+        (keyup.enter)="submit()"
+      />
+    </label>
+
+    <div class="actions">
+      <button class="btn-primary" [disabled]="!canSubmit" (click)="submit()">
+        {{ submitting() ? 'Adding…' : 'Add to portfolio' }}
+      </button>
+      <button class="btn-ghost" (click)="goToPortfolio()">Done</button>
+    </div>
+  </section>
+
+  <!--
+    Results accumulate rather than replacing each other: adding several numbers in a row is the
+    normal case, and an agent needs to see which of them landed and which are still being fetched.
+  -->
+  @if (results().length > 0) {
+    <section class="card results-card">
+      <h2>Added this session</h2>
+      <ul class="result-list">
+        @for (r of results(); track $index) {
+          <li class="result-row" [class.is-fetching]="r.state !== 'ADDED'">
+            <span class="result-icon" aria-hidden="true">{{ r.state === 'ADDED' ? '✓' : '⏳' }}</span>
+            <div class="result-body">
+              <strong>{{ r.name || 'Requested from the register' }}</strong>
+              <span class="result-msg">{{ r.message }}</span>
+            </div>
+            @if (r.trademarkId) {
+              <button class="btn-ghost-xs" (click)="openMark(r)">View</button>
+            }
+          </li>
+        }
+      </ul>
+      <p class="results-hint">
+        Marks still being fetched will fill in automatically — there's no need to wait here or add
+        them again.
+      </p>
+    </section>
+  }
+</div>
