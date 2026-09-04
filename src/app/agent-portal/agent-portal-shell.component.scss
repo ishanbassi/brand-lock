@@ -106,6 +106,49 @@ $content-bg: #f8fafc;
   }
 }
 
+// ── NAV GROUPS ───────────────────────────────────────────
+// The group header is a <button>, so it needs the styling a bare button does not inherit.
+.nav-group {
+  width: calc(100% - 1rem);
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+
+  .nav-label { flex: 1; }
+}
+
+.nav-caret {
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+
+  &.open { transform: rotate(90deg); }
+}
+
+.nav-children {
+  // The rail ties the children to their header, so an indented item still reads as belonging to
+  // the group above it once the list is long enough that the header has scrolled out of view.
+  margin: 0.15rem 0 0.35rem 1.7rem;
+  padding-left: 0.6rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.nav-child {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+
+  .nav-icon { font-size: 0.95rem; width: 18px; }
+}
+
 .sidebar-footer {
   padding: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -184,8 +227,30 @@ $content-bg: #f8fafc;
 // ── MAIN CONTENT ──────────────────────────────────────────────
 .main-content {
   flex: 1;
-  overflow-y: auto;
+  // Column layout with the scroll moved onto .content-scroll below, so the topbar stays put
+  // instead of scrolling away with the page.
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
   background: $content-bg;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  height: 52px;
+  padding: 0 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
 }
 
 // ── MOBILE ──────────────────────────────────────────────
@@ -205,4 +270,5 @@ $content-bg: #f8fafc;
   }
 
   .main-content { overflow-x: hidden; }
+  .content-scroll { overflow-x: hidden; }
 }

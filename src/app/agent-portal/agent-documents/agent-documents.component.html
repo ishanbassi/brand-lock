@@ -1,0 +1,177 @@
+<div class="documents-page">
+  <header class="page-head">
+    <div>
+      <h1>Documents</h1>
+      <p class="subtitle">
+        Every file you hold, across every mark. We keep these on our own storage, so they stay
+        reachable when the registry is not.
+      </p>
+    </div>
+
+    @if (summary(); as s) {
+      <div class="storage" [class.warn]="s.storage.percentUsed >= 80" [class.full]="s.storage.percentUsed >= 100">
+        <div class="storage-label">
+          {{ formatSize(s.storage.usedBytes) }} of {{ formatSize(s.storage.quotaBytes) }}
+        </div>
+        <div class="storage-bar" role="progressbar" [attr.aria-valuenow]="s.storage.percentUsed" aria-valuemin="0" aria-valuemax="100">
+          <span [style.width.%]="s.storage.percentUsed"></span>
+        </div>
+        @if (s.storage.percentUsed >= 80) {
+          <div class="storage-note">Storage is {{ s.storage.percentUsed }}% full.</div>
+        }
+      </div>
+    }
+  </header>
+
+  <div class="filters">
+    <input
+      type="search"
+      class="search"
+      placeholder="Search by file name, mark or application number"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+      aria-label="Search documents"
+    />
+
+    @if (summary()?.clientReferences?.length) {
+      <select
+        class="client-select"
+        [ngModel]="activeClientRef()"
+        (ngModelChange)="selectClientRef($event)"
+        aria-label="Filter by client"
+      >
+        <option [ngValue]="null">All clients</option>
+        @for (ref of summary()!.clientReferences; track ref) {
+          <option [ngValue]="ref">{{ ref }}</option>
+        }
+      </select>
+    }
+
+    @if (hasFilters) {
+      <button type="button" class="clear-btn" (click)="clearFilters()">Clear filters</button>
+    }
+  </div>
+
+  <!-- Only types actually in use: an agent who has never filed a counter-statement does not need
+       a chip for it. -->
+  @if (typesInUse.length > 1) {
+    <nav class="chips">
+      @for (type of typesInUse; track type.value) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="activeType() === type.value"
+          (click)="selectType(type.value)"
+        >
+          {{ type.label }}
+          <span class="chip-count">{{ countFor(type.value) }}</span>
+        </button>
+      }
+    </nav>
+  }
+
+  @if (loading()) {
+    <div class="state">Loading…</div>
+  } @else if (items().length === 0) {
+    <div class="state empty">
+      <span class="empty-icon" aria-hidden="true">📂</span>
+      @if (hasFilters) {
+        <p>No documents match those filters.</p>
+        <button type="button" class="clear-btn" (click)="clearFilters()">Clear filters</button>
+      } @else {
+        <p>
+          Nothing filed yet. Open a mark in your portfolio and attach its examination report,
+          hearing notice or correspondence — everything you add appears here.
+        </p>
+      }
+    </div>
+  } @else {
+    <p class="result-count">{{ totalElements() }} document{{ totalElements() === 1 ? '' : 's' }}</p>
+
+    <ul class="doc-list">
+      @for (item of items(); track item.id) {
+        <li class="doc" (click)="openMark(item)">
+          <div class="doc-main">
+            <div class="doc-top">
+              <span class="doc-name">{{ item.originalFileName }}</span>
+              <span class="doc-type">{{ labelForType(item.documentType) }}</span>
+            </div>
+
+            <div class="doc-meta">
+              <!-- The mark is the point of this view: without it a filename in a list of four
+                   hundred documents identifies nothing. -->
+              <span class="doc-mark">{{ item.trademarkName || 'Untitled mark' }}</span>
+              @if (item.applicationNo) {
+                <span class="dot">·</span>
+                <span>#{{ item.applicationNo }}</span>
+              }
+              @if (item.tmClass) {
+                <span class="dot">·</span>
+                <span>Class {{ item.tmClass }}</span>
+              }
+              @if (item.clientReference) {
+                <span class="dot">·</span>
+                <span class="doc-client">{{ item.clientReference }}</span>
+              }
+            </div>
+
+            @if (item.notes) {
+              <p class="doc-notes">{{ item.notes }}</p>
+            }
+          </div>
+
+          <div class="doc-side">
+            <span class="doc-date">{{ formatDate(item.documentDate || item.uploadedDate) }}</span>
+            <span class="doc-size">{{ formatSize(item.fileSizeBytes) }}</span>
+
+            <div class="doc-actions">
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="download(item); $event.stopPropagation()"
+                [disabled]="downloading() === item.id"
+                title="Download"
+                aria-label="Download"
+              >
+                {{ downloading() === item.id ? '…' : '⬇' }}
+              </button>
+
+              <div class="type-editor">
+                <button type="button" class="icon-btn" (click)="toggleTypeEditor(item, $event)" title="Change type" aria-label="Change type">
+                  ⇄
+                </button>
+                @if (editingType() === item.id) {
+                  <ul class="type-menu">
+                    @for (type of documentTypes; track type.value) {
+                      <li>
+                        <button
+                          type="button"
+                          [class.selected]="type.value === item.documentType"
+                          (click)="reclassify(item, type.value, $event)"
+                        >
+                          {{ type.label }}
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <button type="button" class="icon-btn danger" (click)="remove(item, $event)" title="Delete" aria-label="Delete">
+                ×
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (totalPages() > 1) {
+      <div class="pager">
+        <button type="button" class="clear-btn" [disabled]="page() === 0" (click)="load(page() - 1)">Previous</button>
+        <span class="pager-label">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+        <button type="button" class="clear-btn" [disabled]="page() + 1 >= totalPages()" (click)="load(page() + 1)">Next</button>
+      </div>
+    }
+  }
+</div>

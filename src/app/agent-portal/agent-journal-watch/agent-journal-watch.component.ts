@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/agent.model';
 
@@ -31,13 +31,27 @@ export class AgentJournalWatchComponent implements OnInit {
   /** Risk filter. Empty shows everything. */
   riskFilter = signal<'' | 'HIGH' | 'MEDIUM' | 'LOW'>('');
 
-  constructor(private readonly agentDataService: AgentDataService) {}
+  constructor(
+    private readonly agentDataService: AgentDataService,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    // The watch alert email links straight to the issue it is about, so arriving with a journalNo
+    // means the agent has already chosen — select it and run without a second click.
+    const requested = Number(this.route.snapshot.queryParamMap.get('journalNo'));
+    const deepLinked = Number.isFinite(requested) && requested > 0 ? requested : null;
+
     this.agentDataService.getWatchJournals().subscribe({
       next: list => {
         this.journals.set(list);
         // Newest issue is the one with an opposition window still open, so it is the default.
+        if (deepLinked != null && list.includes(deepLinked)) {
+          this.selectedJournal.set(deepLinked);
+          this.loadingJournals.set(false);
+          this.run();
+          return;
+        }
         if (list.length > 0) this.selectedJournal.set(list[0]);
         this.loadingJournals.set(false);
       },

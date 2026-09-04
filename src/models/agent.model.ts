@@ -81,11 +81,21 @@ export interface AgentImportResult {
   batchId?: number;
 }
 
+/** One status bucket of the agent's portfolio, as counted by the server. */
+export interface AgentStatusCount {
+  /** Stable bucket identifier — colours and ordering key off this, never the label. */
+  key: 'REGISTERED' | 'OBJECTED_OR_OPPOSED' | 'UNDER_EXAMINATION_OR_ADVERTISED' | 'ABANDONED_WITHDRAWN_REJECTED' | 'OTHER_UNKNOWN';
+  label: string;
+  count: number;
+}
+
 export interface AgentDashboardStats {
   totalTrademarks: number;
   activeTrademarks: number;
   expiringIn90Days: number;
   watchlistCount: number;
+  /** Every bucket, zeroes included, summing to totalTrademarks. */
+  statusBreakdown: AgentStatusCount[];
   recentAdditions: AgentPortfolioTrademark[];
   expiringSoon: AgentPortfolioTrademark[];
 }
@@ -113,6 +123,11 @@ export interface WatchConflictHistory {
   riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW';
   isNewConflict?: boolean;
   status?: 'PENDING' | 'RESOLVED' | 'IGNORED';
+  /** Journal issue the conflicting mark was advertised in — the opposition window runs from it. */
+  journalNo?: number;
+  conflictingApplicationNo?: number;
+  conflictingTmClass?: number;
+  conflictingProprietorName?: string;
 }
 
 export interface AgentPublicProfile {
@@ -185,6 +200,43 @@ export interface AgentDocument {
   documentDate?: string;
   uploadedBy?: string;
   uploadedDate?: string;
+}
+
+/** One document in the portfolio-wide library, carrying the mark it belongs to. */
+export interface AgentLibraryDocument extends AgentDocument {
+  trademarkId?: number;
+  trademarkName?: string;
+  applicationNo?: number;
+  tmClass?: number;
+  clientReference?: string;
+}
+
+export interface AgentDocumentLibraryPage {
+  items: AgentLibraryDocument[];
+  totalElements: number;
+  totalPages: number;
+  page: number;
+}
+
+export interface AgentDocumentStorage {
+  usedBytes: number;
+  quotaBytes: number;
+  percentUsed: number;
+}
+
+export interface AgentDocumentLibrarySummary {
+  countsByType: Record<string, number>;
+  clientReferences: string[];
+  storage: AgentDocumentStorage;
+}
+
+/** Per-file outcome of a bulk upload — partial success is normal, not an error. */
+export interface AgentBulkUploadResult {
+  uploaded: AgentDocument[];
+  failures: { fileName: string; reason: string }[];
+  uploadedCount: number;
+  failureCount: number;
+  bytesStored: number;
 }
 
 /** Document kinds an agent actually files against a mark. */

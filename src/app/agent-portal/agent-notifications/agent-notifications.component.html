@@ -1,0 +1,136 @@
+<div class="notifications-page">
+  <header class="page-head">
+    <div>
+      <h1>Notifications</h1>
+      <p class="subtitle">
+        @if (unreadCount() > 0) {
+          {{ unreadCount() }} unread
+        } @else {
+          You're all caught up
+        }
+      </p>
+    </div>
+
+    <div class="head-actions">
+      @if (view() === 'feed') {
+        <button type="button" class="ghost-btn" (click)="toggleUnreadOnly()" [class.on]="unreadOnly()">
+          {{ unreadOnly() ? 'Showing unread' : 'Show unread only' }}
+        </button>
+        @if (unreadCount() > 0) {
+          <button type="button" class="ghost-btn" (click)="markAllRead()">Mark all read</button>
+        }
+        <button type="button" class="ghost-btn" (click)="showSettings()">Settings</button>
+      } @else {
+        <button type="button" class="ghost-btn" (click)="showFeed()">Back to notifications</button>
+      }
+    </div>
+  </header>
+
+  @if (view() === 'feed') {
+    <nav class="tabs">
+      @for (tab of tabs; track tab.label) {
+        <button type="button" class="tab" [class.active]="activeTab() === tab.key" (click)="selectTab(tab.key)">
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    @if (loading()) {
+      <div class="state">Loading…</div>
+    } @else if (items().length === 0) {
+      <div class="state empty">
+        <span class="empty-icon" aria-hidden="true">✓</span>
+        <p>
+          @if (unreadOnly()) {
+            Nothing unread here.
+          } @else {
+            Nothing here yet. Watch results, deadlines and portfolio updates will appear as they happen.
+          }
+        </p>
+      </div>
+    } @else {
+      <ul class="feed">
+        @for (item of items(); track item.id) {
+          <li
+            class="row"
+            [class.unread]="!item.read"
+            [class.urgent]="item.severity === 'URGENT'"
+            [class.action]="item.severity === 'ACTION_REQUIRED'"
+            (click)="activate(item)"
+          >
+            <div class="row-main">
+              <div class="row-top">
+                <span class="row-title">{{ item.title }}</span>
+                <!-- Severity is spelled out, not only coloured: the stripe is invisible to anyone
+                     who cannot distinguish the hues, and to anyone printing this. -->
+                @if (item.severity === 'URGENT') {
+                  <span class="chip chip-urgent">Urgent</span>
+                } @else if (item.severity === 'ACTION_REQUIRED') {
+                  <span class="chip chip-action">Action needed</span>
+                }
+              </div>
+              @if (item.body) {
+                <p class="row-body">{{ item.body }}</p>
+              }
+            </div>
+
+            <div class="row-side">
+              <span class="row-time">{{ timeAgo(item.createdDate) }}</span>
+              <button type="button" class="dismiss" (click)="dismiss(item, $event)" aria-label="Dismiss">×</button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (totalPages() > 1) {
+        <div class="pager">
+          <button type="button" class="ghost-btn" [disabled]="page() === 0" (click)="load(page() - 1)">Previous</button>
+          <span class="pager-label">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+          <button type="button" class="ghost-btn" [disabled]="page() + 1 >= totalPages()" (click)="load(page() + 1)">Next</button>
+        </div>
+      }
+    }
+  } @else {
+    <section class="settings">
+      <p class="settings-intro">
+        Everything is always recorded here in your notifications. These settings control what also
+        reaches you by email.
+      </p>
+
+      <div class="pref-grid">
+        @for (category of preferenceCategories; track category.key) {
+          <div class="pref-row">
+            <div class="pref-label">
+              <span class="pref-name">{{ category.label }}</span>
+              <span class="pref-hint">{{ category.hint }}</span>
+              @if (isRiskyToDisable(category.key) && modeFor(category.key, 'EMAIL') === 'OFF') {
+                <span class="pref-warning">
+                  Email is off for this category. Statutory deadlines will only appear in the app.
+                </span>
+              }
+            </div>
+
+            <div class="pref-modes" role="group" [attr.aria-label]="category.label + ' email frequency'">
+              @for (mode of modes; track mode.value) {
+                <button
+                  type="button"
+                  class="mode-btn"
+                  [class.selected]="modeFor(category.key, 'EMAIL') === mode.value"
+                  [disabled]="savingPreference() === category.key + ':EMAIL'"
+                  (click)="setMode(category.key, 'EMAIL', mode.value)"
+                >
+                  {{ mode.label }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <p class="settings-note">
+        Urgent items — a closing opposition window, an overdue deadline — are always emailed as they
+        happen, even on a daily digest.
+      </p>
+    </section>
+  }
+</div>

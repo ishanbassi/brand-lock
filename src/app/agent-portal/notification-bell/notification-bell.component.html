@@ -1,0 +1,59 @@
+<div class="bell-wrap">
+  <button
+    type="button"
+    class="bell-btn"
+    (click)="toggle()"
+    [class.has-unread]="unreadCount() > 0"
+    [attr.aria-expanded]="open()"
+    [attr.aria-label]="unreadCount() > 0 ? unreadCount() + ' unread notifications' : 'Notifications'"
+  >
+    <span class="bell-icon" aria-hidden="true">🔔</span>
+    @if (unreadCount() > 0) {
+      <!-- Capped at 99+: the exact number stops meaning anything past that, and a four-digit
+           badge breaks the topbar layout. -->
+      <span class="badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="dropdown" role="dialog" aria-label="Notifications">
+      <div class="dropdown-head">
+        <span class="dropdown-title">Notifications</span>
+        @if (unreadCount() > 0) {
+          <button type="button" class="link-btn" (click)="markAllRead($event)">Mark all read</button>
+        }
+      </div>
+
+      @if (items().length === 0) {
+        <div class="empty">
+          <span class="empty-icon" aria-hidden="true">✓</span>
+          <p>You're all caught up.</p>
+        </div>
+      } @else {
+        <ul class="items">
+          @for (item of items(); track item.id) {
+            <li
+              class="item"
+              [class.unread]="!item.read"
+              [class.urgent]="item.severity === 'URGENT'"
+              [class.action]="item.severity === 'ACTION_REQUIRED'"
+              (click)="activate(item)"
+            >
+              <div class="item-main">
+                <span class="item-title">{{ item.title }}</span>
+                @if (item.body) {
+                  <span class="item-body">{{ item.body }}</span>
+                }
+              </div>
+              <span class="item-time">{{ timeAgo(item.createdDate) }}</span>
+            </li>
+          }
+        </ul>
+      }
+
+      <a class="dropdown-foot" routerLink="/agent-portal/notifications" (click)="open.set(false)">
+        See all notifications
+      </a>
+    </div>
+  }
+</div>

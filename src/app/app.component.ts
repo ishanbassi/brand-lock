@@ -6,6 +6,7 @@ import { environment } from '../environments/environment';
 import { ReferralAttributionService } from './shared/services/referral-attribution.service';
 import { LoadingService } from './common/loading.service';
 import { SeoService } from './shared/services/seo.service';
+import { HostContextService } from './shared/services/host-context.service';
 
 @Component({
   selector: 'app-root',
@@ -20,9 +21,35 @@ export class AppComponent {
     private readonly router: Router,
     private readonly referralAttributionService: ReferralAttributionService,
     private readonly loadingService: LoadingService,
-    private readonly seo: SeoService
+    private readonly seo: SeoService,
+    private readonly hostContext: HostContextService
   ){
     this.applicationConfigService.setEndpointPrefix(environment.BaseApiUrl)
+
+    // The agent portal has its own subdomain and the two products are deliberately separate: the
+    // main site sells registration to mark owners, the portal serves practitioners managing other
+    // people's marks. Without this, agent.trademarx.in would also serve the marketing pages, the
+    // registration flow and the member portal — the whole site duplicated on a second host, which
+    // muddles the separation and gives search engines two hosts with identical content.
+    //
+    // Done here rather than as a guard on every public route because that list grows, and a route
+    // added later would silently be served on both hosts. One check covers all of them.
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      if (!this.hostContext.isAgentHost) {
+        return;
+      }
+      const url = this.router.url.split('?')[0];
+      // Everything an agent legitimately needs on this host: the portal itself, signing in, and
+      // signing up. Anything else belongs to the main site.
+      const allowed = ['/agent-portal', '/login', '/create-agent-account', '/forgot-password', '/create-new-password', '/not-found'];
+      if (allowed.some(prefix => url === prefix || url.startsWith(prefix + '/'))) {
+        return;
+      }
+      // Cross-origin, so the router cannot do it — this has to be a full page load.
+      if (typeof window !== 'undefined') {
+        window.location.href = this.hostContext.urlOnMainHost(window.location.pathname + window.location.search);
+      }
+    });
 
     // Captures ?ref=CODE on every navigation regardless of which lazy-loaded
     // route matched, so a partner link can land on any page (homepage, a

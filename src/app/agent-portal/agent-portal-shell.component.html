@@ -16,16 +16,45 @@
     </div>
 
     <nav class="sidebar-nav">
-      @for (item of navItems; track item.route) {
-        <a [routerLink]="item.route"
-           class="nav-item"
-           [class.active]="isActive(item.route)"
-           [title]="sidebarCollapsed() ? item.label : ''">
-          <span class="nav-icon">{{ item.icon }}</span>
-          @if (!sidebarCollapsed()) {
-            <span class="nav-label">{{ item.label }}</span>
+      @for (item of navItems; track item.label) {
+        @if (item.children) {
+          <!-- Group: a disclosure, never a link. See NavItem in the component for why. -->
+          <button type="button"
+                  class="nav-item nav-group"
+                  [class.active]="isGroupActive(item)"
+                  [class.open]="isExpanded(item)"
+                  [attr.aria-expanded]="isExpanded(item)"
+                  (click)="toggleGroup(item)"
+                  [title]="sidebarCollapsed() ? item.label : ''">
+            <span class="nav-icon">{{ item.icon }}</span>
+            @if (!sidebarCollapsed()) {
+              <span class="nav-label">{{ item.label }}</span>
+              <span class="nav-caret" [class.open]="isExpanded(item)">▸</span>
+            }
+          </button>
+          @if (isExpanded(item) && !sidebarCollapsed()) {
+            <div class="nav-children">
+              @for (child of item.children; track child.route) {
+                <a [routerLink]="child.route"
+                   class="nav-item nav-child"
+                   [class.active]="isActive(child.route)">
+                  <span class="nav-icon">{{ child.icon }}</span>
+                  <span class="nav-label">{{ child.label }}</span>
+                </a>
+              }
+            </div>
           }
-        </a>
+        } @else {
+          <a [routerLink]="item.route"
+             class="nav-item"
+             [class.active]="isActive(item.route!)"
+             [title]="sidebarCollapsed() ? item.label : ''">
+            <span class="nav-icon">{{ item.icon }}</span>
+            @if (!sidebarCollapsed()) {
+              <span class="nav-label">{{ item.label }}</span>
+            }
+          </a>
+        }
       }
     </nav>
 
@@ -50,7 +79,17 @@
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
-    <router-outlet></router-outlet>
+    <!--
+      The shell had no topbar until the notification bell needed somewhere to live. It also gives
+      the calendar's "today" summary and a global search a home when those land.
+    -->
+    <header class="topbar">
+      <app-notification-bell />
+    </header>
+
+    <div class="content-scroll">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 
 </div>

@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
 import { ValidationMessageComponent } from '../shared/validation-message/validation-message.component';
 import { CommonRegisterLoginMobileSectionComponent } from '../common-register-login-mobile-section/common-register-login-mobile-section.component';
+import { HostContextService } from '../shared/services/host-context.service';
 
 
 @Component({
@@ -30,7 +31,8 @@ export class LoginV2Component implements OnInit{
     private  readonly router: Router, private  readonly localStorageService: LocalStorageService,
     private readonly loadingService: LoadingService, private readonly  authService:AuthService, 
     private readonly route: ActivatedRoute,private meta: Meta,
-    private title: Title) {
+    private title: Title,
+    private readonly hostContext: HostContextService) {
   }
 
   ngOnInit(): void {
@@ -80,9 +82,16 @@ export class LoginV2Component implements OnInit{
             return;
           }
           if (this.authService.hasRole(['ROLE_AGENT'])) {
-            // TODO: agent gets a dedicated login page in a later phase.
             this.loadingService.hide();
-            this.navigateTo('/agent-portal/dashboard');
+            // The agent portal lives on its own subdomain and is a separate product from trademark
+            // registration. On the main site an agent signing in is almost certainly at the wrong
+            // address, so send them across rather than opening the portal here — otherwise the two
+            // products stay entangled exactly as before.
+            if (this.hostContext.isAgentHost) {
+              this.navigateTo('/agent-portal/dashboard');
+            } else {
+              window.location.href = this.hostContext.urlOnAgentHost('/agent-portal/dashboard');
+            }
             return;
           }
 

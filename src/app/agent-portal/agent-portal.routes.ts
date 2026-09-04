@@ -19,6 +19,12 @@ export const agentPortalRoutes: Routes = [
     title: 'Add Trademark | Agent Portal',
   },
   {
+    // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
+    path: 'watch/conflicts',
+    loadComponent: () => import('./agent-conflicts/agent-conflicts.component').then(m => m.AgentConflictsComponent),
+    title: 'Portfolio Conflicts | Agent Portal',
+  },
+  {
     path: 'watch/journal',
     loadComponent: () => import('./agent-journal-watch/agent-journal-watch.component').then(m => m.AgentJournalWatchComponent),
     title: 'Trademark Watch | Agent Portal',
@@ -50,6 +56,17 @@ export const agentPortalRoutes: Routes = [
     path: 'portfolio/:id/watch',
     loadComponent: () => import('./agent-trademark-watch/agent-trademark-watch.component').then(m => m.AgentTrademarkWatchComponent),
     title: 'Trademark Watch | Agent Portal',
+  },
+  {
+    path: 'documents',
+    loadComponent: () => import('./agent-documents/agent-documents.component').then(m => m.AgentDocumentsComponent),
+    title: 'Documents | Agent Portal',
+  },
+  {
+    path: 'notifications',
+    loadComponent: () =>
+      import('./agent-notifications/agent-notifications.component').then(m => m.AgentNotificationsComponent),
+    title: 'Notifications | Agent Portal',
   },
   {
     path: 'profile',

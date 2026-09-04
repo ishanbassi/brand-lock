@@ -1,0 +1,95 @@
+<div class="conflicts-page">
+
+  <a routerLink="/agent-portal/dashboard" class="back-link">‹ Back to Dashboard</a>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading conflicts…</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="conflicts-header">
+      <h1 class="page-title">Portfolio Conflicts</h1>
+      <p class="page-sub">
+        Marks the journal watch has found against your portfolio — same class, most recent first. Each is advertised in the journal
+        issue shown, and open to opposition for four months from that issue's publication.
+      </p>
+    </div>
+
+    <div class="filter-row">
+      <button class="chip" [class.active]="riskFilter() === 'ALL'" (click)="setFilter('ALL')">
+        All ({{ conflicts().length }})
+      </button>
+      <button class="chip" [class.active]="riskFilter() === 'HIGH'" (click)="setFilter('HIGH')">
+        🔴 High ({{ highRiskCount() }})
+      </button>
+      <button class="chip" [class.active]="riskFilter() === 'MEDIUM'" (click)="setFilter('MEDIUM')">
+        🟡 Medium ({{ mediumRiskCount() }})
+      </button>
+      <button class="chip" [class.active]="riskFilter() === 'LOW'" (click)="setFilter('LOW')">
+        Low ({{ conflicts().length - highRiskCount() - mediumRiskCount() }})
+      </button>
+    </div>
+
+    @if (visible().length === 0) {
+      <div class="empty-state">
+        <h2>Nothing to review</h2>
+        <p>No conflicts recorded at this risk level. The watch runs again tonight.</p>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table class="conflict-table">
+          <thead>
+            <tr>
+              <th>Your Mark</th>
+              <th>Conflicting Mark</th>
+              <th>Class</th>
+              <th>Journal</th>
+              <th>Similarity</th>
+              <th>Risk</th>
+              <th>First Seen</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of visible(); track c.id) {
+              <tr>
+                <td>
+                  @if (c.trademarkId) {
+                    <a [routerLink]="['/agent-portal/portfolio', c.trademarkId, 'watch']">{{ c.trademarkName || '—' }}</a>
+                  } @else {
+                    {{ c.trademarkName || '—' }}
+                  }
+                </td>
+                <td>
+                  {{ c.conflictingTrademarkName || '—' }}
+                  @if (c.conflictingProprietorName) {
+                    <div class="muted-sub">{{ c.conflictingProprietorName }}</div>
+                  }
+                </td>
+                <td class="num">{{ c.conflictingTmClass || '—' }}</td>
+                <td>
+                  @if (c.journalNo) {
+                    <a [routerLink]="['/agent-portal/watch/journal']" [queryParams]="{ journalNo: c.journalNo }">{{ c.journalNo }}</a>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+                <td class="num">{{ scorePercent(c.similarityScore) }}%</td>
+                <td>
+                  <span class="risk-badge" [class]="'badge-' + riskClass(c.riskLevel)">{{ c.riskLevel }}</span>
+                </td>
+                <td class="muted">{{ c.checkDate | date: 'mediumDate' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

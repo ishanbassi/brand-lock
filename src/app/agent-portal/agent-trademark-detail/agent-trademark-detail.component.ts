@@ -48,6 +48,9 @@ export class AgentTrademarkDetailComponent implements OnInit {
   documentsLoading = signal(false);
   selectedFile: File | null = null;
   uploadMeta = { documentType: 'OTHER', notes: '', documentDate: '' };
+  selectedFiles: File[] = [];
+  /** Files the server refused, shown beside the ones that saved. */
+  uploadFailures = signal<{ fileName: string; reason: string }[]>([]);
   uploading = signal(false);
   deletingDocId = signal<number | null>(null);
 
@@ -171,25 +174,51 @@ export class AgentTrademarkDetailComponent implements OnInit {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedFile = input.files?.[0] ?? null;
+    this.selectedFiles = Array.from(input.files ?? []);
+    this.selectedFile = this.selectedFiles[0] ?? null;
   }
 
+  removeSelected(index: number): void {
+    this.selectedFiles = this.selectedFiles.filter((_, i) => i !== index);
+    this.selectedFile = this.selectedFiles[0] ?? null;
+  }
+
+  /**
+   * Uploads everything selected in one request.
+   *
+   * <p>Always the bulk endpoint, even for a single file — one code path rather than two, and the
+   * per-file result is what lets a batch report "eight saved, one refused" instead of failing
+   * whole. Agents scan a folder of correspondence at a time; refusing all nine because one is a
+   * .heic would mean working out which and dragging the rest again.
+   *
+   * <p>One type applies to the batch. Per-file typing is a form filled in twenty times; the
+   * document library lets them correct a type afterwards in one click instead.
+   */
   upload(): void {
-    if (!this.selectedFile || this.uploading()) return;
+    if (this.selectedFiles.length === 0 || this.uploading()) return;
     this.uploading.set(true);
     this.error.set('');
-    this.agentDataService.uploadDocument(this.trademarkId, this.selectedFile, this.uploadMeta).subscribe({
-      next: doc => {
-        this.documents.set([doc, ...this.documents()]);
-        this.uploading.set(false);
-        this.selectedFile = null;
-        this.uploadMeta = { documentType: 'OTHER', notes: '', documentDate: '' };
-      },
-      error: err => {
-        this.uploading.set(false);
-        this.error.set(err?.error?.message || err?.error?.title || 'Could not upload that file.');
-      },
-    });
+    this.uploadFailures.set([]);
+
+    this.agentDataService
+      .uploadDocuments(this.trademarkId, this.selectedFiles, {
+        documentType: this.uploadMeta.documentType,
+        notes: this.uploadMeta.notes,
+      })
+      .subscribe({
+        next: result => {
+          this.documents.set([...(result.uploaded ?? []), ...this.documents()]);
+          this.uploadFailures.set(result.failures ?? []);
+          this.uploading.set(false);
+          this.selectedFiles = [];
+          this.selectedFile = null;
+          this.uploadMeta = { documentType: 'OTHER', notes: '', documentDate: '' };
+        },
+        error: err => {
+          this.uploading.set(false);
+          this.error.set(err?.error?.message || err?.error?.title || 'Could not upload those files.');
+        },
+      });
   }
 
   /**

@@ -70,6 +70,51 @@
       </div>
     </div>
 
+    <!-- PORTFOLIO BY STATUS -->
+    <!--
+      Total / Active / Expiring answer "how big" and "what is urgent", but not "what shape is the
+      portfolio in" — a firm with 400 marks stuck under objection reads identically to one with 400
+      registered. The chart and the cards are the same numbers twice: the chart for the proportion
+      at a glance, the cards for the exact figure including the buckets that are empty.
+    -->
+    <div class="content-card status-card">
+      <div class="card-header">
+        <h2 class="card-title">Portfolio by Status</h2>
+        <span class="card-sub">{{ s.totalTrademarks }} marks</span>
+      </div>
+
+      @if (s.totalTrademarks === 0) {
+        <div class="empty-state">
+          <p>Nothing to chart yet — add or import marks and their statuses will appear here.</p>
+        </div>
+      } @else {
+        <div class="status-layout">
+          <div class="status-chart">
+            @if (isBrowser) {
+              <canvas baseChart [data]="doughnutData()" [options]="doughnutOptions" type="doughnut"></canvas>
+              <div class="chart-centre">
+                <span class="chart-centre-value">{{ s.totalTrademarks }}</span>
+                <span class="chart-centre-label">Total</span>
+              </div>
+            } @else {
+              <div class="chart-placeholder"></div>
+            }
+          </div>
+
+          <div class="status-legend">
+            @for (row of statusRows(); track row.key) {
+              <div class="status-row" [class.is-zero]="row.count === 0">
+                <span class="status-swatch" [style.background]="row.color"></span>
+                <span class="status-name">{{ row.icon }} {{ row.label }}</span>
+                <span class="status-count">{{ row.count }}</span>
+                <span class="status-share">{{ row.share }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
     <!-- TWO COLUMN LAYOUT -->
     <div class="content-grid">
 

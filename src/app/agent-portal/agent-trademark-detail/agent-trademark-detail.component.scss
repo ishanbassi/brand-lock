@@ -280,3 +280,61 @@ $white: #ffffff;
 
 .notes-actions { display: flex; align-items: center; gap: 0.875rem; }
 .saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
+
+// Files staged for upload, before the request goes out.
+.staged-files {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: 0.2rem 0.5rem 0.2rem 0.7rem;
+    font-size: 0.75rem;
+    color: #334155;
+    max-width: 260px;
+  }
+}
+
+.staged-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staged-remove {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: #b91c1c;
+  }
+}
+
+// Files the server refused. Shown alongside what saved, not instead of it.
+.upload-failures {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid #d97706;
+  background: #fffbeb;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.78rem;
+  color: #92400e;
+
+  li + li {
+    margin-top: 0.25rem;
+  }
+}

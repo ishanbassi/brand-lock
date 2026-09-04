@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -8,7 +8,10 @@ import {
   AgentClaimResult,
   AgentDashboardStats,
   AgentDirectoryEntry,
+  AgentBulkUploadResult,
   AgentDocument,
+  AgentDocumentLibraryPage,
+  AgentDocumentLibrarySummary,
   AgentImportSummary,
   AgentJournalWatchResult,
   AgentImportResult,
@@ -102,10 +105,11 @@ export class AgentDataService {
     return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflict-history`);
   }
 
-  // Phase 2 — Batch watch (trigger for current agent)
-  triggerBatchWatch(): Observable<void> {
-    return this.http.post<void>(`${this.base}/agent-portal/portfolio/batch-watch`, {});
+  /** Every conflict recorded across the whole portfolio — what the digest email links to. */
+  getAllConflicts(): Observable<WatchConflictHistory[]> {
+    return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/watch/conflicts`);
   }
+
 
   // Phase 2 — Portfolio export
   /** The caller's own upload history — backs the "we're checking your file" banner. */
@@ -149,6 +153,51 @@ export class AgentDataService {
    * Fetches the bytes rather than linking to them. These files sit outside every web-served
    * directory on purpose, so there is no URL to point an anchor at — the browser gets a blob.
    */
+  // ── Document library (portfolio-wide) ──────────────────────────────────
+  //
+  // Distinct from listDocuments above, which answers "what is attached to this mark". The library
+  // spans every mark, which is what an agent actually needs when they know the document but not
+  // which application it was filed against.
+
+  getDocumentLibrary(options: {
+    type?: string | null;
+    clientRef?: string | null;
+    q?: string | null;
+    page?: number;
+    size?: number;
+  } = {}): Observable<AgentDocumentLibraryPage> {
+    let params = new HttpParams()
+      .set('page', String(options.page ?? 0))
+      .set('size', String(options.size ?? 25));
+    if (options.type) params = params.set('type', options.type);
+    if (options.clientRef) params = params.set('clientRef', options.clientRef);
+    if (options.q) params = params.set('q', options.q);
+    return this.http.get<AgentDocumentLibraryPage>(`${this.base}/agent-portal/documents`, { params });
+  }
+
+  getDocumentLibrarySummary(): Observable<AgentDocumentLibrarySummary> {
+    return this.http.get<AgentDocumentLibrarySummary>(`${this.base}/agent-portal/documents/summary`);
+  }
+
+  uploadDocuments(
+    trademarkId: number,
+    files: File[],
+    meta: { documentType?: string; notes?: string },
+  ): Observable<AgentBulkUploadResult> {
+    const form = new FormData();
+    files.forEach(file => form.append('files', file));
+    if (meta.documentType) form.append('documentType', meta.documentType);
+    if (meta.notes) form.append('notes', meta.notes);
+    return this.http.post<AgentBulkUploadResult>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/documents/bulk`,
+      form,
+    );
+  }
+
+  reclassifyDocument(documentId: number, documentType: string): Observable<AgentDocument> {
+    return this.http.patch<AgentDocument>(`${this.base}/agent-portal/documents/${documentId}/type`, { documentType });
+  }
+
   downloadDocument(documentId: number): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/documents/${documentId}/download`, { responseType: 'blob' });
   }

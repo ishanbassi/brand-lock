@@ -399,7 +399,13 @@ app.use('/**', (req, res, next) => {
   // Mutable context the app can write to during render (Angular exposes it via
   // REQUEST_CONTEXT; see SsrStatusService). Without it every route — including
   // /not-found — answered 200, so dead URLs read as soft 404s to crawlers.
-  const ssrContext: { statusCode?: number } = {};
+  // Host is carried through the same context so the app can tell which site it is rendering
+  // for. The agent portal is served on its own subdomain, and a route guard that only reads
+  // window.location would let the server render agent pages for the main site before the
+  // browser ever corrects it.
+  const ssrContext: { statusCode?: number; host?: string } = {
+    host: (req.headers['x-forwarded-host'] as string) || req.headers.host || '',
+  };
 
   angularApp
     .handle(req, ssrContext)

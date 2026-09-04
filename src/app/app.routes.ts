@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { agentHostGuard, mainHostGuard } from './guards/host.guard';
 
 export const routes: Routes = [
     {
@@ -17,7 +18,9 @@ export const routes: Routes = [
         loadComponent: () => import('./agent-portal/agent-portal-shell.component').then(m => m.AgentPortalShellComponent),
         loadChildren: () => import('./agent-portal/agent-portal.routes').then(m => m.agentPortalRoutes),
         title: "Agent Portal",
-        canActivate: [AuthGuard],
+        // agentHostGuard first: on the wrong host this is a redirect to the agent subdomain, and
+        // there is no point testing the user's role before deciding they are on the wrong site.
+        canActivate: [agentHostGuard, AuthGuard],
         data: { roles: ['ROLE_AGENT'] }
     },
     {

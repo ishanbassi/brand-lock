@@ -206,11 +206,11 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
-    this.title.setTitle('Trademark Registration India — Fast, Simple & Affordable | Trademarx');
+    this.title.setTitle('Trademark Registration Online Portal | Trademarx');
     this.meta.updateTag({ name: 'description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 500+ businesses across India.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });
-    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration India — Fast, Simple & Affordable | Trademarx' });
+    this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration Online Portal | Trademarx' });
     this.meta.updateTag({ property: 'og:description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 500+ businesses across India.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: HOME_URL });
