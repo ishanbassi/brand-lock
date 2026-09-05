@@ -15,7 +15,9 @@
       <!-- AVATAR CARD -->
       <div class="avatar-card">
         <div class="avatar-circle">{{ initials }}</div>
-        <div class="avatar-name">{{ profile()?.firstName }} {{ profile()?.lastName }}</div>
+        @if (fullName) {
+          <div class="avatar-name">{{ fullName }}</div>
+        }
         <div class="avatar-email">{{ profile()?.email }}</div>
         @if (profile()?.profileStatus) {
           <span class="status-pill" [class]="'status--' + profile()!.profileStatus!.toLowerCase()">
@@ -32,129 +34,137 @@
         </div>
       </div>
 
-      <!-- EDIT FORM -->
-      <form class="form-card" (ngSubmit)="save()">
+      <!-- RIGHT COLUMN: the form and the branding card.
+           Wrapped rather than left as siblings of the avatar card: as direct grid children they
+           auto-placed into the next free cell, which put branding in the 260px left column
+           underneath the sticky avatar card. -->
+      <div class="profile-main">
 
-        @if (error()) {
-          <div class="alert-error">{{ error() }}</div>
-        }
+        <!-- EDIT FORM -->
+        <form class="form-card" (ngSubmit)="save()">
 
-        @if (saved()) {
-          <div class="alert-success"><ap-icon name="check" [size]="16" /> Profile updated successfully.</div>
-        }
-
-        <div class="section-title">Personal Information</div>
-        <div class="form-grid">
-          <div class="field">
-            <label class="field-label">First Name</label>
-            <input type="text" class="field-input" [(ngModel)]="form.firstName" name="firstName" />
-          </div>
-          <div class="field">
-            <label class="field-label">Last Name</label>
-            <input type="text" class="field-input" [(ngModel)]="form.lastName" name="lastName" />
-          </div>
-          <div class="field">
-            <label class="field-label">Phone Number</label>
-            <input type="tel" class="field-input" [(ngModel)]="form.phoneNumber" name="phoneNumber" placeholder="+91 98765 43210" />
-          </div>
-        </div>
-
-        <div class="section-title">Professional Details</div>
-        <div class="form-grid">
-          <div class="field full-span">
-            <label class="field-label">Company / Firm Name</label>
-            <input type="text" class="field-input" [(ngModel)]="form.companyName" name="companyName" placeholder="Your law firm or practice name" />
-          </div>
-          <div class="field">
-            <label class="field-label">Bar Registration No.</label>
-            <input type="text" class="field-input" [(ngModel)]="form.barRegNo" name="barRegNo" placeholder="e.g. BAR/2023/12345" />
-          </div>
-          <div class="field">
-            <label class="field-label">Website</label>
-            <input type="url" class="field-input" [(ngModel)]="form.website" name="website" placeholder="https://yourfirm.com" />
-          </div>
-          <div class="field full-span">
-            <label class="field-label">Office Address</label>
-            <textarea class="field-textarea" [(ngModel)]="form.address" name="address" rows="2" placeholder="Your office address"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-primary" [disabled]="saving()">
-            @if (saving()) {
-              <span class="btn-spinner"></span> Saving…
-            } @else {
-              Save Changes
-            }
-          </button>
-        </div>
-
-      </form>
-
-      <!-- ── REPORT BRANDING ──────────────────────────────────────────────
-           What every generated document carries: search reports, the portfolio
-           schedule, watch reports. Set once here rather than per report. -->
-      <section class="branding-section">
-        <h2 class="section-title">Report branding</h2>
-        <p class="section-hint">
-          Applied to every document you generate — search reports, portfolio schedules and watch
-          reports. Leave blank to use the Trademarx house style.
-        </p>
-
-        <div class="logo-row">
-          <div class="logo-preview" [class.empty]="!logoPreview()">
-            @if (logoPreview(); as src) {
-              <img [src]="src" alt="Your firm logo" />
-            } @else {
-              <span>No logo</span>
-            }
-          </div>
-
-          <div class="logo-actions">
-            <label class="btn-secondary">
-              {{ logoPreview() ? 'Replace logo' : 'Upload logo' }}
-              <input type="file" accept="image/png,image/jpeg" (change)="onLogoSelected($event)" hidden />
-            </label>
-            @if (logoPreview()) {
-              <button type="button" class="btn-link danger" (click)="removeLogo()">Remove</button>
-            }
-            <p class="field-hint">PNG or JPEG, up to 2 MB.</p>
-          </div>
-        </div>
-
-        @if (logoError()) {
-          <p class="branding-error">{{ logoError() }}</p>
-        }
-
-        <div class="form-grid">
-          <div class="field">
-            <label class="field-label">Firm name on reports</label>
-            <input class="field-input" type="text" [(ngModel)]="branding.firmDisplayName" name="firmDisplayName"
-                   placeholder="How your firm should appear on the letterhead" />
-          </div>
-
-          <div class="field">
-            <label class="field-label">Accent colour</label>
-            <input class="field-input" type="text" [(ngModel)]="branding.reportAccentColor" name="reportAccentColor"
-                   placeholder="#1F4E79" />
-          </div>
-
-          <div class="field full-span">
-            <label class="field-label">Footer line</label>
-            <textarea class="field-textarea" [(ngModel)]="branding.reportFooterText" name="reportFooterText" rows="2"
-                      placeholder="Your firm's disclaimer or contact line, shown at the foot of every page"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-primary" (click)="saveBranding()" [disabled]="brandingSaving()">
-            {{ brandingSaving() ? 'Saving…' : 'Save report settings' }}
-          </button>
-          @if (brandingSaved()) {
-            <span class="saved-note">Saved</span>
+          @if (error()) {
+            <div class="alert-error">{{ error() }}</div>
           }
-        </div>
-      </section>
+
+          @if (saved()) {
+            <div class="alert-success"><ap-icon name="check" [size]="16" /> Profile updated successfully.</div>
+          }
+
+          <div class="section-title">Personal Information</div>
+          <div class="form-grid">
+            <div class="field">
+              <label class="field-label">First Name</label>
+              <input type="text" class="field-input" [(ngModel)]="form.firstName" name="firstName" />
+            </div>
+            <div class="field">
+              <label class="field-label">Last Name</label>
+              <input type="text" class="field-input" [(ngModel)]="form.lastName" name="lastName" />
+            </div>
+            <div class="field">
+              <label class="field-label">Phone Number</label>
+              <input type="tel" class="field-input" [(ngModel)]="form.phoneNumber" name="phoneNumber" placeholder="+91 98765 43210" />
+            </div>
+          </div>
+
+          <div class="section-title">Professional Details</div>
+          <div class="form-grid">
+            <div class="field full-span">
+              <label class="field-label">Company / Firm Name</label>
+              <input type="text" class="field-input" [(ngModel)]="form.companyName" name="companyName" placeholder="Your law firm or practice name" />
+            </div>
+            <div class="field">
+              <label class="field-label">Bar Registration No.</label>
+              <input type="text" class="field-input" [(ngModel)]="form.barRegNo" name="barRegNo" placeholder="e.g. BAR/2023/12345" />
+            </div>
+            <div class="field">
+              <label class="field-label">Website</label>
+              <input type="url" class="field-input" [(ngModel)]="form.website" name="website" placeholder="https://yourfirm.com" />
+            </div>
+            <div class="field full-span">
+              <label class="field-label">Office Address</label>
+              <textarea class="field-textarea" [(ngModel)]="form.address" name="address" rows="2" placeholder="Your office address"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="saving()">
+              @if (saving()) {
+                <span class="btn-spinner"></span> Saving…
+              } @else {
+                Save Changes
+              }
+            </button>
+          </div>
+
+        </form>
+
+        <!-- ── REPORT BRANDING ──────────────────────────────────────────────
+             What every generated document carries: search reports, the portfolio
+             schedule, watch reports. Set once here rather than per report. -->
+        <section class="branding-section">
+          <h2 class="section-title">Report branding</h2>
+          <p class="section-hint">
+            Applied to every document you generate — search reports, portfolio schedules and watch
+            reports. Leave blank to use the Trademarx house style.
+          </p>
+
+          <div class="logo-row">
+            <div class="logo-preview" [class.empty]="!logoPreview()">
+              @if (logoPreview(); as src) {
+                <img [src]="src" alt="Your firm logo" />
+              } @else {
+                <span>No logo</span>
+              }
+            </div>
+
+            <div class="logo-actions">
+              <label class="btn-secondary">
+                {{ logoPreview() ? 'Replace logo' : 'Upload logo' }}
+                <input type="file" accept="image/png,image/jpeg" (change)="onLogoSelected($event)" hidden />
+              </label>
+              @if (logoPreview()) {
+                <button type="button" class="btn-link danger" (click)="removeLogo()">Remove</button>
+              }
+              <p class="field-hint">PNG or JPEG, up to 2 MB.</p>
+            </div>
+          </div>
+
+          @if (logoError()) {
+            <p class="branding-error">{{ logoError() }}</p>
+          }
+
+          <div class="form-grid">
+            <div class="field">
+              <label class="field-label">Firm name on reports</label>
+              <input class="field-input" type="text" [(ngModel)]="branding.firmDisplayName" name="firmDisplayName"
+                     placeholder="How your firm should appear on the letterhead" />
+            </div>
+
+            <div class="field">
+              <label class="field-label">Accent colour</label>
+              <input class="field-input" type="text" [(ngModel)]="branding.reportAccentColor" name="reportAccentColor"
+                     placeholder="#1F4E79" />
+            </div>
+
+            <div class="field full-span">
+              <label class="field-label">Footer line</label>
+              <textarea class="field-textarea" [(ngModel)]="branding.reportFooterText" name="reportFooterText" rows="2"
+                        placeholder="Your firm's disclaimer or contact line, shown at the foot of every page"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-primary" (click)="saveBranding()" [disabled]="brandingSaving()">
+              {{ brandingSaving() ? 'Saving…' : 'Save report settings' }}
+            </button>
+            @if (brandingSaved()) {
+              <span class="saved-note">Saved</span>
+            }
+          </div>
+        </section>
+
+      </div>
     </div>
   }
 </div>

@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AgentAddByNumberResult,
@@ -13,6 +13,9 @@ import {
   AgentDocumentLibraryPage,
   AgentDocumentLibrarySummary,
   AgentBranding,
+  CompetitorAddResult,
+  CompetitorFeedPage,
+  CompetitorWatch,
   Deadline,
   SearchReport,
   AgentImportSummary,
@@ -40,12 +43,27 @@ export class AgentDataService {
   }
 
   // Profile
+
+  /**
+   * The signed-in agent's own profile, as last fetched or saved.
+   *
+   * Held here rather than in one component because the shell shows the firm name in the sidebar
+   * while the profile screen edits it — a signal keeps the two in step without the shell
+   * re-fetching after every save.
+   */
+  private readonly profileState = signal<AgentProfile | null>(null);
+  readonly agentProfile = this.profileState.asReadonly();
+
   getProfile(): Observable<AgentProfile> {
-    return this.http.get<AgentProfile>(`${this.base}/agent-portal/profile`);
+    return this.http.get<AgentProfile>(`${this.base}/agent-portal/profile`).pipe(
+      tap(p => this.profileState.set(p)),
+    );
   }
 
   updateProfile(data: Partial<AgentProfile>): Observable<AgentProfile> {
-    return this.http.put<AgentProfile>(`${this.base}/agent-portal/profile`, data);
+    return this.http.put<AgentProfile>(`${this.base}/agent-portal/profile`, data).pipe(
+      tap(p => this.profileState.set(p)),
+    );
   }
 
   // Dashboard
@@ -364,6 +382,33 @@ export class AgentDataService {
    */
   exportPortfolioPdf(): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, { responseType: 'blob' });
+  }
+
+
+  // ── Competitor watch ─────────────────────────────────────────────────────
+  //
+  // Firms are chosen from the same directory as onboarding (searchAgents above), so a watched name
+  // is always one that actually appears on the register.
+
+  getCompetitorWatches(): Observable<CompetitorWatch[]> {
+    return this.http.get<CompetitorWatch[]>(`${this.base}/agent-portal/competitors`);
+  }
+
+  /** Adds several at once - a firm often files under more than one spelling. */
+  addCompetitorWatches(names: string[]): Observable<CompetitorAddResult> {
+    return this.http.post<CompetitorAddResult>(`${this.base}/agent-portal/competitors`, { names });
+  }
+
+  removeCompetitorWatch(watchId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/competitors/${watchId}`);
+  }
+
+  getCompetitorFeed(page = 0, size = 25): Observable<CompetitorFeedPage> {
+    return this.http.get<CompetitorFeedPage>(`${this.base}/agent-portal/competitors/feed?page=${page}&size=${size}`);
+  }
+
+  markCompetitorFeedSeen(): Observable<{ cleared: number }> {
+    return this.http.post<{ cleared: number }>(`${this.base}/agent-portal/competitors/feed/seen`, {});
   }
 
   // Phase 2 — Agent public profile

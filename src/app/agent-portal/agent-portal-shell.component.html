@@ -63,11 +63,11 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div class="agent-pill" [class.compact]="sidebarCollapsed()">
-        <div class="agent-avatar">{{ agentInitials }}</div>
+      <div class="agent-pill" [class.compact]="sidebarCollapsed()" [title]="sidebarCollapsed() ? firmName() : ''">
+        <div class="agent-avatar">{{ agentInitials() }}</div>
         @if (!sidebarCollapsed()) {
           <div class="agent-info">
-            <span class="agent-name">Agent Portal</span>
+            <span class="agent-name" [title]="firmName()">{{ firmName() }}</span>
             <span class="agent-badge">Active</span>
           </div>
         }
@@ -89,6 +89,15 @@
     -->
     <header class="topbar">
       <app-notification-bell />
+      <!-- Profile lives here rather than in the nav: it is account plumbing, not one of the
+           portal's features, and it sits beside the bell that shares that role. -->
+      <a routerLink="/agent-portal/profile"
+         class="topbar-btn"
+         [class.active]="onProfile()"
+         title="My profile"
+         aria-label="My profile">
+        <ap-icon name="user" [size]="16" />
+      </a>
     </header>
 
     <div class="content-scroll">

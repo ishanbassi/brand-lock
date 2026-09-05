@@ -35,11 +35,20 @@ $white: #ffffff;
 
 .profile-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr);
   gap: var(--ap-space-5);
   align-items: start;
 
   @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+// Everything in the right-hand column, stacked. Keeps the cards out of the 260px sidebar column,
+// which is what a grid would otherwise do with the second and later siblings.
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-5);
+  min-width: 0;
 }
 
 // ── AVATAR CARD ─────────────────────────────────────────
@@ -263,17 +272,25 @@ $white: #ffffff;
 }
 
 // ── Report branding ──────────────────────────────────────
+// A card of its own rather than a ruled-off tail of the form: it saves separately, so presenting
+// it as part of the profile form implied the one Save Changes button covered it too.
 .branding-section {
-  margin-top: var(--ap-space-6);
-  padding-top: var(--ap-space-5);
-  border-top: 1px solid var(--ap-rule);
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: var(--ap-space-6);
 }
 
-.section-title {
+// Scoped, so the form card's own section headings keep the small uppercase label style above.
+.branding-section > .section-title {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--ap-ink);
+  text-transform: none;
+  letter-spacing: normal;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .section-hint {

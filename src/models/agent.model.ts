@@ -370,3 +370,51 @@ export interface AgentAddByNumberResult {
   name?: string;
   message: string;
 }
+
+/**
+ * A rival firm on the agent's watch list.
+ *
+ * `markCountAtAdd` is the register's count when the watch was created, not a live figure - it says
+ * how big the firm is. `filingsFound` is what has appeared since. Zero on a new watch is the
+ * correct answer, not a failure: the watch only ever looks forward.
+ */
+export interface CompetitorWatch {
+  id: number;
+  displayName: string;
+  nameNormalized: string;
+  markCountAtAdd?: number;
+  filingsFound: number;
+  addedDate?: string;
+}
+
+/** One filing detected under a watched firm's name. */
+export interface CompetitorFiling {
+  id: number;
+  competitorWatchId: number;
+  agentName: string;
+  foundDate?: string;
+  seen: boolean;
+  trademarkId?: number;
+  trademarkName?: string;
+  applicationNo?: number;
+  tmClass?: number;
+  applicationDate?: string;
+  proprietorName?: string;
+  trademarkStatus?: string;
+  /** Public detail page, e.g. /trademarks/acme-class-9-1234567. Built server-side from SlugUtil. */
+  detailUrl?: string;
+}
+
+export interface CompetitorFeedPage {
+  items: CompetitorFiling[];
+  totalElements: number;
+  totalPages: number;
+  page: number;
+  unseen: number;
+}
+
+/** Names that could not be watched are reported individually, so a partial add still succeeds. */
+export interface CompetitorAddResult {
+  added: CompetitorWatch[];
+  rejected: Record<string, string>;
+}

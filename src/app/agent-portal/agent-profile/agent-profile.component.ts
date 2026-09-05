@@ -126,6 +126,12 @@ export class AgentProfileComponent implements OnInit {
     });
   }
 
+  /** Empty for an account that registered with a firm name only — the card omits the line then. */
+  get fullName(): string {
+    const p = this.profile();
+    return [p?.firstName, p?.lastName].filter(Boolean).join(' ').trim();
+  }
+
   get initials(): string {
     const p = this.profile();
     if (!p) return '?';

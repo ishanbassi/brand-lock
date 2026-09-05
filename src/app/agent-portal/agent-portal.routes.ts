@@ -30,6 +30,13 @@ export const agentPortalRoutes: Routes = [
     title: 'Trademark Watch | Agent Portal',
   },
   {
+    // Rival firms an agent follows. Sits under watch/ with the other two: all three answer "what
+    // is the register doing that affects me".
+    path: 'watch/competitors',
+    loadComponent: () => import('./agent-competitors/agent-competitors.component').then(m => m.AgentCompetitorsComponent),
+    title: 'Competitors | Agent Portal',
+  },
+  {
     path: 'portfolio/claim',
     loadComponent: () => import('./agent-portfolio-claim/agent-portfolio-claim.component').then(m => m.AgentPortfolioClaimComponent),
     title: 'Find Your Trademarks | Agent Portal',

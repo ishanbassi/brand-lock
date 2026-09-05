@@ -253,6 +253,35 @@ $content-bg: var(--ap-paper);
   border-bottom: 1px solid #e2e8f0;
 }
 
+// Matches the notification bell's button so the two topbar controls read as a pair.
+.topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ap-target);
+  min-height: var(--ap-target);
+  padding: var(--ap-space-2);
+  border-radius: 8px;
+  color: var(--ap-ink-muted);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--ap-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-accent);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    background: var(--ap-accent-soft);
+    color: var(--ap-accent);
+  }
+}
+
 .content-scroll {
   flex: 1;
   overflow-y: auto;

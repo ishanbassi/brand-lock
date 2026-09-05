@@ -1,0 +1,502 @@
+/**
+ * Competitors.
+ *
+ * Every value here comes from the portal tokens. Colour appears in exactly two places - the unread
+ * marker and the active filter - because everything else on this page is a fact, not a state.
+ */
+
+.competitors {
+  padding: var(--ap-space-6);
+  max-width: 1280px;
+}
+
+/* ── Page head ─────────────────────────────────────────────────────────── */
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ap-space-6);
+  flex-wrap: wrap;
+  margin-bottom: var(--ap-space-6);
+}
+
+.page-head__text {
+  min-width: 0;
+}
+
+.head-stats {
+  display: flex;
+  gap: var(--ap-space-6);
+  margin: 0;
+}
+
+.head-stat {
+  text-align: right;
+
+  dt {
+    font-size: var(--ap-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ap-ink-faint);
+    margin: 0;
+  }
+
+  dd {
+    margin: var(--ap-space-1) 0 0;
+    font-size: var(--ap-text-xl);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ap-ink);
+  }
+}
+
+/* The only number on the page allowed to be coloured, and only when it is not zero. */
+.head-stat--live dd {
+  color: var(--ap-accent);
+}
+
+.notice {
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border-radius: var(--ap-radius);
+  font-size: var(--ap-text-base);
+  margin: 0 0 var(--ap-space-5);
+}
+
+.notice--error {
+  background: var(--ap-overdue-soft);
+  color: var(--ap-overdue);
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--ap-space-6);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The control comes first when there is no room beside the feed: on a narrow screen the roster
+     is what you came to change, and a feed above it would bury the search. */
+  .roster {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .competitors {
+    padding: var(--ap-space-4);
+  }
+}
+
+/* ── Feed ──────────────────────────────────────────────────────────────── */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  margin-bottom: var(--ap-space-4);
+  background: var(--ap-accent-soft);
+  border-radius: var(--ap-radius);
+  font-size: var(--ap-text-sm);
+  color: var(--ap-accent);
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  background: none;
+  border: 0;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.day {
+  margin-bottom: var(--ap-space-5);
+}
+
+.day__rail {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ap-space-3);
+  padding: 0 var(--ap-space-1) var(--ap-space-2);
+}
+
+.day__label {
+  font-family: var(--ap-font-display);
+  font-optical-sizing: auto;
+  font-size: var(--ap-text-md);
+  font-weight: 600;
+  color: var(--ap-ink);
+}
+
+.day__count {
+  color: var(--ap-ink-faint);
+}
+
+.day__rows {
+  overflow: hidden;
+}
+
+.filing {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ap-space-5);
+  padding: var(--ap-space-4);
+  border-bottom: 1px solid var(--ap-rule);
+}
+
+.filing:last-child {
+  border-bottom: 0;
+}
+
+.filing__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.filing__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+}
+
+/* The unread marker. One accent dot, no coloured row background and no left border stripe. */
+.new-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ap-accent);
+  flex-shrink: 0;
+}
+
+.filing__name {
+  font-size: var(--ap-text-md);
+  font-weight: 600;
+  color: var(--ap-ink);
+  text-decoration: none;
+}
+
+a.filing__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.filing__firm {
+  margin: var(--ap-space-1) 0 0;
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-muted);
+  line-height: 1.5;
+
+  strong {
+    font-weight: 600;
+    color: var(--ap-ink);
+  }
+}
+
+.filing__data {
+  display: flex;
+  gap: var(--ap-space-5);
+  margin: 0;
+  flex-shrink: 0;
+
+  dt {
+    font-size: var(--ap-text-xs);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ap-ink-faint);
+    margin: 0;
+  }
+
+  dd {
+    margin: 2px 0 0;
+    color: var(--ap-ink);
+  }
+}
+
+@media (max-width: 720px) {
+  .filing {
+    flex-direction: column;
+    gap: var(--ap-space-3);
+  }
+
+  .filing__data {
+    gap: var(--ap-space-4);
+  }
+}
+
+.first-run__title {
+  font-family: var(--ap-font-display);
+  font-optical-sizing: auto;
+  font-size: var(--ap-text-lg);
+  font-weight: 600;
+  color: var(--ap-ink);
+  margin: 0 0 var(--ap-space-3);
+}
+
+.first-run__note {
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-faint);
+}
+
+/* ── Roster ────────────────────────────────────────────────────────────── */
+
+.roster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.roster__title {
+  font-size: var(--ap-text-base);
+  font-weight: 600;
+  margin: 0;
+  color: var(--ap-ink);
+}
+
+.roster__count {
+  color: var(--ap-ink-faint);
+}
+
+.roster__search {
+  padding: var(--ap-space-4);
+}
+
+.field {
+  display: block;
+}
+
+.field__label {
+  display: block;
+  font-size: var(--ap-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ap-ink-faint);
+  margin-bottom: var(--ap-space-2);
+}
+
+.field__input {
+  width: 100%;
+  min-height: var(--ap-target);
+  padding: 0 var(--ap-space-3);
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius);
+  font-family: inherit;
+  font-size: var(--ap-text-base);
+  color: var(--ap-ink);
+  background: var(--ap-surface);
+}
+
+.field__input:focus {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 1px;
+  border-color: var(--ap-accent);
+}
+
+.field__hint {
+  margin: var(--ap-space-2) 0 0;
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-muted);
+  line-height: 1.5;
+}
+
+.roster__status {
+  margin: var(--ap-space-3) 0 0;
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-muted);
+}
+
+.results {
+  list-style: none;
+  margin: var(--ap-space-3) 0 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  border-top: 1px solid var(--ap-rule);
+}
+
+/* The whole row is the target, not the 12px box beside it. */
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  width: 100%;
+  min-height: var(--ap-target);
+  padding: var(--ap-space-2) 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--ap-rule);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.result:hover:not(:disabled) .result__name {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.result:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: -2px;
+}
+
+.result:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.result__box {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius-sm);
+  color: #fff;
+}
+
+.result--picked .result__box,
+.result--watched .result__box {
+  background: var(--ap-accent);
+  border-color: var(--ap-accent);
+}
+
+.result__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.result__name {
+  font-size: var(--ap-text-sm);
+  font-weight: 550;
+  color: var(--ap-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result__meta {
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+}
+
+.roster__add {
+  width: 100%;
+  margin-top: var(--ap-space-4);
+}
+
+.rejected {
+  list-style: none;
+  margin: var(--ap-space-3) 0 0;
+  padding: var(--ap-space-3);
+  background: var(--ap-overdue-soft);
+  border-radius: var(--ap-radius);
+  font-size: var(--ap-text-xs);
+  color: var(--ap-overdue);
+  line-height: 1.5;
+}
+
+/* ── Watch list ────────────────────────────────────────────────────────── */
+
+.watch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.watch {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ap-space-2);
+  border-bottom: 1px solid var(--ap-rule);
+  padding-right: var(--ap-space-2);
+}
+
+.watch:last-child {
+  border-bottom: 0;
+}
+
+.watch--active {
+  background: var(--ap-accent-soft);
+}
+
+.watch__select {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--ap-target);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--ap-space-2) var(--ap-space-4);
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.watch__select:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: -2px;
+}
+
+.watch__name {
+  font-size: var(--ap-text-sm);
+  font-weight: 550;
+  color: var(--ap-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.watch__meta {
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+}
+
+.watch__remove {
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--ap-radius-sm);
+  color: var(--ap-ink-faint);
+  cursor: pointer;
+}
+
+.watch__remove:hover:not(:disabled) {
+  border-color: var(--ap-rule-strong);
+  color: var(--ap-overdue);
+}
+
+.watch__remove:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 1px;
+}
