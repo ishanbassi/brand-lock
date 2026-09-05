@@ -39,9 +39,20 @@ export class AppComponent {
         return;
       }
       const url = this.router.url.split('?')[0];
-      // Everything an agent legitimately needs on this host: the portal itself, signing in, and
-      // signing up. Anything else belongs to the main site.
-      const allowed = ['/agent-portal', '/login', '/create-agent-account', '/forgot-password', '/create-new-password', '/not-found'];
+      // Everything an agent legitimately needs on this host: the portal itself and the sign-in
+      // page in front of it. Anything else belongs to the main site.
+      //
+      // /agent-login has to be here. It is where both mainHostGuard (bare root on this host) and
+      // AuthGuard (expired session inside the portal) send an agent, and it is the one route the
+      // main host actively pushes back over here via agentHostGuard. Leaving it out made those two
+      // guards fight: this bounced /agent-login to trademarx.in, agentHostGuard bounced it
+      // straight back, and the browser ping-ponged between the hosts forever.
+      //
+      // The sign-up and password routes are deliberately absent. They are children of the ''
+      // route, so mainHostGuard already moves them to the main site before this ever runs, and
+      // agent-login.component.html links to them there by absolute URL. Listing them here only
+      // suggested they worked on this host.
+      const allowed = ['/agent-portal', '/agent-login'];
       if (allowed.some(prefix => url === prefix || url.startsWith(prefix + '/'))) {
         return;
       }
