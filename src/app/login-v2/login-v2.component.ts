@@ -84,14 +84,20 @@ export class LoginV2Component implements OnInit{
           if (this.authService.hasRole(['ROLE_AGENT'])) {
             this.loadingService.hide();
             // The agent portal lives on its own subdomain and is a separate product from trademark
-            // registration. On the main site an agent signing in is almost certainly at the wrong
-            // address, so send them across rather than opening the portal here — otherwise the two
-            // products stay entangled exactly as before.
+            // registration. On the main site an agent signing in is at the wrong address.
             if (this.hostContext.isAgentHost) {
               this.navigateTo('/agent-portal/dashboard');
-            } else {
-              window.location.href = this.hostContext.urlOnAgentHost('/agent-portal/dashboard');
+              return;
             }
+
+            // Cross-host, the session cannot come with them: the token is in localStorage, which is
+            // per-origin, so agent.trademarx.in has its own empty store. Sending them to the
+            // dashboard looked like it worked and then bounced them straight back out. Discard the
+            // token this origin has no use for and hand them to the agent sign-in instead, where
+            // one more submit puts it in the right store.
+            this.localStorageService.clearAuthenticationToken();
+            this.localStorageService.remove('user');
+            window.location.href = this.hostContext.urlOnAgentHost('/agent-login');
             return;
           }
 

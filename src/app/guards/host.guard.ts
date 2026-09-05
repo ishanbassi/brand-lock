@@ -55,9 +55,23 @@ export const mainHostGuard: CanActivateFn = () => {
   }
 
   if (isPlatformBrowser(platformId)) {
-    window.location.href = hostContext.urlOnMainHost(window.location.pathname + window.location.search);
+    const path = window.location.pathname;
+
+    // The bare root is the address an agent actually types. Sending it across to the marketing
+    // site would be the opposite of what the subdomain is for, so it goes to the agent sign-in
+    // instead — which in turn bounces an already-signed-in agent to their dashboard.
+    if (path === '/' || path === '') {
+      return router.createUrlTree(['/agent-login']);
+    }
+
+    window.location.href = hostContext.urlOnMainHost(path + window.location.search);
     return false;
   }
 
-  return router.createUrlTree(['/agent-portal/dashboard']);
+  // No window to redirect with during SSR, so refusing the route is what keeps public pages from
+  // being rendered under the agent host and handed to a crawler.
+  //
+  // Points at the sign-in, not the dashboard: the dashboard is behind AuthGuard, which would send
+  // an unauthenticated server-side render to /login — a public route, which lands back here.
+  return router.createUrlTree(['/agent-login']);
 };

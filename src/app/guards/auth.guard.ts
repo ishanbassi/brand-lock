@@ -1,13 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../../models/auth.services';
+import { HostContextService } from '../shared/services/host-context.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PermissionsService {
 
-  constructor(private readonly authService: AuthService, private readonly router: Router) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly hostContext: HostContextService,
+  ) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
@@ -22,7 +27,11 @@ export class PermissionsService {
       return true;
     }
     if (!response.hasAccess) {
-      this.router.navigate(['login'], { queryParams: { returnUrl: state.url } });
+      // On the agent subdomain, sending an unauthenticated visitor to '/login' would bounce them
+      // off to the main marketing site (that route is behind mainHostGuard) — so someone whose
+      // session expired mid-portal would be thrown out of the product entirely. Keep them here.
+      const loginRoute = this.hostContext.isAgentHost ? 'agent-login' : 'login';
+      this.router.navigate([loginRoute], { queryParams: { returnUrl: state.url } });
       return false;
     }
     if (!response.hasRoleAccess) {

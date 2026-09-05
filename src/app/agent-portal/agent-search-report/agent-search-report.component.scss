@@ -1,0 +1,260 @@
+$accent: #6366f1;
+$border: #e2e8f0;
+$muted: #64748b;
+$high: #b91c1c;
+$medium: #d97706;
+$low: #16a34a;
+
+.search-report-page {
+  padding: 1.5rem 1.75rem 3rem;
+  max-width: 1080px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 0.85rem;
+  color: $muted;
+  max-width: 560px;
+}
+
+.search-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &.grow {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $muted;
+  }
+
+  input,
+  select {
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.87rem;
+    font-family: inherit;
+    background: #fff;
+    color: #0f172a;
+
+    &:focus {
+      outline: none;
+      border-color: $accent;
+    }
+  }
+}
+
+.btn-primary {
+  background: $accent;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.87rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+.disclaimer {
+  margin: 0.75rem 0 0;
+  font-size: 0.76rem;
+  color: $muted;
+  line-height: 1.5;
+  max-width: 640px;
+}
+
+.error {
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid $high;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 0.83rem;
+  border-radius: 0 6px 6px 0;
+}
+
+// ── Results ──────────────────────────────────────────────
+.results {
+  margin-top: 1.5rem;
+}
+
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.bands {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.band {
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  background: #f1f5f9;
+  color: #334155;
+
+  &.high {
+    background: #fee2e2;
+    color: $high;
+  }
+
+  &.medium {
+    background: #fef3c7;
+    color: $medium;
+  }
+
+  &.low {
+    background: #dcfce7;
+    color: $low;
+  }
+
+  &.same {
+    background: #eef2ff;
+    color: $accent;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  min-width: 780px;
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $muted;
+    border-bottom: 1px solid $border;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  // The class actually being filed in is the fact that decides whether a row matters.
+  tr.same-class {
+    background: #fafaff;
+  }
+}
+
+.cell-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.cell-prop {
+  max-width: 220px;
+}
+
+.dot-same {
+  color: $accent;
+  font-size: 0.7rem;
+}
+
+.chip {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  background: #dcfce7;
+  color: $low;
+
+  &.high {
+    background: #fee2e2;
+    color: $high;
+  }
+
+  &.medium {
+    background: #fef3c7;
+    color: $medium;
+  }
+}
+
+.state.empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: $muted;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: #fff;
+
+  p {
+    margin: 0;
+  }
+}
+
+.footnote {
+  margin: 0.5rem 0 0;
+  font-size: 0.74rem;
+  color: $muted;
+}
+
+@media (max-width: 640px) {
+  .search-report-page {
+    padding: 1rem 1rem 2.5rem;
+  }
+}

@@ -90,6 +90,71 @@
         </div>
 
       </form>
+
+      <!-- ── REPORT BRANDING ──────────────────────────────────────────────
+           What every generated document carries: search reports, the portfolio
+           schedule, watch reports. Set once here rather than per report. -->
+      <section class="branding-section">
+        <h2 class="section-title">Report branding</h2>
+        <p class="section-hint">
+          Applied to every document you generate — search reports, portfolio schedules and watch
+          reports. Leave blank to use the Trademarx house style.
+        </p>
+
+        <div class="logo-row">
+          <div class="logo-preview" [class.empty]="!logoPreview()">
+            @if (logoPreview(); as src) {
+              <img [src]="src" alt="Your firm logo" />
+            } @else {
+              <span>No logo</span>
+            }
+          </div>
+
+          <div class="logo-actions">
+            <label class="btn-secondary">
+              {{ logoPreview() ? 'Replace logo' : 'Upload logo' }}
+              <input type="file" accept="image/png,image/jpeg" (change)="onLogoSelected($event)" hidden />
+            </label>
+            @if (logoPreview()) {
+              <button type="button" class="btn-link danger" (click)="removeLogo()">Remove</button>
+            }
+            <p class="field-hint">PNG or JPEG, up to 2 MB.</p>
+          </div>
+        </div>
+
+        @if (logoError()) {
+          <p class="branding-error">{{ logoError() }}</p>
+        }
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Firm name on reports</label>
+            <input class="field-input" type="text" [(ngModel)]="branding.firmDisplayName" name="firmDisplayName"
+                   placeholder="How your firm should appear on the letterhead" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Accent colour</label>
+            <input class="field-input" type="text" [(ngModel)]="branding.reportAccentColor" name="reportAccentColor"
+                   placeholder="#1F4E79" />
+          </div>
+
+          <div class="field full-span">
+            <label class="field-label">Footer line</label>
+            <textarea class="field-textarea" [(ngModel)]="branding.reportFooterText" name="reportFooterText" rows="2"
+                      placeholder="Your firm's disclaimer or contact line, shown at the foot of every page"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" (click)="saveBranding()" [disabled]="brandingSaving()">
+            {{ brandingSaving() ? 'Saving…' : 'Save report settings' }}
+          </button>
+          @if (brandingSaved()) {
+            <span class="saved-note">Saved</span>
+          }
+        </div>
+      </section>
     </div>
   }
 </div>

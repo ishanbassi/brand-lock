@@ -2,9 +2,9 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentImportSummary, AgentPortfolioTrademark } from '../../../models/agent.model';
+import { AgentImportSummary, AgentPortfolioFilterOptions, AgentPortfolioTrademark } from '../../../models/agent.model';
 
 @Component({
   selector: 'app-agent-portfolio',
@@ -24,11 +24,22 @@ export class AgentPortfolioComponent implements OnInit {
   totalCount = 0;
   totalPages = 0;
 
-  // Filters
+  // Filters. Applied by the server: the client holds one page of twenty out of thousands of marks,
+  // so filtering what it has in hand searched the wrong 20 rows and normally found nothing.
   searchQuery = '';
   filterStatus = '';
   filterClass = '';
   private searchSubject = new Subject<string>();
+
+  // The query the table currently reflects. Tracked here rather than with distinctUntilChanged so
+  // that clearing the filters can reset it: the operator would otherwise still be holding the old
+  // text, and retyping it after a clear would be swallowed as "no change" while the table below
+  // stayed unfiltered.
+  private lastSearched = '';
+
+  // Only the buckets and classes this agent actually holds, with counts, so no option can be
+  // chosen that is guaranteed to return an empty table.
+  filterOptions = signal<AgentPortfolioFilterOptions | null>(null);
 
   // Delete
   deletingId = signal<number | null>(null);
@@ -47,20 +58,25 @@ export class AgentPortfolioComponent implements OnInit {
   exportingExcel = signal(false);
   exportingPdf = signal(false);
 
-  readonly STATUS_OPTIONS = [
-    'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed'
-  ];
-
-  readonly CLASS_OPTIONS = Array.from({ length: 45 }, (_, i) => i + 1);
-
   constructor(private readonly agentDataService: AgentDataService) {}
 
   ngOnInit(): void {
     this.load();
     this.loadPendingImports();
-    this.searchSubject.pipe(debounceTime(350), distinctUntilChanged()).subscribe(() => {
+    this.loadFilterOptions();
+    this.searchSubject.pipe(debounceTime(350)).subscribe((q) => {
+      if (q.trim() === this.lastSearched) return;
+      this.lastSearched = q.trim();
       this.page = 0;
       this.load();
+    });
+  }
+
+  private loadFilterOptions(): void {
+    this.agentDataService.getPortfolioFilterOptions().subscribe({
+      // Losing the options only costs the dropdowns; the table itself must still render.
+      next: (options) => this.filterOptions.set(options),
+      error: () => this.filterOptions.set(null),
     });
   }
 
@@ -110,44 +126,53 @@ export class AgentPortfolioComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.agentDataService.getPortfolio(this.page, this.pageSize).subscribe({
-      next: (res) => {
-        this.trademarks.set(res.body || []);
-        const total = res.headers.get('X-Total-Count');
-        this.totalCount = total ? parseInt(total, 10) : (res.body?.length || 0);
-        this.totalPages = Math.ceil(this.totalCount / this.pageSize);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to load portfolio.');
-        this.loading.set(false);
-      },
-    });
+    this.error.set('');
+    this.agentDataService
+      .getPortfolio(this.page, this.pageSize, {
+        search: this.searchQuery,
+        status: this.filterStatus,
+        tmClass: this.filterClass === '' ? null : Number(this.filterClass),
+      })
+      .subscribe({
+        next: (res) => {
+          this.trademarks.set(res.body || []);
+          const total = res.headers.get('X-Total-Count');
+          // Counts the filtered set, so the pager shrinks with the filter rather than offering
+          // pages that render empty.
+          this.totalCount = total ? parseInt(total, 10) : (res.body?.length || 0);
+          this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Failed to load portfolio.');
+          this.loading.set(false);
+        },
+      });
   }
 
-  get filtered(): AgentPortfolioTrademark[] {
-    let result = this.trademarks();
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(tm =>
-        tm.name?.toLowerCase().includes(q) ||
-        tm.proprietorName?.toLowerCase().includes(q) ||
-        String(tm.applicationNo).includes(q)
-      );
-    }
-    if (this.filterStatus) {
-      result = result.filter(tm =>
-        tm.trademarkStatus?.toLowerCase().includes(this.filterStatus.toLowerCase())
-      );
-    }
-    if (this.filterClass) {
-      result = result.filter(tm => String(tm.tmClass) === this.filterClass);
-    }
-    return result;
+  /** True whenever the table is showing a subset, so the header can say so. */
+  get hasFilters(): boolean {
+    return !!(this.searchQuery.trim() || this.filterStatus || this.filterClass);
   }
 
   onSearchChange(): void {
     this.searchSubject.next(this.searchQuery);
+  }
+
+  /** Any dropdown change restarts at page one - page 483 of an unfiltered list means nothing now. */
+  onFilterChange(): void {
+    this.lastSearched = this.searchQuery.trim();
+    this.page = 0;
+    this.load();
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.lastSearched = '';
+    this.filterStatus = '';
+    this.filterClass = '';
+    this.page = 0;
+    this.load();
   }
 
   goToPage(p: number): void {

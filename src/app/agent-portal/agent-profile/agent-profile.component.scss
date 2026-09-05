@@ -261,3 +261,117 @@ $white: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
 }
+
+// ── Report branding ──────────────────────────────────────
+.branding-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.section-hint {
+  margin: 0.3rem 0 1rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.logo-preview {
+  width: 150px;
+  height: 64px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  &.empty span {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+}
+
+.logo-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.83rem;
+  color: #334155;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0;
+
+  &.danger:hover {
+    color: #b91c1c;
+    text-decoration: underline;
+  }
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #94a3b8;
+  flex-basis: 100%;
+}
+
+.branding-error {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.8rem;
+  border-left: 3px solid #b91c1c;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 0.8rem;
+  border-radius: 0 6px 6px 0;
+}
+
+.saved-note {
+  margin-left: 0.75rem;
+  font-size: 0.82rem;
+  color: #16a34a;
+  font-weight: 600;
+}

@@ -1,0 +1,112 @@
+<div class="search-report-page">
+  <header class="page-head">
+    <h1>Search report</h1>
+    <p class="subtitle">
+      Check a proposed mark against the Register, then download the result on your own letterhead.
+    </p>
+  </header>
+
+  <form class="search-form" (ngSubmit)="run()">
+    <div class="field grow">
+      <label for="mark">Proposed mark</label>
+      <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label for="tmClass">Class</label>
+      <select id="tmClass" [(ngModel)]="tmClass" name="tmClass">
+        <option [ngValue]="null">All classes</option>
+        @for (c of classes; track c) {
+          <option [ngValue]="c">Class {{ c }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="clientName">Client (optional)</label>
+      <input id="clientName" type="text" [(ngModel)]="clientName" name="clientName" placeholder="Shown on the report" />
+    </div>
+
+    <button type="submit" class="btn-primary" [disabled]="!query.trim() || loading()">
+      {{ loading() ? 'Searching…' : 'Search' }}
+    </button>
+  </form>
+
+  <!-- Said before the results, not only in the PDF: an agent skimming the screen should not read
+       this as clearance either. -->
+  <p class="disclaimer">
+    Lists marks on the Register that resemble the proposed one. It is not an opinion on
+    registrability and does not constitute legal advice.
+  </p>
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (report(); as r) {
+    <section class="results">
+      <div class="results-head">
+        <div class="bands">
+          <span class="band high">{{ countFor('HIGH') }} close</span>
+          <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
+          <span class="band low">{{ countFor('LOW') }} distant</span>
+          @if (r.tmClass) {
+            <span class="band same">{{ r.sameClassCount }} in class {{ r.tmClass }}</span>
+          }
+        </div>
+
+        <button type="button" class="btn-primary" (click)="download()" [disabled]="downloading()">
+          {{ downloading() ? 'Preparing…' : 'Download PDF' }}
+        </button>
+      </div>
+
+      @if (r.rows.length === 0) {
+        <div class="state empty">
+          <p>No similar marks were found for “{{ r.query }}”.</p>
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Application</th>
+                <th>Class</th>
+                <th>Proprietor</th>
+                <th>Status</th>
+                <th>Filed</th>
+                <th>Similarity</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of r.rows; track row.trademarkId) {
+                <tr [class.same-class]="row.sameClass">
+                  <td class="cell-name">{{ row.name }}</td>
+                  <td>{{ row.applicationNo || '—' }}</td>
+                  <td>
+                    {{ row.tmClass || '—' }}
+                    @if (row.sameClass) {
+                      <span class="dot-same" title="Same class as the one being filed">●</span>
+                    }
+                  </td>
+                  <td class="cell-prop">{{ row.proprietorName || '—' }}</td>
+                  <td>{{ statusLabel(row) }}</td>
+                  <td>{{ formatDate(row.applicationDate) }}</td>
+                  <td>
+                    <span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">
+                      {{ bandLabel(row.riskBand) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (r.tmClass) {
+          <p class="footnote">● marks an application in class {{ r.tmClass }}, the class searched.</p>
+        }
+      }
+    </section>
+  }
+</div>

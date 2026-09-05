@@ -43,7 +43,9 @@
       [style.animation-delay]="(i * 60) + 'ms'">
       <div class="tm-card-header">
         <div class="tm-thumb">
-          <img loading="lazy" [src]="tm.imgUrl ? baseUrl + 'files/' + tm.imgUrl : '/assets/images/trademark.png'" alt="">
+          <img loading="lazy" width="36" height="36"
+            [src]="tm.imgUrl ? baseUrl + 'files/' + tm.imgUrl : '/assets/images/trademark.png'"
+            [alt]="tm.imgUrl ? tm.name + ' trademark logo' : ''">
         </div>
         <div class="tm-card-main">
           <div class="tm-app-no">App #{{ tm.applicationNo }}</div>

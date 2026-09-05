@@ -59,7 +59,7 @@
         <a [routerLink]="result.url" class="result-item">
           <span class="result-icon">
             <img loading="lazy" [src]="result.imgUrl ? baseUrl + 'files/' + result.imgUrl : '/assets/images/trademark.png'"
-              alt="">
+              [alt]="result.imgUrl ? result.name + ' trademark logo' : ''">
           </span>
 
           <span class="result-body">

@@ -77,6 +77,7 @@ export class AgentPortalShellComponent {
         { label: 'Portfolio Conflicts', icon: '⚔️', route: '/agent-portal/watch/conflicts' },
       ],
     },
+    { label: 'Search Report', icon: '📄', route: '/agent-portal/reports/search' },
     { label: 'Documents',     icon: '📁', route: '/agent-portal/documents' },
     { label: 'Notifications', icon: '🔔', route: '/agent-portal/notifications' },
     { label: 'My Profile',    icon: '👤', route: '/agent-portal/profile' },

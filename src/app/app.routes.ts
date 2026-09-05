@@ -24,6 +24,19 @@ export const routes: Routes = [
         data: { roles: ['ROLE_AGENT'] }
     },
     {
+        // Agent sign-in — standalone, no public navbar/footer.
+        //
+        // A sibling of 'agent-portal' rather than a child of it: that branch is guarded with
+        // roles: ['ROLE_AGENT'], so a login page inside it would be unreachable by the people who
+        // need it. ROLE_ANONYMOUS here means an already-signed-in agent is sent straight to their
+        // dashboard instead of being shown a login form again.
+        path: 'agent-login',
+        loadComponent: () => import('./agent-login/agent-login.component').then(m => m.AgentLoginComponent),
+        title: "Agent Sign In | Trademarx",
+        canActivate: [agentHostGuard, AuthGuard],
+        data: { roles: ['ROLE_ANONYMOUS'] }
+    },
+    {
         // ROLE_ADMIN portal — standalone shell, no public navbar/footer.
         path: 'admin-portal',
         loadComponent: () => import('./admin-portal/admin-portal-shell.component').then(m => m.AdminPortalShellComponent),
@@ -48,7 +61,14 @@ export const routes: Routes = [
         title: "Free Trademark API India — Trademarks & Journal Data | Trademarx",
     },
     {
+        // The public site: marketing pages, registration flow, member portal — everything wrapped
+        // in the navbar, top header and footer.
+        //
+        // mainHostGuard keeps all of it off agent.trademarx.in. It was written for exactly this and
+        // had been imported but never applied, which is why the subdomain was serving the whole
+        // marketing site — and why an agent signing in there got the registration site's chrome.
         path: "",
+        canActivate: [mainHostGuard],
         loadComponent: () => import('./public-layout-component/public-layout-component.component').then(m => m.PublicLayoutComponentComponent),
         children:[
     {

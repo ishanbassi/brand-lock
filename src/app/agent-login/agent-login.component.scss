@@ -1,0 +1,265 @@
+// Palette lifted from the portal shell so signing in and the portal read as one product.
+$sidebar-bg: #0f172a;
+$accent: #6366f1;
+$border: #e2e8f0;
+$muted: #64748b;
+$danger: #b91c1c;
+
+.agent-login {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f8fafc;
+}
+
+// ── Brand pane ───────────────────────────────────────────
+.brand-pane {
+  width: 42%;
+  max-width: 520px;
+  background: $sidebar-bg;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 2.5rem 2.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+
+  .brand-tm {
+    color: #fff;
+  }
+
+  .brand-arx {
+    color: $accent;
+  }
+}
+
+.brand-copy {
+  h1 {
+    margin: 0 0 0.6rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 34ch;
+  }
+}
+
+.brand-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: 0.65rem;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.75);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.45rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $accent;
+    }
+  }
+}
+
+.brand-foot {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+
+  a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: underline;
+  }
+}
+
+// ── Form pane ────────────────────────────────────────────
+.form-pane {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 380px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+.form-sub {
+  margin: 0.35rem 0 1.5rem;
+  font-size: 0.85rem;
+  color: $muted;
+}
+
+.form-error {
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid $danger;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 0.83rem;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.45;
+}
+
+.field {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  input {
+    width: 100%;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fff;
+    color: #0f172a;
+
+    &:focus {
+      outline: none;
+      border-color: $accent;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+  }
+}
+
+.password-wrap {
+  position: relative;
+
+  input {
+    padding-right: 4rem;
+  }
+}
+
+.reveal {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $muted;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+
+  &:hover {
+    color: $accent;
+  }
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: $danger;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 0.5rem;
+  background: $accent;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.form-links {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: $muted;
+
+  a {
+    color: $accent;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .sep {
+    margin: 0 0.4rem;
+    color: #cbd5e1;
+  }
+}
+
+// The brand pane is decoration; on a phone the form is the whole point.
+@media (max-width: 860px) {
+  .agent-login {
+    flex-direction: column;
+  }
+
+  .brand-pane {
+    width: 100%;
+    max-width: none;
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+
+  .brand-copy {
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    p,
+    .brand-points {
+      display: none;
+    }
+  }
+
+  .brand-foot {
+    display: none;
+  }
+}

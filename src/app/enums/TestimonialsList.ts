@@ -68,8 +68,11 @@ export const TestimonialsList:Review[] = [
         text: "Very professional and Honest ... Must visit for any kind of query",
         name: "Vinay Rajput",
         date: '1 month ago',
-        
-        link: 'https://g.co/your-review-link',
+
+        // Points at the firm's review listing rather than this reviewer's own share link, which was
+        // never filled in — `https://g.co/your-review-link` was placeholder text that shipped and
+        // returned a 404 to anyone who clicked "View on Google".
+        link: 'https://share.google/ZSxYZC1J917c6vaHz',
         rating:5
         
     },

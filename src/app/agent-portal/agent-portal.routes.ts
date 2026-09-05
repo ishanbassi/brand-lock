@@ -58,6 +58,11 @@ export const agentPortalRoutes: Routes = [
     title: 'Trademark Watch | Agent Portal',
   },
   {
+    path: 'reports/search',
+    loadComponent: () => import('./agent-search-report/agent-search-report.component').then(m => m.AgentSearchReportComponent),
+    title: 'Search Report | Agent Portal',
+  },
+  {
     path: 'documents',
     loadComponent: () => import('./agent-documents/agent-documents.component').then(m => m.AgentDocumentsComponent),
     title: 'Documents | Agent Portal',

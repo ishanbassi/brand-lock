@@ -1,0 +1,84 @@
+<div class="agent-login">
+  <!-- Two panes: the portal's own identity on the left, the form on the right. No public navbar,
+       top header or footer — an IP practitioner signing in is not shopping for a registration. -->
+  <aside class="brand-pane">
+    <a class="brand" [href]="mainSiteUrl('/')">
+      <span class="brand-tm">TM</span><span class="brand-arx">arx</span>
+    </a>
+
+    <div class="brand-copy">
+      <h1>Agent Portal</h1>
+      <p>Portfolio, watch, deadlines and client documents — for practitioners managing other people's marks.</p>
+
+      <ul class="brand-points">
+        <li>Claim your filings straight from the Register</li>
+        <li>Journal watch with opposition windows tracked</li>
+        <li>Search reports on your own letterhead</li>
+      </ul>
+    </div>
+
+    <p class="brand-foot">Not an agent? <a [href]="mainSiteUrl('/login')">Sign in on the main site</a></p>
+  </aside>
+
+  <main class="form-pane">
+    <div class="form-card">
+      <h2>Sign in</h2>
+      <p class="form-sub">Use the email address your agent account was created with.</p>
+
+      @if (error()) {
+        <div class="form-error" role="alert">{{ error() }}</div>
+      }
+
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)" novalidate>
+        <div class="field">
+          <label for="username">Email</label>
+          <input
+            id="username"
+            name="username"
+            type="email"
+            autocomplete="username"
+            [(ngModel)]="data.username"
+            #username="ngModel"
+            required
+          />
+          @if (showValidation && username.invalid) {
+            <span class="field-error">Enter your email address</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              name="password"
+              [type]="passwordFieldType"
+              autocomplete="current-password"
+              [(ngModel)]="data.password"
+              #password="ngModel"
+              required
+            />
+            <button type="button" class="reveal" (click)="togglePassword()" [attr.aria-label]="passwordFieldType === 'password' ? 'Show password' : 'Hide password'">
+              {{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}
+            </button>
+          </div>
+          @if (showValidation && password.invalid) {
+            <span class="field-error">Enter your password</span>
+          }
+        </div>
+
+        <button type="submit" class="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="form-links">
+        <!-- Password reset and registration live on the main site; a router link cannot cross an
+             origin, so these are absolute. -->
+        <a [href]="mainSiteUrl('/forgot-password')">Forgot your password?</a>
+        <span class="sep">·</span>
+        <a [href]="mainSiteUrl('/create-agent-account')">Create an agent account</a>
+      </div>
+    </div>
+  </main>
+</div>

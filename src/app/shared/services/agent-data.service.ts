@@ -12,9 +12,13 @@ import {
   AgentDocument,
   AgentDocumentLibraryPage,
   AgentDocumentLibrarySummary,
+  AgentBranding,
+  SearchReport,
   AgentImportSummary,
   AgentJournalWatchResult,
   AgentImportResult,
+  AgentPortfolioFilterOptions,
+  AgentPortfolioQuery,
   AgentPortfolioTrademark,
   AgentProfile,
   AgentPublicProfile,
@@ -49,11 +53,33 @@ export class AgentDataService {
   }
 
   // Portfolio CRUD
-  getPortfolio(page = 0, size = 20): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
-    return this.http.get<AgentPortfolioTrademark[]>(
-      `${this.base}/agent-portal/portfolio?page=${page}&size=${size}`,
-      { observe: 'response' }
-    );
+  /**
+   * One page of the portfolio, narrowed by the server.
+   *
+   * Filters go to the API rather than being applied to the rows already in hand: the client only
+   * ever holds one page of twenty, so filtering locally searched 20 marks out of thousands and
+   * almost always came back empty.
+   */
+  getPortfolio(page = 0, size = 20, query: AgentPortfolioQuery = {}): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (query.search?.trim()) {
+      params = params.set('search', query.search.trim());
+    }
+    if (query.status) {
+      params = params.set('status', query.status);
+    }
+    if (query.tmClass != null) {
+      params = params.set('tmClass', query.tmClass);
+    }
+    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
+      params,
+      observe: 'response',
+    });
+  }
+
+  /** The status buckets and classes actually present in this agent's portfolio, with counts. */
+  getPortfolioFilterOptions(): Observable<AgentPortfolioFilterOptions> {
+    return this.http.get<AgentPortfolioFilterOptions>(`${this.base}/agent-portal/portfolio/filter-options`);
   }
 
   getPortfolioItem(id: number): Observable<AgentPortfolioTrademark> {
@@ -153,6 +179,46 @@ export class AgentDataService {
    * Fetches the bytes rather than linking to them. These files sit outside every web-served
    * directory on purpose, so there is no URL to point an anchor at — the browser gets a blob.
    */
+  // ── Reports ────────────────────────────────────────────────────────────
+
+  previewSearchReport(query: string, tmClass?: number | null): Observable<SearchReport> {
+    let params = new HttpParams().set('q', query);
+    if (tmClass != null) params = params.set('tmClass', String(tmClass));
+    return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, { params });
+  }
+
+  downloadSearchReport(query: string, tmClass?: number | null, clientName?: string | null): Observable<Blob> {
+    let params = new HttpParams().set('q', query);
+    if (tmClass != null) params = params.set('tmClass', String(tmClass));
+    if (clientName) params = params.set('clientName', clientName);
+    return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, { params, responseType: 'blob' });
+  }
+
+  downloadWatchReport(journalNo: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.pdf`, { responseType: 'blob' });
+  }
+
+  // ── Report branding ────────────────────────────────────────────────────
+
+  updateBranding(branding: Partial<AgentBranding>): Observable<AgentBranding> {
+    return this.http.put<AgentBranding>(`${this.base}/agent-portal/branding`, branding);
+  }
+
+  uploadLogo(file: File): Observable<{ hasLogo: boolean }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ hasLogo: boolean }>(`${this.base}/agent-portal/branding/logo`, form);
+  }
+
+  removeLogo(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/branding/logo`);
+  }
+
+  /** The stored logo, for the profile preview. Streamed — there is no static URL for it. */
+  getLogo(): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/branding/logo`, { responseType: 'blob' });
+  }
+
   // ── Document library (portfolio-wide) ──────────────────────────────────
   //
   // Distinct from listDocuments above, which answers "what is attached to this mark". The library
@@ -262,8 +328,15 @@ export class AgentDataService {
     return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, { responseType: 'blob' });
   }
 
+  /**
+   * The portfolio PDF, now on the firm's letterhead.
+   *
+   * Repointed from /portfolio/export/pdf to the branded report. The old endpoint produced an
+   * unbranded table with a dark grey header — fine as an internal export, not something to send a
+   * client. It is left on the server for now so nothing that still calls it breaks.
+   */
   exportPortfolioPdf(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/portfolio/export/pdf`, { responseType: 'blob' });
+    return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, { responseType: 'blob' });
   }
 
   // Phase 2 — Agent public profile

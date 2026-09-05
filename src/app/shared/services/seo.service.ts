@@ -52,6 +52,18 @@ const UNCANONICAL_PREFIXES = [
   '/search/results',
 ];
 
+/**
+ * Paths whose query string never changes what renders, so their canonical is always the bare path.
+ *
+ * `/search` is the marketing page for the search tool; the component reads no query parameters at
+ * all, so `/search?q=nike` server-renders byte-identical content to `/search`. Left to the default
+ * below it would self-canonicalise to `/search?q=nike`, which turns every link anyone ever builds
+ * with a stray parameter into its own indexable copy of the same 3,900 words. The results page next
+ * door is handled by {@link UNCANONICAL_PREFIXES} instead, because there the query string *is* the
+ * content and no canonical is the right answer.
+ */
+const PARAMLESS_PATHS = new Set(['/search']);
+
 @Injectable({ providedIn: 'root' })
 export class SeoService {
 
@@ -107,6 +119,10 @@ export class SeoService {
 
     if (UNCANONICAL_PREFIXES.some(prefix => path === prefix || path.startsWith(prefix + '/'))) {
       return null;
+    }
+
+    if (PARAMLESS_PATHS.has(path)) {
+      return SITE_URL + path;
     }
 
     // Parameters that do change the page (?page=2 on a listing) are kept, so paginated pages stay

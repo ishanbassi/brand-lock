@@ -5,7 +5,13 @@
     <div>
       <h1 class="page-title">Trademark Portfolio</h1>
       <p class="page-sub">
-        @if (!loading()) { {{ totalCount }} trademark{{ totalCount !== 1 ? 's' : '' }} in your portfolio }
+        @if (!loading()) {
+          @if (hasFilters) {
+            {{ totalCount }} matching {{ totalCount === 1 ? 'trademark' : 'trademarks' }}@if (filterOptions(); as opts) { of {{ opts.total }} }
+          } @else {
+            {{ totalCount }} trademark{{ totalCount !== 1 ? 's' : '' }} in your portfolio
+          }
+        }
       </p>
     </div>
     <div class="header-actions">
@@ -34,22 +40,27 @@
       }
     </div>
 
-    <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="page = 0">
+    <!--
+      Both dropdowns list only what this agent holds, with counts, and both re-query the server.
+      They used to offer a fixed seven status words and all 45 classes and filter the twenty rows
+      already on screen, so almost every choice emptied the table.
+    -->
+    <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
       <option value="">All Statuses</option>
-      @for (s of STATUS_OPTIONS; track s) {
-        <option [value]="s">{{ s }}</option>
+      @for (s of filterOptions()?.statuses ?? []; track s.key) {
+        <option [value]="s.key">{{ s.label }} ({{ s.count }})</option>
       }
     </select>
 
-    <select class="filter-select" [(ngModel)]="filterClass" (ngModelChange)="page = 0">
+    <select class="filter-select" [(ngModel)]="filterClass" (ngModelChange)="onFilterChange()">
       <option value="">All Classes</option>
-      @for (c of CLASS_OPTIONS; track c) {
-        <option [value]="c">Class {{ c }}</option>
+      @for (c of filterOptions()?.classes ?? []; track c.tmClass) {
+        <option [value]="c.tmClass">Class {{ c.tmClass }} ({{ c.count }})</option>
       }
     </select>
 
-    @if (filterStatus || filterClass || searchQuery) {
-      <button class="btn-ghost" (click)="searchQuery = ''; filterStatus = ''; filterClass = ''; page = 0; load()">
+    @if (hasFilters) {
+      <button class="btn-ghost" (click)="clearFilters()">
         Clear filters
       </button>
     }
@@ -105,7 +116,7 @@
   }
 
   <!-- TABLE -->
-  @if (!loading() && filtered.length > 0) {
+  @if (!loading() && trademarks().length > 0) {
     <div class="table-card">
       <table class="tm-table">
         <thead>
@@ -121,7 +132,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (tm of filtered; track tm.id; let i = $index) {
+          @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id">
 
               <!-- TRADEMARK NAME + TYPE -->
@@ -205,13 +216,13 @@
   }
 
   <!-- EMPTY STATE -->
-  @if (!loading() && filtered.length === 0 && !error()) {
+  @if (!loading() && trademarks().length === 0 && !error()) {
     <div class="empty-state">
-      @if (searchQuery || filterStatus || filterClass) {
+      @if (hasFilters) {
         <div class="empty-icon">🔍</div>
         <h3>No results found</h3>
         <p>Try adjusting your search or filters.</p>
-        <button class="btn-outline" (click)="searchQuery = ''; filterStatus = ''; filterClass = ''; load()">
+        <button class="btn-outline" (click)="clearFilters()">
           Clear all filters
         </button>
       } @else {

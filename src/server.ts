@@ -30,8 +30,11 @@ const app = express();
 // localhost/127.0.0.1 stay listed to keep `node dist/.../server.mjs` runs and any health check
 // that hits the port directly from breaking. nginx sends `proxy_set_header Host $host`, and
 // www.trademarx.in is 301'd to the apex before it ever reaches this process.
+// agent.trademarx.in serves the same build: the agent portal is a separate product on its own
+// subdomain (see HostContextService), not a separate deployment. Omitting it here is a hard 400 on
+// every agent-portal request, which looks nothing like a host-allowlist problem from the browser.
 const angularApp = new AngularNodeAppEngine({
-  allowedHosts: ['trademarx.in', 'www.trademarx.in', 'localhost', '127.0.0.1'],
+  allowedHosts: ['trademarx.in', 'www.trademarx.in', 'agent.trademarx.in', 'localhost', '127.0.0.1'],
   trustProxyHeaders: true,
 });
 const SITE_URL = 'https://trademarx.in';
@@ -356,31 +359,70 @@ Sitemap: https://trademarx.in/sitemap.xml
 Sitemap: https://trademarx.in/sitemap-companies.xml
 `);
 });
+/**
+ * Hostnames /og-image-proxy will fetch from.
+ *
+ * Derived by parsing the configured URLs rather than comparing against them as strings: the config
+ * holds "https://cms.trademarx.in" while a request carries a hostname, and matching one against the
+ * other by substring is how the original check ended up accepting everything.
+ */
+const OG_PROXY_ALLOWED_HOSTS = [environment.BaseBlogUrl]
+  .filter(Boolean)
+  .map(value => {
+    try {
+      return new URL(value).hostname.toLowerCase();
+    } catch {
+      return value.toLowerCase();
+    }
+  });
+
+/**
+ * Fetches an image from the CMS so social scrapers see it on our own origin.
+ *
+ * This endpoint makes a server-side request to a URL supplied by the caller, so the host allowlist
+ * is the only thing standing between it and every service reachable from this box - the Spring API
+ * on :8080, the other tenants' apps, and any cloud metadata endpoint. It previously enforced
+ * nothing at all: the check read `allowedHosts.some(host => host.includes(host))`, where the arrow
+ * parameter shadowed the outer one, so it asked whether each string contained itself and was always
+ * true. It then failed to `return` after sending 403, so even a working check would have gone on to
+ * fetch the URL anyway.
+ *
+ * Redirects are deliberately not followed - Node's http.get does not follow them - so an allowed
+ * host cannot bounce the request onto an internal one.
+ */
 app.get('/og-image-proxy', (req, res) => {
   const imageUrl = req.query['src'] as string;
   if (!imageUrl) {
     res.status(400).send('Missing src parameter');
+    return;
   }
 
-  // Security: only allow your CMS subdomain
-  const allowedHosts = [environment.BaseBlogUrl];
   let parsedUrl: URL;
-
   try {
     parsedUrl = new URL(imageUrl);
   } catch {
     res.status(400).send('Invalid URL');
     return;
   }
-  console.log(allowedHosts, parsedUrl);
-  if (!allowedHosts.some(host => host.includes(host))) {
+
+  // Anything but http(s) - file:, gopher:, data: - is not an image fetch and has no business here.
+  if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+    res.status(400).send('Unsupported protocol');
+    return;
+  }
+
+  // Exact hostname match. A suffix or substring test would accept
+  // "cms.trademarx.in.attacker.example" and "evil-cms.trademarx.in" alike.
+  if (!OG_PROXY_ALLOWED_HOSTS.includes(parsedUrl.hostname.toLowerCase())) {
     res.status(403).send('Forbidden host');
+    return;
   }
 
   const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
   protocol
-    .get(imageUrl, imageRes => {
+    // The parsed URL, not the raw string, so what is fetched is exactly what was validated.
+    .get(parsedUrl, imageRes => {
       // Forward content-type and cache headers
       res.setHeader('Content-Type', imageRes.headers['content-type'] || 'image/jpeg');
       res.setHeader('Cache-Control', 'public, max-age=86400'); // cache 1 day

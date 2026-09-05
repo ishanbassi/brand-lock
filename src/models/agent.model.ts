@@ -89,6 +89,27 @@ export interface AgentStatusCount {
   count: number;
 }
 
+/**
+ * The portfolio filter dropdowns, as the server sees them.
+ *
+ * Sent rather than hard-coded because a fixed list of 45 classes and seven guessed status words was
+ * mostly dead options: picking one emptied the table with no explanation. Every option here is
+ * backed by at least one mark the agent holds.
+ */
+export interface AgentPortfolioFilterOptions {
+  total: number;
+  statuses: AgentStatusCount[];
+  classes: { tmClass: number; count: number }[];
+}
+
+/** Server-side narrowing of the portfolio listing. Anything unset is "no filter". */
+export interface AgentPortfolioQuery {
+  search?: string;
+  /** A status bucket key, never a raw registry status. */
+  status?: string;
+  tmClass?: number | null;
+}
+
 export interface AgentDashboardStats {
   totalTrademarks: number;
   activeTrademarks: number;
@@ -237,6 +258,42 @@ export interface AgentBulkUploadResult {
   uploadedCount: number;
   failureCount: number;
   bytesStored: number;
+}
+
+/** One conflicting mark in an availability search report. */
+export interface SearchReportRow {
+  trademarkId: number;
+  name?: string;
+  applicationNo?: number;
+  tmClass?: number;
+  proprietorName?: string;
+  applicationDate?: string;
+  /** Live registry status. The raw similarity search does not return this. */
+  trademarkStatus?: string;
+  type?: string;
+  score: number;
+  riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
+  /** True when the mark sits in the class being applied for — often the deciding fact. */
+  sameClass: boolean;
+  hasArtwork: boolean;
+}
+
+export interface SearchReport {
+  query: string;
+  tmClass?: number;
+  generatedOn: string;
+  totalResults: number;
+  countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
+  sameClassCount: number;
+  rows: SearchReportRow[];
+}
+
+/** Letterhead settings applied to every generated document. */
+export interface AgentBranding {
+  firmDisplayName?: string | null;
+  reportAccentColor?: string | null;
+  reportFooterText?: string | null;
+  hasLogo?: boolean;
 }
 
 /** Document kinds an agent actually files against a mark. */

@@ -1,10 +1,13 @@
-import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, PLATFORM_ID } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { TrademarkSearchFAQSchema } from '../enums/trademark-search-faq';
 import { BlogService } from '../shared/services/blog-service.service';
 import { BlogData } from '../../models/blog.model';
 import { BlogMarkdownComponent } from '../blog-markdown/blog-markdown.component';
-import { isPlatformBrowser } from '@angular/common';
+import { SeoService } from '../shared/services/seo.service';
+
+/** Identifies this component's JSON-LD block so it can be replaced rather than duplicated. */
+const FAQ_SCHEMA_ID = 'trademark-search-faq';
 export interface Benefit {
   icon: string;
   title: string;
@@ -32,29 +35,20 @@ export interface FAQ {
 })
 export class TrademarkSearchContentComponent implements OnInit, OnDestroy {
   blog?: BlogData;
-  private isBrowser = false;
-  private faqSchemaScript!: HTMLScriptElement;
-
-
   constructor(
     private blogService: BlogService,
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
+    private seo: SeoService,
+  ) {}
   ngOnDestroy(): void {
-    if(this.isBrowser && this.faqSchemaScript){
-      document.head.removeChild(this.faqSchemaScript);
-    }
+    this.seo.removeJsonLd(FAQ_SCHEMA_ID);
   }
 
   ngOnInit(): void {
-    if (this.isBrowser) {
-      this.faqSchemaScript = document.createElement('script');
-      this.faqSchemaScript.type = 'application/ld+json';
-      this.faqSchemaScript.text = JSON.stringify(TrademarkSearchFAQSchema);
-      document.head.appendChild(this.faqSchemaScript);
-    }
+    // Injected through SeoService, which writes into the injected DOCUMENT rather than the browser
+    // global. The previous version was guarded by `isBrowser` and used `document` directly, so the
+    // markup existed only after hydration — the server-rendered HTML that crawlers and the
+    // JS-less AI fetchers actually read carried no FAQ schema at all.
+    this.seo.injectJsonLd(TrademarkSearchFAQSchema, FAQ_SCHEMA_ID);
 
     this.blogService.getBlogBySlug("complete-guide-to-trademark-search-in-india").subscribe(res => {
       this.blog = res?.data[0];
