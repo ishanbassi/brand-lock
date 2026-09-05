@@ -296,6 +296,26 @@ export interface AgentBranding {
   hasLogo?: boolean;
 }
 
+/** One dated item on the agent's calendar - a renewal, a listed hearing, or one they added. */
+export interface Deadline {
+  id?: number | null;
+  /** Present on computed entries, which have no row until the agent acts on them. */
+  derivedKey?: string | null;
+  deadlineType: 'RENEWAL' | 'OPPOSITION_WINDOW' | 'HEARING' | 'EXAM_REPLY' | 'COUNTER_STATEMENT' | 'EVIDENCE' | 'OTHER';
+  dueDate: string;
+  status: 'OPEN' | 'DONE' | 'WAIVED' | 'MISSED';
+  source: 'DERIVED' | 'AGENT' | 'REGISTRY';
+  title?: string | null;
+  notes?: string | null;
+  statutoryRef?: string | null;
+  trademarkId?: number | null;
+  trademarkName?: string | null;
+  applicationNo?: number | null;
+  tmClass?: number | null;
+  /** Negative when overdue. Computed server-side so every client agrees on "today". */
+  daysUntilDue: number;
+}
+
 /** Document kinds an agent actually files against a mark. */
 export const AGENT_DOCUMENT_TYPES: { value: string; label: string }[] = [
   { value: 'EXAMINATION_REPORT', label: 'Examination report' },

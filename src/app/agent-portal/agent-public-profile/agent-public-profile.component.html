@@ -9,7 +9,7 @@
 
   @if (error()) {
     <div class="error-state">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon"><ap-icon name="alert" [size]="16" /></div>
       <h2>Agent Not Found</h2>
       <p>{{ error() }}</p>
       <a routerLink="/" class="btn-primary">Go to Home</a>
@@ -47,7 +47,7 @@
       @if (profile()!.website) {
         <div class="profile-links">
           <a [href]="profile()!.website" target="_blank" rel="noopener" class="website-link">
-            🌐 {{ profile()!.website }}
+            <ap-icon name="globe" [size]="16" /> {{ profile()!.website }}
           </a>
         </div>
       }

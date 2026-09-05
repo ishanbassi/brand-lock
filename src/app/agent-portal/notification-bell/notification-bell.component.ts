@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { Router, RouterModule } from '@angular/router';
 import { AppNotification } from '../../../models/notification.model';
 import { NotificationService } from '../../shared/services/notification.service';
@@ -13,7 +14,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 @Component({
   selector: 'app-notification-bell',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [IconComponent, CommonModule, RouterModule],
   templateUrl: './notification-bell.component.html',
   styleUrl: './notification-bell.component.scss',
 })

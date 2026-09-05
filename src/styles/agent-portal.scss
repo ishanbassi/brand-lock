@@ -1,0 +1,267 @@
+/**
+ * Agent portal design tokens.
+ *
+ * Defined as custom properties rather than SCSS variables so any component can use them without
+ * import plumbing, and so a value can be inspected in the browser rather than hunted in a build.
+ *
+ * The portal is a register of numbered things: applications, classes, journal issues, hearing
+ * dates. The type system says so - numerals get a face of their own - and colour is reserved for
+ * status. Nothing here is decorative.
+ */
+
+:root {
+  /* ── Ground and ink ──────────────────────────────────────────────────────
+     Paper is barely warm; a full cream reads as a lifestyle brand, and this is a
+     professional register. Ink is a cool near-black, never pure #000, which is
+     harsh on a light ground at small sizes. */
+  --ap-paper: #fcfbf9;
+  --ap-surface: #ffffff;
+  --ap-ink: #16191d;
+  --ap-ink-muted: #6b6f76;
+  --ap-ink-faint: #9aa0a6;
+  --ap-rule: #e4e1db;
+  --ap-rule-strong: #cfcbc3;
+
+  /* Sidebar keeps the ink ground so the portal reads as one surface. */
+  --ap-shell: #16191d;
+  --ap-shell-text: rgba(255, 255, 255, 0.82);
+  --ap-shell-muted: rgba(255, 255, 255, 0.44);
+  --ap-shell-hover: rgba(255, 255, 255, 0.07);
+
+  /* ── Accent ──────────────────────────────────────────────────────────────
+     One accent, used for primary actions and the active nav item only. Ink blue
+     rather than the indigo this portal shipped with: #6366f1 is the default
+     every generated interface arrives wearing. */
+  --ap-accent: #24405c;
+  --ap-accent-hover: #1b3149;
+  --ap-accent-soft: #eaeef3;
+
+  /* ── Status ──────────────────────────────────────────────────────────────
+     The only other colour in the portal. If something is coloured, it is because
+     of its state - never to decorate. Muted deliberately: these appear beside
+     dense text and on printed reports. */
+  --ap-overdue: #a32c2c;
+  --ap-overdue-soft: #fbeeee;
+  --ap-due: #a76a0e;
+  --ap-due-soft: #fdf4e7;
+  --ap-done: #2e6b4f;
+  --ap-done-soft: #ecf4ef;
+
+  /* ── Type ────────────────────────────────────────────────────────────────
+     Three roles, all already loaded by index.html.
+       Fraunces  - display, used sparingly. Optical sizing does the work at large
+                   sizes; it is never used below 18px.
+       Inter     - interface and body.
+       Plex Mono - data. Application numbers, dates, classes, journal numbers.
+                   The portal's consistent signal for "this is a registered
+                   thing you can look up". */
+  --ap-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --ap-font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --ap-font-data: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* A real scale rather than ad-hoc sizes, which is how spacing and type drift
+     apart across screens. */
+  --ap-text-xs: 0.75rem;
+  --ap-text-sm: 0.8125rem;
+  --ap-text-base: 0.875rem;
+  --ap-text-md: 1rem;
+  --ap-text-lg: 1.25rem;
+  --ap-text-xl: 1.75rem;
+
+  /* ── Spacing ─────────────────────────────────────────────────────────────
+     A 4px base. Every margin and padding in the portal comes from here; that is
+     the whole fix for spacing that drifts screen to screen. */
+  --ap-space-1: 0.25rem;
+  --ap-space-2: 0.5rem;
+  --ap-space-3: 0.75rem;
+  --ap-space-4: 1rem;
+  --ap-space-5: 1.5rem;
+  --ap-space-6: 2rem;
+  --ap-space-7: 3rem;
+
+  /* Modest radius: enough to read as software, not so much that it reads as a
+     consumer app. Zero would read as newsprint. */
+  --ap-radius: 6px;
+  --ap-radius-sm: 4px;
+
+  /* One shadow. Elevation is not a design language here; rules and space are. */
+  --ap-shadow: 0 1px 2px rgba(22, 25, 29, 0.06), 0 4px 12px rgba(22, 25, 29, 0.05);
+
+  /* Fitts: the floor for anything clickable. */
+  --ap-target: 40px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Shared primitives.
+
+   Scoped under .ap so they cannot leak into the public site, which has its own
+   Bootstrap-derived styling.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.ap {
+  font-family: var(--ap-font-ui);
+  color: var(--ap-ink);
+  background: var(--ap-paper);
+}
+
+/* Page title. The only place Fraunces appears at size. */
+.ap-title {
+  font-family: var(--ap-font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: var(--ap-text-xl);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--ap-ink);
+}
+
+.ap-subtitle {
+  margin: var(--ap-space-1) 0 0;
+  font-size: var(--ap-text-base);
+  color: var(--ap-ink-muted);
+  max-width: 60ch;
+  line-height: 1.55;
+}
+
+/* Section label. Small caps tracking, used to head a group of rows. */
+.ap-eyebrow {
+  font-size: var(--ap-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ap-ink-faint);
+}
+
+/* Any registered number: application, class, journal. Tabular so columns line up. */
+.ap-num {
+  font-family: var(--ap-font-data);
+  font-feature-settings: 'tnum' 1;
+  font-size: var(--ap-text-sm);
+  letter-spacing: -0.01em;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────
+   One dominant action per view; everything else is quiet. Both meet the 40px
+   target floor, and neither fades on hover - the state change is a real colour
+   step so it is visible at a glance and to anyone with reduced motion. */
+
+.ap-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-2);
+  min-height: var(--ap-target);
+  padding: 0 var(--ap-space-4);
+  border-radius: var(--ap-radius);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: var(--ap-text-base);
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.ap-btn:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 2px;
+}
+
+.ap-btn--primary {
+  background: var(--ap-accent);
+  color: #fff;
+}
+
+.ap-btn--primary:hover:not(:disabled) {
+  background: var(--ap-accent-hover);
+}
+
+.ap-btn--quiet {
+  background: var(--ap-surface);
+  border-color: var(--ap-rule-strong);
+  color: var(--ap-ink);
+}
+
+.ap-btn--quiet:hover:not(:disabled) {
+  border-color: var(--ap-ink-muted);
+  background: var(--ap-paper);
+}
+
+.ap-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Status chip ───────────────────────────────────────────────────────────
+   Carries a word as well as a colour: these get printed, photocopied, and read
+   by people who cannot separate the hues. */
+
+.ap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  padding: 2px var(--ap-space-2);
+  border-radius: 999px;
+  font-size: var(--ap-text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ap-chip--overdue {
+  background: var(--ap-overdue-soft);
+  color: var(--ap-overdue);
+}
+
+.ap-chip--due {
+  background: var(--ap-due-soft);
+  color: var(--ap-due);
+}
+
+.ap-chip--done {
+  background: var(--ap-done-soft);
+  color: var(--ap-done);
+}
+
+.ap-chip--neutral {
+  background: var(--ap-accent-soft);
+  color: var(--ap-accent);
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────────────
+   A single panel treatment. Rules and space carry hierarchy, so there is no
+   second card style and nothing has a coloured border. */
+
+.ap-panel {
+  background: var(--ap-surface);
+  border: 1px solid var(--ap-rule);
+  border-radius: var(--ap-radius);
+}
+
+.ap-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-4);
+  border-bottom: 1px solid var(--ap-rule);
+}
+
+/* Empty states are an invitation to act, not an apology. */
+.ap-empty {
+  padding: var(--ap-space-7) var(--ap-space-4);
+  text-align: center;
+  color: var(--ap-ink-muted);
+  font-size: var(--ap-text-base);
+  line-height: 1.6;
+}
+
+.ap-empty p {
+  margin: 0 auto var(--ap-space-4);
+  max-width: 44ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-btn {
+    transition: none;
+  }
+}

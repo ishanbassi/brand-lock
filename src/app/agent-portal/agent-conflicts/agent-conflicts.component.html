@@ -27,10 +27,10 @@
         All ({{ conflicts().length }})
       </button>
       <button class="chip" [class.active]="riskFilter() === 'HIGH'" (click)="setFilter('HIGH')">
-        🔴 High ({{ highRiskCount() }})
+        High ({{ highRiskCount() }})
       </button>
       <button class="chip" [class.active]="riskFilter() === 'MEDIUM'" (click)="setFilter('MEDIUM')">
-        🟡 Medium ({{ mediumRiskCount() }})
+        Medium ({{ mediumRiskCount() }})
       </button>
       <button class="chip" [class.active]="riskFilter() === 'LOW'" (click)="setFilter('LOW')">
         Low ({{ conflicts().length - highRiskCount() - mediumRiskCount() }})

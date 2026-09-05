@@ -24,10 +24,10 @@
         }
         <div class="avatar-meta">
           @if (profile()?.companyName) {
-            <div class="meta-row"><span class="meta-icon">🏢</span> {{ profile()!.companyName }}</div>
+            <div class="meta-row"><span class="meta-icon"><ap-icon name="building" [size]="16" /></span> {{ profile()!.companyName }}</div>
           }
           @if (profile()?.barRegNo) {
-            <div class="meta-row"><span class="meta-icon">⚖️</span> Bar Reg. {{ profile()!.barRegNo }}</div>
+            <div class="meta-row"><span class="meta-icon"><ap-icon name="scales" [size]="16" /></span> Bar Reg. {{ profile()!.barRegNo }}</div>
           }
         </div>
       </div>
@@ -40,7 +40,7 @@
         }
 
         @if (saved()) {
-          <div class="alert-success">✅ Profile updated successfully.</div>
+          <div class="alert-success"><ap-icon name="check" [size]="16" /> Profile updated successfully.</div>
         }
 
         <div class="section-title">Personal Information</div>

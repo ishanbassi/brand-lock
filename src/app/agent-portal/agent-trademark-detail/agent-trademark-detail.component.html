@@ -24,12 +24,16 @@
       <div class="detail-actions">
         @if (mark()!.applicationNo) {
           <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
-            {{ refreshing() ? 'Requesting…' : '🔄 Refresh from register' }}
+            @if (refreshing()) {
+              Requesting…
+            } @else {
+              <ap-icon name="refresh" [size]="15" /> Refresh from register
+            }
           </button>
         }
-        <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'watch']" class="btn-ghost">👁 Check conflicts</a>
+        <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'watch']" class="btn-ghost"><ap-icon name="eye" [size]="16" /> Check conflicts</a>
         @if (editable()) {
-          <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']" class="btn-ghost">✏️ Edit</a>
+          <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']" class="btn-ghost"><ap-icon name="edit" [size]="16" />Edit</a>
         }
         <button class="btn-danger-ghost" (click)="confirmRemove.set(true)">Remove</button>
       </div>
@@ -69,7 +73,7 @@
 
     @if (!editable()) {
       <div class="source-banner">
-        🔒 Maintained from the IP India register
+        <ap-icon name="lock" [size]="16" /> Maintained from the IP India register
         @if (mark()!.registrySyncedDate) {
           — last confirmed {{ mark()!.registrySyncedDate | date:'dd MMM yyyy' }}
         }

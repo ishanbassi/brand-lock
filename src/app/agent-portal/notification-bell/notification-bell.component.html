@@ -7,7 +7,7 @@
     [attr.aria-expanded]="open()"
     [attr.aria-label]="unreadCount() > 0 ? unreadCount() + ' unread notifications' : 'Notifications'"
   >
-    <span class="bell-icon" aria-hidden="true">🔔</span>
+    <span class="bell-icon" aria-hidden="true"><ap-icon name="bell" [size]="16" /></span>
     @if (unreadCount() > 0) {
       <!-- Capped at 99+: the exact number stops meaning anything past that, and a four-digit
            badge breaks the topbar layout. -->
@@ -26,7 +26,7 @@
 
       @if (items().length === 0) {
         <div class="empty">
-          <span class="empty-icon" aria-hidden="true">✓</span>
+          <span class="empty-icon" aria-hidden="true"><ap-icon name="check" [size]="16" /></span>
           <p>You're all caught up.</p>
         </div>
       } @else {

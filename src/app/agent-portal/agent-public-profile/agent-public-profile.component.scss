@@ -4,36 +4,36 @@
   align-items: center;
   justify-content: center;
   background: #f5f5f7;
-  padding: 2rem 1rem;
+  padding: var(--ap-space-6) var(--ap-space-4);
 }
 
 .loading-state,
 .error-state {
   text-align: center;
-  padding: 3rem;
+  padding: var(--ap-space-7);
   color: #555;
 
   .spinner {
     width: 40px;
     height: 40px;
     border: 3px solid #e0e0e0;
-    border-top-color: #1a1a3e;
+    border-top-color: var(--ap-ink);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-    margin: 0 auto 1rem;
+    margin: 0 auto var(--ap-space-4);
   }
 
-  .error-icon { font-size: 3rem; margin-bottom: 1rem; }
-  h2 { color: #1a1a3e; margin-bottom: 0.5rem; }
+  .error-icon { font-size: 3rem; margin-bottom: var(--ap-space-4); }
+  h2 { color: var(--ap-ink); margin-bottom: var(--ap-space-2); }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .profile-card {
-  background: #fff;
+  background: var(--ap-surface);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  padding: 2.5rem;
+  padding: var(--ap-space-6);
   max-width: 520px;
   width: 100%;
 }
@@ -41,15 +41,15 @@
 .profile-hero {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: var(--ap-space-5);
+  margin-bottom: var(--ap-space-6);
 }
 
 .agent-avatar-lg {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1a1a3e, #3a3a6e);
+  background: linear-gradient(135deg, var(--ap-ink), #3a3a6e);
   color: #fff;
   font-size: 2rem;
   font-weight: 700;
@@ -63,19 +63,19 @@
 .agent-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a3e;
-  margin: 0 0 0.25rem;
+  color: var(--ap-ink);
+  margin: 0 0 var(--ap-space-1);
 }
 
 .company-name {
   color: #666;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--ap-space-2);
   font-size: 0.95rem;
 }
 
 .status-badge {
   display: inline-block;
-  padding: 0.2rem 0.75rem;
+  padding: var(--ap-space-1) var(--ap-space-3);
   border-radius: 12px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -89,9 +89,9 @@
 
 .profile-stats {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-  padding: 1.25rem;
+  gap: var(--ap-space-5);
+  margin-bottom: var(--ap-space-5);
+  padding: var(--ap-space-4);
   background: #f8f9fa;
   border-radius: 12px;
 }
@@ -99,13 +99,13 @@
 .stat-box {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--ap-space-1);
 }
 
 .stat-value {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #1a1a3e;
+  color: var(--ap-ink);
   line-height: 1;
 
   &.code { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; font-family: monospace; }
@@ -119,30 +119,30 @@
 }
 
 .profile-links {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
 }
 
 .website-link {
-  color: #1a1a3e;
+  color: var(--ap-ink);
   text-decoration: none;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--ap-space-2);
 
   &:hover { text-decoration: underline; }
 }
 
 .profile-footer {
   border-top: 1px solid #f0f0f0;
-  padding-top: 1.25rem;
+  padding-top: var(--ap-space-4);
   text-align: center;
 }
 
 .btn-primary {
   display: inline-block;
-  padding: 0.6rem 1.5rem;
-  background: #1a1a3e;
+  padding: var(--ap-space-2) var(--ap-space-5);
+  background: var(--ap-ink);
   color: #fff;
   border-radius: 8px;
   text-decoration: none;
@@ -155,14 +155,14 @@
 
 .btn-outline {
   display: inline-block;
-  padding: 0.6rem 1.5rem;
-  border: 1.5px solid #1a1a3e;
-  color: #1a1a3e;
+  padding: var(--ap-space-2) var(--ap-space-5);
+  border: 1.5px solid var(--ap-ink);
+  color: var(--ap-ink);
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.2s;
 
-  &:hover { background: #1a1a3e; color: #fff; }
+  &:hover { background: var(--ap-ink); color: #fff; }
 }

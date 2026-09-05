@@ -1,15 +1,15 @@
 // Palette lifted from the portal shell so signing in and the portal read as one product.
-$sidebar-bg: #0f172a;
-$accent: #6366f1;
-$border: #e2e8f0;
-$muted: #64748b;
-$danger: #b91c1c;
+$sidebar-bg: var(--ap-ink);
+$accent: var(--ap-accent);
+$border: var(--ap-rule);
+$muted: var(--ap-ink-muted);
+$danger: var(--ap-overdue);
 
 .agent-login {
   display: flex;
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  background: #f8fafc;
+  background: var(--ap-paper);
 }
 
 // ── Brand pane ───────────────────────────────────────────
@@ -18,7 +18,7 @@ $danger: #b91c1c;
   max-width: 520px;
   background: $sidebar-bg;
   color: rgba(255, 255, 255, 0.85);
-  padding: 2.5rem 2.75rem;
+  padding: var(--ap-space-6) var(--ap-space-7);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -41,7 +41,7 @@ $danger: #b91c1c;
 
 .brand-copy {
   h1 {
-    margin: 0 0 0.6rem;
+    margin: 0 0 var(--ap-space-2);
     font-size: 2rem;
     font-weight: 700;
     color: #fff;
@@ -49,7 +49,7 @@ $danger: #b91c1c;
   }
 
   p {
-    margin: 0 0 1.5rem;
+    margin: 0 0 var(--ap-space-5);
     font-size: 0.95rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.6);
@@ -64,8 +64,8 @@ $danger: #b91c1c;
 
   li {
     position: relative;
-    padding-left: 1.4rem;
-    margin-bottom: 0.65rem;
+    padding-left: var(--ap-space-5);
+    margin-bottom: var(--ap-space-3);
     font-size: 0.88rem;
     color: rgba(255, 255, 255, 0.75);
 
@@ -99,7 +99,7 @@ $danger: #b91c1c;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1.5rem;
+  padding: var(--ap-space-6) var(--ap-space-5);
 }
 
 .form-card {
@@ -110,52 +110,52 @@ $danger: #b91c1c;
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--ap-ink);
   }
 }
 
 .form-sub {
-  margin: 0.35rem 0 1.5rem;
+  margin: var(--ap-space-1) 0 var(--ap-space-5);
   font-size: 0.85rem;
   color: $muted;
 }
 
 .form-error {
-  margin-bottom: 1rem;
-  padding: 0.65rem 0.85rem;
+  margin-bottom: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-3);
   border-left: 3px solid $danger;
-  background: #fef2f2;
-  color: #7f1d1d;
+  background: var(--ap-overdue-soft);
+  color: var(--ap-overdue);
   font-size: 0.83rem;
   border-radius: 0 6px 6px 0;
   line-height: 1.45;
 }
 
 .field {
-  margin-bottom: 1rem;
+  margin-bottom: var(--ap-space-4);
 
   label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: var(--ap-space-1);
     font-size: 0.78rem;
     font-weight: 600;
-    color: #334155;
+    color: var(--ap-ink);
   }
 
   input {
     width: 100%;
     border: 1px solid $border;
     border-radius: 8px;
-    padding: 0.65rem 0.8rem;
+    padding: var(--ap-space-3) var(--ap-space-3);
     font-size: 0.9rem;
     font-family: inherit;
-    background: #fff;
-    color: #0f172a;
+    background: var(--ap-surface);
+    color: var(--ap-ink);
 
     &:focus {
       outline: none;
       border-color: $accent;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+      box-shadow: 0 0 0 3px rgba(36, 64, 92, 0.15);
     }
   }
 }
@@ -164,7 +164,7 @@ $danger: #b91c1c;
   position: relative;
 
   input {
-    padding-right: 4rem;
+    padding-right: var(--ap-space-7);
   }
 }
 
@@ -179,7 +179,7 @@ $danger: #b91c1c;
   font-weight: 600;
   color: $muted;
   cursor: pointer;
-  padding: 0.2rem 0.35rem;
+  padding: var(--ap-space-1) var(--ap-space-1);
 
   &:hover {
     color: $accent;
@@ -188,19 +188,19 @@ $danger: #b91c1c;
 
 .field-error {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: var(--ap-space-1);
   font-size: 0.75rem;
   color: $danger;
 }
 
 .submit {
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: var(--ap-space-2);
   background: $accent;
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
@@ -216,7 +216,7 @@ $danger: #b91c1c;
 }
 
 .form-links {
-  margin-top: 1.25rem;
+  margin-top: var(--ap-space-4);
   text-align: center;
   font-size: 0.82rem;
   color: $muted;
@@ -231,8 +231,8 @@ $danger: #b91c1c;
   }
 
   .sep {
-    margin: 0 0.4rem;
-    color: #cbd5e1;
+    margin: 0 var(--ap-space-2);
+    color: var(--ap-rule-strong);
   }
 }
 
@@ -245,7 +245,7 @@ $danger: #b91c1c;
   .brand-pane {
     width: 100%;
     max-width: none;
-    padding: 1.5rem 1.5rem 1.75rem;
+    padding: var(--ap-space-5) var(--ap-space-5) var(--ap-space-5);
   }
 
   .brand-copy {

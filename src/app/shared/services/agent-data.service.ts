@@ -13,6 +13,7 @@ import {
   AgentDocumentLibraryPage,
   AgentDocumentLibrarySummary,
   AgentBranding,
+  Deadline,
   SearchReport,
   AgentImportSummary,
   AgentJournalWatchResult,
@@ -179,6 +180,32 @@ export class AgentDataService {
    * Fetches the bytes rather than linking to them. These files sit outside every web-served
    * directory on purpose, so there is no URL to point an anchor at — the browser gets a blob.
    */
+  // ── Deadlines ──────────────────────────────────────────────────────────
+
+  getDeadlines(from?: string | null, to?: string | null): Observable<Deadline[]> {
+    let params = new HttpParams();
+    if (from) params = params.set('from', from);
+    if (to) params = params.set('to', to);
+    return this.http.get<Deadline[]>(`${this.base}/agent-portal/deadlines`, { params });
+  }
+
+  /**
+   * Marks a deadline done, waived or missed.
+   *
+   * A computed entry has no id yet, so it is identified by its derivedKey; the server turns it
+   * into a row on first use.
+   */
+  setDeadlineStatus(
+    target: { id?: number | null; derivedKey?: string | null },
+    status: Deadline['status'],
+  ): Observable<Deadline> {
+    return this.http.patch<Deadline>(`${this.base}/agent-portal/deadlines/status`, {
+      id: target.id ?? null,
+      derivedKey: target.derivedKey ?? null,
+      status,
+    });
+  }
+
   // ── Reports ────────────────────────────────────────────────────────────
 
   previewSearchReport(query: string, tmClass?: number | null): Observable<SearchReport> {

@@ -1,21 +1,21 @@
-$accent: #6366f1;
-$accent-light: #818cf8;
-$danger: #ef4444;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$accent: var(--ap-accent);
+$accent-light: var(--ap-accent);
+$danger: var(--ap-overdue);
+$gray-100: var(--ap-paper);
+$gray-200: var(--ap-rule);
+$gray-400: var(--ap-ink-faint);
+$gray-600: var(--ap-ink-muted);
+$gray-800: var(--ap-ink);
 $white: #ffffff;
 
 * { box-sizing: border-box; }
 
 .form-page {
-  padding: 2rem;
+  padding: var(--ap-space-6);
   max-width: 760px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 
-  @media (max-width: 768px) { padding: 1.25rem; }
+  @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
 
 .back-link {
@@ -24,7 +24,7 @@ $white: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  margin-bottom: 1rem;
+  margin-bottom: var(--ap-space-4);
   transition: color 0.15s;
 
   &:hover { color: $accent; }
@@ -34,27 +34,27 @@ $white: #ffffff;
   font-size: 1.75rem;
   font-weight: 700;
   color: $gray-800;
-  margin: 0 0 0.35rem;
+  margin: 0 0 var(--ap-space-1);
 }
 
 .page-sub {
   color: $gray-400;
   font-size: 0.9rem;
-  margin: 0 0 2rem;
+  margin: 0 0 var(--ap-space-6);
 }
 
 .form-card {
   background: $white;
   border-radius: 16px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-  padding: 2rem;
+  padding: var(--ap-space-6);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-bottom: 1.75rem;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-5);
 
   @media (max-width: 640px) { grid-template-columns: 1fr; }
 }
@@ -62,7 +62,7 @@ $white: #ffffff;
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: var(--ap-space-2);
   min-width: 0;
 
   &.full-span { grid-column: 1 / -1; }
@@ -80,7 +80,7 @@ $white: #ffffff;
 
 .field-input, .field-select, .field-textarea {
   width: 100%;
-  padding: 0.65rem 0.875rem;
+  padding: var(--ap-space-3) var(--ap-space-3);
   border: 1.5px solid $gray-200;
   border-radius: 9px;
   font-size: 0.875rem;
@@ -92,7 +92,7 @@ $white: #ffffff;
 
   &:focus {
     border-color: $accent;
-    box-shadow: 0 0 0 3px rgba($accent, 0.1);
+    box-shadow: 0 0 0 3px var(--ap-accent-soft);
   }
 
   &::placeholder { color: $gray-400; }
@@ -106,16 +106,16 @@ $white: #ffffff;
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 1.5rem;
+  gap: var(--ap-space-3);
+  padding-top: var(--ap-space-5);
   border-top: 1.5px solid $gray-200;
 }
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.75rem;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-5);
   background: linear-gradient(135deg, $accent, $accent-light);
   color: white;
   border: none;
@@ -127,7 +127,7 @@ $white: #ffffff;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($accent, 0.35);
+    box-shadow: 0 4px 12px var(--ap-accent-soft);
   }
 
   &:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -136,7 +136,7 @@ $white: #ffffff;
 .btn-ghost {
   display: inline-flex;
   align-items: center;
-  padding: 0.7rem 1.25rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   background: none;
   color: $gray-600;
   border: none;
@@ -163,9 +163,9 @@ $white: #ffffff;
 
 .loading-state {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
 
-  p { color: $gray-400; margin: 1rem 0 0; font-size: 0.875rem; }
+  p { color: $gray-400; margin: var(--ap-space-4) 0 0; font-size: 0.875rem; }
 }
 
 .spinner {
@@ -179,29 +179,29 @@ $white: #ffffff;
 }
 
 .alert-error {
-  background: rgba($danger, 0.08);
-  border: 1px solid rgba($danger, 0.2);
+  background: var(--ap-overdue-soft);
+  border: 1px solid var(--ap-overdue-soft);
   color: $danger;
-  padding: 1rem 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
   border-radius: 10px;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
   font-size: 0.875rem;
 }
 
 // ── REGISTER-BACKED (READ-ONLY) ─────────────────────────
 .locked-banner {
   display: flex;
-  gap: 0.875rem;
+  gap: var(--ap-space-3);
   align-items: flex-start;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #6366f1;
+  background: var(--ap-paper);
+  border: 1px solid var(--ap-rule);
+  border-left: 4px solid var(--ap-accent);
   border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
 
-  strong { display: block; color: #1e293b; font-size: 0.9375rem; margin-bottom: 0.25rem; }
-  p { margin: 0; color: #475569; font-size: 0.875rem; line-height: 1.55; }
+  strong { display: block; color: var(--ap-ink); font-size: 0.9375rem; margin-bottom: var(--ap-space-1); }
+  p { margin: 0; color: var(--ap-ink-muted); font-size: 0.875rem; line-height: 1.55; }
 }
 
 .locked-icon { font-size: 1.125rem; line-height: 1.4; }
@@ -216,8 +216,8 @@ $white: #ffffff;
 
 .form-card.is-locked {
   input, select, textarea {
-    background: #f8fafc;
-    color: #64748b;
+    background: var(--ap-paper);
+    color: var(--ap-ink-muted);
     cursor: not-allowed;
   }
 }
@@ -226,41 +226,41 @@ $white: #ffffff;
 // Outside the form on purpose: these live on the portfolio link, not the mark, so they save
 // independently and remain available when everything above is locked.
 .notes-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--ap-surface);
+  border: 1px solid var(--ap-rule);
   border-radius: 14px;
-  padding: 1.5rem;
-  margin-top: 1.25rem;
+  padding: var(--ap-space-5);
+  margin-top: var(--ap-space-4);
 
-  h2 { font-size: 1rem; font-weight: 700; margin: 0 0 0.25rem; color: #1e293b; }
+  h2 { font-size: 1rem; font-weight: 700; margin: 0 0 var(--ap-space-1); color: var(--ap-ink); }
 }
 
-.notes-hint { color: #94a3b8; font-size: 0.8125rem; margin: 0 0 1rem; }
+.notes-hint { color: var(--ap-ink-faint); font-size: 0.8125rem; margin: 0 0 var(--ap-space-4); }
 
 .notes-card .field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
+  gap: var(--ap-space-1);
+  margin-bottom: var(--ap-space-4);
 
-  span { font-size: 0.8125rem; font-weight: 600; color: #475569; }
+  span { font-size: 0.8125rem; font-weight: 600; color: var(--ap-ink-muted); }
 
   input, textarea {
-    padding: 0.625rem 0.75rem;
-    border: 1px solid #e2e8f0;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border: 1px solid var(--ap-rule);
     border-radius: 9px;
     font-family: inherit;
     font-size: 0.9375rem;
     resize: vertical;
 
-    &:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+    &:focus { outline: none; border-color: var(--ap-accent); box-shadow: 0 0 0 3px rgba(36, 64, 92, 0.15); }
   }
 }
 
 .notes-actions {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: var(--ap-space-3);
 }
 
-.notes-saved { color: #10b981; font-size: 0.8125rem; font-weight: 600; }
+.notes-saved { color: var(--ap-done); font-size: 0.8125rem; font-weight: 600; }

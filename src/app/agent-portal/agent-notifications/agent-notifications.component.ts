@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { Router } from '@angular/router';
 import {
   AppNotification,
@@ -18,7 +19,7 @@ interface CategoryTab {
 @Component({
   selector: 'app-agent-notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [IconComponent, CommonModule],
   templateUrl: './agent-notifications.component.html',
   styleUrl: './agent-notifications.component.scss',
 })

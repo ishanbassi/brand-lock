@@ -1,23 +1,23 @@
-$accent: #6366f1;
-$accent-light: #818cf8;
-$success: #10b981;
-$warning: #f59e0b;
-$danger: #ef4444;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$accent: var(--ap-accent);
+$accent-light: var(--ap-accent);
+$success: var(--ap-done);
+$warning: var(--ap-due);
+$danger: var(--ap-overdue);
+$gray-100: var(--ap-paper);
+$gray-200: var(--ap-rule);
+$gray-400: var(--ap-ink-faint);
+$gray-600: var(--ap-ink-muted);
+$gray-800: var(--ap-ink);
 $white: #ffffff;
 
 * { box-sizing: border-box; }
 
 .watch-page {
-  padding: 2rem;
+  padding: var(--ap-space-6);
   max-width: 1100px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 
-  @media (max-width: 768px) { padding: 1.25rem; }
+  @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
 
 .back-link {
@@ -26,7 +26,7 @@ $white: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
   transition: color 0.15s;
 
   &:hover { color: $accent; }
@@ -38,15 +38,15 @@ $white: #ffffff;
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-6);
 }
 
 .page-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: $gray-400;
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--ap-space-2);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -54,7 +54,7 @@ $white: #ffffff;
 .tm-identity {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   flex-wrap: wrap;
 }
 
@@ -73,8 +73,8 @@ $white: #ffffff;
 .class-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.65rem;
-  background: rgba($accent, 0.1);
+  padding: var(--ap-space-1) var(--ap-space-3);
+  background: var(--ap-accent-soft);
   color: $accent;
   border-radius: 6px;
   font-size: 0.78rem;
@@ -84,8 +84,8 @@ $white: #ffffff;
 .btn-outline {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.25rem;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
   background: $white;
   color: $gray-600;
   border: 1.5px solid $gray-200;
@@ -104,8 +104,8 @@ $white: #ffffff;
 .risk-summary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-6);
 
   @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 480px) { grid-template-columns: 1fr; }
@@ -114,7 +114,7 @@ $white: #ffffff;
 .risk-card {
   background: $white;
   border-radius: 14px;
-  padding: 1.25rem 1.5rem;
+  padding: var(--ap-space-4) var(--ap-space-5);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border-left: 4px solid transparent;
 
@@ -129,7 +129,7 @@ $white: #ffffff;
   font-weight: 800;
   color: $gray-800;
   line-height: 1;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--ap-space-1);
 }
 
 .risk-lbl {
@@ -153,7 +153,7 @@ $white: #ffffff;
 }
 
 .results-header {
-  padding: 1.25rem 1.5rem;
+  padding: var(--ap-space-4) var(--ap-space-5);
   border-bottom: 1.5px solid $gray-200;
 }
 
@@ -161,7 +161,7 @@ $white: #ffffff;
   font-size: 1rem;
   font-weight: 700;
   color: $gray-800;
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--ap-space-1);
 }
 
 .results-sub {
@@ -175,17 +175,17 @@ $white: #ffffff;
 .conflict-row {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1rem 1.5rem;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-4) var(--ap-space-5);
   border-bottom: 1px solid $gray-100;
   transition: background 0.1s;
 
   &:last-child { border-bottom: none; }
-  &:hover { background: rgba($accent, 0.025); }
+  &:hover { background: var(--ap-accent-soft); }
 
   @media (max-width: 640px) {
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: var(--ap-space-3);
   }
 }
 
@@ -194,12 +194,12 @@ $white: #ffffff;
   flex-shrink: 0;
   width: 72px;
   text-align: center;
-  padding: 0.3rem 0.5rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 8px;
 
-  &.badge-risk-high   { background: rgba($danger, 0.1); }
-  &.badge-risk-medium { background: rgba($warning, 0.1); }
-  &.badge-risk-low    { background: rgba($success, 0.1); }
+  &.badge-risk-high   { background: var(--ap-overdue-soft); }
+  &.badge-risk-medium { background: var(--ap-due-soft); }
+  &.badge-risk-low    { background: var(--ap-done-soft); }
 }
 
 .badge-label {
@@ -208,8 +208,8 @@ $white: #ffffff;
   letter-spacing: 0.05em;
 
   .badge-risk-high &   { color: $danger; }
-  .badge-risk-medium & { color: darken($warning, 20%); }
-  .badge-risk-low &    { color: darken($success, 15%); }
+  .badge-risk-medium & { color: var(--ap-due); }
+  .badge-risk-low &    { color: var(--ap-done); }
 }
 
 // ── CONFLICT MAIN ─────────────────────────────────────────
@@ -222,7 +222,7 @@ $white: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--ap-space-1);
 }
 
 .conflict-meta {
@@ -236,7 +236,7 @@ $white: #ffffff;
 
     &:not(:last-child)::after {
       content: ' · ';
-      margin: 0 0.25rem;
+      margin: 0 var(--ap-space-1);
     }
   }
 }
@@ -253,7 +253,7 @@ $white: #ffffff;
   font-weight: 800;
   color: $gray-800;
   line-height: 1;
-  margin-bottom: 0.35rem;
+  margin-bottom: var(--ap-space-1);
 }
 
 .score-bar-wrap {
@@ -261,7 +261,7 @@ $white: #ffffff;
   background: $gray-200;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--ap-space-1);
 }
 
 .score-bar {
@@ -282,22 +282,22 @@ $white: #ffffff;
 // ── EMPTY WATCH ─────────────────────────────────────────
 .empty-watch {
   text-align: center;
-  padding: 5rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
   background: $white;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
-  .empty-icon { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
-  h3 { font-size: 1.3rem; font-weight: 700; color: $gray-800; margin: 0 0 0.5rem; }
+  .empty-icon { font-size: 3.5rem; display: block; margin-bottom: var(--ap-space-4); }
+  h3 { font-size: 1.3rem; font-weight: 700; color: $gray-800; margin: 0 0 var(--ap-space-2); }
   p  { color: $gray-400; font-size: 0.9rem; margin: 0; max-width: 400px; margin: 0 auto; }
 }
 
 // ── LOADING / ERROR ─────────────────────────────────────────
 .loading-state {
   text-align: center;
-  padding: 5rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
 
-  p { color: $gray-400; margin: 1.25rem 0 0; font-size: 0.875rem; }
+  p { color: $gray-400; margin: var(--ap-space-4) 0 0; font-size: 0.875rem; }
 }
 
 .spinner {
@@ -313,24 +313,24 @@ $white: #ffffff;
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .alert-error {
-  background: rgba($danger, 0.08);
-  border: 1px solid rgba($danger, 0.2);
+  background: var(--ap-overdue-soft);
+  border: 1px solid var(--ap-overdue-soft);
   color: $danger;
-  padding: 1rem 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
   border-radius: 10px;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
   font-size: 0.875rem;
 }
 
 // ── CONFLICT HISTORY (Phase 2) ────────────────────────────
 .history-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
 }
 
 .history-toggle {
   background: none;
   border: 1.5px solid $gray-200;
-  padding: 0.5rem 1rem;
+  padding: var(--ap-space-2) var(--ap-space-4);
   border-radius: 8px;
   font-size: 0.875rem;
   color: $gray-600;
@@ -341,19 +341,19 @@ $white: #ffffff;
 }
 
 .history-list {
-  margin-top: 0.75rem;
+  margin-top: var(--ap-space-3);
   border: 1px solid $gray-200;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .history-row {
-  padding: 0.75rem 1.25rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   border-bottom: 1px solid $gray-200;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--ap-space-4);
 
   &:last-child { border-bottom: none; }
 }
@@ -372,22 +372,22 @@ $white: #ffffff;
 .history-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   flex-shrink: 0;
   font-size: 0.8rem;
   color: $gray-400;
 }
 
 .risk-pill {
-  padding: 0.15rem 0.5rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 10px;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
 
-  &--high   { background: rgba($danger,0.1); color: $danger; }
-  &--medium { background: rgba($warning,0.1); color: darken($warning,20%); }
-  &--low    { background: rgba($success,0.1); color: darken($success,15%); }
+  &--high   { background: var(--ap-overdue-soft); color: $danger; }
+  &--medium { background: var(--ap-due-soft); color: var(--ap-due); }
+  &--low    { background: var(--ap-done-soft); color: var(--ap-done); }
 }
 
 .new-badge {
@@ -396,7 +396,7 @@ $white: #ffffff;
   font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  padding: 0.1rem 0.4rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 6px;
 }
 

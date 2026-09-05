@@ -16,10 +16,10 @@
     </div>
     <div class="header-actions">
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
-        <span>📤</span> Import Excel
+        <span><ap-icon name="upload" [size]="16" /></span> Import Excel
       </a>
       <a routerLink="/agent-portal/portfolio/add" class="btn-primary">
-        <span>➕</span> Add Trademark
+        <span><ap-icon name="plus" [size]="16" /></span> Add Trademark
       </a>
     </div>
   </div>
@@ -27,7 +27,7 @@
   <!-- FILTERS BAR -->
   <div class="filters-bar">
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
       <input
         type="text"
         class="search-input"
@@ -36,7 +36,7 @@
         (ngModelChange)="onSearchChange()"
       />
       @if (searchQuery) {
-        <button class="search-clear" (click)="searchQuery = ''; onSearchChange()">✕</button>
+        <button class="search-clear" (click)="searchQuery = ''; onSearchChange()"><ap-icon name="close" [size]="16" /></button>
       }
     </div>
 
@@ -219,19 +219,19 @@
   @if (!loading() && trademarks().length === 0 && !error()) {
     <div class="empty-state">
       @if (hasFilters) {
-        <div class="empty-icon">🔍</div>
+        <div class="empty-icon"><ap-icon name="search" [size]="16" /></div>
         <h3>No results found</h3>
         <p>Try adjusting your search or filters.</p>
         <button class="btn-outline" (click)="clearFilters()">
           Clear all filters
         </button>
       } @else {
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon"><ap-icon name="portfolio" [size]="16" /></div>
         <h3>Your portfolio is empty</h3>
         <p>Import an Excel file or add trademarks one by one to get started.</p>
         <div class="empty-actions">
-          <a routerLink="/agent-portal/portfolio/upload" class="btn-primary">📤 Import from Excel</a>
-          <a routerLink="/agent-portal/portfolio/add" class="btn-outline">➕ Add Manually</a>
+          <a routerLink="/agent-portal/portfolio/upload" class="btn-primary"><ap-icon name="upload" [size]="16" /> Import from Excel</a>
+          <a routerLink="/agent-portal/portfolio/add" class="btn-outline"><ap-icon name="plus" [size]="16" /> Add Manually</a>
         </div>
       }
     </div>

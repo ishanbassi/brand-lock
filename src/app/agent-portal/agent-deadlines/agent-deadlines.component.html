@@ -1,0 +1,253 @@
+<div class="ap deadlines">
+  <header class="page-head">
+    <div>
+      <h1 class="ap-title">Deadlines</h1>
+      <p class="ap-subtitle">
+        Renewals the Registry has confirmed, and hearings as they are listed. Grouped by the day
+        they fall.
+      </p>
+    </div>
+  </header>
+
+  <!-- Counts first, because they answer the question the agent arrived with. Only rendered once
+       there is something to count - a row of zeroes is noise on an empty portfolio. -->
+  @if (!loading() && visible().length > 0) {
+    <div class="summary">
+      @if (overdueCount() > 0) {
+        <span class="ap-chip ap-chip--overdue">{{ overdueCount() }} overdue</span>
+      }
+      @if (next7Count() > 0) {
+        <span class="ap-chip ap-chip--due">{{ next7Count() }} in the next 7 days</span>
+      }
+      <span class="summary-total">{{ visible().length }} shown</span>
+    </div>
+  }
+
+  <div class="controls">
+    <div class="range" role="group" aria-label="View">
+      <button type="button" class="range-btn" [class.selected]="view() === 'list'"
+              [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">List</button>
+      <button type="button" class="range-btn" [class.selected]="view() === 'month'"
+              [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
+    </div>
+
+    @if (view() === 'list') {
+    <div class="range" role="group" aria-label="Date range">
+      @for (range of ranges; track range.key) {
+        <button
+          type="button"
+          class="range-btn"
+          [class.selected]="activeRange().key === range.key"
+          [attr.aria-pressed]="activeRange().key === range.key"
+          (click)="selectRange(range.key)"
+        >
+          {{ range.label }}
+        </button>
+      }
+    </div>
+    } @else {
+      <!-- Month paging replaces the range chips: the visible month is the range. -->
+      <div class="month-nav">
+        <button type="button" class="month-step" (click)="stepMonth(-1)" aria-label="Previous month">
+          <ap-icon name="chevron" [size]="16" class="flip" />
+        </button>
+        <span class="month-label">{{ monthLabel() }}</span>
+        <button type="button" class="month-step" (click)="stepMonth(1)" aria-label="Next month">
+          <ap-icon name="chevron" [size]="16" />
+        </button>
+        <button type="button" class="month-today" (click)="goToThisMonth()">Today</button>
+      </div>
+    }
+
+    <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
+      <ap-icon [name]="showDone() ? 'check' : 'dot'" [size]="15" />
+      {{ showDone() ? 'Hiding nothing' : 'Show completed' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="banner" role="alert">
+      <ap-icon name="alert" [size]="16" />
+      <span>{{ error() }}</span>
+      <button type="button" class="banner-retry" (click)="load()">Retry</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <!-- Skeleton rather than a spinner: the shape of what is coming is itself information, and it
+         keeps the page from jumping when the rows land. -->
+    <div class="skeleton" aria-hidden="true">
+      @for (n of [1, 2, 3]; track n) {
+        <div class="skeleton-day">
+          <div class="skeleton-rail"></div>
+          <div class="skeleton-rows">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
+      }
+    </div>
+    <p class="visually-hidden" role="status">Loading deadlines</p>
+  } @else if (groups().length === 0) {
+    <div class="ap-panel ap-empty">
+      <p>
+        Nothing falls due in this window. Renewals appear here once the Registry confirms a renewal
+        date on a mark, and hearings appear on the day they are listed.
+      </p>
+      <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange('365')">Look ahead 12 months</button>
+    </div>
+  } @else if (view() === 'month') {
+    <!--
+      The month answers a different question from the list: not "what is next" but "how is the
+      quarter shaped". Markers differ by colour AND shape, and the legend names each, because
+      colour alone is not a channel everyone has.
+    -->
+    <div class="legend">
+      <span class="legend-item"><span class="marker marker--renewal"></span>Renewal due</span>
+      <span class="legend-item"><span class="marker marker--renewal-overdue"></span>Renewal overdue</span>
+      <span class="legend-item"><span class="marker marker--hearing-today"></span>Hearing today</span>
+      <span class="legend-item"><span class="marker marker--hearing-past"></span>Hearing held</span>
+    </div>
+
+    <div class="month" role="grid" [attr.aria-label]="monthLabel()">
+      <div class="month-head" role="row">
+        @for (d of weekdayHeadings; track d) {
+          <span class="month-head-cell" role="columnheader">{{ d }}</span>
+        }
+      </div>
+
+      <div class="month-body">
+        @for (cell of monthGrid(); track cell.date) {
+          <div
+            class="cell"
+            role="gridcell"
+            [class.out-of-month]="!cell.inMonth"
+            [class.is-today]="cell.today"
+            [class.has-items]="cell.items.length > 0"
+            [class.is-selected]="selectedDay() === cell.date"
+            [attr.tabindex]="cell.items.length ? 0 : -1"
+            (click)="selectDay(cell)"
+            (keydown.enter)="selectDay(cell)"
+          >
+            <span class="cell-date ap-num">{{ cell.dayOfMonth }}</span>
+
+            @if (cell.items.length > 0) {
+              <span class="cell-markers">
+                @for (item of cell.items.slice(0, 4); track item.derivedKey || item.id) {
+                  <span [class]="markerClass(item)" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')"></span>
+                }
+                @if (cell.items.length > 4) {
+                  <span class="cell-more">+{{ cell.items.length - 4 }}</span>
+                }
+              </span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Clicking a day lists it in full, so the grid never has to shrink a mark name to fit. -->
+    @if (selectedDay()) {
+      <section class="day-detail">
+        <h2 class="day-detail-head">{{ selectedDayLabel() }}</h2>
+        <ul class="rows">
+          @for (item of selectedItems(); track item.derivedKey || item.id) {
+            <li class="row" [class.is-done]="item.status === 'DONE'" [class.is-record]="isRecordOnly(item)"
+                (click)="openMark(item)">
+              <div class="row-main">
+                <div class="row-top">
+                  <span class="row-type">{{ typeLabel(item) }}</span>
+                  <span [class]="chipClass(item)">{{ chipLabel(item) }}</span>
+                </div>
+                <span class="row-mark">{{ item.trademarkName || 'Mark not in your portfolio' }}</span>
+                <div class="row-meta">
+                  @if (item.applicationNo) { <span class="ap-num">{{ item.applicationNo }}</span> }
+                  @if (item.tmClass) { <span class="meta-sep">·</span><span class="ap-num">Class {{ item.tmClass }}</span> }
+                </div>
+              </div>
+              <div class="row-actions">
+                @if (item.status === 'DONE') {
+                  <button type="button" class="row-btn" (click)="undo(item, $event)" [disabled]="isSaving(item)">Undo</button>
+                } @else if (!isRecordOnly(item)) {
+                  <button type="button" class="row-btn row-btn--primary" (click)="markDone(item, $event)" [disabled]="isSaving(item)">
+                    <ap-icon name="check" [size]="14" />
+                    {{ isSaving(item) ? 'Saving' : 'Done' }}
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  } @else {
+    <!--
+      The date is the organising fact, so it holds the left rail and the day's items hang off it.
+      A flat table would make the reader re-read the date on every row.
+    -->
+    <ol class="days">
+      @for (day of groups(); track day.date) {
+        <li class="day" [class.is-past]="day.past" [class.is-today]="day.today">
+          <div class="day-rail">
+            <span class="day-num ap-num">{{ day.label }}</span>
+            <span class="day-weekday">{{ day.weekday }}</span>
+            <span class="day-relative">{{ day.relative }}</span>
+          </div>
+
+          <ul class="rows">
+            @for (item of day.items; track item.derivedKey || item.id) {
+              <li
+                class="row"
+                [class.is-done]="item.status === 'DONE'"
+                [class.is-record]="isRecordOnly(item)"
+                (click)="openMark(item)"
+              >
+                <div class="row-main">
+                  <div class="row-top">
+                    <span class="row-type">{{ typeLabel(item) }}</span>
+                    <span [class]="chipClass(item)">{{ chipLabel(item) }}</span>
+                  </div>
+
+                  <span class="row-mark">{{ item.trademarkName || 'Mark not in your portfolio' }}</span>
+
+                  <div class="row-meta">
+                    @if (item.applicationNo) {
+                      <span class="ap-num">{{ item.applicationNo }}</span>
+                    }
+                    @if (item.tmClass) {
+                      <span class="meta-sep">·</span>
+                      <span class="ap-num">Class {{ item.tmClass }}</span>
+                    }
+                    @if (item.notes) {
+                      <span class="meta-sep">·</span>
+                      <span class="row-note">{{ item.notes }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- The action sits beside the thing it affects, not in a toolbar elsewhere. -->
+                <div class="row-actions">
+                  @if (item.status === 'DONE') {
+                    <button type="button" class="row-btn" (click)="undo(item, $event)" [disabled]="isSaving(item)">
+                      Undo
+                    </button>
+                  } @else if (!isRecordOnly(item)) {
+                    <button
+                      type="button"
+                      class="row-btn row-btn--primary"
+                      (click)="markDone(item, $event)"
+                      [disabled]="isSaving(item)"
+                    >
+                      <ap-icon name="check" [size]="14" />
+                      {{ isSaving(item) ? 'Saving' : 'Done' }}
+                    </button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ol>
+  }
+</div>

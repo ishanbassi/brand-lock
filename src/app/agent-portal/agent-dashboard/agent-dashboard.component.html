@@ -3,15 +3,15 @@
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <h1 class="page-title">{{ greeting }}, {{ agentFirstName }} 👋</h1>
+      <h1 class="page-title">{{ greeting }}, {{ agentFirstName }}</h1>
       <p class="page-sub">Here's your portfolio at a glance</p>
     </div>
     <div class="header-actions">
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
-        📤 Import Excel
+        <ap-icon name="upload" [size]="16" /> Import Excel
       </a>
       <a routerLink="/agent-portal/portfolio/add" class="btn-primary">
-        ➕ Add Trademark
+        <ap-icon name="plus" [size]="16" /> Add Trademark
       </a>
     </div>
   </div>
@@ -34,7 +34,7 @@
   @if (stats(); as s) {
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon stat-icon--total">📂</div>
+        <div class="stat-icon stat-icon--total"><ap-icon name="documents" [size]="16" /></div>
         <div class="stat-body">
           <div class="stat-value">{{ s.totalTrademarks }}</div>
           <div class="stat-label">Total Trademarks</div>
@@ -43,7 +43,7 @@
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon stat-icon--active">✅</div>
+        <div class="stat-icon stat-icon--active"><ap-icon name="check" [size]="16" /></div>
         <div class="stat-body">
           <div class="stat-value">{{ s.activeTrademarks }}</div>
           <div class="stat-label">Active / Registered</div>
@@ -51,7 +51,7 @@
       </div>
 
       <div class="stat-card stat-card--warning">
-        <div class="stat-icon stat-icon--expiring">⏰</div>
+        <div class="stat-icon stat-icon--expiring"><ap-icon name="clock" [size]="16" /></div>
         <div class="stat-body">
           <div class="stat-value">{{ s.expiringIn90Days }}</div>
           <div class="stat-label">Expiring in 90 days</div>
@@ -62,7 +62,7 @@
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon stat-icon--watch">👁</div>
+        <div class="stat-icon stat-icon--watch"><ap-icon name="eye" [size]="16" /></div>
         <div class="stat-body">
           <div class="stat-value">{{ s.watchlistCount }}</div>
           <div class="stat-label">Watch Alerts</div>
@@ -164,7 +164,7 @@
         </div>
         @if (s.expiringSoon.length === 0) {
           <div class="empty-state">
-            <span class="empty-icon">🎉</span>
+            <span class="empty-icon"></span>
             <p>No renewals due in the next 90 days.</p>
           </div>
         } @else {
@@ -198,35 +198,35 @@
         open to opposition for four months, and that window closes whether or not anyone looked.
       -->
       <div class="qa-item qa-primary" routerLink="/agent-portal/watch/journal">
-        <span class="qa-icon">🛡️</span>
+        <span class="qa-icon"><ap-icon name="watch" [size]="16" /></span>
         <div class="qa-text">
           <strong>Trademark Watch</strong>
           <p>Check a journal issue against your portfolio</p>
         </div>
       </div>
       <div class="qa-item" routerLink="/agent-portal/portfolio/claim">
-        <span class="qa-icon">🔎</span>
+        <span class="qa-icon"><ap-icon name="search" [size]="16" /></span>
         <div class="qa-text">
           <strong>Find your marks</strong>
           <p>Search the register by your firm name</p>
         </div>
       </div>
       <div class="qa-item" routerLink="/agent-portal/portfolio/upload">
-        <span class="qa-icon">📤</span>
+        <span class="qa-icon"><ap-icon name="upload" [size]="16" /></span>
         <div class="qa-text">
           <strong>Import from Excel</strong>
           <p>Upload .xlsx or .xls in seconds</p>
         </div>
       </div>
       <div class="qa-item" routerLink="/agent-portal/portfolio">
-        <span class="qa-icon">🔍</span>
+        <span class="qa-icon"><ap-icon name="search" [size]="16" /></span>
         <div class="qa-text">
           <strong>Search Portfolio</strong>
           <p>Filter by class, status or name</p>
         </div>
       </div>
       <div class="qa-item" routerLink="/agent-portal/profile">
-        <span class="qa-icon">👤</span>
+        <span class="qa-icon"><ap-icon name="user" [size]="16" /></span>
         <div class="qa-text">
           <strong>Update Profile</strong>
           <p>Add your firm details & credentials</p>

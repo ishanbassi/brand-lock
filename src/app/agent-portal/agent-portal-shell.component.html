@@ -10,8 +10,12 @@
           <span class="brand-tm">TM</span>
         }
       </a>
-      <button class="collapse-btn" (click)="toggleSidebar()" [title]="sidebarCollapsed() ? 'Expand' : 'Collapse'">
-        {{ sidebarCollapsed() ? '→' : '←' }}
+      <button type="button"
+              class="collapse-btn"
+              (click)="toggleSidebar()"
+              [attr.aria-label]="sidebarCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
+              [title]="sidebarCollapsed() ? 'Expand' : 'Collapse'">
+        <ap-icon name="chevron" [size]="16" [class.flip]="!sidebarCollapsed()" />
       </button>
     </div>
 
@@ -26,10 +30,10 @@
                   [attr.aria-expanded]="isExpanded(item)"
                   (click)="toggleGroup(item)"
                   [title]="sidebarCollapsed() ? item.label : ''">
-            <span class="nav-icon">{{ item.icon }}</span>
+            <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
             @if (!sidebarCollapsed()) {
               <span class="nav-label">{{ item.label }}</span>
-              <span class="nav-caret" [class.open]="isExpanded(item)">▸</span>
+              <ap-icon class="nav-caret" [class.open]="isExpanded(item)" name="chevron" [size]="14" />
             }
           </button>
           @if (isExpanded(item) && !sidebarCollapsed()) {
@@ -38,7 +42,7 @@
                 <a [routerLink]="child.route"
                    class="nav-item nav-child"
                    [class.active]="isActive(child.route)">
-                  <span class="nav-icon">{{ child.icon }}</span>
+                  <ap-icon class="nav-icon" [name]="child.icon" [size]="16" />
                   <span class="nav-label">{{ child.label }}</span>
                 </a>
               }
@@ -49,7 +53,7 @@
              class="nav-item"
              [class.active]="isActive(item.route!)"
              [title]="sidebarCollapsed() ? item.label : ''">
-            <span class="nav-icon">{{ item.icon }}</span>
+            <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
             @if (!sidebarCollapsed()) {
               <span class="nav-label">{{ item.label }}</span>
             }
@@ -69,7 +73,7 @@
         }
       </div>
       <button class="logout-btn" (click)="logout()" [title]="sidebarCollapsed() ? 'Sign out' : ''">
-        <span class="nav-icon">🚪</span>
+        <ap-icon class="nav-icon" name="signout" [size]="16" />
         @if (!sidebarCollapsed()) {
           <span>Sign out</span>
         }

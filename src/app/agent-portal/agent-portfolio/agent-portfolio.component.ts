@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -9,7 +10,7 @@ import { AgentImportSummary, AgentPortfolioFilterOptions, AgentPortfolioTrademar
 @Component({
   selector: 'app-agent-portfolio',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })

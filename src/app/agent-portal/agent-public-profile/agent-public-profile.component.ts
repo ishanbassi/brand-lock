@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -7,7 +8,7 @@ import { AgentPublicProfile } from '../../../models/agent.model';
 @Component({
   selector: 'app-agent-public-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [IconComponent, CommonModule, RouterModule],
   templateUrl: './agent-public-profile.component.html',
   styleUrl: './agent-public-profile.component.scss',
 })

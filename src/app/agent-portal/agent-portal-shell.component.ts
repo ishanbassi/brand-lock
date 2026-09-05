@@ -5,11 +5,12 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../models/auth.services';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
 import { NotificationService } from '../shared/services/notification.service';
+import { IconComponent, IconName } from './ui/icon.component';
 
 /** A single destination. */
 interface NavLeaf {
   label: string;
-  icon: string;
+  icon: IconName;
   route: string;
 }
 
@@ -22,7 +23,7 @@ interface NavLeaf {
  */
 interface NavItem {
   label: string;
-  icon: string;
+  icon: IconName;
   /** Present on leaves only. */
   route?: string;
   /** Present on groups only; stable key for the expanded/collapsed state. */
@@ -33,7 +34,7 @@ interface NavItem {
 @Component({
   selector: 'app-agent-portal-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, NotificationBellComponent],
+  imports: [CommonModule, RouterModule, NotificationBellComponent, IconComponent],
   templateUrl: './agent-portal-shell.component.html',
   styleUrl: './agent-portal-shell.component.scss',
 })
@@ -52,35 +53,37 @@ export class AgentPortalShellComponent {
    * top-level entry of their own when they are not about the portfolio.
    */
   navItems: NavItem[] = [
-    { label: 'Dashboard', icon: '📊', route: '/agent-portal/dashboard' },
+    { label: 'Dashboard', icon: 'dashboard', route: '/agent-portal/dashboard' },
     {
       label: 'My Portfolio',
-      icon: '📂',
+      icon: 'portfolio',
       id: 'portfolio',
       children: [
-        { label: 'All Trademarks', icon: '📋', route: '/agent-portal/portfolio' },
-        { label: 'Find My Marks',  icon: '🔎', route: '/agent-portal/portfolio/claim' },
-        { label: 'Import Excel',   icon: '📤', route: '/agent-portal/portfolio/upload' },
-        { label: 'Add Trademark',  icon: '➕', route: '/agent-portal/portfolio/add' },
+        { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
+        { label: 'Find my marks',  icon: 'search',    route: '/agent-portal/portfolio/claim' },
+        { label: 'Import a list',  icon: 'upload',    route: '/agent-portal/portfolio/upload' },
+        { label: 'Add a mark',     icon: 'plus',      route: '/agent-portal/portfolio/add' },
       ],
     },
     {
       // Time-critical: marks advertised in a journal are open to opposition for four months, and
       // that window closes whether or not anyone checked. It belongs in the nav, not buried.
-      label: 'Trademark Watch',
-      icon: '🛡️',
+      label: 'Trademark watch',
+      icon: 'watch',
       id: 'watch',
       children: [
-        { label: 'Journal Watch',       icon: '📰', route: '/agent-portal/watch/journal' },
+        { label: 'Journal watch',       icon: 'journal', route: '/agent-portal/watch/journal' },
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
-        { label: 'Portfolio Conflicts', icon: '⚔️', route: '/agent-portal/watch/conflicts' },
+        { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts' },
       ],
     },
-    { label: 'Search Report', icon: '📄', route: '/agent-portal/reports/search' },
-    { label: 'Documents',     icon: '📁', route: '/agent-portal/documents' },
-    { label: 'Notifications', icon: '🔔', route: '/agent-portal/notifications' },
-    { label: 'My Profile',    icon: '👤', route: '/agent-portal/profile' },
+    // Deadlines sits directly under the watch group: both answer "what needs me, and when".
+    { label: 'Deadlines',     icon: 'calendar',  route: '/agent-portal/deadlines' },
+    { label: 'Search report', icon: 'search',    route: '/agent-portal/reports/search' },
+    { label: 'Documents',     icon: 'documents', route: '/agent-portal/documents' },
+    { label: 'Notifications', icon: 'bell',      route: '/agent-portal/notifications' },
+    { label: 'My profile',    icon: 'user',      route: '/agent-portal/profile' },
   ];
 
   /** Every destination in the nav, groups flattened away — the input to active-route matching. */

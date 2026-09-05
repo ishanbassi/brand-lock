@@ -74,7 +74,7 @@
     <div class="state">Loading…</div>
   } @else if (items().length === 0) {
     <div class="state empty">
-      <span class="empty-icon" aria-hidden="true">📂</span>
+      <span class="empty-icon" aria-hidden="true"><ap-icon name="documents" [size]="16" /></span>
       @if (hasFilters) {
         <p>No documents match those filters.</p>
         <button type="button" class="clear-btn" (click)="clearFilters()">Clear filters</button>
@@ -133,12 +133,16 @@
                 title="Download"
                 aria-label="Download"
               >
-                {{ downloading() === item.id ? '…' : '⬇' }}
+                @if (downloading() === item.id) {
+                  <span aria-hidden="true">…</span>
+                } @else {
+                  <ap-icon name="download" [size]="15" />
+                }
               </button>
 
               <div class="type-editor">
                 <button type="button" class="icon-btn" (click)="toggleTypeEditor(item, $event)" title="Change type" aria-label="Change type">
-                  ⇄
+                  <ap-icon name="refresh" [size]="16" />
                 </button>
                 @if (editingType() === item.id) {
                   <ul class="type-menu">

@@ -39,7 +39,7 @@
       <div class="state">Loading…</div>
     } @else if (items().length === 0) {
       <div class="state empty">
-        <span class="empty-icon" aria-hidden="true">✓</span>
+        <span class="empty-icon" aria-hidden="true"><ap-icon name="check" [size]="16" /></span>
         <p>
           @if (unreadOnly()) {
             Nothing unread here.

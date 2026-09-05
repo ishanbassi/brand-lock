@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -7,7 +8,7 @@ import { TrademarkConflict, AgentPortfolioTrademark, WatchConflictHistory } from
 @Component({
   selector: 'app-agent-trademark-watch',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [IconComponent, CommonModule, RouterModule],
   templateUrl: './agent-trademark-watch.component.html',
   styleUrl: './agent-trademark-watch.component.scss',
 })

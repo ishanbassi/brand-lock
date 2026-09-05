@@ -1,0 +1,654 @@
+/**
+ * Deadlines.
+ *
+ * Every value comes from the portal tokens; nothing here invents a colour or a spacing step.
+ * The one structural idea is the date rail: the day is the organising fact, so it sits in its own
+ * column and the rows hang off it.
+ */
+
+.deadlines {
+  padding: var(--ap-space-5) var(--ap-space-6) var(--ap-space-7);
+  max-width: 940px;
+}
+
+.page-head {
+  margin-bottom: var(--ap-space-4);
+}
+
+/* ── Summary ───────────────────────────────────────────────────────────── */
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--ap-space-4);
+}
+
+.summary-total {
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+}
+
+/* ── Controls ──────────────────────────────────────────────────────────── */
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--ap-space-5);
+}
+
+/* A segmented control: three related options reading as one thing, which is what they are. */
+.range {
+  display: inline-flex;
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius);
+  overflow: hidden;
+  background: var(--ap-surface);
+}
+
+.range-btn {
+  min-height: var(--ap-target);
+  padding: 0 var(--ap-space-4);
+  border: none;
+  border-right: 1px solid var(--ap-rule);
+  background: transparent;
+  font: inherit;
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-muted);
+  cursor: pointer;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &:hover:not(.selected) {
+    background: var(--ap-paper);
+    color: var(--ap-ink);
+  }
+
+  /* Selection is a real fill, not a tint that disappears on a projector or in print. */
+  &.selected {
+    background: var(--ap-accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-accent);
+    outline-offset: -2px;
+  }
+}
+
+.toggle-done {
+  font-size: var(--ap-text-sm);
+}
+
+/* ── Banner ────────────────────────────────────────────────────────────── */
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
+  border: 1px solid var(--ap-overdue);
+  border-radius: var(--ap-radius);
+  background: var(--ap-overdue-soft);
+  color: var(--ap-overdue);
+  font-size: var(--ap-text-base);
+}
+
+.banner-retry {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0 var(--ap-space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--ap-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── The date rail ─────────────────────────────────────────────────────── */
+
+.days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.day {
+  display: grid;
+  /* Fixed rail so every date lines up down the page and the eye can scan the column. */
+  grid-template-columns: 88px 1fr;
+  gap: var(--ap-space-4);
+  padding-bottom: var(--ap-space-5);
+}
+
+.day-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  padding-top: var(--ap-space-3);
+  border-right: 1px solid var(--ap-rule);
+  padding-right: var(--ap-space-3);
+  position: sticky;
+  top: var(--ap-space-4);
+  align-self: start;
+}
+
+.day-num {
+  font-size: var(--ap-text-md);
+  font-weight: 500;
+  color: var(--ap-ink);
+  letter-spacing: -0.02em;
+}
+
+.day-weekday {
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.day-relative {
+  margin-top: var(--ap-space-1);
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-muted);
+}
+
+/* Today is the one day marked, and it is marked on the rail rather than by tinting every row. */
+.day.is-today {
+  .day-rail {
+    border-right-color: var(--ap-accent);
+  }
+
+  .day-num,
+  .day-relative {
+    color: var(--ap-accent);
+    font-weight: 600;
+  }
+}
+
+.day.is-past {
+  .day-num,
+  .day-weekday,
+  .day-relative {
+    color: var(--ap-ink-faint);
+  }
+}
+
+/* ── Rows ──────────────────────────────────────────────────────────────── */
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-surface);
+  border: 1px solid var(--ap-rule);
+  border-radius: var(--ap-radius);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ap-rule-strong);
+  }
+}
+
+/* A hearing is a record of something listed, not a task. It reads quieter so it cannot be
+   mistaken for something still actionable. */
+.row.is-record {
+  background: var(--ap-paper);
+}
+
+.row.is-done {
+  .row-mark,
+  .row-type {
+    text-decoration: line-through;
+    color: var(--ap-ink-faint);
+  }
+}
+
+.row-main {
+  min-width: 0;
+}
+
+.row-top {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+}
+
+.row-type {
+  font-size: var(--ap-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ap-ink-muted);
+}
+
+.row-mark {
+  display: block;
+  margin-top: var(--ap-space-1);
+  font-size: var(--ap-text-md);
+  font-weight: 550;
+  color: var(--ap-ink);
+  line-height: 1.3;
+}
+
+.row-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+  margin-top: var(--ap-space-1);
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-muted);
+}
+
+.meta-sep {
+  color: var(--ap-rule-strong);
+}
+
+.row-note {
+  color: var(--ap-ink-faint);
+}
+
+.row-actions {
+  flex-shrink: 0;
+}
+
+.row-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  min-height: 34px;
+  padding: 0 var(--ap-space-3);
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius-sm);
+  background: var(--ap-surface);
+  font: inherit;
+  font-size: var(--ap-text-sm);
+  font-weight: 550;
+  color: var(--ap-ink);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--ap-ink-muted);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-accent);
+    outline-offset: 2px;
+  }
+}
+
+.row-btn--primary {
+  border-color: var(--ap-accent);
+  color: var(--ap-accent);
+
+  &:hover:not(:disabled) {
+    background: var(--ap-accent-soft);
+  }
+}
+
+/* ── Loading ───────────────────────────────────────────────────────────── */
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-5);
+}
+
+.skeleton-day {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--ap-space-4);
+}
+
+.skeleton-rail {
+  height: 44px;
+  border-right: 1px solid var(--ap-rule);
+}
+
+.skeleton-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.skeleton-row {
+  height: 64px;
+  border-radius: var(--ap-radius);
+  background: linear-gradient(90deg, #f1efec 25%, #f7f5f2 50%, #f1efec 75%);
+  background-size: 200% 100%;
+  animation: ap-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ap-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row {
+    animation: none;
+  }
+}
+
+/* ── Small screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 700px) {
+  .deadlines {
+    padding: var(--ap-space-4) var(--ap-space-4) var(--ap-space-6);
+  }
+
+  /* The rail becomes a header above its rows; a 88px column beside content is unreadable here. */
+  .day,
+  .skeleton-day {
+    grid-template-columns: 1fr;
+    gap: var(--ap-space-2);
+  }
+
+  .day-rail {
+    position: static;
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--ap-space-2);
+    text-align: left;
+    border-right: none;
+    border-bottom: 1px solid var(--ap-rule);
+    padding: 0 0 var(--ap-space-2);
+  }
+
+  .day-relative {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: var(--ap-space-3);
+  }
+
+  .row-actions {
+    align-self: stretch;
+  }
+
+  .row-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Month view ────────────────────────────────────────────────────────────
+   A plain CSS grid rather than a calendar library. Nothing installed does event
+   calendars - ng-bootstrap's datepicker is a picker, with selection semantics and
+   cell sizing built for choosing a date rather than showing what falls on one.
+   Seven columns and a leading offset is the whole of it, and it inherits the
+   tokens for free. */
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+}
+
+.month-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ap-target);
+  height: var(--ap-target);
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius);
+  background: var(--ap-surface);
+  color: var(--ap-ink);
+  cursor: pointer;
+
+  &:hover { border-color: var(--ap-ink-muted); }
+  &:focus-visible { outline: 2px solid var(--ap-accent); outline-offset: 2px; }
+
+  ap-icon.flip { transform: scaleX(-1); }
+}
+
+.month-label {
+  min-width: 11ch;
+  text-align: center;
+  font-size: var(--ap-text-md);
+  font-weight: 600;
+  color: var(--ap-ink);
+}
+
+.month-today {
+  min-height: var(--ap-target);
+  padding: 0 var(--ap-space-3);
+  margin-left: var(--ap-space-1);
+  border: 1px solid var(--ap-rule-strong);
+  border-radius: var(--ap-radius);
+  background: var(--ap-surface);
+  font: inherit;
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink);
+  cursor: pointer;
+
+  &:hover { border-color: var(--ap-ink-muted); }
+}
+
+/* ── Legend ─────────────────────────────────────────────────────────────── */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-3);
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+/* ── Markers ────────────────────────────────────────────────────────────────
+   Colour AND shape, never colour alone: a filled square is a renewal, a ring is
+   a hearing. That distinction survives greyscale printing and colour blindness,
+   which a palette-only scheme does not. */
+
+.marker {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+}
+
+/* Renewals: solid squares. A due obligation with a hard edge. */
+.marker--renewal {
+  background: var(--ap-accent);
+  border-radius: 2px;
+}
+
+.marker--renewal-overdue {
+  background: var(--ap-overdue);
+  border-radius: 2px;
+}
+
+.marker--done {
+  background: var(--ap-done);
+  border-radius: 2px;
+  opacity: 0.55;
+}
+
+/* Hearings: rings. Something that happens to you rather than something you file. */
+.marker--hearing-today {
+  border-radius: 50%;
+  background: var(--ap-due);
+  box-shadow: 0 0 0 2px var(--ap-due-soft);
+}
+
+.marker--hearing-upcoming {
+  border-radius: 50%;
+  border: 1.5px solid var(--ap-due);
+  background: transparent;
+}
+
+/* Held: hollow and grey. A record, not a task. */
+.marker--hearing-past {
+  border-radius: 50%;
+  border: 1.5px solid var(--ap-ink-faint);
+  background: transparent;
+}
+
+/* ── Grid ───────────────────────────────────────────────────────────────── */
+
+.month {
+  border: 1px solid var(--ap-rule);
+  border-radius: var(--ap-radius);
+  overflow: hidden;
+  background: var(--ap-surface);
+}
+
+.month-head,
+.month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.month-head {
+  border-bottom: 1px solid var(--ap-rule);
+  background: var(--ap-paper);
+}
+
+.month-head-cell {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: var(--ap-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ap-ink-faint);
+}
+
+.cell {
+  min-height: 92px;
+  padding: var(--ap-space-2);
+  border-right: 1px solid var(--ap-rule);
+  border-bottom: 1px solid var(--ap-rule);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  cursor: default;
+
+  &:nth-child(7n) { border-right: none; }
+  &:nth-last-child(-n + 7) { border-bottom: none; }
+
+  &.has-items {
+    cursor: pointer;
+
+    &:hover { background: var(--ap-paper); }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-accent);
+    outline-offset: -2px;
+  }
+}
+
+/* Days outside the month stay visible but recede - removing them entirely breaks
+   the week rhythm and makes the first row hard to read. */
+.cell.out-of-month {
+  background: var(--ap-paper);
+
+  .cell-date { color: var(--ap-ink-faint); }
+}
+
+.cell.is-today .cell-date {
+  background: var(--ap-accent);
+  color: #fff;
+  border-radius: var(--ap-radius-sm);
+  padding: 1px 5px;
+}
+
+.cell.is-selected {
+  background: var(--ap-accent-soft);
+  box-shadow: inset 0 0 0 2px var(--ap-accent);
+}
+
+.cell-date {
+  font-size: var(--ap-text-sm);
+  color: var(--ap-ink-muted);
+  align-self: flex-start;
+}
+
+.cell-markers {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.cell-more {
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+}
+
+/* ── Selected day ───────────────────────────────────────────────────────── */
+
+.day-detail {
+  margin-top: var(--ap-space-5);
+}
+
+.day-detail-head {
+  margin: 0 0 var(--ap-space-3);
+  font-size: var(--ap-text-md);
+  font-weight: 600;
+  color: var(--ap-ink);
+}
+
+@media (max-width: 700px) {
+  /* A seven-column grid on a phone gives 45px cells. The list view is the better
+     answer at this width, so the grid scrolls rather than crushing. */
+  .month {
+    overflow-x: auto;
+  }
+
+  .month-head,
+  .month-body {
+    min-width: 560px;
+  }
+}

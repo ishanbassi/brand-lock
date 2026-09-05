@@ -63,6 +63,11 @@ export const agentPortalRoutes: Routes = [
     title: 'Search Report | Agent Portal',
   },
   {
+    path: 'deadlines',
+    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    title: 'Deadlines | Agent Portal',
+  },
+  {
     path: 'documents',
     loadComponent: () => import('./agent-documents/agent-documents.component').then(m => m.AgentDocumentsComponent),
     title: 'Documents | Agent Portal',

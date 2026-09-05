@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -9,7 +10,7 @@ type UploadPhase = 'select' | 'preview' | 'importing' | 'done' | 'error' | 'hand
 @Component({
   selector: 'app-agent-portfolio-upload',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [IconComponent, CommonModule, RouterModule],
   templateUrl: './agent-portfolio-upload.component.html',
   styleUrl: './agent-portfolio-upload.component.scss',
 })

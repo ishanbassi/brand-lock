@@ -1,11 +1,11 @@
-$accent: #6366f1;
-$border: #e2e8f0;
-$muted: #64748b;
-$warn: #d97706;
-$danger: #b91c1c;
+$accent: var(--ap-accent);
+$border: var(--ap-rule);
+$muted: var(--ap-ink-muted);
+$warn: var(--ap-due);
+$danger: var(--ap-overdue);
 
 .documents-page {
-  padding: 1.5rem 1.75rem 3rem;
+  padding: var(--ap-space-5) var(--ap-space-5) var(--ap-space-7);
   max-width: 1050px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
@@ -14,20 +14,20 @@ $danger: #b91c1c;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: var(--ap-space-5);
   flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
 
   h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--ap-ink);
   }
 }
 
 .subtitle {
-  margin: 0.25rem 0 0;
+  margin: var(--ap-space-1) 0 0;
   font-size: 0.85rem;
   color: $muted;
   max-width: 460px;
@@ -42,13 +42,13 @@ $danger: #b91c1c;
 .storage-label {
   font-size: 0.78rem;
   color: $muted;
-  margin-bottom: 0.35rem;
+  margin-bottom: var(--ap-space-1);
 }
 
 .storage-bar {
   height: 6px;
   border-radius: 3px;
-  background: #e2e8f0;
+  background: var(--ap-rule);
   overflow: hidden;
 
   span {
@@ -68,7 +68,7 @@ $danger: #b91c1c;
 }
 
 .storage-note {
-  margin-top: 0.35rem;
+  margin-top: var(--ap-space-1);
   font-size: 0.74rem;
   color: $warn;
 }
@@ -80,9 +80,9 @@ $danger: #b91c1c;
 // ── Filters ──────────────────────────────────────────────
 .filters {
   display: flex;
-  gap: 0.6rem;
+  gap: var(--ap-space-2);
   flex-wrap: wrap;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .search {
@@ -90,7 +90,7 @@ $danger: #b91c1c;
   min-width: 240px;
   border: 1px solid $border;
   border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  padding: var(--ap-space-2) var(--ap-space-3);
   font-size: 0.85rem;
   font-family: inherit;
 
@@ -103,20 +103,20 @@ $danger: #b91c1c;
 .client-select {
   border: 1px solid $border;
   border-radius: 8px;
-  padding: 0.5rem 0.6rem;
+  padding: var(--ap-space-2) var(--ap-space-2);
   font-size: 0.83rem;
   font-family: inherit;
-  background: #fff;
-  color: #334155;
+  background: var(--ap-surface);
+  color: var(--ap-ink);
 }
 
 .clear-btn {
-  background: #fff;
+  background: var(--ap-surface);
   border: 1px solid $border;
   border-radius: 8px;
-  padding: 0.45rem 0.8rem;
+  padding: var(--ap-space-2) var(--ap-space-3);
   font-size: 0.8rem;
-  color: #334155;
+  color: var(--ap-ink);
   cursor: pointer;
 
   &:hover:not(:disabled) {
@@ -132,21 +132,21 @@ $danger: #b91c1c;
 
 .chips {
   display: flex;
-  gap: 0.4rem;
+  gap: var(--ap-space-2);
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  background: #fff;
+  gap: var(--ap-space-1);
+  background: var(--ap-surface);
   border: 1px solid $border;
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
+  padding: var(--ap-space-1) var(--ap-space-3);
   font-size: 0.78rem;
-  color: #334155;
+  color: var(--ap-ink);
   cursor: pointer;
 
   &:hover {
@@ -166,14 +166,14 @@ $danger: #b91c1c;
 }
 
 .result-count {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--ap-space-2);
   font-size: 0.78rem;
   color: $muted;
 }
 
 // ── List ─────────────────────────────────────────────────
 .state {
-  padding: 3rem 1rem;
+  padding: var(--ap-space-7) var(--ap-space-4);
   text-align: center;
   color: $muted;
   font-size: 0.9rem;
@@ -181,11 +181,11 @@ $danger: #b91c1c;
   &.empty .empty-icon {
     display: block;
     font-size: 1.9rem;
-    margin-bottom: 0.6rem;
+    margin-bottom: var(--ap-space-2);
   }
 
   p {
-    margin: 0 auto 0.9rem;
+    margin: 0 auto var(--ap-space-4);
     max-width: 420px;
     line-height: 1.55;
   }
@@ -198,20 +198,20 @@ $danger: #b91c1c;
   border: 1px solid $border;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background: var(--ap-surface);
 }
 
 .doc {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border-bottom: 1px solid var(--ap-paper);
   cursor: pointer;
 
   &:hover {
-    background: #f8fafc;
+    background: var(--ap-paper);
   }
 
   &:last-child {
@@ -227,14 +227,14 @@ $danger: #b91c1c;
 .doc-top {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   flex-wrap: wrap;
 }
 
 .doc-name {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--ap-ink);
   word-break: break-word;
 }
 
@@ -244,7 +244,7 @@ $danger: #b91c1c;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: $accent;
-  background: #eef2ff;
+  background: var(--ap-accent-soft);
   border-radius: 999px;
   padding: 2px 8px;
 }
@@ -252,30 +252,30 @@ $danger: #b91c1c;
 .doc-meta {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--ap-space-1);
   flex-wrap: wrap;
-  margin-top: 0.2rem;
+  margin-top: var(--ap-space-1);
   font-size: 0.78rem;
   color: $muted;
 }
 
 .doc-mark {
   font-weight: 600;
-  color: #334155;
+  color: var(--ap-ink);
 }
 
 .doc-client {
-  background: #f1f5f9;
+  background: var(--ap-paper);
   border-radius: 4px;
   padding: 1px 6px;
 }
 
 .dot {
-  color: #cbd5e1;
+  color: var(--ap-rule-strong);
 }
 
 .doc-notes {
-  margin: 0.3rem 0 0;
+  margin: var(--ap-space-1) 0 0;
   font-size: 0.78rem;
   color: $muted;
   line-height: 1.45;
@@ -285,26 +285,26 @@ $danger: #b91c1c;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.2rem;
+  gap: var(--ap-space-1);
   flex-shrink: 0;
 }
 
 .doc-date {
   font-size: 0.74rem;
-  color: #94a3b8;
+  color: var(--ap-ink-faint);
   white-space: nowrap;
 }
 
 .doc-size {
   font-size: 0.7rem;
-  color: #cbd5e1;
+  color: var(--ap-rule-strong);
 }
 
 .doc-actions {
   display: flex;
   align-items: center;
-  gap: 0.15rem;
-  margin-top: 0.25rem;
+  gap: var(--ap-space-1);
+  margin-top: var(--ap-space-1);
 }
 
 .icon-btn {
@@ -319,12 +319,12 @@ $danger: #b91c1c;
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background: #eef2ff;
+    background: var(--ap-accent-soft);
     color: $accent;
   }
 
   &.danger:hover {
-    background: #fee2e2;
+    background: var(--ap-overdue-soft);
     color: $danger;
   }
 
@@ -346,9 +346,9 @@ $danger: #b91c1c;
   z-index: 20;
   list-style: none;
   margin: 0;
-  padding: 0.25rem;
+  padding: var(--ap-space-1);
   min-width: 190px;
-  background: #fff;
+  background: var(--ap-surface);
   border: 1px solid $border;
   border-radius: 10px;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
@@ -362,13 +362,13 @@ $danger: #b91c1c;
     background: none;
     border: none;
     border-radius: 6px;
-    padding: 0.38rem 0.55rem;
+    padding: var(--ap-space-2) var(--ap-space-2);
     font-size: 0.79rem;
-    color: #334155;
+    color: var(--ap-ink);
     cursor: pointer;
 
     &:hover {
-      background: #f1f5f9;
+      background: var(--ap-paper);
     }
 
     &.selected {
@@ -382,8 +382,8 @@ $danger: #b91c1c;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-4);
 }
 
 .pager-label {
@@ -393,7 +393,7 @@ $danger: #b91c1c;
 
 @media (max-width: 640px) {
   .documents-page {
-    padding: 1rem 1rem 2.5rem;
+    padding: var(--ap-space-4) var(--ap-space-4) var(--ap-space-6);
   }
 
   .doc {
@@ -403,7 +403,7 @@ $danger: #b91c1c;
   .doc-side {
     align-items: flex-start;
     flex-direction: row;
-    gap: 0.6rem;
+    gap: var(--ap-space-2);
     align-self: stretch;
     justify-content: space-between;
   }

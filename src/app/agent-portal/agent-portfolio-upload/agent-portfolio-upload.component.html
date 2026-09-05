@@ -20,7 +20,7 @@
         (drop)="onDrop($event)"
         (click)="fileInput.click()"
       >
-        <div class="drop-icon">📂</div>
+        <div class="drop-icon"><ap-icon name="documents" [size]="16" /></div>
         <p class="drop-title">Drag & drop your Excel file here</p>
         <p class="drop-sub">or click to browse • supports .xlsx and .xls</p>
         <input #fileInput type="file" accept=".xlsx,.xls" class="hidden-input" (change)="onFileSelected($event)" />
@@ -67,7 +67,7 @@
           }
         </div>
         <p class="retention-note">
-          🔒 We keep a copy of your file so our team can help if the import misses anything.
+          <ap-icon name="lock" [size]="16" /> We keep a copy of your file so our team can help if the import misses anything.
           It is private to your account and never shared.
         </p>
       </div>
@@ -82,7 +82,7 @@
       <!-- FILE INFO -->
       <div class="file-info-bar">
         <div class="file-info-left">
-          <span class="file-icon">📄</span>
+          <span class="file-icon"><ap-icon name="documents" [size]="16" /></span>
           <div>
             <div class="file-name">{{ selectedFile()?.name }}</div>
             <div class="file-size">{{ fileSizeLabel(selectedFile()?.size ?? 0) }}</div>
@@ -204,7 +204,7 @@
   <!-- PHASE: DONE -->
   @if (phase() === 'done') {
     <div class="done-card">
-      <div class="done-icon">✅</div>
+      <div class="done-icon"><ap-icon name="check" [size]="16" /></div>
       <h2 class="done-title">Import Complete!</h2>
       <p class="done-sub">{{ importResult()!.imported }} trademark{{ (importResult()!.imported ?? 1) !== 1 ? 's' : '' }} added to your portfolio.</p>
 

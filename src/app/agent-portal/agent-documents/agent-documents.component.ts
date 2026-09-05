@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -19,7 +20,7 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 @Component({
   selector: 'app-agent-documents',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [IconComponent, CommonModule, FormsModule],
   templateUrl: './agent-documents.component.html',
   styleUrl: './agent-documents.component.scss',
 })

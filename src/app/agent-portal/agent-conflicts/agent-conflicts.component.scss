@@ -1,21 +1,21 @@
-$accent: #6366f1;
-$warning: #f59e0b;
-$danger: #ef4444;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$accent: var(--ap-accent);
+$warning: var(--ap-due);
+$danger: var(--ap-overdue);
+$gray-100: var(--ap-paper);
+$gray-200: var(--ap-rule);
+$gray-400: var(--ap-ink-faint);
+$gray-600: var(--ap-ink-muted);
+$gray-800: var(--ap-ink);
 $white: #ffffff;
 
 * { box-sizing: border-box; }
 
 .conflicts-page {
-  padding: 2rem;
+  padding: var(--ap-space-6);
   max-width: 1100px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 
-  @media (max-width: 768px) { padding: 1.25rem; }
+  @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
 
 .back-link {
@@ -24,19 +24,19 @@ $white: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
   transition: color 0.15s;
 
   &:hover { color: $accent; }
 }
 
-.conflicts-header { margin-bottom: 1.5rem; }
+.conflicts-header { margin-bottom: var(--ap-space-5); }
 
 .page-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: $gray-400;
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--ap-space-2);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -51,15 +51,15 @@ $white: #ffffff;
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-5);
 }
 
 .chip {
   background: $white;
   border: 1.5px solid $gray-200;
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
+  padding: var(--ap-space-2) var(--ap-space-4);
   font-size: 0.8125rem;
   font-weight: 500;
   color: $gray-600;
@@ -93,7 +93,7 @@ $white: #ffffff;
 
   th {
     text-align: left;
-    padding: 0.75rem 1rem;
+    padding: var(--ap-space-3) var(--ap-space-4);
     background: $gray-100;
     color: $gray-600;
     font-weight: 600;
@@ -104,7 +104,7 @@ $white: #ffffff;
   }
 
   td {
-    padding: 0.75rem 1rem;
+    padding: var(--ap-space-3) var(--ap-space-4);
     border-top: 1px solid $gray-200;
     color: $gray-800;
     vertical-align: middle;
@@ -115,28 +115,28 @@ $white: #ffffff;
 
   .num { font-variant-numeric: tabular-nums; font-weight: 600; }
   .muted { color: $gray-400; white-space: nowrap; }
-  .muted-sub { color: $gray-400; font-size: 0.75rem; margin-top: 0.15rem; }
+  .muted-sub { color: $gray-400; font-size: 0.75rem; margin-top: var(--ap-space-1); }
 }
 
 .risk-badge {
   display: inline-block;
-  padding: 0.2rem 0.55rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 6px;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.04em;
 
-  &.badge-risk-high { background: rgba($danger, 0.12); color: $danger; }
-  &.badge-risk-medium { background: rgba($warning, 0.15); color: #92400e; }
+  &.badge-risk-high { background: var(--ap-overdue-soft); color: $danger; }
+  &.badge-risk-medium { background: var(--ap-due-soft); color: var(--ap-due); }
   &.badge-risk-low { background: $gray-100; color: $gray-600; }
 }
 
 // ── STATES ────────────────────────────────────────────────
 .loading-state {
   text-align: center;
-  padding: 5rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
 
-  p { color: $gray-400; margin: 1.25rem 0 0; font-size: 0.875rem; }
+  p { color: $gray-400; margin: var(--ap-space-4) 0 0; font-size: 0.875rem; }
 }
 
 .spinner {
@@ -152,21 +152,21 @@ $white: #ffffff;
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .alert-error {
-  background: rgba($danger, 0.08);
-  border: 1px solid rgba($danger, 0.2);
+  background: var(--ap-overdue-soft);
+  border: 1px solid var(--ap-overdue-soft);
   color: $danger;
-  padding: 1rem 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
   border-radius: 10px;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
   font-size: 0.875rem;
 }
 
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
   border: 1px dashed $gray-200;
   border-radius: 12px;
 
-  h2 { font-size: 1rem; color: $gray-800; margin: 0 0 0.5rem; }
+  h2 { font-size: 1rem; color: $gray-800; margin: 0 0 var(--ap-space-2); }
   p { color: $gray-400; font-size: 0.875rem; margin: 0; }
 }

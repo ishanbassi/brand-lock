@@ -1,12 +1,14 @@
-$sidebar-width: 240px;
-$sidebar-collapsed-width: 64px;
-$sidebar-bg: #0f172a;
-$sidebar-hover: rgba(255, 255, 255, 0.06);
-$sidebar-active: #6366f1;
-$sidebar-active-bg: rgba(99, 102, 241, 0.15);
-$text-muted: rgba(255, 255, 255, 0.45);
-$text-main: rgba(255, 255, 255, 0.85);
-$content-bg: #f8fafc;
+// Every value here resolves to a portal token; see src/styles/agent-portal.scss. The sidebar
+// previously carried its own indigo (#6366f1) and slate, which is the palette every generated
+// interface ships with and which nothing else in the product used.
+$sidebar-width: 244px;
+$sidebar-collapsed-width: 68px;
+$sidebar-bg: var(--ap-shell);
+$sidebar-hover: var(--ap-shell-hover);
+$sidebar-active-bg: rgba(255, 255, 255, 0.1);
+$text-muted: var(--ap-shell-muted);
+$text-main: var(--ap-shell-text);
+$content-bg: var(--ap-paper);
 
 * { box-sizing: border-box; }
 
@@ -48,7 +50,7 @@ $content-bg: #f8fafc;
   font-weight: 800;
   white-space: nowrap;
 
-  .brand-tm { color: #818cf8; }
+  .brand-tm { color: #fff; }
   .brand-arx { color: #ffffff; }
 }
 
@@ -78,19 +80,20 @@ $content-bg: #f8fafc;
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
+  gap: var(--ap-space-3);
+  // 40px minimum: the target floor for anything clickable in the portal.
+  min-height: var(--ap-target);
+  padding: var(--ap-space-2) var(--ap-space-3);
   text-decoration: none;
   color: $text-muted;
-  font-size: 0.875rem;
+  font-size: var(--ap-text-base);
   font-weight: 500;
   white-space: nowrap;
-  border-radius: 0;
-  transition: color 0.15s, background 0.15s;
-  margin: 0 0.5rem;
-  border-radius: 8px;
+  transition: color 0.12s, background 0.12s;
+  margin: 1px var(--ap-space-2);
+  border-radius: var(--ap-radius);
 
-  .nav-icon { font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center; }
+  .nav-icon { flex-shrink: 0; width: 22px; display: inline-flex; justify-content: center; }
 
   &:hover {
     background: $sidebar-hover;
@@ -99,7 +102,7 @@ $content-bg: #f8fafc;
 
   &.active {
     background: $sidebar-active-bg;
-    color: #818cf8;
+    color: var(--ap-shell-text);
     font-weight: 600;
 
     .nav-icon { filter: none; }
@@ -122,11 +125,13 @@ $content-bg: #f8fafc;
 }
 
 .nav-caret {
-  font-size: 0.7rem;
-  line-height: 1;
+  margin-left: auto;
+  line-height: 0;
+  opacity: 0.6;
   transition: transform 0.18s ease;
   flex-shrink: 0;
 
+  // Points right when closed, down when open - the disclosure convention users already know.
   &.open { transform: rotate(90deg); }
 }
 
@@ -146,7 +151,7 @@ $content-bg: #f8fafc;
   padding: 0.5rem 0.75rem;
   font-size: 0.82rem;
 
-  .nav-icon { font-size: 0.95rem; width: 18px; }
+  .nav-icon { width: 22px; opacity: 0.85; }
 }
 
 .sidebar-footer {
@@ -169,7 +174,7 @@ $content-bg: #f8fafc;
 .agent-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -216,7 +221,7 @@ $content-bg: #f8fafc;
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 
-  .nav-icon { width: 24px; text-align: center; flex-shrink: 0; }
+  .nav-icon { width: 22px; display: inline-flex; justify-content: center; flex-shrink: 0; }
 
   &:hover {
     background: rgba(239, 68, 68, 0.1);
@@ -271,4 +276,27 @@ $content-bg: #f8fafc;
 
   .main-content { overflow-x: hidden; }
   .content-scroll { overflow-x: hidden; }
+}
+
+
+// ── Icon behaviour ─────────────────────────────────────────────────────────
+// The collapse control shows one chevron and mirrors it, so the affordance is a
+// single consistent shape rather than two different arrow characters.
+.collapse-btn ap-icon.flip {
+  transform: scaleX(-1);
+}
+
+.collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .nav-caret {
+    transition: none;
+  }
 }

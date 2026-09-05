@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -8,7 +9,7 @@ import { AgentPortfolioTrademark } from '../../../models/agent.model';
 @Component({
   selector: 'app-agent-portfolio-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio-form.component.html',
   styleUrl: './agent-portfolio-form.component.scss',
 })

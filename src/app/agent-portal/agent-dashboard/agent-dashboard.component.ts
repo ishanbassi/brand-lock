@@ -1,4 +1,5 @@
 import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -16,7 +17,7 @@ import { AuthService } from '../../../models/auth.services';
  */
 const BUCKET_COLORS: Record<AgentStatusCount['key'], string> = {
   REGISTERED: '#10b981',
-  UNDER_EXAMINATION_OR_ADVERTISED: '#6366f1',
+  UNDER_EXAMINATION_OR_ADVERTISED: '#24405C',
   OBJECTED_OR_OPPOSED: '#f59e0b',
   ABANDONED_WITHDRAWN_REJECTED: '#ef4444',
   OTHER_UNKNOWN: '#94a3b8',
@@ -33,7 +34,7 @@ const BUCKET_ICONS: Record<AgentStatusCount['key'], string> = {
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, BaseChartDirective],
+  imports: [IconComponent, CommonModule, RouterModule, BaseChartDirective],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './agent-dashboard.component.html',
   styleUrl: './agent-dashboard.component.scss',

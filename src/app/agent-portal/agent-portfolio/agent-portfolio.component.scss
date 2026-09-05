@@ -1,24 +1,24 @@
-$accent: #6366f1;
-$accent-light: #818cf8;
-$success: #10b981;
-$warning: #f59e0b;
-$danger: #ef4444;
-$gray-50: #f8fafc;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$accent: var(--ap-accent);
+$accent-light: var(--ap-accent);
+$success: var(--ap-done);
+$warning: var(--ap-due);
+$danger: var(--ap-overdue);
+$gray-50: var(--ap-paper);
+$gray-100: var(--ap-paper);
+$gray-200: var(--ap-rule);
+$gray-400: var(--ap-ink-faint);
+$gray-600: var(--ap-ink-muted);
+$gray-800: var(--ap-ink);
 $white: #ffffff;
 
 * { box-sizing: border-box; }
 
 .portfolio-page {
-  padding: 2rem;
+  padding: var(--ap-space-6);
   max-width: 1400px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 
-  @media (max-width: 768px) { padding: 1.25rem; }
+  @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
 
 // ── PAGE HEADER ─────────────────────────────────────────
@@ -26,8 +26,8 @@ $white: #ffffff;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 1.75rem;
-  gap: 1rem;
+  margin-bottom: var(--ap-space-5);
+  gap: var(--ap-space-4);
   flex-wrap: wrap;
 }
 
@@ -35,7 +35,7 @@ $white: #ffffff;
   font-size: 1.75rem;
   font-weight: 700;
   color: $gray-800;
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--ap-space-1);
 }
 
 .page-sub {
@@ -47,15 +47,15 @@ $white: #ffffff;
 
 .header-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   flex-wrap: wrap;
 }
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.25rem;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
   background: linear-gradient(135deg, $accent, $accent-light);
   color: white;
   border: none;
@@ -68,7 +68,7 @@ $white: #ffffff;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($accent, 0.35);
+    box-shadow: 0 4px 12px var(--ap-accent-soft);
     color: white;
     text-decoration: none;
   }
@@ -77,8 +77,8 @@ $white: #ffffff;
 .btn-outline {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.25rem;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
   background: $white;
   color: $gray-600;
   border: 1.5px solid $gray-200;
@@ -99,8 +99,8 @@ $white: #ffffff;
 .btn-ghost {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1rem;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
   background: none;
   color: $gray-600;
   border: none;
@@ -116,9 +116,9 @@ $white: #ffffff;
 // ── FILTERS BAR ─────────────────────────────────────────
 .filters-bar {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
   align-items: center;
 }
 
@@ -139,7 +139,7 @@ $white: #ffffff;
 
 .search-input {
   width: 100%;
-  padding: 0.6rem 2.25rem 0.6rem 2.25rem;
+  padding: var(--ap-space-2) var(--ap-space-6) var(--ap-space-2) var(--ap-space-6);
   border: 1.5px solid $gray-200;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -150,7 +150,7 @@ $white: #ffffff;
 
   &:focus {
     border-color: $accent;
-    box-shadow: 0 0 0 3px rgba($accent, 0.1);
+    box-shadow: 0 0 0 3px var(--ap-accent-soft);
   }
 
   &::placeholder { color: $gray-400; }
@@ -173,7 +173,7 @@ $white: #ffffff;
 }
 
 .filter-select {
-  padding: 0.6rem 0.9rem;
+  padding: var(--ap-space-2) var(--ap-space-4);
   border: 1.5px solid $gray-200;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -190,7 +190,7 @@ $white: #ffffff;
 .table-skeleton {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
 }
 
 .skeleton-row {
@@ -212,7 +212,7 @@ $white: #ffffff;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .tm-table {
@@ -226,7 +226,7 @@ $white: #ffffff;
   }
 
   th {
-    padding: 0.8rem 1rem;
+    padding: var(--ap-space-3) var(--ap-space-4);
     text-align: left;
     font-size: 0.75rem;
     font-weight: 600;
@@ -241,12 +241,12 @@ $white: #ffffff;
     transition: background 0.1s;
 
     &:last-child { border-bottom: none; }
-    &:hover { background: rgba($accent, 0.03); }
+    &:hover { background: var(--ap-accent-soft); }
     &.deleting { opacity: 0.5; pointer-events: none; }
   }
 
   td {
-    padding: 0.85rem 1rem;
+    padding: var(--ap-space-3) var(--ap-space-4);
     color: $gray-800;
     vertical-align: middle;
   }
@@ -266,8 +266,8 @@ $white: #ffffff;
 .tm-type-tag {
   display: inline-block;
   margin-top: 3px;
-  padding: 0.1rem 0.45rem;
-  background: rgba($accent, 0.08);
+  padding: var(--ap-space-1) var(--ap-space-2);
+  background: var(--ap-accent-soft);
   color: $accent;
   border-radius: 4px;
   font-size: 0.68rem;
@@ -288,7 +288,7 @@ $white: #ffffff;
   justify-content: center;
   width: 32px;
   height: 24px;
-  background: rgba($accent, 0.08);
+  background: var(--ap-accent-soft);
   color: $accent;
   border-radius: 6px;
   font-size: 0.78rem;
@@ -306,14 +306,14 @@ $white: #ffffff;
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.65rem;
+  padding: var(--ap-space-1) var(--ap-space-3);
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
 
-  &.status--active   { background: rgba($success, 0.12); color: darken($success, 12%); }
-  &.status--warning  { background: rgba($warning, 0.12); color: darken($warning, 20%); }
+  &.status--active   { background: var(--ap-done-soft); color: var(--ap-done); }
+  &.status--warning  { background: var(--ap-due-soft); color: var(--ap-due); }
   &.status--inactive { background: $gray-100;            color: $gray-400; }
   &.status--pending  { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
   &.status--unknown  { background: $gray-100;            color: $gray-400; }
@@ -337,7 +337,7 @@ $white: #ffffff;
 .action-btns {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--ap-space-1);
 }
 
 .action-btn {
@@ -354,9 +354,9 @@ $white: #ffffff;
   text-decoration: none;
   transition: background 0.15s, border-color 0.15s;
 
-  &.watch-btn:hover { background: rgba($accent, 0.1); border-color: rgba($accent, 0.25); }
-  &.edit-btn:hover  { background: rgba($success, 0.1); border-color: rgba($success, 0.25); }
-  &.delete-btn:hover { background: rgba($danger, 0.1); border-color: rgba($danger, 0.25); }
+  &.watch-btn:hover { background: var(--ap-accent-soft); border-color: var(--ap-accent-soft); }
+  &.edit-btn:hover  { background: var(--ap-done-soft); border-color: var(--ap-done-soft); }
+  &.delete-btn:hover { background: var(--ap-overdue-soft); border-color: var(--ap-overdue-soft); }
 
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
@@ -364,14 +364,14 @@ $white: #ffffff;
 .confirm-delete-wrap {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--ap-space-1);
   white-space: nowrap;
 }
 
 .confirm-text { font-size: 0.78rem; color: $danger; font-weight: 600; }
 
 .btn-danger-xs {
-  padding: 0.25rem 0.55rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   background: $danger;
   color: white;
   border: none;
@@ -385,7 +385,7 @@ $white: #ffffff;
 }
 
 .btn-ghost-xs {
-  padding: 0.25rem 0.55rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   background: $gray-100;
   color: $gray-600;
   border: none;
@@ -402,8 +402,8 @@ $white: #ffffff;
 .pagination {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-top: 1.25rem;
+  gap: var(--ap-space-1);
+  margin-top: var(--ap-space-4);
   flex-wrap: wrap;
 }
 
@@ -440,7 +440,7 @@ $white: #ffffff;
 }
 
 .page-info {
-  margin-left: 0.5rem;
+  margin-left: var(--ap-space-2);
   font-size: 0.8rem;
   color: $gray-400;
   font-weight: 500;
@@ -449,32 +449,32 @@ $white: #ffffff;
 // ── EMPTY STATE ─────────────────────────────────────────
 .empty-state {
   text-align: center;
-  padding: 5rem 2rem;
+  padding: var(--ap-space-7) var(--ap-space-6);
   background: $white;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
-  .empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+  .empty-icon { font-size: 3rem; display: block; margin-bottom: var(--ap-space-4); }
 
-  h3 { font-size: 1.2rem; font-weight: 700; color: $gray-800; margin: 0 0 0.5rem; }
-  p  { color: $gray-400; margin: 0 0 1.5rem; font-size: 0.9rem; }
+  h3 { font-size: 1.2rem; font-weight: 700; color: $gray-800; margin: 0 0 var(--ap-space-2); }
+  p  { color: $gray-400; margin: 0 0 var(--ap-space-5); font-size: 0.9rem; }
 }
 
 .empty-actions {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   flex-wrap: wrap;
 }
 
 // ── ALERT ─────────────────────────────────────────
 .alert-error {
-  background: rgba($danger, 0.08);
-  border: 1px solid rgba($danger, 0.2);
+  background: var(--ap-overdue-soft);
+  border: 1px solid var(--ap-overdue-soft);
   color: $danger;
-  padding: 1rem 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
   border-radius: 10px;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--ap-space-5);
   font-size: 0.875rem;
 }
 
@@ -497,33 +497,33 @@ $white: #ffffff;
 // ── PENDING IMPORT BANNER ───────────────────────────────
 .alert-pending {
   display: flex;
-  gap: 0.875rem;
+  gap: var(--ap-space-3);
   align-items: flex-start;
   background: #fff7ed;
   border: 1px solid #fed7aa;
   border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.25rem;
+  padding: var(--ap-space-4) var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
 
   strong {
     display: block;
     color: #9a3412;
     font-size: 0.9375rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--ap-space-1);
   }
 }
 
 .pending-icon { font-size: 1.125rem; line-height: 1.4; }
 
 .pending-file {
-  margin: 0.125rem 0;
+  margin: var(--ap-space-1) 0;
   color: #9a3412;
   font-size: 0.875rem;
 }
 
 .pending-note {
-  margin: 0.5rem 0 0;
-  color: #b45309;
+  margin: var(--ap-space-2) 0 0;
+  color: var(--ap-due);
   font-size: 0.8125rem;
 }
 
@@ -532,14 +532,14 @@ $white: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
-  background: #eef2ff;
+  gap: var(--ap-space-4);
+  background: var(--ap-accent-soft);
   border: 1px solid #c7d2fe;
   color: #3730a3;
   border-radius: 10px;
-  padding: 0.75rem 1rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   font-size: 0.875rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .alert-dismiss {
@@ -569,14 +569,14 @@ $white: #ffffff;
 // One clear way into a mark, replacing the old inline action cluster.
 .view-details-btn {
   display: inline-block;
-  padding: 0.3125rem 0.75rem;
-  border: 1px solid #e2e8f0;
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: 1px solid var(--ap-rule);
   border-radius: 8px;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--ap-ink-muted);
   text-decoration: none;
   white-space: nowrap;
 
-  &:hover { border-color: #6366f1; color: #6366f1; }
+  &:hover { border-color: var(--ap-accent); color: var(--ap-accent); }
 }

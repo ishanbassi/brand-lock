@@ -32,7 +32,7 @@
         </div>
       </div>
       <a [routerLink]="['/agent-portal/portfolio', id, 'edit']" class="btn-outline">
-        ✏️ Edit Trademark
+        <ap-icon name="edit" [size]="16" />Edit Trademark
       </a>
     </div>
 
@@ -64,7 +64,7 @@
     @if (conflictHistory().length > 0) {
       <div class="history-section">
         <button class="history-toggle" (click)="toggleHistory()">
-          🕐 {{ showHistory() ? 'Hide' : 'Show' }} Check History ({{ conflictHistory().length }} past results)
+          <ap-icon name="clock" [size]="16" /> {{ showHistory() ? 'Hide' : 'Show' }} Check History ({{ conflictHistory().length }} past results)
         </button>
         @if (showHistory()) {
           <div class="history-list">
@@ -89,7 +89,7 @@
     <!-- RESULTS LIST -->
     @if (conflicts().length === 0) {
       <div class="empty-watch">
-        <div class="empty-icon">✅</div>
+        <div class="empty-icon"><ap-icon name="check" [size]="16" /></div>
         <h3>No similar trademarks found</h3>
         <p>Your trademark appears to be unique in our database. No conflicting marks detected.</p>
       </div>

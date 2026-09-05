@@ -1,11 +1,11 @@
-$urgent: #b91c1c;
-$action: #d97706;
-$accent: #6366f1;
-$border: #e2e8f0;
-$muted: #64748b;
+$urgent: var(--ap-overdue);
+$action: var(--ap-due);
+$accent: var(--ap-accent);
+$border: var(--ap-rule);
+$muted: var(--ap-ink-muted);
 
 .notifications-page {
-  padding: 1.5rem 1.75rem 3rem;
+  padding: var(--ap-space-5) var(--ap-space-5) var(--ap-space-7);
   max-width: 900px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
@@ -14,37 +14,37 @@ $muted: #64748b;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--ap-space-4);
   flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
 
   h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--ap-ink);
   }
 }
 
 .subtitle {
-  margin: 0.15rem 0 0;
+  margin: var(--ap-space-1) 0 0;
   font-size: 0.85rem;
   color: $muted;
 }
 
 .head-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   flex-wrap: wrap;
 }
 
 .ghost-btn {
-  background: #fff;
+  background: var(--ap-surface);
   border: 1px solid $border;
   border-radius: 8px;
-  padding: 0.42rem 0.8rem;
+  padding: var(--ap-space-2) var(--ap-space-3);
   font-size: 0.8rem;
-  color: #334155;
+  color: var(--ap-ink);
   cursor: pointer;
 
   &:hover:not(:disabled) {
@@ -55,7 +55,7 @@ $muted: #64748b;
   &.on {
     border-color: $accent;
     color: $accent;
-    background: #f5f6ff;
+    background: var(--ap-accent-soft);
   }
 
   &:disabled {
@@ -66,23 +66,23 @@ $muted: #64748b;
 
 .tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--ap-space-1);
   flex-wrap: wrap;
   border-bottom: 1px solid $border;
-  margin-bottom: 1rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .tab {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  padding: 0.5rem 0.75rem;
+  padding: var(--ap-space-2) var(--ap-space-3);
   font-size: 0.83rem;
   color: $muted;
   cursor: pointer;
 
   &:hover {
-    color: #0f172a;
+    color: var(--ap-ink);
   }
 
   &.active {
@@ -93,7 +93,7 @@ $muted: #64748b;
 }
 
 .state {
-  padding: 3rem 1rem;
+  padding: var(--ap-space-7) var(--ap-space-4);
   text-align: center;
   color: $muted;
   font-size: 0.9rem;
@@ -101,8 +101,8 @@ $muted: #64748b;
   &.empty .empty-icon {
     display: block;
     font-size: 1.75rem;
-    color: #22c55e;
-    margin-bottom: 0.5rem;
+    color: var(--ap-done);
+    margin-bottom: var(--ap-space-2);
   }
 
   p {
@@ -120,25 +120,25 @@ $muted: #64748b;
   border: 1px solid $border;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background: var(--ap-surface);
 }
 
 .row {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   align-items: flex-start;
   justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border-bottom: 1px solid var(--ap-paper);
   border-left: 3px solid transparent;
   cursor: pointer;
 
   &:hover {
-    background: #f8fafc;
+    background: var(--ap-paper);
   }
 
   &.unread {
-    background: #f5f7ff;
+    background: var(--ap-accent-soft);
   }
 
   &.urgent {
@@ -161,14 +161,14 @@ $muted: #64748b;
 .row-top {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   flex-wrap: wrap;
 }
 
 .row-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--ap-ink);
 }
 
 .chip {
@@ -181,17 +181,17 @@ $muted: #64748b;
 }
 
 .chip-urgent {
-  background: #fee2e2;
+  background: var(--ap-overdue-soft);
   color: $urgent;
 }
 
 .chip-action {
-  background: #fef3c7;
+  background: var(--ap-due-soft);
   color: $action;
 }
 
 .row-body {
-  margin: 0.25rem 0 0;
+  margin: var(--ap-space-1) 0 0;
   font-size: 0.82rem;
   color: $muted;
   line-height: 1.5;
@@ -200,20 +200,20 @@ $muted: #64748b;
 .row-side {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   flex-shrink: 0;
 }
 
 .row-time {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--ap-ink-faint);
   white-space: nowrap;
 }
 
 .dismiss {
   background: none;
   border: none;
-  color: #cbd5e1;
+  color: var(--ap-rule-strong);
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -228,8 +228,8 @@ $muted: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-4);
 }
 
 .pager-label {
@@ -247,27 +247,27 @@ $muted: #64748b;
 }
 
 .settings-note {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
+  margin-top: var(--ap-space-4);
+  padding-top: var(--ap-space-4);
   border-top: 1px solid $border;
 }
 
 .pref-grid {
-  margin-top: 1.25rem;
+  margin-top: var(--ap-space-4);
   border: 1px solid $border;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background: var(--ap-surface);
 }
 
 .pref-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--ap-space-4);
   flex-wrap: wrap;
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: var(--ap-space-4) var(--ap-space-4);
+  border-bottom: 1px solid var(--ap-paper);
 
   &:last-child {
     border-bottom: none;
@@ -284,7 +284,7 @@ $muted: #64748b;
 .pref-name {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--ap-ink);
 }
 
 .pref-hint {
@@ -307,12 +307,12 @@ $muted: #64748b;
 }
 
 .mode-btn {
-  background: #fff;
+  background: var(--ap-surface);
   border: none;
   border-right: 1px solid $border;
-  padding: 0.4rem 0.7rem;
+  padding: var(--ap-space-2) var(--ap-space-3);
   font-size: 0.76rem;
-  color: #475569;
+  color: var(--ap-ink-muted);
   cursor: pointer;
   white-space: nowrap;
 
@@ -321,7 +321,7 @@ $muted: #64748b;
   }
 
   &:hover:not(:disabled):not(.selected) {
-    background: #f8fafc;
+    background: var(--ap-paper);
   }
 
   &.selected {
@@ -338,7 +338,7 @@ $muted: #64748b;
 
 @media (max-width: 600px) {
   .notifications-page {
-    padding: 1rem 1rem 2.5rem;
+    padding: var(--ap-space-4) var(--ap-space-4) var(--ap-space-6);
   }
 
   .pref-row {

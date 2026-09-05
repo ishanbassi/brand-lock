@@ -1,24 +1,24 @@
-$accent: #6366f1;
-$accent-light: #818cf8;
-$success: #10b981;
-$danger: #ef4444;
-$gray-50: #f8fafc;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$accent: var(--ap-accent);
+$accent-light: var(--ap-accent);
+$success: var(--ap-done);
+$danger: var(--ap-overdue);
+$gray-50: var(--ap-paper);
+$gray-100: var(--ap-paper);
+$gray-200: var(--ap-rule);
+$gray-400: var(--ap-ink-faint);
+$gray-600: var(--ap-ink-muted);
+$gray-800: var(--ap-ink);
 $white: #ffffff;
 
 * { box-sizing: border-box; }
 
 .claim-page {
-  padding: 2rem;
+  padding: var(--ap-space-6);
   max-width: 1100px;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   color: $gray-800;
 
-  @media (max-width: 768px) { padding: 1.25rem; }
+  @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
 
 // ── HEADER ──────────────────────────────────────────────
@@ -26,14 +26,14 @@ $white: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.5rem;
-  margin-bottom: 1.75rem;
+  gap: var(--ap-space-5);
+  margin-bottom: var(--ap-space-5);
   flex-wrap: wrap;
 
   h1 {
     font-size: 1.625rem;
     font-weight: 700;
-    margin: 0 0 0.375rem;
+    margin: 0 0 var(--ap-space-1);
   }
 
   .subtitle {
@@ -56,20 +56,20 @@ $white: #ffffff;
 }
 
 .alert-error {
-  background: rgba($danger, 0.08);
-  border: 1px solid rgba($danger, 0.25);
-  color: darken($danger, 12%);
+  background: var(--ap-overdue-soft);
+  border: 1px solid var(--ap-overdue-soft);
+  color: var(--ap-overdue);
   border-radius: 10px;
-  padding: 0.75rem 1rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   font-size: 0.875rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--ap-space-4);
 }
 
 .card {
   background: $white;
   border: 1px solid $gray-200;
   border-radius: 14px;
-  padding: 1.5rem;
+  padding: var(--ap-space-5);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
@@ -77,15 +77,15 @@ $white: #ffffff;
 .search-field {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
   border: 1.5px solid $gray-200;
   border-radius: 12px;
-  padding: 0.875rem 1rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:focus-within {
     border-color: $accent;
-    box-shadow: 0 0 0 3px rgba($accent, 0.12);
+    box-shadow: 0 0 0 3px var(--ap-accent-soft);
   }
 }
 
@@ -117,7 +117,7 @@ $white: #ffffff;
 .hint {
   color: $gray-400;
   font-size: 0.8125rem;
-  margin: 0.625rem 0 0;
+  margin: var(--ap-space-2) 0 0;
   line-height: 1.5;
 
   a { color: $accent; }
@@ -125,7 +125,7 @@ $white: #ffffff;
 
 .agent-list {
   list-style: none;
-  margin: 1.25rem 0 0;
+  margin: var(--ap-space-4) 0 0;
   padding: 0;
   border-top: 1px solid $gray-100;
 }
@@ -135,8 +135,8 @@ $white: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 0.875rem 0.5rem;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-2);
   background: none;
   border: none;
   border-bottom: 1px solid $gray-100;
@@ -157,7 +157,7 @@ $white: #ffffff;
 .agent-meta {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: var(--ap-space-3);
   flex-shrink: 0;
 }
 
@@ -165,25 +165,25 @@ $white: #ffffff;
   font-size: 0.8125rem;
   color: $gray-600;
   background: $gray-100;
-  padding: 0.1875rem 0.5rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 999px;
 }
 
 .chev { color: $gray-400; font-size: 1.25rem; line-height: 1; }
 
 .empty {
-  padding: 1.5rem 0 0.5rem;
+  padding: var(--ap-space-5) 0 var(--ap-space-2);
   text-align: center;
 
-  p { margin: 0 0 0.5rem; color: $gray-600; }
+  p { margin: 0 0 var(--ap-space-2); color: $gray-600; }
 }
 
 // ── BROWSE ──────────────────────────────────────────────
 .browse-header {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
 }
 
 .btn-back {
@@ -193,7 +193,7 @@ $white: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 0.25rem 0;
+  padding: var(--ap-space-1) 0;
   font-family: inherit;
   white-space: nowrap;
 
@@ -203,24 +203,24 @@ $white: #ffffff;
 .browse-title h2 {
   font-size: 1.125rem;
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--ap-space-1);
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: var(--ap-space-3) 0;
   border-top: 1px solid $gray-100;
   border-bottom: 1px solid $gray-100;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--ap-space-3);
 }
 
 .select-all {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--ap-space-2);
   font-size: 0.875rem;
   color: $gray-600;
   cursor: pointer;
@@ -233,7 +233,7 @@ $white: #ffffff;
 }
 
 .loading {
-  padding: 2.5rem;
+  padding: var(--ap-space-6);
   text-align: center;
   color: $gray-400;
   font-size: 0.9375rem;
@@ -257,13 +257,13 @@ $white: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: $gray-400;
-    padding: 0.75rem 0.5rem;
+    padding: var(--ap-space-3) var(--ap-space-2);
     border-bottom: 1px solid $gray-200;
     white-space: nowrap;
   }
 
   td {
-    padding: 0.6875rem 0.5rem;
+    padding: var(--ap-space-3) var(--ap-space-2);
     border-bottom: 1px solid $gray-100;
     color: $gray-600;
   }
@@ -273,7 +273,7 @@ $white: #ffffff;
     transition: background 0.1s ease;
 
     &:hover { background: $gray-50; }
-    &.selected { background: rgba($accent, 0.06); }
+    &.selected { background: var(--ap-accent-soft); }
   }
 }
 
@@ -307,8 +307,8 @@ $white: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 1rem 0 0;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-4) 0 0;
   font-size: 0.875rem;
   color: $gray-600;
 
@@ -316,7 +316,7 @@ $white: #ffffff;
     background: $white;
     border: 1px solid $gray-200;
     border-radius: 8px;
-    padding: 0.375rem 0.875rem;
+    padding: var(--ap-space-1) var(--ap-space-3);
     font-size: 0.8125rem;
     font-family: inherit;
     cursor: pointer;
@@ -330,9 +330,9 @@ $white: #ffffff;
 // ── ACTIONS ─────────────────────────────────────────────
 .actions {
   display: flex;
-  gap: 0.75rem;
-  padding-top: 1.25rem;
-  margin-top: 1rem;
+  gap: var(--ap-space-3);
+  padding-top: var(--ap-space-4);
+  margin-top: var(--ap-space-4);
   border-top: 1px solid $gray-100;
   flex-wrap: wrap;
 }
@@ -340,7 +340,7 @@ $white: #ffffff;
 .btn-primary,
 .btn-secondary {
   border-radius: 10px;
-  padding: 0.6875rem 1.25rem;
+  padding: var(--ap-space-3) var(--ap-space-4);
   font-size: 0.9375rem;
   font-weight: 600;
   font-family: inherit;
@@ -369,12 +369,12 @@ $white: #ffffff;
 // ── DONE ────────────────────────────────────────────────
 .done {
   text-align: center;
-  padding: 2.5rem 1.5rem;
+  padding: var(--ap-space-6) var(--ap-space-5);
 
   h2 {
     font-size: 1.375rem;
     font-weight: 700;
-    margin: 0 0 1rem;
+    margin: 0 0 var(--ap-space-4);
   }
 
   .actions { justify-content: center; border-top: none; }
@@ -383,9 +383,9 @@ $white: #ffffff;
 .done-icon {
   width: 52px;
   height: 52px;
-  margin: 0 auto 1rem;
+  margin: 0 auto var(--ap-space-4);
   border-radius: 50%;
-  background: rgba($success, 0.12);
+  background: var(--ap-done-soft);
   color: $success;
   font-size: 1.5rem;
   display: flex;
@@ -396,11 +396,11 @@ $white: #ffffff;
 .result-detail {
   list-style: none;
   padding: 0;
-  margin: 0 0 1rem;
+  margin: 0 0 var(--ap-space-4);
   color: $gray-600;
   font-size: 0.9375rem;
 
-  li { margin-bottom: 0.25rem; }
+  li { margin-bottom: var(--ap-space-1); }
 }
 
 .variants-hint {

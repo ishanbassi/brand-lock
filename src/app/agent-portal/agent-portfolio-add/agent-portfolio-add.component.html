@@ -60,7 +60,9 @@
       <ul class="result-list">
         @for (r of results(); track $index) {
           <li class="result-row" [class.is-fetching]="r.state !== 'ADDED'">
-            <span class="result-icon" aria-hidden="true">{{ r.state === 'ADDED' ? '✓' : '⏳' }}</span>
+            <span class="result-icon" aria-hidden="true">
+              <ap-icon [name]="r.state === 'ADDED' ? 'check' : 'clock'" [size]="16" />
+            </span>
             <div class="result-body">
               <strong>{{ r.name || 'Requested from the register' }}</strong>
               <span class="result-msg">{{ r.message }}</span>

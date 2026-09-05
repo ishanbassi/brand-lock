@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
+import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -20,7 +21,7 @@ import {
 @Component({
   selector: 'app-agent-trademark-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-trademark-detail.component.html',
   styleUrl: './agent-trademark-detail.component.scss',
 })
