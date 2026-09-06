@@ -226,17 +226,28 @@ export class AgentDataService {
 
   // ── Reports ────────────────────────────────────────────────────────────
 
-  previewSearchReport(query: string, tmClass?: number | null): Observable<SearchReport> {
-    let params = new HttpParams().set('q', query);
-    if (tmClass != null) params = params.set('tmClass', String(tmClass));
-    return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, { params });
+  previewSearchReport(query: string, tmClasses?: number[] | null): Observable<SearchReport> {
+    return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, {
+      params: this.searchReportParams(query, tmClasses),
+    });
   }
 
-  downloadSearchReport(query: string, tmClass?: number | null, clientName?: string | null): Observable<Blob> {
-    let params = new HttpParams().set('q', query);
-    if (tmClass != null) params = params.set('tmClass', String(tmClass));
+  downloadSearchReport(query: string, tmClasses?: number[] | null, clientName?: string | null): Observable<Blob> {
+    let params = this.searchReportParams(query, tmClasses);
     if (clientName) params = params.set('clientName', clientName);
     return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, { params, responseType: 'blob' });
+  }
+
+  /**
+   * Repeated `tmClasses` params, which is what Spring binds to a List<Integer>. No param at all
+   * means every class — an empty one would bind to a list containing a blank and fail.
+   */
+  private searchReportParams(query: string, tmClasses?: number[] | null): HttpParams {
+    let params = new HttpParams().set('q', query);
+    for (const c of tmClasses ?? []) {
+      params = params.append('tmClasses', String(c));
+    }
+    return params;
   }
 
   downloadWatchReport(journalNo: number): Observable<Blob> {

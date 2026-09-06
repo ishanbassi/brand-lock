@@ -273,18 +273,16 @@ export interface SearchReportRow {
   type?: string;
   score: number;
   riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
-  /** True when the mark sits in the class being applied for — often the deciding fact. */
-  sameClass: boolean;
   hasArtwork: boolean;
 }
 
 export interface SearchReport {
   query: string;
-  tmClass?: number;
+  /** Classes the search was confined to, ascending. Empty means every class was searched. */
+  tmClasses: number[];
   generatedOn: string;
   totalResults: number;
   countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
-  sameClassCount: number;
   rows: SearchReportRow[];
 }
 

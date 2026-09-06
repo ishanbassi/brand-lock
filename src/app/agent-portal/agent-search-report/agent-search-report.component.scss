@@ -71,6 +71,137 @@ $low: var(--ap-done);
   }
 }
 
+// ── Class multi-select ───────────────────────────────────
+.class-picker {
+  position: relative;
+  min-width: 180px;
+}
+
+.class-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: 0.87rem;
+  font-family: inherit;
+  background: var(--ap-surface);
+  color: var(--ap-ink);
+  cursor: pointer;
+  text-align: left;
+
+  &.active {
+    border-color: $accent;
+    color: $accent;
+    font-weight: 600;
+  }
+
+  .caret {
+    font-size: 0.7rem;
+    color: $muted;
+  }
+}
+
+.class-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  width: 320px;
+  max-width: 78vw;
+  padding: var(--ap-space-3);
+  background: var(--ap-surface);
+  border: 1px solid $border;
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgb(0 0 0 / 14%);
+}
+
+.class-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ap-space-2);
+  font-size: 0.74rem;
+  color: $muted;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: $accent;
+  cursor: pointer;
+
+  &:disabled {
+    color: $muted;
+    cursor: default;
+  }
+}
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: var(--ap-space-1);
+  max-height: 230px;
+  overflow-y: auto;
+  margin-bottom: var(--ap-space-3);
+}
+
+.class-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: var(--ap-space-1) 0;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ap-ink);
+
+  // The tick itself is redundant next to the filled state, and 45 checkboxes is visual noise.
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  &.picked {
+    background: var(--ap-accent-soft);
+    border-color: $accent;
+    color: $accent;
+    font-weight: 700;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid $accent;
+    outline-offset: 1px;
+  }
+}
+
+.btn-secondary {
+  width: 100%;
+  background: var(--ap-paper);
+  color: var(--ap-ink);
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: var(--ap-space-2);
+  font-size: 0.83rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
 .btn-primary {
   background: $accent;
   color: #fff;
@@ -193,11 +324,6 @@ $low: var(--ap-done);
   tr:last-child td {
     border-bottom: none;
   }
-
-  // The class actually being filed in is the fact that decides whether a row matters.
-  tr.same-class {
-    background: var(--ap-accent-soft);
-  }
 }
 
 .cell-name {
@@ -207,11 +333,6 @@ $low: var(--ap-done);
 
 .cell-prop {
   max-width: 220px;
-}
-
-.dot-same {
-  color: $accent;
-  font-size: 0.7rem;
 }
 
 .chip {

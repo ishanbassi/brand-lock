@@ -12,14 +12,41 @@
       <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
     </div>
 
-    <div class="field">
-      <label for="tmClass">Class</label>
-      <select id="tmClass" [(ngModel)]="tmClass" name="tmClass">
-        <option [ngValue]="null">All classes</option>
-        @for (c of classes; track c) {
-          <option [ngValue]="c">Class {{ c }}</option>
-        }
-      </select>
+    <!-- Multi-select rather than a <select multiple>: one mark is often filed in several classes,
+         and a native multi-select hides that ctrl-click is required to pick more than one. -->
+    <div class="field class-picker">
+      <label id="classLabel">Classes</label>
+      <button
+        type="button"
+        class="class-trigger"
+        [class.active]="selectedClasses().length > 0"
+        (click)="toggleClassPicker()"
+        aria-labelledby="classLabel"
+        [attr.aria-expanded]="classPickerOpen()"
+      >
+        <span>{{ classSummary() }}</span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+
+      @if (classPickerOpen()) {
+        <div class="class-panel" role="group" aria-labelledby="classLabel">
+          <div class="class-panel-head">
+            <span>{{ selectedClasses().length || 'No' }} selected</span>
+            <button type="button" class="link-btn" (click)="clearClasses()" [disabled]="selectedClasses().length === 0">
+              All classes
+            </button>
+          </div>
+          <div class="class-grid">
+            @for (c of classes; track c) {
+              <label class="class-option" [class.picked]="isClassSelected(c)">
+                <input type="checkbox" [checked]="isClassSelected(c)" (change)="toggleClass(c)" />
+                <span>{{ c }}</span>
+              </label>
+            }
+          </div>
+          <button type="button" class="btn-secondary" (click)="toggleClassPicker()">Done</button>
+        </div>
+      }
     </div>
 
     <div class="field">
@@ -50,8 +77,8 @@
           <span class="band high">{{ countFor('HIGH') }} close</span>
           <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
           <span class="band low">{{ countFor('LOW') }} distant</span>
-          @if (r.tmClass) {
-            <span class="band same">{{ r.sameClassCount }} in class {{ r.tmClass }}</span>
+          @if (r.tmClasses.length) {
+            <span class="band same">{{ classSentence(r.tmClasses) }} only</span>
           }
         </div>
 
@@ -62,7 +89,11 @@
 
       @if (r.rows.length === 0) {
         <div class="state empty">
-          <p>No similar marks were found for “{{ r.query }}”.</p>
+          @if (r.tmClasses.length) {
+            <p>No similar marks were found for “{{ r.query }}” in {{ classSentence(r.tmClasses) }}.</p>
+          } @else {
+            <p>No similar marks were found for “{{ r.query }}”.</p>
+          }
         </div>
       } @else {
         <div class="table-scroll">
@@ -80,15 +111,10 @@
             </thead>
             <tbody>
               @for (row of r.rows; track row.trademarkId) {
-                <tr [class.same-class]="row.sameClass">
+                <tr>
                   <td class="cell-name">{{ row.name }}</td>
                   <td>{{ row.applicationNo || '—' }}</td>
-                  <td>
-                    {{ row.tmClass || '—' }}
-                    @if (row.sameClass) {
-                      <span class="dot-same" title="Same class as the one being filed">●</span>
-                    }
-                  </td>
+                  <td>{{ row.tmClass || '—' }}</td>
                   <td class="cell-prop">{{ row.proprietorName || '—' }}</td>
                   <td>{{ statusLabel(row) }}</td>
                   <td>{{ formatDate(row.applicationDate) }}</td>
@@ -103,8 +129,8 @@
           </table>
         </div>
 
-        @if (r.tmClass) {
-          <p class="footnote">● marks an application in class {{ r.tmClass }}, the class searched.</p>
+        @if (r.tmClasses.length) {
+          <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p>
         }
       }
     </section>
