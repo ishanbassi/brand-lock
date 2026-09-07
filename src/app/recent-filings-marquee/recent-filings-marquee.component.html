@@ -1,0 +1,38 @@
+<section class="filings-section" *ngIf="visible">
+  <div class="container">
+    <div class="section-header">
+      <h2>Our Recent Filings</h2>
+      <p>Real marks we have filed with the Trade Marks Registry — pulled live from the registry record, not a stock logo wall.</p>
+    </div>
+  </div>
+
+  <!-- Two identical runs slide by exactly one run width, so the loop restarts on a frame that
+       matches the one before it. Duplicated in the template so the strip is populated under SSR. -->
+  <div class="filings-marquee">
+    <div class="marquee-track" [ngStyle]="{ '--marquee-duration': marqueeDuration }">
+
+      <div class="marquee-run" *ngFor="let run of marqueeRuns; let isClone = index"
+           [attr.aria-hidden]="isClone ? 'true' : null">
+
+        <a class="filing-tile" *ngFor="let f of filings"
+           [routerLink]="f.url"
+           [class.is-missing]="isMissing(f)"
+           [attr.tabindex]="isClone ? -1 : null">
+          <span class="tile-logo">
+            <img [src]="logoUrl(f)" [alt]="logoAlt(f)" loading="lazy" width="140" height="90"
+                 (error)="onLogoError(f)">
+          </span>
+          <span class="tile-caption">{{ caption(f) }}</span>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <p class="filings-note">
+      10,000+ trademark filings and counting. <a routerLink="/trademark">Start yours from ₹1,999</a>.
+    </p>
+  </div>
+</section>

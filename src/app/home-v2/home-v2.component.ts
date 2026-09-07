@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
+import { RecentFilingsMarqueeComponent } from '../recent-filings-marquee/recent-filings-marquee.component';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Blog } from '../../models/blog.model';
@@ -21,7 +22,7 @@ const HOME_URL = 'https://trademarx.in/';
 
 @Component({
   selector: 'app-home-v2',
-  imports: [RatingReviewComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent, SkeletonComponent],
+  imports: [RatingReviewComponent, RecentFilingsMarqueeComponent, SharedModule, CountUpDirective, LeadFormComponent, LiveSearchComponent, FaqComponent, MobileBottomNavbarComponent, SkeletonComponent],
   templateUrl: './home-v2.component.html',
   styleUrl: './home-v2.component.scss'
 })
@@ -207,11 +208,11 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
   ngOnInit(): void {
     this.blogService.getLatestBlogs(3).subscribe(res => this.blogs = this.convertDateFromServer(res));
     this.title.setTitle('Trademark Registration Online Portal | Trademarx');
-    this.meta.updateTag({ name: 'description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 500+ businesses across India.' });
+    this.meta.updateTag({ name: 'description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 10,000+ businesses across India.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark registration, iso certification, msme registration, import export code, business registration services, trademark registration india, iso certification india, online business services' });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });
     this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration Online Portal | Trademarx' });
-    this.meta.updateTag({ property: 'og:description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 500+ businesses across India.' });
+    this.meta.updateTag({ property: 'og:description', content: 'Search 30L+ trademarks instantly. File your application online in 10 minutes. Govt-approved. Used by 10,000+ businesses across India.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: HOME_URL });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });

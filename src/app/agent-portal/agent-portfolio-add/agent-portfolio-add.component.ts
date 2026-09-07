@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentAddByNumberResult } from '../../../models/agent.model';
 
@@ -37,7 +37,17 @@ export class AgentPortfolioAddComponent {
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly router: Router,
-  ) {}
+    private readonly route: ActivatedRoute,
+  ) {
+    // Prefilled, not auto-submitted. The HEARING_UNCLAIMED notification links straight here with the
+    // number the Registry printed, and making the agent copy it back out of the alert they were just
+    // reading is the kind of friction that leaves the prompt unactioned. Submitting for them would
+    // be a write they never asked for.
+    const prefill = this.route.snapshot.queryParamMap.get('applicationNo');
+    if (prefill) {
+      this.applicationNo = prefill.replace(/[^0-9]/g, '');
+    }
+  }
 
   get canSubmit(): boolean {
     return this.applicationNo.replace(/[^0-9]/g, '').length > 0 && !this.submitting();

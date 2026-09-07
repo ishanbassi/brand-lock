@@ -41,7 +41,7 @@ export class TrademarkCityPageComponent implements OnInit, OnDestroy {
     this.registryOffice = getRegistryOffice(data.state);
     this.otherCities = Object.values(CITY_DATA).filter(c => c.slug !== slug);
     const pageTitle = `Trademark Registration in ${data.name}, ${data.state} — ₹1,999 + Govt. Fees | Trademarx`;
-    const desc = `Register your trademark in ${data.name} from ₹1,999. IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.`;
+    const desc = `Register your trademark in ${data.name} from ₹1,999. IP India authorised agents. Free trademark search, 10,000+ marks filed, 98% success rate. 100% online process.`;
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: desc });

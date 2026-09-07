@@ -154,10 +154,10 @@ export class TrademarkPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.checkScrollPosition();
 
     this.title.setTitle('Trademark Registration in India — ₹1,999 + Govt. Fees | Trademarx');
-    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,999. Expert filing by IP India authorised agents. Free trademark search, 5,000+ marks filed, 98% success rate. 100% online process.' });
+    this.meta.updateTag({ name: 'description', content: 'Register your trademark in India from ₹1,999. Expert filing by IP India authorised agents. Free trademark search, 10,000+ marks filed, 98% success rate. 100% online process.' });
     this.meta.updateTag({ name: 'keywords', content: 'trademark registration india, trademark registration, trademark filing india, ip india trademark, online trademark registration, trademarx' });
     this.meta.updateTag({ property: 'og:title', content: 'Trademark Registration in India — ₹1,999 + Govt. Fees | Trademarx' });
-    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark in India from ₹1,999 with IP India authorised agents. Free search report, 5,000+ marks filed.' });
+    this.meta.updateTag({ property: 'og:description', content: 'Register your trademark in India from ₹1,999 with IP India authorised agents. Free search report, 10,000+ marks filed.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/trademark' });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });

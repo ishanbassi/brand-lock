@@ -11,18 +11,27 @@
     </div>
 
     @if (watches().length > 0) {
-      <!-- Two counts, because they answer different questions: how much am I watching, and what is
-           new. Set in the data face so they read as figures rather than labels. -->
-      <dl class="head-stats">
-        <div class="head-stat">
-          <dt>Firms watched</dt>
-          <dd class="ap-num">{{ watches().length }}</dd>
-        </div>
-        <div class="head-stat" [class.head-stat--live]="unseenCount() > 0">
-          <dt>New filings</dt>
-          <dd class="ap-num">{{ unseenCount() }}</dd>
-        </div>
-      </dl>
+      <div class="page-head__side">
+        <!-- Two counts, because they answer different questions: how much am I watching, and what is
+             new. Set in the data face so they read as figures rather than labels. -->
+        <dl class="head-stats">
+          <div class="head-stat">
+            <dt>Firms watched</dt>
+            <dd class="ap-num">{{ watches().length }}</dd>
+          </div>
+          <div class="head-stat" [class.head-stat--live]="unseenCount() > 0">
+            <dt>New filings</dt>
+            <dd class="ap-num">{{ unseenCount() }}</dd>
+          </div>
+        </dl>
+
+        <!-- The one way firms get on this page, so it is the one primary button on it. -->
+        @if (!showAdder()) {
+          <button type="button" class="ap-btn ap-btn--primary" (click)="openAdd()">
+            <ap-icon name="plus" [size]="16" /> Add a firm
+          </button>
+        }
+      </div>
     }
   </header>
 
@@ -30,117 +39,29 @@
     <p class="notice notice--error" role="alert">{{ error() }}</p>
   }
 
-  <div class="layout">
+  @if (loading()) {
+    <div class="ap-panel ap-empty">Loading your competitors…</div>
+  } @else {
 
-    <!-- ── The feed ───────────────────────────────────────────────────── -->
-    <section class="feed" aria-label="Competitor filings">
+    <!-- ── Add a firm ──────────────────────────────────────────────────────
+         Centred and alone in the column: it is the only way this page ever fills, so nothing
+         competes with it while it is open. -->
+    @if (showAdder()) {
+      <section class="adder ap-panel" aria-label="Add a firm to watch">
 
-      @if (loading()) {
-        <div class="ap-panel ap-empty">Loading your competitors…</div>
-      } @else if (watches().length === 0) {
-        <!-- The first thing an agent sees on this page. It says what the feature does and points at
-             the one control that starts it, rather than apologising for being empty. -->
-        <div class="ap-panel ap-empty first-run">
-          <h2 class="first-run__title">Start watching a firm</h2>
-          <p>
+        <div class="adder__intro">
+          <h2 class="adder__title">Start watching a firm</h2>
+          <p class="adder__lede">
             Search for a firm by the name it files under. From then on, every new application on the
             register under that name lands here — usually within a day of being filed.
           </p>
-          <p class="first-run__note">
-            Nothing they filed before today is reported. The watch starts when you add it.
-          </p>
-        </div>
-      } @else if (visibleFilings().length === 0) {
-        <div class="ap-panel ap-empty">
-          @if (filterWatchId() !== null) {
-            <p>Nothing filed under this name since you started watching it.</p>
-            <button type="button" class="ap-btn ap-btn--quiet" (click)="filterBy(null)">Show all firms</button>
-          } @else {
-            <p>No filings yet. The register is checked every morning; anything new appears here.</p>
-          }
-        </div>
-      } @else {
-
-        @if (filterWatchId() !== null) {
-          <div class="filter-bar">
-            <span>Showing one firm</span>
-            <button type="button" class="link-btn" (click)="filterBy(null)">
-              <ap-icon name="close" [size]="14" /> Clear filter
-            </button>
-          </div>
-        }
-
-        @for (day of days(); track day.key) {
-          <section class="day">
-            <!-- The date rail, matching the deadlines screen: the day is the organising fact, and
-                 the rows hang off it. -->
-            <div class="day__rail">
-              <span class="day__label">{{ day.label }}</span>
-              <span class="day__count ap-num">{{ day.items.length }}</span>
-            </div>
-
-            <div class="day__rows ap-panel">
-              @for (filing of day.items; track filing.id) {
-                <article class="filing" [class.filing--new]="!filing.seen">
-                  <div class="filing__main">
-                    <div class="filing__name-row">
-                      @if (!filing.seen) {
-                        <span class="new-dot" aria-label="Not yet read"></span>
-                      }
-                      @if (filing.detailUrl) {
-                        <a class="filing__name" [href]="filing.detailUrl" target="_blank" rel="noopener">
-                          {{ filing.trademarkName || 'Unnamed mark' }}
-                        </a>
-                      } @else {
-                        <span class="filing__name">{{ filing.trademarkName || 'Unnamed mark' }}</span>
-                      }
-                      <span class="ap-chip ap-chip--neutral">{{ statusLabel(filing) }}</span>
-                    </div>
-
-                    <p class="filing__firm">
-                      Filed by <strong>{{ filing.agentName }}</strong>
-                      @if (filing.proprietorName) {
-                        for {{ filing.proprietorName }}
-                      }
-                    </p>
-                  </div>
-
-                  <!-- Registered facts, all in the data face and tabular so the column lines up
-                       down the list. -->
-                  <dl class="filing__data">
-                    <div>
-                      <dt>Application</dt>
-                      <dd class="ap-num">{{ filing.applicationNo || '—' }}</dd>
-                    </div>
-                    <div>
-                      <dt>Class</dt>
-                      <dd class="ap-num">{{ filing.tmClass || '—' }}</dd>
-                    </div>
-                    <div>
-                      <dt>Filed</dt>
-                      <dd class="ap-num">{{ filedOn(filing) }}</dd>
-                    </div>
-                  </dl>
-                </article>
-              }
-            </div>
-          </section>
-        }
-      }
-    </section>
-
-    <!-- ── The watch list ─────────────────────────────────────────────── -->
-    <aside class="roster" aria-label="Firms you watch">
-
-      <div class="ap-panel roster__panel">
-        <div class="ap-panel__head">
-          <h2 class="roster__title">Add a firm</h2>
         </div>
 
-        <div class="roster__search">
+        <div class="adder__body">
           <label class="field">
             <span class="field__label">Firm name on the register</span>
             <input
+              #searchBox
               type="search"
               class="field__input"
               placeholder="e.g. Remfry & Sagar"
@@ -156,9 +77,9 @@
           </p>
 
           @if (searching()) {
-            <p class="roster__status">Searching…</p>
+            <p class="adder__status">Searching…</p>
           } @else if (searched() && results().length === 0) {
-            <p class="roster__status">No firm on the register matches that. Try a shorter name.</p>
+            <p class="adder__status">No firm on the register matches that. Try a shorter name.</p>
           }
 
           @if (results().length > 0) {
@@ -190,22 +111,6 @@
                 </li>
               }
             </ul>
-
-            <button
-              type="button"
-              class="ap-btn ap-btn--primary roster__add"
-              [disabled]="pickedCount() === 0 || saving()"
-              (click)="addPicked()">
-              @if (saving()) {
-                Adding…
-              } @else if (pickedCount() === 0) {
-                Select a firm to watch
-              } @else if (pickedCount() === 1) {
-                Watch 1 firm
-              } @else {
-                Watch {{ pickedCount() }} firms
-              }
-            </button>
           }
 
           @if (rejected().length > 0) {
@@ -216,41 +121,190 @@
             </ul>
           }
         </div>
-      </div>
 
-      @if (watches().length > 0) {
-        <div class="ap-panel roster__panel">
-          <div class="ap-panel__head">
-            <h2 class="roster__title">Watching</h2>
-            <span class="ap-num roster__count">{{ watches().length }}</span>
-          </div>
-
-          <ul class="watch-list">
-            @for (watch of watches(); track watch.id) {
-              <li class="watch" [class.watch--active]="filterWatchId() === watch.id">
-                <button type="button" class="watch__select" (click)="filterBy(watch.id)">
-                  <span class="watch__name">{{ watch.displayName }}</span>
-                  <span class="watch__meta ap-num">
-                    {{ watch.filingsFound }} since added
-                    @if (watch.markCountAtAdd) {
-                      · {{ watch.markCountAtAdd }} on the register
-                    }
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  class="watch__remove"
-                  [disabled]="saving()"
-                  [attr.aria-label]="'Stop watching ' + watch.displayName"
-                  title="Stop watching"
-                  (click)="remove(watch)">
-                  <ap-icon name="close" [size]="14" />
-                </button>
-              </li>
+        <div class="adder__actions">
+          <button
+            type="button"
+            class="ap-btn ap-btn--primary adder__add"
+            [disabled]="pickedCount() === 0 || saving()"
+            (click)="addPicked()">
+            @if (saving()) {
+              Adding…
+            } @else if (pickedCount() === 0) {
+              Select a firm to watch
+            } @else if (pickedCount() === 1) {
+              Watch 1 firm
+            } @else {
+              Watch {{ pickedCount() }} firms
             }
-          </ul>
+          </button>
+
+          @if (watches().length > 0) {
+            <button type="button" class="ap-btn ap-btn--quiet" (click)="closeAdd()">Done</button>
+          }
         </div>
-      }
-    </aside>
-  </div>
+
+        <p class="adder__note">
+          Nothing they filed before today is reported. The watch starts when you add it.
+        </p>
+      </section>
+    }
+
+    @if (watches().length > 0) {
+
+      <!-- ── The firms being watched ──────────────────────────────────────
+           A rail rather than a sidebar: it filters the feed below it, and it is where a firm is
+           dropped. Both are occasional, so neither takes a column away from the feed. -->
+      <section class="roster" aria-label="Firms you watch">
+        <div class="roster__head">
+          <h2 class="roster__title">Watching</h2>
+          @if (filterWatchId() !== null) {
+            <button type="button" class="link-btn" (click)="filterBy(null)">
+              <ap-icon name="close" [size]="14" /> Show all firms
+            </button>
+          }
+        </div>
+
+        <ul class="firms">
+          @for (watch of watches(); track watch.id) {
+            <li class="firm" [class.firm--active]="filterWatchId() === watch.id">
+              <button
+                type="button"
+                class="firm__select"
+                [attr.aria-pressed]="filterWatchId() === watch.id"
+                (click)="filterBy(watch.id)">
+                <span class="firm__name">{{ watch.displayName }}</span>
+                <span class="firm__meta ap-num">
+                  {{ watch.filingsFound }} since added
+                  @if (watch.markCountAtAdd) {
+                    · {{ watch.markCountAtAdd }} on the register
+                  }
+                </span>
+              </button>
+              <button
+                type="button"
+                class="firm__remove"
+                [disabled]="removingId() !== null"
+                [attr.aria-label]="'Stop watching ' + watch.displayName"
+                title="Stop watching"
+                (click)="askRemove(watch)">
+                <ap-icon name="close" [size]="14" />
+              </button>
+            </li>
+          }
+        </ul>
+
+        <!--
+          Asked, because the part that does not come back is not visible from the button. Re-adding
+          the firm resumes the same watch from that day, so anything filed while it was off the list
+          is never reported. The prompt says that rather than "this cannot be undone", which would
+          be both vaguer and untrue.
+        -->
+        @if (pendingRemoval(); as watch) {
+          <!-- An alert, not an alertdialog: it is announced where it appears and the ✕ that raised
+               it keeps focus. Calling it a dialog would promise a focus trap that is not here. -->
+          <div class="confirm" role="alert">
+            <strong>Stop watching {{ watch.displayName }}?</strong>
+            <p>
+              @if (pendingRemovalFilings() > 0) {
+                The {{ pendingRemovalFilings() }} filing{{ pendingRemovalFilings() === 1 ? '' : 's' }}
+                found under this name will leave your feed.
+              }
+              You can add the firm again later, but the watch resumes from that day — anything they
+              file in between is never reported.
+            </p>
+            <div class="confirm__actions">
+              <button
+                type="button"
+                class="ap-btn ap-btn--danger"
+                [disabled]="removingId() !== null"
+                (click)="confirmRemove()">
+                {{ removingId() !== null ? 'Removing…' : 'Yes, stop watching' }}
+              </button>
+              <button
+                type="button"
+                class="ap-btn ap-btn--quiet"
+                [disabled]="removingId() !== null"
+                (click)="cancelRemove()">
+                Cancel
+              </button>
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- ── The feed ───────────────────────────────────────────────────── -->
+      <section class="feed" aria-label="Competitor filings">
+
+        @if (visibleFilings().length === 0) {
+          <div class="ap-panel ap-empty">
+            @if (filterWatchId() !== null) {
+              <p>Nothing filed under this name since you started watching it.</p>
+              <button type="button" class="ap-btn ap-btn--quiet" (click)="filterBy(null)">Show all firms</button>
+            } @else {
+              <p>No filings yet. The register is checked every morning; anything new appears here.</p>
+            }
+          </div>
+        } @else {
+
+          @for (day of days(); track day.key) {
+            <section class="day">
+              <!-- The date rail, matching the deadlines screen: the day is the organising fact, and
+                   the rows hang off it. -->
+              <div class="day__rail">
+                <span class="day__label">{{ day.label }}</span>
+                <span class="day__count ap-num">{{ day.items.length }}</span>
+              </div>
+
+              <div class="day__rows ap-panel">
+                @for (filing of day.items; track filing.id) {
+                  <article class="filing" [class.filing--new]="!filing.seen">
+                    <div class="filing__main">
+                      <div class="filing__name-row">
+                        @if (!filing.seen) {
+                          <span class="new-dot" aria-label="Not yet read"></span>
+                        }
+                        @if (filing.detailUrl) {
+                          <a class="filing__name" [href]="filing.detailUrl" target="_blank" rel="noopener">
+                            {{ filing.trademarkName || 'Unnamed mark' }}
+                          </a>
+                        } @else {
+                          <span class="filing__name">{{ filing.trademarkName || 'Unnamed mark' }}</span>
+                        }
+                        <span class="ap-chip ap-chip--neutral">{{ statusLabel(filing) }}</span>
+                      </div>
+
+                      <p class="filing__firm">
+                        Filed by <strong>{{ filing.agentName }}</strong>
+                        @if (filing.proprietorName) {
+                          for {{ filing.proprietorName }}
+                        }
+                      </p>
+                    </div>
+
+                    <!-- Registered facts, all in the data face and tabular so the column lines up
+                         down the list. -->
+                    <dl class="filing__data">
+                      <div>
+                        <dt>Application</dt>
+                        <dd class="ap-num">{{ filing.applicationNo || '—' }}</dd>
+                      </div>
+                      <div>
+                        <dt>Class</dt>
+                        <dd class="ap-num">{{ filing.tmClass || '—' }}</dd>
+                      </div>
+                      <div>
+                        <dt>Filed</dt>
+                        <dd class="ap-num">{{ filedOn(filing) }}</dd>
+                      </div>
+                    </dl>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        }
+      </section>
+    }
+  }
 </div>

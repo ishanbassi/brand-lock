@@ -8,6 +8,7 @@ import { ApplicationConfigService } from '../../core/config/application-config.s
 import { createRequestOption } from '../../core/request/request-util';
 import { DATE_FORMAT } from '../../config/input.constants';
 import { ITrademark, ITrademarkWithLogo, NewTrademark } from '../../../models/trademark.model';
+import { IFirmFiling } from '../../../models/firm-filing.model';
 import { IDocuments } from '../../../models/documents.model';
 import { DocumentsService, RestDocuments } from './documents.service';
 
@@ -187,6 +188,16 @@ export class TrademarkService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
+
+  /**
+   * Newest marks this firm has filed that carry a logo — the "Our Recent Filings" strip.
+   *
+   * Its own endpoint rather than the generic criteria query: filtering /api/trademarks by
+   * agentName takes ~5s and hands back proprietor names and addresses we do not render.
+   */
+  firmRecentFilings(limit = 20): Observable<IFirmFiling[]> {
+    return this.http.get<IFirmFiling[]>(`${this.resourceUrl}/firm-recent-filings`, { params: { limit } });
+  }
 
   getTrademarkIdentifier(trademark: Pick<ITrademark, 'id'>): number {
     return trademark.id;

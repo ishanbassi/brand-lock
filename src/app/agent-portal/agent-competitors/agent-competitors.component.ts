@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import dayjs from 'dayjs';
@@ -27,8 +27,11 @@ interface FeedDay {
  * agent happened to click would quietly miss the rest of the firm's filings. The mark count beside
  * each name is what lets them tell a firm's main entry from its variants.
  *
- * <p>The feed is the page; the watch list is the control beside it. An agent opens this screen to
- * see what happened, not to administer a list - so the list is a panel, and the feed gets the room.
+ * <p>Adding a firm is the only way this page ever fills up, so the search is the page's centre of
+ * gravity rather than a sidebar: on first run it is the whole screen, and afterwards it is one
+ * primary button in the head that opens the same panel in place. The watch list is then a rail of
+ * firms above the feed - it filters, and it is where a firm is dropped - and the feed gets the
+ * full width, which is what an agent actually came to read.
  *
  * <p>Grouped by the day we detected a filing rather than the day it was filed. Those are usually a
  * day or two apart and conflating them would misreport the register. The filing date is on the row
@@ -49,10 +52,20 @@ export class AgentCompetitorsComponent implements OnInit {
   readonly loading = signal(true);
   readonly error = signal('');
 
-  /** Set while a watch is being added or removed, so the control shows it registered the click. */
+  /** Set while a watch is being added, so the control shows it registered the click. */
   readonly saving = signal(false);
 
   // ── Search ───────────────────────────────────────────────────────────────
+
+  private readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('searchBox');
+
+  /**
+   * Whether the add panel is open by request. With nothing watched yet it is open regardless -
+   * an empty page whose one useful action is hidden behind a button is a page that explains
+   * nothing.
+   */
+  readonly addOpen = signal(false);
+  readonly showAdder = computed(() => this.addOpen() || this.watches().length === 0);
 
   query = '';
   readonly results = signal<AgentDirectoryEntry[]>([]);
@@ -73,6 +86,21 @@ export class AgentCompetitorsComponent implements OnInit {
   // been doing", which is the second question every agent asks after "what is new".
 
   readonly filterWatchId = signal<number | null>(null);
+
+  // ── Removal ──────────────────────────────────────────────────────────────
+  //
+  // Dropping a firm also drops the filings already found for it, and the watch cannot be restarted
+  // retrospectively - re-adding it only picks up what is filed from that day on. That is not
+  // recoverable by the agent, so it is asked before it is done.
+
+  readonly pendingRemoval = signal<CompetitorWatch | null>(null);
+  readonly removingId = signal<number | null>(null);
+
+  /** Filings that would go with the firm awaiting confirmation, so the prompt can say how many. */
+  readonly pendingRemovalFilings = computed(() => {
+    const watch = this.pendingRemoval();
+    return watch === null ? 0 : this.filings().filter(f => f.competitorWatchId === watch.id).length;
+  });
 
   readonly visibleFilings = computed(() => {
     const id = this.filterWatchId();
@@ -159,6 +187,26 @@ export class AgentCompetitorsComponent implements OnInit {
 
   // ── Search and add ───────────────────────────────────────────────────────
 
+  openAdd(): void {
+    this.addOpen.set(true);
+    this.pendingRemoval.set(null);
+    // The panel exists to be typed into; landing the caret there saves the agent a click.
+    queueMicrotask(() => this.searchBox()?.nativeElement.focus());
+  }
+
+  closeAdd(): void {
+    this.addOpen.set(false);
+    this.resetSearch();
+  }
+
+  private resetSearch(): void {
+    this.query = '';
+    this.results.set([]);
+    this.searched.set(false);
+    this.picked.set(new Set());
+    this.rejected.set([]);
+  }
+
   onQueryChange(value: string): void {
     this.query = value;
     if (value.trim().length < 2) {
@@ -201,12 +249,15 @@ export class AgentCompetitorsComponent implements OnInit {
     this.agentData.addCompetitorWatches(names).subscribe({
       next: result => {
         this.watches.set([...this.watches(), ...result.added].sort((a, b) => a.displayName.localeCompare(b.displayName)));
-        this.rejected.set(Object.entries(result.rejected ?? {}).map(([name, reason]) => ({ name, reason })));
-        this.picked.set(new Set());
-        this.query = '';
-        this.results.set([]);
-        this.searched.set(false);
+        const rejected = Object.entries(result.rejected ?? {}).map(([name, reason]) => ({ name, reason }));
+        this.resetSearch();
+        this.rejected.set(rejected);
         this.saving.set(false);
+        // Close on a clean run so the feed comes forward. If anything was refused the panel stays,
+        // because the reason is only useful next to the search that produced it.
+        if (rejected.length === 0) {
+          this.addOpen.set(false);
+        }
       },
       error: () => {
         this.error.set('Could not add those firms. Try again.');
@@ -215,11 +266,22 @@ export class AgentCompetitorsComponent implements OnInit {
     });
   }
 
-  remove(watch: CompetitorWatch): void {
-    if (this.saving()) {
+  // ── Remove ───────────────────────────────────────────────────────────────
+
+  askRemove(watch: CompetitorWatch): void {
+    this.pendingRemoval.set(watch);
+  }
+
+  cancelRemove(): void {
+    this.pendingRemoval.set(null);
+  }
+
+  confirmRemove(): void {
+    const watch = this.pendingRemoval();
+    if (watch === null || this.removingId() !== null) {
       return;
     }
-    this.saving.set(true);
+    this.removingId.set(watch.id);
     this.agentData.removeCompetitorWatch(watch.id).subscribe({
       next: () => {
         this.watches.set(this.watches().filter(w => w.id !== watch.id));
@@ -227,11 +289,13 @@ export class AgentCompetitorsComponent implements OnInit {
         if (this.filterWatchId() === watch.id) {
           this.filterWatchId.set(null);
         }
-        this.saving.set(false);
+        this.removingId.set(null);
+        this.pendingRemoval.set(null);
       },
       error: () => {
         this.error.set('Could not remove that firm.');
-        this.saving.set(false);
+        this.removingId.set(null);
+        this.pendingRemoval.set(null);
       },
     });
   }

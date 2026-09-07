@@ -137,10 +137,66 @@
     }
 
     /* ── Reviews Grid ── */
-    .reviews-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* ── Reviews Marquee ── */
+    .reviews-marquee {
+      overflow: hidden;
+      /* Cards fade out at the edges instead of being sliced by the container bound. */
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: reviews-marquee var(--marquee-duration, 70s) linear infinite;
+      /* The cards lift on hover; promoting the track keeps that from repainting the whole strip. */
+      will-change: transform;
+    }
+
+    .marquee-run {
+      display: flex;
       gap: 16px;
+      padding-right: 16px;
+    }
+
+    /* Reading stops while the pointer is down or a card link has focus. */
+    .reviews-marquee:hover .marquee-track,
+    .reviews-marquee:focus-within .marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes reviews-marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .reviews-marquee .review-card {
+      flex: 0 0 auto;
+      width: min(320px, 78vw);
+      /* No fixed height: the row stretches every card to the tallest, so the clamp below decides
+         where text stops rather than a hard cut mid-line. */
+      margin: 4px 0;
+    }
+
+    .reviews-marquee .review-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* No motion: fall back to a plain horizontal scroller the reader drives themselves. */
+    @media (prefers-reduced-motion: reduce) {
+      .reviews-marquee {
+        overflow-x: auto;
+        -webkit-mask-image: none;
+        mask-image: none;
+      }
+
+      .marquee-track { animation: none; }
+
+      /* The duplicate run is decoration for the loop — without the loop it is just repetition. */
+      .marquee-run:nth-child(2) { display: none; }
     }
 
     /* ── Review Card ── */

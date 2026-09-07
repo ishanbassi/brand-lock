@@ -1,0 +1,141 @@
+.filings-section {
+  padding: 56px 0;
+  background: #f7f8fa;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 28px;
+
+  h2 {
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    color: #101828;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 15px;
+    color: #475467;
+    margin: 0 auto;
+    max-width: 620px;
+  }
+}
+
+.filings-marquee {
+  overflow: hidden;
+  /* Tiles fade out at the edges instead of being sliced by the container bound. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: filings-marquee var(--marquee-duration, 80s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-run {
+  display: flex;
+  gap: 16px;
+  padding-right: 16px;
+}
+
+/* Reading stops while the pointer is over the strip or a tile has keyboard focus. */
+.filings-marquee:hover .marquee-track,
+.filings-marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes filings-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.filing-tile {
+  flex: 0 0 auto;
+  width: 172px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 12px;
+  margin: 4px 0;
+  background: #fff;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: box-shadow .2s, transform .2s, border-color .2s;
+}
+
+.filing-tile.is-missing {
+  display: none;
+}
+
+.filing-tile:hover,
+.filing-tile:focus-visible {
+  border-color: #d0d5dd;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, .1);
+  transform: translateY(-2px);
+}
+
+.tile-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 90px;
+}
+
+/* Journal scans come in every aspect ratio going, so the box is fixed and the image fits inside. */
+.tile-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.tile-caption {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475467;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filings-note {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #475467;
+
+  a {
+    color: #1a73e8;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  a:hover { text-decoration: underline; }
+}
+
+/* No motion: fall back to a scroller the reader drives themselves. */
+@media (prefers-reduced-motion: reduce) {
+  .filings-marquee {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marquee-track { animation: none; }
+
+  /* The duplicate run exists for the loop — without the loop it is just repetition. */
+  .marquee-run:nth-child(2) { display: none; }
+}

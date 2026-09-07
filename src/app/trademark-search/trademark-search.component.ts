@@ -66,7 +66,7 @@ export class TrademarkSearchComponent implements OnInit {
 
    statistics: Statistic[] = [
     {
-      value: '15,000+',
+      value: '10,000+',
       label: 'Trademarks Filed',
       icon: 'file-text',
     },

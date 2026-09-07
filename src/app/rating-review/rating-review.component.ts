@@ -26,12 +26,25 @@ export class RatingReviewComponent implements OnInit {
   starsArray = Array(5).fill(0);
   ratingKeys = [5,4,3,2,1];
 
+  /** Two passes over the same reviews — see the template comment on .marquee-track. */
+  marqueeRuns = [0, 1];
+
+  /**
+   * Seconds per card rather than a fixed total, so adding a review slows the loop down instead of
+   * speeding every card past the reader.
+   */
+  private readonly SECONDS_PER_CARD = 7;
+
   constructor() {}
 
   ngOnInit(): void {}
 
   getStars(rating: number) {
     return this.starsArray.map((_, i) => i < Math.round(rating));
+  }
+
+  get marqueeDuration(): string {
+    return `${this.CONFIG.reviews.length * this.SECONDS_PER_CARD}s`;
   }
 
   getAvatarColor(index: number) {

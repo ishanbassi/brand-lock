@@ -59,15 +59,20 @@ export class CountUpDirective implements OnInit, OnDestroy,AfterViewInit {
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const currentValue = Math.floor(startValue + (this.endValue - startValue) * easeOutQuart);
       
-      element.textContent = `${this.prefix}${currentValue}${this.suffix}`;
+      element.textContent = `${this.prefix}${this.format(currentValue)}${this.suffix}`;
       
       if (progress < 1) {
         requestAnimationFrame(updateNumber);
       } else {
-        element.textContent = `${this.prefix}${this.endValue}${this.suffix}`;
+        element.textContent = `${this.prefix}${this.format(this.endValue)}${this.suffix}`;
       }
     };
     
     requestAnimationFrame(updateNumber);
+  }
+
+  /** Group thousands so counters match the written copy elsewhere on the site (10,000+, not 10000+). */
+  private format(value: number): string {
+    return value.toLocaleString('en-IN');
   }
 } 
