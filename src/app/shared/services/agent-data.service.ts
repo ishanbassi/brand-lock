@@ -155,6 +155,16 @@ export class AgentDataService {
     return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/watch/conflicts`);
   }
 
+  /** Set a conflict aside, or bring it back. `OPPOSING` is not settable here — use opposeConflict. */
+  setConflictStatus(id: number, status: 'OPEN' | 'DISMISSED'): Observable<void> {
+    return this.http.patch<void>(`${this.base}/agent-portal/watch/conflicts/${id}`, { status });
+  }
+
+  /** Convert a journal conflict into an opposition-window deadline. Returns the created deadline. */
+  opposeConflict(id: number): Observable<Deadline> {
+    return this.http.post<Deadline>(`${this.base}/agent-portal/watch/conflicts/${id}/oppose`, {});
+  }
+
 
   // Phase 2 — Portfolio export
   /** The caller's own upload history — backs the "we're checking your file" banner. */

@@ -17,30 +17,55 @@
     <div class="conflicts-header">
       <h1 class="page-title">Portfolio Conflicts</h1>
       <p class="page-sub">
-        Marks the journal watch has found against your portfolio — same class, most recent first. Each is advertised in the journal
-        issue shown, and open to opposition for four months from that issue's publication.
+        Marks the watch has found against your portfolio, most recent first. A
+        <strong>journal</strong> hit is advertised and open to opposition for four months from that
+        issue's publication. A <strong>new filing</strong> is an application just added to the
+        register — early awareness only, with no deadline running until it is advertised.
       </p>
     </div>
 
+    @if (actionMsg()) {
+      <div class="alert-ok">{{ actionMsg() }}</div>
+    }
+    <!-- An action that fails must not blank the list the agent is working through, so this is
+         separate from the load error above. -->
+    @if (actionError()) {
+      <div class="alert-error">{{ actionError() }}</div>
+    }
+
+    <!-- Triage status: the population you are looking at. -->
     <div class="filter-row">
-      <button class="chip" [class.active]="riskFilter() === 'ALL'" (click)="setFilter('ALL')">
-        All ({{ conflicts().length }})
+      <button class="chip" [class.active]="statusFilter() === 'OPEN'" (click)="setStatusFilter('OPEN')">
+        Open ({{ openCount() }})
       </button>
-      <button class="chip" [class.active]="riskFilter() === 'HIGH'" (click)="setFilter('HIGH')">
+      <button class="chip" [class.active]="statusFilter() === 'OPPOSING'" (click)="setStatusFilter('OPPOSING')">
+        Opposing ({{ opposingCount() }})
+      </button>
+      <button class="chip" [class.active]="statusFilter() === 'DISMISSED'" (click)="setStatusFilter('DISMISSED')">
+        Dismissed ({{ dismissedCount() }})
+      </button>
+    </div>
+
+    <!-- Risk band: filters within the chosen status. -->
+    <div class="filter-row filter-row--risk">
+      <button class="chip chip--sm" [class.active]="riskFilter() === 'ALL'" (click)="setRiskFilter('ALL')">
+        All risk ({{ atStatusLength() }})
+      </button>
+      <button class="chip chip--sm" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">
         High ({{ highRiskCount() }})
       </button>
-      <button class="chip" [class.active]="riskFilter() === 'MEDIUM'" (click)="setFilter('MEDIUM')">
+      <button class="chip chip--sm" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">
         Medium ({{ mediumRiskCount() }})
       </button>
-      <button class="chip" [class.active]="riskFilter() === 'LOW'" (click)="setFilter('LOW')">
-        Low ({{ conflicts().length - highRiskCount() - mediumRiskCount() }})
+      <button class="chip chip--sm" [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">
+        Low ({{ lowRiskCount() }})
       </button>
     </div>
 
     @if (visible().length === 0) {
       <div class="empty-state">
         <h2>Nothing to review</h2>
-        <p>No conflicts recorded at this risk level. The watch runs again tonight.</p>
+        <p>No conflicts at this status and risk level. The watch runs again tonight.</p>
       </div>
     } @else {
       <div class="table-scroll">
@@ -50,10 +75,11 @@
               <th>Your Mark</th>
               <th>Conflicting Mark</th>
               <th>Class</th>
-              <th>Journal</th>
+              <th>Source</th>
               <th>Similarity</th>
               <th>Risk</th>
               <th>First Seen</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -71,13 +97,18 @@
                   @if (c.conflictingProprietorName) {
                     <div class="muted-sub">{{ c.conflictingProprietorName }}</div>
                   }
+                  @if (c.conflictingStatus) {
+                    <div class="muted-sub">Status: {{ c.conflictingStatus }}</div>
+                  }
                 </td>
                 <td class="num">{{ c.conflictingTmClass || '—' }}</td>
                 <td>
-                  @if (c.journalNo) {
-                    <a [routerLink]="['/agent-portal/watch/journal']" [queryParams]="{ journalNo: c.journalNo }">{{ c.journalNo }}</a>
+                  @if (isNewFiling(c)) {
+                    <span class="src-badge src-new">New filing</span>
                   } @else {
-                    <span class="muted">—</span>
+                    <a class="src-badge src-journal" [routerLink]="['/agent-portal/watch/journal']" [queryParams]="{ journalNo: c.journalNo }">
+                      Journal {{ c.journalNo }}
+                    </a>
                   }
                 </td>
                 <td class="num">{{ scorePercent(c.similarityScore) }}%</td>
@@ -85,6 +116,22 @@
                   <span class="risk-badge" [class]="'badge-' + riskClass(c.riskLevel)">{{ c.riskLevel }}</span>
                 </td>
                 <td class="muted">{{ c.checkDate | date: 'mediumDate' }}</td>
+                <td class="actions">
+                  @switch (statusFilter()) {
+                    @case ('DISMISSED') {
+                      <button class="btn-link" [disabled]="busyId() === c.id" (click)="restore(c)">Restore</button>
+                    }
+                    @case ('OPPOSING') {
+                      <a class="btn-link" routerLink="/agent-portal/deadlines">On calendar</a>
+                    }
+                    @default {
+                      @if (!isNewFiling(c)) {
+                        <button class="btn-primary-sm" [disabled]="busyId() === c.id" (click)="oppose(c)">Oppose</button>
+                      }
+                      <button class="btn-link" [disabled]="busyId() === c.id" (click)="dismiss(c)">Dismiss</button>
+                    }
+                  }
+                </td>
               </tr>
             }
           </tbody>

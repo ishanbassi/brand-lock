@@ -143,12 +143,18 @@ export interface WatchConflictHistory {
   similarityScore?: number;
   riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW';
   isNewConflict?: boolean;
-  status?: 'PENDING' | 'RESOLVED' | 'IGNORED';
-  /** Journal issue the conflicting mark was advertised in — the opposition window runs from it. */
+  /** Where the agent has taken this row in triage. Legacy rows read as OPEN. */
+  status?: 'OPEN' | 'OPPOSING' | 'DISMISSED';
+  /**
+   * Journal issue the conflicting mark was advertised in — the opposition window runs from it.
+   * Null when the hit came from the new-filings watch (early awareness, no statutory deadline).
+   */
   journalNo?: number;
   conflictingApplicationNo?: number;
   conflictingTmClass?: number;
   conflictingProprietorName?: string;
+  /** The conflicting mark's current registry status — an abandoned/refused mark is a weak threat. */
+  conflictingStatus?: string;
 }
 
 export interface AgentPublicProfile {

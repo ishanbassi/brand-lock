@@ -55,6 +55,8 @@ $white: #ffffff;
   margin-bottom: var(--ap-space-5);
 }
 
+.filter-row--risk { margin-top: calc(var(--ap-space-4) * -1); }
+
 .chip {
   background: $white;
   border: 1.5px solid $gray-200;
@@ -73,6 +75,71 @@ $white: #ffffff;
     border-color: $gray-800;
     color: $white;
   }
+
+  &.chip--sm {
+    padding: var(--ap-space-1) var(--ap-space-3);
+    font-size: 0.75rem;
+  }
+}
+
+.alert-ok {
+  background: var(--ap-due-soft);
+  border: 1px solid var(--ap-due-soft);
+  color: $gray-800;
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border-radius: 10px;
+  margin-bottom: var(--ap-space-4);
+  font-size: 0.875rem;
+}
+
+// ── SOURCE + ACTION CELLS ─────────────────────────────────
+.src-badge {
+  display: inline-block;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+
+  &.src-journal { background: var(--ap-accent-soft, rgba(0,0,0,0.06)); color: $accent; text-decoration: none; }
+  &.src-new { background: $gray-100; color: $gray-600; }
+}
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+
+  .btn-link,
+  .btn-primary-sm { margin-left: var(--ap-space-2); }
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: $gray-600;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  text-decoration: none;
+
+  &:hover:not(:disabled) { color: $accent; text-decoration: underline; }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.btn-primary-sm {
+  background: $gray-800;
+  border: 1.5px solid $gray-800;
+  color: $white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: var(--ap-space-1) var(--ap-space-3);
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: $accent; border-color: $accent; }
+  &:disabled { opacity: 0.5; cursor: default; }
 }
 
 // ── TABLE ─────────────────────────────────────────────────
