@@ -225,7 +225,17 @@ export class AgentDeadlinesComponent implements OnInit {
     return this.showDone() ? rows : rows.filter(d => d.status === 'OPEN' || d.status === 'MISSED');
   });
 
-  readonly overdueCount = computed(() => this.visible().filter(d => d.daysUntilDue < 0 && d.status === 'OPEN').length);
+  /**
+   * Overdue counts renewals and agent deadlines that have passed unactioned — not hearings.
+   *
+   * <p>A hearing is a record of a listing, not a task the agent owes: it is known only on or after
+   * the day it happens, so once it is past there was never a window to miss. Flagging "1 overdue"
+   * for yesterday's hearing reads as a failure where there is none. Hearings show as "Listed"
+   * regardless of date.
+   */
+  readonly overdueCount = computed(
+    () => this.visible().filter(d => d.daysUntilDue < 0 && d.status === 'OPEN' && !this.isRecordOnly(d)).length,
+  );
   readonly next7Count = computed(() => this.visible().filter(d => d.daysUntilDue >= 0 && d.daysUntilDue <= 7).length);
 
   /** Groups in date order, soonest first, with the day itself carrying the context. */
@@ -298,6 +308,11 @@ export class AgentDeadlinesComponent implements OnInit {
 
   chipClass(item: Deadline): string {
     if (item.status === 'DONE') return 'ap-chip ap-chip--done';
+    // A hearing is never overdue — it is a listing, not a task. Today's hearing keeps the "due"
+    // emphasis; a past or upcoming one is neutral, matching its "Listed" label.
+    if (this.isRecordOnly(item)) {
+      return item.daysUntilDue === 0 ? 'ap-chip ap-chip--due' : 'ap-chip ap-chip--neutral';
+    }
     if (item.status === 'MISSED') return 'ap-chip ap-chip--overdue';
     if (item.daysUntilDue < 0) return 'ap-chip ap-chip--overdue';
     if (item.daysUntilDue <= 14) return 'ap-chip ap-chip--due';

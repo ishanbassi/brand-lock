@@ -158,11 +158,37 @@ $muted: var(--ap-ink-muted);
   overflow: hidden;
 }
 
-.item-time {
+.item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
   flex-shrink: 0;
+}
+
+.item-time {
   font-size: 0.68rem;
   color: var(--ap-ink-faint);
   white-space: nowrap;
+}
+
+.item-dismiss {
+  background: none;
+  border: none;
+  color: var(--ap-ink-faint);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+
+  &:hover {
+    color: $urgent;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: 1px;
+  }
 }
 
 .empty {

@@ -45,7 +45,17 @@
                   <span class="item-body">{{ item.body }}</span>
                 }
               </div>
-              <span class="item-time">{{ timeAgo(item.createdDate) }}</span>
+              <span class="item-side">
+                <span class="item-time">{{ timeAgo(item.createdDate) }}</span>
+                <button
+                  type="button"
+                  class="item-dismiss"
+                  (click)="dismiss(item, $event)"
+                  aria-label="Clear notification"
+                >
+                  ×
+                </button>
+              </span>
             </li>
           }
         </ul>

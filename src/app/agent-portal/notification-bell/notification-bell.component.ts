@@ -81,6 +81,21 @@ export class NotificationBellComponent {
     });
   }
 
+  /**
+   * Clears one notification from the dropdown.
+   *
+   * <p>Dropped from the shared feed signal straight away so the row leaves under the cursor, then
+   * reconciled with the server. A failed dismiss simply reappears on the next summary refresh.
+   */
+  dismiss(item: AppNotification, event: MouseEvent): void {
+    event.stopPropagation();
+    this.notifications.latest.update(list => list.filter(n => n.id !== item.id));
+    this.notifications.dismiss(item.id).subscribe({
+      next: () => this.notifications.refreshSummary(),
+      error: () => this.notifications.refreshSummary(),
+    });
+  }
+
   /** Compact relative time. Long enough ago and the exact minute stops being what anyone wants. */
   timeAgo(iso: string): string {
     const then = new Date(iso).getTime();
