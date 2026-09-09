@@ -31,6 +31,40 @@
       }
     </label>
 
+    <div class="class-select">
+      <span>Classes</span>
+      <button
+        type="button"
+        class="class-toggle"
+        [disabled]="running()"
+        (click)="classPickerOpen.set(!classPickerOpen())"
+      >
+        {{ classSummary() }}
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+
+      @if (classPickerOpen()) {
+        <div class="class-popover">
+          <div class="class-popover-head">
+            <span>Check only these classes</span>
+            <button type="button" class="link-btn" (click)="clearClasses()">All classes</button>
+          </div>
+          <div class="class-grid">
+            @for (c of allClasses; track c) {
+              <label class="class-chip" [class.checked]="selectedClasses().includes(c)">
+                <input
+                  type="checkbox"
+                  [checked]="selectedClasses().includes(c)"
+                  (change)="toggleClass(c)"
+                />
+                {{ c }}
+              </label>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
     <button class="btn-primary" [disabled]="running() || selectedJournal() === null" (click)="run()">
       {{ running() ? 'Checking…' : 'Run check' }}
     </button>
@@ -50,10 +84,26 @@
           <strong>{{ counts().total }}</strong>
           possible conflict{{ counts().total === 1 ? '' : 's' }} in Journal {{ result()!.journalNo }}
         </div>
-        <div class="summary-meta">
-          {{ result()!.pairsScored | number }} comparison{{ result()!.pairsScored === 1 ? '' : 's' }}
-          in {{ (result()!.durationMs / 1000).toFixed(1) }}s
+        <div class="summary-actions">
+          <a
+            class="btn-outline"
+            [routerLink]="['/trademark-journal', result()!.journalNo, 'browse']"
+            target="_blank"
+            rel="noopener"
+          >
+            Open Journal {{ result()!.journalNo }} ↗
+          </a>
+          @if (counts().total > 0) {
+            <button class="btn-outline" [disabled]="downloading()" (click)="downloadPdf()">
+              {{ downloading() ? 'Preparing…' : 'Download PDF' }}
+            </button>
+          }
         </div>
+      </div>
+
+      <div class="summary-meta">
+        {{ result()!.pairsScored | number }} comparison{{ result()!.pairsScored === 1 ? '' : 's' }}
+        in {{ (result()!.durationMs / 1000).toFixed(1) }}s
       </div>
 
       <!--
@@ -124,6 +174,16 @@
                   </span>
                   @if (c.conflictingProprietorName) {
                     <span class="proprietor">{{ c.conflictingProprietorName }}</span>
+                  }
+                  @if (c.conflictingDetailUrl) {
+                    <a
+                      class="view-mark"
+                      [href]="c.conflictingDetailUrl"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      View mark ↗
+                    </a>
                   }
                 </div>
               </div>

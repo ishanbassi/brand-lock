@@ -24,9 +24,18 @@ export class AgentJournalWatchComponent implements OnInit {
   loadingJournals = signal(true);
   selectedJournal = signal<number | null>(null);
 
+  /** All 45 Nice classes. None selected means every class — the default. */
+  readonly allClasses = Array.from({ length: 45 }, (_, i) => i + 1);
+  selectedClasses = signal<number[]>([]);
+  classPickerOpen = signal(false);
+
   running = signal(false);
+  downloading = signal(false);
   result = signal<AgentJournalWatchResult | null>(null);
   error = signal('');
+
+  /** The classes the shown result was actually run with — so the PDF matches the list on screen. */
+  private ranWithClasses: number[] = [];
 
   /** Risk filter. Empty shows everything. */
   riskFilter = signal<'' | 'HIGH' | 'MEDIUM' | 'LOW'>('');
@@ -78,20 +87,61 @@ export class AgentJournalWatchComponent implements OnInit {
     };
   });
 
+  classSummary = computed(() => {
+    const n = this.selectedClasses().length;
+    if (n === 0) return 'All classes';
+    if (n === 1) return `Class ${this.selectedClasses()[0]}`;
+    return `${n} classes`;
+  });
+
+  toggleClass(n: number): void {
+    this.selectedClasses.update(list =>
+      list.includes(n) ? list.filter(c => c !== n) : [...list, n].sort((a, b) => a - b),
+    );
+  }
+
+  clearClasses(): void {
+    this.selectedClasses.set([]);
+  }
+
   run(): void {
     const journal = this.selectedJournal();
     if (journal == null || this.running()) return;
     this.running.set(true);
+    this.classPickerOpen.set(false);
     this.error.set('');
     this.result.set(null);
-    this.agentDataService.runJournalWatch(journal).subscribe({
+    const classes = [...this.selectedClasses()];
+    this.agentDataService.runJournalWatch(journal, classes).subscribe({
       next: res => {
         this.result.set(res);
+        this.ranWithClasses = classes;
         this.running.set(false);
       },
       error: () => {
         this.error.set('The check could not be completed. Please try again.');
         this.running.set(false);
+      },
+    });
+  }
+
+  downloadPdf(): void {
+    const journal = this.result()?.journalNo;
+    if (journal == null || this.downloading()) return;
+    this.downloading.set(true);
+    this.agentDataService.downloadWatchReport(journal, this.ranWithClasses).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `watch-report-journal-${journal}.pdf`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+        this.downloading.set(false);
+      },
+      error: () => {
+        this.error.set('Could not generate the PDF.');
+        this.downloading.set(false);
       },
     });
   }

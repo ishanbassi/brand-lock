@@ -357,6 +357,8 @@ export interface AgentJournalConflict {
   conflictingProprietorName?: string;
   conflictingApplicationDate?: string;
   conflictingImgUrl?: string;
+  /** Public detail page for the advertised mark. Absent when it has no application number. */
+  conflictingDetailUrl?: string;
 }
 
 export interface AgentJournalWatchResult {

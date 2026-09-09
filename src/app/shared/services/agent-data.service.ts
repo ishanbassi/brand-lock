@@ -260,8 +260,11 @@ export class AgentDataService {
     return params;
   }
 
-  downloadWatchReport(journalNo: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.pdf`, { responseType: 'blob' });
+  downloadWatchReport(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.pdf`, {
+      params: this.tmClassParams(tmClasses),
+      responseType: 'blob',
+    });
   }
 
   // ── Report branding ────────────────────────────────────────────────────
@@ -363,9 +366,25 @@ export class AgentDataService {
     return this.http.get<number[]>(`${this.base}/agent-portal/watch/journals?limit=${limit}`);
   }
 
-  /** Scores the whole portfolio against one journal issue. */
-  runJournalWatch(journalNo: number): Observable<AgentJournalWatchResult> {
-    return this.http.post<AgentJournalWatchResult>(`${this.base}/agent-portal/watch/journals/${journalNo}`, {});
+  /**
+   * Scores the portfolio against one journal issue. `tmClasses` confines the check to those NICE
+   * classes; empty or omitted checks every class.
+   */
+  runJournalWatch(journalNo: number, tmClasses?: number[] | null): Observable<AgentJournalWatchResult> {
+    return this.http.post<AgentJournalWatchResult>(
+      `${this.base}/agent-portal/watch/journals/${journalNo}`,
+      {},
+      { params: this.tmClassParams(tmClasses) },
+    );
+  }
+
+  /** Repeated `tmClasses` params — what Spring binds to a `List<Integer>`. No param means all classes. */
+  private tmClassParams(tmClasses?: number[] | null): HttpParams {
+    let params = new HttpParams();
+    for (const c of tmClasses ?? []) {
+      params = params.append('tmClasses', String(c));
+    }
+    return params;
   }
 
   // ── Discovery: find and claim marks already in our data ──────────────────
