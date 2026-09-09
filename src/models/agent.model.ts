@@ -178,6 +178,10 @@ export interface AgentDirectoryEntry {
   displayName: string;
   markCount: number;
   latestFilingDate?: string;
+  /** Most common agent address filed under this name. Absent when the registry records none. */
+  primaryAddress?: string;
+  /** Distinct addresses on file under this name; > 1 means two firms may share the name. */
+  addressCount?: number;
 }
 
 export interface AgentClaimRequest {

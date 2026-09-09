@@ -249,6 +249,19 @@
   color: var(--ap-ink-faint);
 }
 
+.result__addr {
+  margin-top: 2px;
+  font-size: var(--ap-text-xs);
+  color: var(--ap-ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result__addr-more {
+  color: var(--ap-overdue);
+}
+
 .rejected {
   list-style: none;
   margin: var(--ap-space-4) 0 0;

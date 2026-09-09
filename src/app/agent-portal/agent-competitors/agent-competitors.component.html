@@ -106,6 +106,16 @@
                           · already watching
                         }
                       </span>
+                      <!-- The directory groups by name alone, so two firms with the same name land on
+                           one row. The address is what tells them apart. -->
+                      @if (entry.primaryAddress) {
+                        <span class="result__addr">
+                          {{ entry.primaryAddress }}
+                          @if (entry.addressCount && entry.addressCount > 1) {
+                            <span class="result__addr-more">· {{ entry.addressCount }} addresses on file under this name</span>
+                          }
+                        </span>
+                      }
                     </span>
                   </button>
                 </li>

@@ -33,7 +33,15 @@
     <ul class="agent-list" *ngIf="agents().length > 0">
       <li *ngFor="let agent of agents()">
         <button type="button" class="agent-row" (click)="openAgent(agent)">
-          <span class="agent-name">{{ agent.displayName }}</span>
+          <span class="agent-text">
+            <span class="agent-name">{{ agent.displayName }}</span>
+            <span class="agent-addr" *ngIf="agent.primaryAddress">
+              {{ agent.primaryAddress }}
+              <span class="agent-addr-more" *ngIf="agent.addressCount && agent.addressCount > 1">
+                · {{ agent.addressCount }} addresses on file under this name
+              </span>
+            </span>
+          </span>
           <span class="agent-meta">
             <span class="mark-count">{{ agent.markCount | number }} marks</span>
             <span class="chev" aria-hidden="true">&rsaquo;</span>
