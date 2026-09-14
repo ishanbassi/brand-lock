@@ -26,7 +26,6 @@ import {
   AgentProfile,
   AgentPublicProfile,
   AgentRegistration,
-  TrademarkConflict,
   WatchConflictHistory,
 } from '../../../models/agent.model';
 
@@ -133,20 +132,6 @@ export class AgentDataService {
     form.append('file', file);
     const url = `${this.base}/agent-portal/portfolio/import`;
     return this.http.post<AgentImportResult>(batchId != null ? `${url}?batchId=${batchId}` : url, form);
-  }
-
-  // Trademark watch
-  findConflicts(portfolioItemId: number): Observable<TrademarkConflict[]> {
-    return this.http.get<TrademarkConflict[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflicts`);
-  }
-
-  getConflicts(portfolioItemId: number): Observable<TrademarkConflict[]> {
-    return this.findConflicts(portfolioItemId);
-  }
-
-  // Phase 2 — Conflict history
-  getConflictHistory(portfolioItemId: number): Observable<WatchConflictHistory[]> {
-    return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflict-history`);
   }
 
   /** Every conflict recorded across the whole portfolio — what the digest email links to. */

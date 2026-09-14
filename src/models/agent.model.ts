@@ -122,17 +122,6 @@ export interface AgentDashboardStats {
   expiringSoon: AgentPortfolioTrademark[];
 }
 
-export interface TrademarkConflict {
-  id?: number;
-  name?: string;
-  applicationNo?: number;
-  proprietorName?: string;
-  trademarkStatus?: string;
-  tmClass?: number;
-  score: number;
-  similarityScore?: number;
-}
-
 export interface WatchConflictHistory {
   id?: number;
   trademarkId?: number;
