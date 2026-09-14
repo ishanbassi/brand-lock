@@ -45,7 +45,12 @@ export class AgentPortfolioFormComponent implements OnInit {
     renewalDate: undefined,
   };
 
+  /** Add mode only - on edit the reference is saved with the notes, below the form. */
+  clientReference = '';
+
   readonly STATUS_OPTIONS = [
+    // First because it is the case the add form now exists for: a mark entered ahead of filing.
+    'Not yet filed',
     'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'
   ];
 
@@ -71,6 +76,13 @@ export class AgentPortfolioFormComponent implements OnInit {
       this.isEdit = true;
       this.editId = parseInt(id, 10);
       this.loadItem(this.editId);
+      return;
+    }
+    // Prefilled, not auto-submitted. The HEARING_UNCLAIMED notification links here with the number
+    // the Registry printed; submitting for the agent would be a write they never asked for.
+    const prefill = this.route.snapshot.queryParamMap.get('applicationNo')?.replace(/[^0-9]/g, '');
+    if (prefill) {
+      this.form.applicationNo = Number(prefill);
     }
   }
 
@@ -124,8 +136,10 @@ export class AgentPortfolioFormComponent implements OnInit {
       this.error.set('This mark comes from the public register and cannot be edited. Add a note instead.');
       return;
     }
-    if (!this.form.name?.trim()) {
-      this.error.set('Trademark name is required.');
+    // Either will do. A mark not yet filed has only a name; a filed one can be added by its number
+    // alone, and the register fills in the name when it is fetched.
+    if (!this.form.name?.trim() && !this.form.applicationNo) {
+      this.error.set('Enter a trademark name or an application number.');
       return;
     }
     this.error.set('');
@@ -133,7 +147,7 @@ export class AgentPortfolioFormComponent implements OnInit {
 
     const obs = this.isEdit
       ? this.agentDataService.updatePortfolioItem(this.editId!, this.form)
-      : this.agentDataService.addPortfolioItem(this.form);
+      : this.agentDataService.addPortfolioItem({ ...this.form, clientReference: this.clientReference.trim() || undefined });
 
     obs.subscribe({
       next: () => {

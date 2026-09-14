@@ -117,7 +117,8 @@ export interface AgentDashboardStats {
   watchlistCount: number;
   /** Every bucket, zeroes included, summing to totalTrademarks. */
   statusBreakdown: AgentStatusCount[];
-  recentAdditions: AgentPortfolioTrademark[];
+  /** Newest application date first; marks not yet filed are excluded. */
+  recentFilings: AgentPortfolioTrademark[];
   expiringSoon: AgentPortfolioTrademark[];
 }
 
@@ -371,15 +372,6 @@ export interface AgentJournalWatchResult {
   durationMs: number;
 }
 
-
-/** Outcome of adding a mark by application number. */
-export interface AgentAddByNumberResult {
-  /** ADDED = we already held it. FETCHING/QUEUE_BUSY = requested from the register. */
-  state: 'ADDED' | 'FETCHING' | 'QUEUE_BUSY' | 'INVALID';
-  trademarkId?: number;
-  name?: string;
-  message: string;
-}
 
 /**
  * A rival firm on the agent's watch list.

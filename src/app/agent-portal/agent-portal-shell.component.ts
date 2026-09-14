@@ -13,6 +13,12 @@ interface NavLeaf {
   label: string;
   icon: IconName;
   route: string;
+  /**
+   * Other routes that highlight this entry. For screens with no nav entry of their own that are
+   * reached from this one - Find my marks and Import Excel are buttons on Add Trademark, so while
+   * the agent is on them, Add Trademark is where they are.
+   */
+  alsoMatches?: string[];
 }
 
 /**
@@ -60,11 +66,16 @@ export class AgentPortalShellComponent {
       label: 'My Portfolio',
       icon: 'portfolio',
       id: 'portfolio',
+      // Two entries only. Find my marks and Import Excel are alternative ways of adding, so they
+      // are buttons at the top of Add Trademark rather than three nav peers for one job.
       children: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
-        { label: 'Find my marks',  icon: 'search',    route: '/agent-portal/portfolio/claim' },
-        { label: 'Import a list',  icon: 'upload',    route: '/agent-portal/portfolio/upload' },
-        { label: 'Add a mark',     icon: 'plus',      route: '/agent-portal/portfolio/add' },
+        {
+          label: 'Add trademark',
+          icon: 'plus',
+          route: '/agent-portal/portfolio/add',
+          alsoMatches: ['/agent-portal/portfolio/claim', '/agent-portal/portfolio/upload'],
+        },
       ],
     },
     {
@@ -78,11 +89,12 @@ export class AgentPortalShellComponent {
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
         { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts' },
-        // Watching other firms rather than our own marks - the outward half of the same question.
-        { label: 'Competitors',         icon: 'building', route: '/agent-portal/watch/competitors' },
       ],
     },
-    // Deadlines sits directly under the watch group: both answer "what needs me, and when".
+    // Its own entry rather than a watch child: it follows rival firms, not marks against the
+    // agent's portfolio. The route stays under watch/ so existing links keep working.
+    { label: 'Competitors',   icon: 'building',  route: '/agent-portal/watch/competitors' },
+    // Deadlines sits close under the watch group: both answer "what needs me, and when".
     { label: 'Deadlines',     icon: 'calendar',  route: '/agent-portal/deadlines' },
     { label: 'Search report', icon: 'search',    route: '/agent-portal/reports/search' },
     { label: 'Documents',     icon: 'documents', route: '/agent-portal/documents' },
@@ -98,15 +110,21 @@ export class AgentPortalShellComponent {
   /**
    * The one route to highlight: the most specific nav destination the URL matches.
    *
-   * A plain startsWith lights up All Trademarks as well as Import Excel whenever the URL is
-   * /portfolio/upload, because one route is a prefix of the other. With Find My Marks and the
-   * upload and add screens all living under /portfolio, that would be four highlighted at once.
+   * A plain startsWith lights up All Trademarks as well as Add Trademark whenever the URL is
+   * /portfolio/add, because one route is a prefix of the other. Specificity is judged on the path
+   * that matched, so an alsoMatches route beats its parent the same way a route does.
    */
   private readonly bestMatch = computed(() => {
     const url = this.activeRoute();
-    const matches = this.leaves.filter(i => url === i.route || url.startsWith(i.route + '/')).map(i => i.route);
-    if (matches.length === 0) return null;
-    return matches.reduce((a, b) => (b.length > a.length ? b : a));
+    let best: { route: string; length: number } | null = null;
+    for (const leaf of this.leaves) {
+      for (const path of [leaf.route, ...(leaf.alsoMatches ?? [])]) {
+        if ((url === path || url.startsWith(path + '/')) && (!best || path.length > best.length)) {
+          best = { route: leaf.route, length: path.length };
+        }
+      }
+    }
+    return best?.route ?? null;
   });
 
   constructor(

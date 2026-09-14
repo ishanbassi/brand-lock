@@ -95,14 +95,17 @@ $white: #ffffff;
 }
 
 // ── STATS GRID ──────────────────────────────────────
+// Every track on this page is minmax(0, 1fr), not 1fr. A bare 1fr has an automatic minimum of its
+// content's width, so one long nowrap line - a proprietor name, a status label - widened its column
+// past the viewport and gave the whole portal a horizontal scrollbar.
 .stats-grid, .loading-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--ap-space-4);
   margin-bottom: var(--ap-space-6);
 
-  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 600px)  { grid-template-columns: minmax(0, 1fr); }
 }
 
 .stat-card {
@@ -188,14 +191,15 @@ $white: #ffffff;
 // ── CONTENT GRID ──────────────────────────────────────
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--ap-space-4);
   margin-bottom: var(--ap-space-5);
 
-  @media (max-width: 900px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) { grid-template-columns: minmax(0, 1fr); }
 }
 
 .content-card {
+  min-width: 0;
   background: $white;
   border-radius: 14px;
   padding: var(--ap-space-5);
@@ -231,12 +235,12 @@ $white: #ffffff;
 
 .status-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr);
   gap: var(--ap-space-6);
   align-items: center;
 
   @media (max-width: 760px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--ap-space-5);
   }
 }
@@ -244,6 +248,8 @@ $white: #ffffff;
 .status-chart {
   position: relative;
   height: 240px;
+  // Chart.js sizes the canvas to its parent; without this the canvas can hold the track open.
+  min-width: 0;
 
   // The centre label is absolutely positioned over the doughnut hole, so it must not swallow the
   // pointer — hovering a slice through it still has to raise that slice's tooltip.
@@ -283,11 +289,13 @@ $white: #ffffff;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-1);
+  min-width: 0;
 }
 
 .status-row {
   display: grid;
-  grid-template-columns: 10px 1fr auto 44px;
+  // minmax(0, 1fr) so the name column can shrink and its ellipsis actually engages.
+  grid-template-columns: 10px minmax(0, 1fr) auto 44px;
   align-items: center;
   gap: var(--ap-space-3);
   padding: var(--ap-space-2) var(--ap-space-2);
@@ -372,15 +380,23 @@ $white: #ffffff;
   text-overflow: ellipsis;
 }
 
+// Wraps onto a second line rather than pushing the row wider; a long proprietor name is also
+// truncated on its own so it cannot outgrow the card.
 .tm-meta {
   display: flex;
-  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+  column-gap: var(--ap-space-2);
+  row-gap: 2px;
   margin-top: 2px;
+  min-width: 0;
 
   span {
     font-size: 0.72rem;
     color: $gray-400;
     white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:not(:last-child)::after {
       content: '·';
@@ -414,16 +430,6 @@ $white: #ffffff;
   &:hover { opacity: 1; }
 }
 
-.edit-btn {
-  font-size: 0.75rem;
-  color: $accent;
-  text-decoration: none;
-  font-weight: 600;
-  flex-shrink: 0;
-
-  &:hover { text-decoration: underline; }
-}
-
 .renewal-info { text-align: right; flex-shrink: 0; }
 .renewal-label { display: block; font-size: 0.7rem; color: $gray-400; }
 .renewal-date {
@@ -446,10 +452,11 @@ $white: #ffffff;
 // ── QUICK ACTIONS ──────────────────────────────────────
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--ap-space-4);
 
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 768px)  { grid-template-columns: minmax(0, 1fr); }
 }
 
 .qa-item {
@@ -473,6 +480,8 @@ $white: #ffffff;
 .qa-icon { font-size: 1.75rem; flex-shrink: 0; }
 
 .qa-text {
+  min-width: 0;
+
   strong { display: block; color: $gray-800; font-size: 0.875rem; margin-bottom: 2px; }
   p { color: $gray-400; font-size: 0.78rem; margin: 0; }
 }

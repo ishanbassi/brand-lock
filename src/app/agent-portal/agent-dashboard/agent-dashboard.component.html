@@ -118,20 +118,20 @@
     <!-- TWO COLUMN LAYOUT -->
     <div class="content-grid">
 
-      <!-- RECENT ADDITIONS -->
+      <!-- RECENT FILINGS: newest application date first -->
       <div class="content-card">
         <div class="card-header">
-          <h2 class="card-title">Recent Additions</h2>
+          <h2 class="card-title">Recent Filings</h2>
           <a routerLink="/agent-portal/portfolio" class="card-link">See all</a>
         </div>
-        @if (s.recentAdditions.length === 0) {
+        @if (s.recentFilings.length === 0) {
           <div class="empty-state">
-            <p>No trademarks yet.</p>
-            <a routerLink="/agent-portal/portfolio/upload" class="btn-primary btn-sm">Import your first portfolio →</a>
+            <p>No filed trademarks yet.</p>
+            <a routerLink="/agent-portal/portfolio/add" class="btn-primary btn-sm">Add a trademark →</a>
           </div>
         } @else {
           <div class="trademark-list">
-            @for (tm of s.recentAdditions; track tm.id; let i = $index) {
+            @for (tm of s.recentFilings; track tm.id; let i = $index) {
               <!--
                 The whole row opens the mark's detail screen, where its actions live. Per-row
                 action icons were removed: they put consequential operations one mis-click apart in
@@ -142,6 +142,7 @@
                 <div class="tm-main">
                   <div class="tm-name">{{ tm.name || '—' }}</div>
                   <div class="tm-meta">
+                    @if (tm.applicationDate) { <span>Filed {{ tm.applicationDate | date:'dd MMM yyyy' }}</span> }
                     @if (tm.applicationNo) { <span>No. {{ tm.applicationNo }}</span> }
                     @if (tm.tmClass) { <span>Class {{ tm.tmClass }}</span> }
                     @if (tm.proprietorName) { <span>{{ tm.proprietorName }}</span> }
@@ -170,7 +171,8 @@
         } @else {
           <div class="trademark-list">
             @for (tm of s.expiringSoon; track tm.id) {
-              <div class="tm-row">
+              <!-- Whole row opens the mark, as in Recent Filings; no per-row Edit action. -->
+              <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-row">
                 <div class="tm-main">
                   <div class="tm-name">{{ tm.name || '—' }}</div>
                   <div class="tm-meta">
@@ -182,8 +184,7 @@
                   <span class="renewal-label">Renewal</span>
                   <span class="renewal-date warn">{{ tm.renewalDate | date:'dd MMM yyyy' }}</span>
                 </div>
-                <a [routerLink]="['/agent-portal/portfolio', tm.id, 'edit']" class="edit-btn">Edit</a>
-              </div>
+              </a>
             }
           </div>
         }

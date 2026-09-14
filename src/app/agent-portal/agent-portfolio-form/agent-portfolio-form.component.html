@@ -5,6 +5,22 @@
     <a routerLink="/agent-portal/portfolio" class="back-link">‹ Back to Portfolio</a>
     <h1 class="page-title">{{ isEdit ? 'Edit Trademark' : 'Add Trademark' }}</h1>
     <p class="page-sub">{{ isEdit ? 'Update the details for this trademark.' : 'Add a new trademark to your portfolio.' }}</p>
+
+    <!--
+      The other two ways of adding. They were separate nav entries; as buttons here the agent sees
+      all three options in one place and picks the one that fits.
+    -->
+    @if (!isEdit) {
+      <div class="add-alternatives">
+        <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
+          <ap-icon name="upload" [size]="16" /> Import from Excel
+        </a>
+        <a routerLink="/agent-portal/portfolio/claim" class="btn-outline">
+          <ap-icon name="search" [size]="16" /> Find on the register
+        </a>
+      </div>
+      <p class="alt-divider"><span>or enter the details yourself</span></p>
+    }
   </div>
 
   @if (loading()) {
@@ -50,7 +66,7 @@
 
         <!-- NAME -->
         <div class="field full-span">
-          <label class="field-label" for="name">Trademark Name <span class="req">*</span></label>
+          <label class="field-label" for="name">Trademark Name</label>
           <input
             id="name"
             type="text"
@@ -58,7 +74,6 @@
             [(ngModel)]="form.name"
             name="name"
             placeholder="e.g. TRADEMARX"
-            required
           />
         </div>
 
@@ -73,6 +88,9 @@
             name="applicationNo"
             placeholder="e.g. 1234567"
           />
+          @if (!isEdit) {
+            <small class="field-hint">Leave blank if not filed yet. With a number, we fetch the rest from the register.</small>
+          }
         </div>
 
         <!-- CLASS -->
@@ -157,6 +175,22 @@
             name="renewalDate"
           />
         </div>
+
+        <!-- CLIENT REFERENCE: add only; on edit it is saved with the private notes below -->
+        @if (!isEdit) {
+          <div class="field full-span">
+            <label class="field-label" for="clientReference">Client Reference <em>(optional)</em></label>
+            <input
+              id="clientReference"
+              type="text"
+              class="field-input"
+              [(ngModel)]="clientReference"
+              name="clientReference"
+              placeholder="Your matter or client number"
+              autocomplete="off"
+            />
+          </div>
+        }
 
         <!-- DESCRIPTION -->
         <div class="field full-span">

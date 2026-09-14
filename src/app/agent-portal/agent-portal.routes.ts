@@ -12,10 +12,11 @@ export const agentPortalRoutes: Routes = [
     title: 'My Portfolio | Agent Portal',
   },
   {
-    // Application-number only. The old full form is kept for /portfolio/:id/edit, which is still
-    // the right screen for correcting a mark the register has not answered for yet.
+    // The full form, shared with /portfolio/:id/edit. Was application-number only, but agents add
+    // marks before filing them, and those have no number to give. Marks with a number we don't
+    // hold are fetched from the register later by AgentMarkReconcileJob.
     path: 'portfolio/add',
-    loadComponent: () => import('./agent-portfolio-add/agent-portfolio-add.component').then(m => m.AgentPortfolioAddComponent),
+    loadComponent: () => import('./agent-portfolio-form/agent-portfolio-form.component').then(m => m.AgentPortfolioFormComponent),
     title: 'Add Trademark | Agent Portal',
   },
   {

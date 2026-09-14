@@ -43,6 +43,51 @@ $white: #ffffff;
   margin: 0 0 var(--ap-space-6);
 }
 
+.add-alternatives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  background: $white;
+  color: $gray-600;
+  border: 1.5px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: $accent; color: $accent; }
+}
+
+.alt-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  color: $gray-400;
+  font-size: 0.8125rem;
+  margin: var(--ap-space-5) 0;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $gray-200;
+  }
+}
+
+.field-hint {
+  color: $gray-400;
+  font-size: 0.75rem;
+  margin-top: var(--ap-space-1);
+}
+
 .form-card {
   background: $white;
   border-radius: 16px;
