@@ -96,9 +96,21 @@ export class AgentDataService {
    * almost always came back empty.
    */
   getPortfolio(page = 0, size = 20, query: AgentPortfolioQuery = {}): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
-    let params = new HttpParams().set('page', page).set('size', size);
+    const params = this.portfolioParams(query).set('page', page).set('size', size);
+    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
+      params,
+      observe: 'response',
+    });
+  }
+
+  /** The listing's filter and sort as query params — shared by the listing and both exports. */
+  private portfolioParams(query: AgentPortfolioQuery): HttpParams {
+    let params = new HttpParams();
     if (query.search?.trim()) {
       params = params.set('search', query.search.trim());
+      if (query.searchBy) {
+        params = params.set('searchBy', query.searchBy);
+      }
     }
     if (query.status) {
       params = params.set('status', query.status);
@@ -106,10 +118,10 @@ export class AgentDataService {
     if (query.tmClass != null) {
       params = params.set('tmClass', query.tmClass);
     }
-    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
-      params,
-      observe: 'response',
-    });
+    if (query.sort) {
+      params = params.set('sort', `${query.sort.field},${query.sort.dir}`);
+    }
+    return params;
   }
 
   /** The status buckets and classes actually present in this agent's portfolio, with counts. */
@@ -286,11 +298,45 @@ export class AgentDataService {
     return params;
   }
 
+  /** Every row of the search as a spreadsheet — the PDF stops at a readable length. */
+  downloadSearchReportExcel(query: string, tmClasses?: number[] | null): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/search.xlsx`, {
+      params: this.searchReportParams(query, tmClasses),
+      responseType: 'blob',
+    });
+  }
+
   downloadWatchReport(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.pdf`, {
       params: this.tmClassParams(tmClasses),
       responseType: 'blob',
     });
+  }
+
+  /** The same watch run as a spreadsheet, with both marks' goods and services. */
+  downloadWatchReportExcel(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.xlsx`, {
+      params: this.tmClassParams(tmClasses),
+      responseType: 'blob',
+    });
+  }
+
+  /** One mark's register record, as a spreadsheet. */
+  exportTrademarkExcel(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/export/excel`, { responseType: 'blob' });
+  }
+
+  /** One mark's register record on the firm's letterhead. */
+  exportTrademarkPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/trademark/${id}.pdf`, { responseType: 'blob' });
+  }
+
+  /**
+   * A mark's artwork in a browser-drawable format (JPEG 2000 is transcoded server-side). Fetched as
+   * a blob because the endpoint needs the auth header an <img src> cannot send. 404s when absent.
+   */
+  getTrademarkArtwork(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/artwork`, { responseType: 'blob' });
   }
 
   // ── Report branding ────────────────────────────────────────────────────
@@ -435,8 +481,12 @@ export class AgentDataService {
     return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/claim`, request);
   }
 
-  exportPortfolioExcel(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, { responseType: 'blob' });
+  /** The portfolio as a spreadsheet, narrowed and ordered as the listing is. No query = everything. */
+  exportPortfolioExcel(query: AgentPortfolioQuery = {}): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, {
+      params: this.portfolioParams(query),
+      responseType: 'blob',
+    });
   }
 
   /**
@@ -446,8 +496,11 @@ export class AgentDataService {
    * unbranded table with a dark grey header — fine as an internal export, not something to send a
    * client. It is left on the server for now so nothing that still calls it breaks.
    */
-  exportPortfolioPdf(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, { responseType: 'blob' });
+  exportPortfolioPdf(query: AgentPortfolioQuery = {}): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, {
+      params: this.portfolioParams(query),
+      responseType: 'blob',
+    });
   }
 
 

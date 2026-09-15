@@ -63,6 +63,12 @@ export interface AgentPortfolioTrademark {
   /** Agent-private annotation. Lives on the portfolio link, so it is always editable. */
   agentNotes?: string;
   clientReference?: string;
+
+  /**
+   * Stored artwork filename; present only when the mark has an image. Treat it as a flag — many
+   * are JPEG 2000, which browsers cannot draw, so fetch the image via getTrademarkArtwork.
+   */
+  imgUrl?: string | null;
 }
 
 export interface AgentImportResult {
@@ -102,12 +108,29 @@ export interface AgentPortfolioFilterOptions {
   classes: { tmClass: number; count: number }[];
 }
 
+/** The field the portfolio search box matches against. */
+export type PortfolioSearchField = 'NAME' | 'APPLICATION_NO' | 'PROPRIETOR';
+
+/** Portfolio columns the server can sort by — the DTO property names, whitelisted server-side. */
+export type PortfolioSortField =
+  | 'name'
+  | 'applicationNo'
+  | 'tmClass'
+  | 'proprietorName'
+  | 'trademarkStatus'
+  | 'applicationDate'
+  | 'renewalDate';
+
 /** Server-side narrowing of the portfolio listing. Anything unset is "no filter". */
 export interface AgentPortfolioQuery {
   search?: string;
+  /** Which field `search` matches. Unset searches name, number and proprietor together. */
+  searchBy?: PortfolioSearchField;
   /** A status bucket key, never a raw registry status. */
   status?: string;
   tmClass?: number | null;
+  /** Unset keeps the default order: most recently added to the portfolio first. */
+  sort?: { field: PortfolioSortField; dir: 'asc' | 'desc' } | null;
 }
 
 export interface AgentDashboardStats {
@@ -339,6 +362,8 @@ export interface AgentJournalConflict {
   portfolioTrademarkName?: string;
   portfolioApplicationNo?: number;
   portfolioTmClass?: number;
+  /** Goods / services of the agent's mark. */
+  portfolioDetails?: string;
 
   conflictingTrademarkId: number;
   conflictingTrademarkName?: string;
@@ -347,6 +372,8 @@ export interface AgentJournalConflict {
   conflictingProprietorName?: string;
   conflictingApplicationDate?: string;
   conflictingImgUrl?: string;
+  /** Goods / services of the advertised mark — what tells a similar name apart from a real clash. */
+  conflictingDetails?: string;
   /** Public detail page for the advertised mark. Absent when it has no application number. */
   conflictingDetailUrl?: string;
 }

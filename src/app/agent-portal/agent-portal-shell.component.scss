@@ -75,6 +75,54 @@ $content-bg: var(--ap-paper);
   padding: var(--ap-space-4) 0;
   overflow-y: auto;
   overflow-x: hidden;
+
+  // The native bar is a light grey slab on the ink rail and takes ~17px from a 244px column, which
+  // is enough to truncate labels. A thin thumb that only shows while the rail is hovered keeps the
+  // scroll affordance without either cost.
+  //
+  // WebKit/Blink get the pseudo-elements, which allow a rounded, inset thumb. The standard
+  // properties go only to browsers without them (Firefox): Chrome 121+ supports both and lets the
+  // standard ones override the pseudo-elements, which would lose the rounding.
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    // The transparent border insets the thumb from the rail's edge, so it reads as 4px wide
+    // while the hit area stays 10px.
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    background-color: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb,
+  &:focus-within::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &:hover,
+    &:focus-within {
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+  }
 }
 
 // ── SECTIONS ─────────────────────────────────────────────

@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/agent.model';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { saveBlob } from '../ui/save-blob';
+
+/** Descriptions longer than this are clamped until the agent asks for the rest. */
+const DESCRIPTION_PREVIEW_CHARS = 160;
 
 /**
  * Trademark Watch — checks the agent's portfolio against a published journal issue.
@@ -15,7 +20,7 @@ import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/a
 @Component({
   selector: 'app-agent-journal-watch',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ExportMenuComponent],
   templateUrl: './agent-journal-watch.component.html',
   styleUrl: './agent-journal-watch.component.scss',
 })
@@ -30,7 +35,10 @@ export class AgentJournalWatchComponent implements OnInit {
   classPickerOpen = signal(false);
 
   running = signal(false);
-  downloading = signal(false);
+  exporting = signal<ExportFormat | null>(null);
+
+  /** Cards whose goods/services text is shown in full. */
+  private expanded = signal<Set<string>>(new Set());
   result = signal<AgentJournalWatchResult | null>(null);
   error = signal('');
 
@@ -125,24 +133,47 @@ export class AgentJournalWatchComponent implements OnInit {
     });
   }
 
-  downloadPdf(): void {
+  /** Downloads the run on screen — same issue, same classes — as Excel or PDF. */
+  export(format: ExportFormat): void {
     const journal = this.result()?.journalNo;
-    if (journal == null || this.downloading()) return;
-    this.downloading.set(true);
-    this.agentDataService.downloadWatchReport(journal, this.ranWithClasses).subscribe({
+    if (journal == null || this.exporting()) return;
+    this.exporting.set(format);
+    const request = format === 'excel'
+      ? this.agentDataService.downloadWatchReportExcel(journal, this.ranWithClasses)
+      : this.agentDataService.downloadWatchReport(journal, this.ranWithClasses);
+    request.subscribe({
       next: blob => {
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = `watch-report-journal-${journal}.pdf`;
-        anchor.click();
-        URL.revokeObjectURL(url);
-        this.downloading.set(false);
+        saveBlob(blob, `watch-report-journal-${journal}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+        this.exporting.set(null);
       },
       error: () => {
-        this.error.set('Could not generate the PDF.');
-        this.downloading.set(false);
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.exporting.set(null);
       },
+    });
+  }
+
+  // ── Goods / services descriptions ────────────────────────────────────────
+
+  private cardKey(c: AgentJournalConflict): string {
+    return `${c.portfolioTrademarkId}-${c.conflictingTrademarkId}`;
+  }
+
+  isLong(text: string | undefined): boolean {
+    return (text?.length ?? 0) > DESCRIPTION_PREVIEW_CHARS;
+  }
+
+  isExpanded(c: AgentJournalConflict): boolean {
+    return this.expanded().has(this.cardKey(c));
+  }
+
+  /** One toggle per card opens both descriptions together — they are read side by side. */
+  toggleExpanded(c: AgentJournalConflict): void {
+    const key = this.cardKey(c);
+    this.expanded.update(set => {
+      const next = new Set(set);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
     });
   }
 

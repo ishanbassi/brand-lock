@@ -22,6 +22,7 @@
         consequential enough that they need the surrounding context to decide on.
       -->
       <div class="detail-actions">
+        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
         @if (mark()!.applicationNo) {
           <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
             @if (refreshing()) {
@@ -82,6 +83,22 @@
     <!-- ── DETAILS ──────────────────────────────────────────────────── -->
     <section class="card">
       <h2>Details</h2>
+      <div class="details-layout" [class.has-artwork]="artworkState() !== 'none'">
+      @if (artworkState() !== 'none') {
+        <figure class="artwork">
+          @switch (artworkState()) {
+            @case ('ready') {
+              <img [src]="artworkUrl()" [alt]="'Artwork for ' + (mark()!.name || 'this mark')" />
+            }
+            @case ('loading') {
+              <span class="artwork-note">Loading image…</span>
+            }
+            @default {
+              <span class="artwork-note">The image for this mark could not be displayed.</span>
+            }
+          }
+        </figure>
+      }
       <dl class="detail-grid">
         <div><dt>Proprietor</dt><dd>{{ mark()!.proprietorName || '—' }}</dd></div>
         <div><dt>Class</dt><dd>{{ mark()!.tmClass || '—' }}</dd></div>
@@ -92,6 +109,7 @@
         <div><dt>State</dt><dd>{{ mark()!.state || '—' }}</dd></div>
         <div><dt>Source</dt><dd>{{ mark()!.source || '—' }}</dd></div>
       </dl>
+      </div>
       @if (mark()!.details) {
         <div class="goods"><dt>Goods / services</dt><p>{{ mark()!.details }}</p></div>
       }

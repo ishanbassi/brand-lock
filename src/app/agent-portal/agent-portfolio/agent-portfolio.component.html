@@ -15,6 +15,12 @@
       </p>
     </div>
     <div class="header-actions">
+      <!-- Exports the current search, filters and sort across every page, not just this one. -->
+      <ap-export-menu
+        [busy]="exporting()"
+        [disabled]="loading() || totalCount === 0"
+        (selected)="export($event)"
+      />
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
         <span><ap-icon name="upload" [size]="16" /></span> Import Excel
       </a>
@@ -26,18 +32,32 @@
 
   <!-- FILTERS BAR -->
   <div class="filters-bar">
-    <div class="search-wrap">
-      <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search by name, app number or proprietor…"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearchChange()"
-      />
-      @if (searchQuery) {
-        <button class="search-clear" (click)="searchQuery = ''; onSearchChange()"><ap-icon name="close" [size]="16" /></button>
-      }
+    <!-- Field picker and text box read as one control: "search [Proprietor] for ___". -->
+    <div class="search-group">
+      <select
+        class="search-by"
+        aria-label="Search by"
+        [(ngModel)]="searchBy"
+        (ngModelChange)="onSearchByChange()"
+      >
+        @for (f of searchFields; track f.value) {
+          <option [value]="f.value">{{ f.label }}</option>
+        }
+      </select>
+      <div class="search-wrap">
+        <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
+        <input
+          type="text"
+          class="search-input"
+          [attr.inputmode]="searchBy === 'APPLICATION_NO' ? 'numeric' : null"
+          [placeholder]="searchPlaceholder"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
+        />
+        @if (searchQuery) {
+          <button class="search-clear" aria-label="Clear search" (click)="searchQuery = ''; onSearchChange()"><ap-icon name="close" [size]="16" /></button>
+        }
+      </div>
     </div>
 
     <!--
@@ -121,13 +141,22 @@
       <table class="tm-table">
         <thead>
           <tr>
-            <th>Trademark</th>
-            <th>App No.</th>
-            <th>Class</th>
-            <th>Proprietor</th>
-            <th>Status</th>
-            <th>Filing Date</th>
-            <th>Renewal</th>
+            <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
+            @for (col of columns; track col.field) {
+              <th [attr.aria-sort]="ariaSort(col.field)">
+                <button
+                  type="button"
+                  class="sort-btn"
+                  [class.sorted]="sortField === col.field"
+                  (click)="toggleSort(col)"
+                >
+                  {{ col.label }}
+                  <span class="sort-indicator" aria-hidden="true">
+                    @if (sortField !== col.field) { ↕ } @else if (sortDir === 'asc') { ↑ } @else { ↓ }
+                  </span>
+                </button>
+              </th>
+            }
             <th class="actions-col">Actions</th>
           </tr>
         </thead>

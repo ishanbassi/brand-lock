@@ -82,9 +82,7 @@
           }
         </div>
 
-        <button type="button" class="btn-primary" (click)="download()" [disabled]="downloading()">
-          {{ downloading() ? 'Preparing…' : 'Download PDF' }}
-        </button>
+        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
       </div>
 
       @if (r.rows.length === 0) {

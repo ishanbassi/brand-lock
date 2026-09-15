@@ -1,5 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { fileSlug, saveBlob } from '../ui/save-blob';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -21,11 +23,11 @@ import {
 @Component({
   selector: 'app-agent-trademark-detail',
   standalone: true,
-  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-trademark-detail.component.html',
   styleUrl: './agent-trademark-detail.component.scss',
 })
-export class AgentTrademarkDetailComponent implements OnInit {
+export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   readonly documentTypes = AGENT_DOCUMENT_TYPES;
 
   trademarkId!: number;
@@ -58,6 +60,17 @@ export class AgentTrademarkDetailComponent implements OnInit {
   /** Registry-backed marks are read-only; only agent-entered ones can still be edited. */
   editable = computed(() => this.mark()?.editable === true);
 
+  // Export
+  exporting = signal<ExportFormat | null>(null);
+
+  /**
+   * The mark's artwork as an object URL. Fetched through the API rather than linked from /files/:
+   * about a third of stored images are JPEG 2000, which no browser draws, and the server transcodes
+   * those. 'failed' keeps the frame with a note rather than silently dropping the image.
+   */
+  artworkUrl = signal<string | null>(null);
+  artworkState = signal<'none' | 'loading' | 'ready' | 'failed'>('none');
+
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
@@ -84,10 +97,59 @@ export class AgentTrademarkDetailComponent implements OnInit {
         this.notes.agentNotes = tm.agentNotes ?? '';
         this.notes.clientReference = tm.clientReference ?? '';
         this.loading.set(false);
+        this.loadArtwork(tm);
       },
       error: () => {
         this.error.set('Could not load this trademark.');
         this.loading.set(false);
+      },
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.releaseArtwork();
+  }
+
+  private loadArtwork(tm: AgentPortfolioTrademark): void {
+    this.releaseArtwork();
+    if (!tm.imgUrl) {
+      this.artworkState.set('none');
+      return;
+    }
+    this.artworkState.set('loading');
+    this.agentDataService.getTrademarkArtwork(this.trademarkId).subscribe({
+      next: blob => {
+        this.artworkUrl.set(URL.createObjectURL(blob));
+        this.artworkState.set('ready');
+      },
+      error: () => this.artworkState.set('failed'),
+    });
+  }
+
+  private releaseArtwork(): void {
+    const url = this.artworkUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.artworkUrl.set(null);
+  }
+
+  // ── Export ───────────────────────────────────────────────────────────────
+
+  export(format: ExportFormat): void {
+    if (this.exporting()) return;
+    this.exporting.set(format);
+    const tm = this.mark();
+    const key = tm?.applicationNo ? String(tm.applicationNo) : fileSlug(tm?.name, 'trademark');
+    const request = format === 'excel'
+      ? this.agentDataService.exportTrademarkExcel(this.trademarkId)
+      : this.agentDataService.exportTrademarkPdf(this.trademarkId);
+    request.subscribe({
+      next: blob => {
+        saveBlob(blob, `trademark-${key}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+        this.exporting.set(null);
+      },
+      error: () => {
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.exporting.set(null);
       },
     });
   }
@@ -230,14 +292,7 @@ export class AgentTrademarkDetailComponent implements OnInit {
    */
   download(doc: AgentDocument): void {
     this.agentDataService.downloadDocument(doc.id).subscribe({
-      next: blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = doc.originalFileName || `document-${doc.id}`;
-        a.click();
-        URL.revokeObjectURL(url);
-      },
+      next: blob => saveBlob(blob, doc.originalFileName || `document-${doc.id}`),
       error: () => this.error.set('Could not download that document.'),
     });
   }

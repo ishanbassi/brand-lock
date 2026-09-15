@@ -1,16 +1,40 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { saveBlob } from '../ui/save-blob';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentImportSummary, AgentPortfolioFilterOptions, AgentPortfolioTrademark } from '../../../models/agent.model';
+import {
+  AgentImportSummary,
+  AgentPortfolioFilterOptions,
+  AgentPortfolioQuery,
+  AgentPortfolioTrademark,
+  PortfolioSearchField,
+  PortfolioSortField,
+} from '../../../models/agent.model';
+
+/** One option of the "search by" dropdown. */
+interface SearchFieldOption {
+  value: PortfolioSearchField;
+  label: string;
+  placeholder: string;
+}
+
+/** A sortable column header. */
+interface SortableColumn {
+  field: PortfolioSortField;
+  label: string;
+  /** Dates open newest-first — "oldest filing" is rarely the first question. Text opens A→Z. */
+  firstDir: 'asc' | 'desc';
+}
 
 @Component({
   selector: 'app-agent-portfolio',
   standalone: true,
-  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })
@@ -32,6 +56,17 @@ export class AgentPortfolioComponent implements OnInit {
   filterClass = '';
   private searchSubject = new Subject<string>();
 
+  /**
+   * Which field the search box matches. One field at a time: searching all three at once meant a
+   * number like "25" matched every mark whose name, proprietor or application number contained it.
+   */
+  searchBy: PortfolioSearchField = 'NAME';
+  readonly searchFields: SearchFieldOption[] = [
+    { value: 'NAME', label: 'Trademark', placeholder: 'Search by trademark name…' },
+    { value: 'APPLICATION_NO', label: 'Application no.', placeholder: 'Search by application number…' },
+    { value: 'PROPRIETOR', label: 'Proprietor', placeholder: 'Search by proprietor name…' },
+  ];
+
   // The query the table currently reflects. Tracked here rather than with distinctUntilChanged so
   // that clearing the filters can reset it: the operator would otherwise still be holding the old
   // text, and retyping it after a clear would be swallowed as "no change" while the table below
@@ -41,6 +76,23 @@ export class AgentPortfolioComponent implements OnInit {
   // Only the buckets and classes this agent actually holds, with counts, so no option can be
   // chosen that is guaranteed to return an empty table.
   filterOptions = signal<AgentPortfolioFilterOptions | null>(null);
+
+  /**
+   * Sorting is done by the server across the whole filtered set — sorting the twenty rows on screen
+   * would put page one's "A" marks first and leave every other "A" on later pages. Null keeps the
+   * default order, most recently added first.
+   */
+  sortField: PortfolioSortField | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
+  readonly columns: SortableColumn[] = [
+    { field: 'name', label: 'Trademark', firstDir: 'asc' },
+    { field: 'applicationNo', label: 'App No.', firstDir: 'asc' },
+    { field: 'tmClass', label: 'Class', firstDir: 'asc' },
+    { field: 'proprietorName', label: 'Proprietor', firstDir: 'asc' },
+    { field: 'trademarkStatus', label: 'Status', firstDir: 'asc' },
+    { field: 'applicationDate', label: 'Filing Date', firstDir: 'desc' },
+    { field: 'renewalDate', label: 'Renewal', firstDir: 'asc' },
+  ];
 
   // Delete
   deletingId = signal<number | null>(null);
@@ -56,8 +108,7 @@ export class AgentPortfolioComponent implements OnInit {
   pendingImports = signal<AgentImportSummary[]>([]);
 
   // Export
-  exportingExcel = signal(false);
-  exportingPdf = signal(false);
+  exporting = signal<ExportFormat | null>(null);
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
@@ -125,15 +176,22 @@ export class AgentPortfolioComponent implements OnInit {
     });
   }
 
+  /** The filter and sort the table reflects — sent with the listing and with both exports. */
+  private currentQuery(): AgentPortfolioQuery {
+    return {
+      search: this.searchQuery,
+      searchBy: this.searchBy,
+      status: this.filterStatus,
+      tmClass: this.filterClass === '' ? null : Number(this.filterClass),
+      sort: this.sortField ? { field: this.sortField, dir: this.sortDir } : null,
+    };
+  }
+
   load(): void {
     this.loading.set(true);
     this.error.set('');
     this.agentDataService
-      .getPortfolio(this.page, this.pageSize, {
-        search: this.searchQuery,
-        status: this.filterStatus,
-        tmClass: this.filterClass === '' ? null : Number(this.filterClass),
-      })
+      .getPortfolio(this.page, this.pageSize, this.currentQuery())
       .subscribe({
         next: (res) => {
           this.trademarks.set(res.body || []);
@@ -156,8 +214,18 @@ export class AgentPortfolioComponent implements OnInit {
     return !!(this.searchQuery.trim() || this.filterStatus || this.filterClass);
   }
 
+  get searchPlaceholder(): string {
+    return this.searchFields.find(f => f.value === this.searchBy)?.placeholder ?? 'Search…';
+  }
+
   onSearchChange(): void {
     this.searchSubject.next(this.searchQuery);
+  }
+
+  /** Switching the field only changes the results when there is text to match. */
+  onSearchByChange(): void {
+    if (!this.searchQuery.trim()) return;
+    this.onFilterChange();
   }
 
   /** Any dropdown change restarts at page one - page 483 of an unfiltered list means nothing now. */
@@ -174,6 +242,23 @@ export class AgentPortfolioComponent implements OnInit {
     this.filterClass = '';
     this.page = 0;
     this.load();
+  }
+
+  /** First click sorts by the column, the next reverses it. Restarts at page one either way. */
+  toggleSort(column: SortableColumn): void {
+    if (this.sortField === column.field) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = column.field;
+      this.sortDir = column.firstDir;
+    }
+    this.page = 0;
+    this.load();
+  }
+
+  ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {
+    if (this.sortField !== field) return 'none';
+    return this.sortDir === 'asc' ? 'ascending' : 'descending';
   }
 
   goToPage(p: number): void {
@@ -239,34 +324,27 @@ export class AgentPortfolioComponent implements OnInit {
     return tm.id;
   }
 
-  exportExcel(): void {
-    this.exportingExcel.set(true);
-    this.agentDataService.exportPortfolioExcel().subscribe({
+  /**
+   * Downloads what the table shows — the same search, filters and order — across every page, not
+   * just the twenty rows on screen.
+   */
+  export(format: ExportFormat): void {
+    if (this.exporting()) return;
+    this.exporting.set(format);
+    this.error.set('');
+    const query = this.currentQuery();
+    const request = format === 'excel'
+      ? this.agentDataService.exportPortfolioExcel(query)
+      : this.agentDataService.exportPortfolioPdf(query);
+    request.subscribe({
       next: (blob) => {
-        this.downloadBlob(blob, 'trademark-portfolio.xlsx');
-        this.exportingExcel.set(false);
+        saveBlob(blob, format === 'excel' ? 'trademark-portfolio.xlsx' : 'trademark-portfolio.pdf');
+        this.exporting.set(null);
       },
-      error: () => this.exportingExcel.set(false),
-    });
-  }
-
-  exportPdf(): void {
-    this.exportingPdf.set(true);
-    this.agentDataService.exportPortfolioPdf().subscribe({
-      next: (blob) => {
-        this.downloadBlob(blob, 'trademark-portfolio.pdf');
-        this.exportingPdf.set(false);
+      error: () => {
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}. Please try again.`);
+        this.exporting.set(null);
       },
-      error: () => this.exportingPdf.set(false),
     });
-  }
-
-  private downloadBlob(blob: Blob, filename: string): void {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
   }
 }

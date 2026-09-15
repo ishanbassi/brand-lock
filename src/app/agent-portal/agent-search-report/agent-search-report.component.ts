@@ -3,6 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SearchReport, SearchReportRow } from '../../../models/agent.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { fileSlug, saveBlob } from '../ui/save-blob';
 
 /**
  * Availability search, previewed on screen and downloadable on the firm's letterhead.
@@ -14,7 +16,7 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 @Component({
   selector: 'app-agent-search-report',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportMenuComponent],
   templateUrl: './agent-search-report.component.html',
   styleUrl: './agent-search-report.component.scss',
 })
@@ -36,7 +38,7 @@ export class AgentSearchReportComponent {
 
   readonly report = signal<SearchReport | null>(null);
   readonly loading = signal(false);
-  readonly downloading = signal(false);
+  readonly exporting = signal<ExportFormat | null>(null);
   readonly error = signal('');
 
   /** All 45 Nice classes. Optional, but choosing some changes what the report means. */
@@ -96,26 +98,25 @@ export class AgentSearchReportComponent {
     });
   }
 
-  download(): void {
+  /** The search on screen as Excel (every row) or PDF (on letterhead, with the client name). */
+  export(format: ExportFormat): void {
     const current = this.report();
-    if (!current || this.downloading()) {
+    if (!current || this.exporting()) {
       return;
     }
-    this.downloading.set(true);
+    this.exporting.set(format);
 
-    this.agentData.downloadSearchReport(current.query, current.tmClasses, this.clientName.trim() || null).subscribe({
+    const request = format === 'excel'
+      ? this.agentData.downloadSearchReportExcel(current.query, current.tmClasses)
+      : this.agentData.downloadSearchReport(current.query, current.tmClasses, this.clientName.trim() || null);
+    request.subscribe({
       next: blob => {
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = `search-report-${current.query.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`;
-        anchor.click();
-        URL.revokeObjectURL(url);
-        this.downloading.set(false);
+        saveBlob(blob, `search-report-${fileSlug(current.query, 'mark')}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+        this.exporting.set(null);
       },
       error: () => {
-        this.error.set('Could not generate the PDF.');
-        this.downloading.set(false);
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.exporting.set(null);
       },
     });
   }

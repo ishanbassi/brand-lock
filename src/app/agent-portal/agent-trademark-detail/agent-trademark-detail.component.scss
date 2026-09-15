@@ -40,6 +40,42 @@ $white: #ffffff;
 
 .loading-inline, .empty-inline { padding: var(--ap-space-3) 0; font-size: 0.875rem; }
 
+// ── ARTWORK ─────────────────────────────────────────────
+// Image beside the facts on wide screens, above them on narrow ones.
+.details-layout.has-artwork {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr;
+  gap: var(--ap-space-5);
+  align-items: start;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.artwork {
+  margin: var(--ap-space-3) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: var(--ap-space-3);
+  background: var(--ap-paper);
+  border: 1px solid var(--ap-rule);
+  border-radius: 10px;
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+  }
+}
+
+.artwork-note {
+  font-size: 0.8125rem;
+  color: var(--ap-ink-faint);
+  text-align: center;
+}
+
 // ── HEADER ──────────────────────────────────────────────
 .detail-header {
   display: flex;
