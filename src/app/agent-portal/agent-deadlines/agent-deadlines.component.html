@@ -31,7 +31,8 @@
               [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
     </div>
 
-    @if (view() === 'list') {
+    <!-- The range is the one filter, read by both views alike: it sets the window list scrolls
+         through and the span month view is allowed to page across. -->
     <div class="range" role="group" aria-label="Date range">
       @for (range of ranges; track range.key) {
         <button
@@ -45,18 +46,25 @@
         </button>
       }
     </div>
-    } @else {
-      <!-- Month paging replaces the range chips: the visible month is the range. -->
+
+    @if (view() === 'month') {
+      <!-- Paging within the range above, not a second, independent window. -->
       <div class="month-nav">
-        <button type="button" class="month-step" (click)="stepMonth(-1)" aria-label="Previous month">
+        <button type="button" class="month-step" (click)="stepMonth(-1)" aria-label="Previous month" [disabled]="!canStepBack()">
           <ap-icon name="chevron" [size]="16" class="flip" />
         </button>
         <span class="month-label">{{ monthLabel() }}</span>
-        <button type="button" class="month-step" (click)="stepMonth(1)" aria-label="Next month">
+        <button type="button" class="month-step" (click)="stepMonth(1)" aria-label="Next month" [disabled]="!canStepForward()">
           <ap-icon name="chevron" [size]="16" />
         </button>
         <button type="button" class="month-today" (click)="goToThisMonth()">Today</button>
       </div>
+    }
+
+    @if (view() === 'list' && hasTodayGroup()) {
+      <button type="button" class="ap-btn ap-btn--quiet jump-today" (click)="scrollToToday()">
+        Jump to today
+      </button>
     }
 
     <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
@@ -132,14 +140,27 @@
             <span class="cell-date ap-num">{{ cell.dayOfMonth }}</span>
 
             @if (cell.items.length > 0) {
-              <span class="cell-markers">
-                @for (item of cell.items.slice(0, 4); track item.derivedKey || item.id) {
-                  <span [class]="markerClass(item)" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')"></span>
+              <!-- Up to two items named in the box itself, so the common case - one hearing, one
+                   renewal - reads without a click. A busier day still shows a dot per item beyond
+                   that, so the count is never lost, just not spelled out. -->
+              <ul class="cell-items">
+                @for (item of cell.items.slice(0, 2); track item.derivedKey || item.id) {
+                  <li class="cell-item" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')">
+                    <span [class]="markerClass(item)"></span>
+                    <span class="cell-item-label">{{ item.trademarkName || typeLabel(item) }}</span>
+                  </li>
                 }
-                @if (cell.items.length > 4) {
-                  <span class="cell-more">+{{ cell.items.length - 4 }}</span>
-                }
-              </span>
+              </ul>
+              @if (cell.items.length > 2) {
+                <span class="cell-markers">
+                  @for (item of cell.items.slice(2, 6); track item.derivedKey || item.id) {
+                    <span [class]="markerClass(item)" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')"></span>
+                  }
+                  @if (cell.items.length > 6) {
+                    <span class="cell-more">+{{ cell.items.length - 6 }}</span>
+                  }
+                </span>
+              }
             }
           </div>
         }
@@ -187,7 +208,7 @@
     -->
     <ol class="days">
       @for (day of groups(); track day.date) {
-        <li class="day" [class.is-past]="day.past" [class.is-today]="day.today">
+        <li class="day" [attr.id]="day.today ? 'deadline-day-today' : null" [class.is-past]="day.past" [class.is-today]="day.today">
           <div class="day-rail">
             <span class="day-num ap-num">{{ day.label }}</span>
             <span class="day-weekday">{{ day.weekday }}</span>

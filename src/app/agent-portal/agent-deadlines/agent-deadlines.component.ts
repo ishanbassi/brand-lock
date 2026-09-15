@@ -56,15 +56,20 @@ export class AgentDeadlinesComponent implements OnInit {
   readonly saving = signal<string | null>(null);
 
   /**
-   * Ranges the agent actually asks for, with the default first.
+   * Ranges the agent actually asks for, with the default first. Shared by both views - see the
+   * class comment on {@link view}.
    *
-   * <p>Every range reaches into the past. Hearings are only ever known on or after the day, so a
-   * strictly forward window would show an empty page to someone who had a hearing this morning.
+   * <p>Symmetric back and forward on purpose. They used to differ (a fixed 14-30 day lookback
+   * regardless of how far forward the range reached), which is what let a renewal overdue by more
+   * than a month quietly vanish from every range on this page while still being reachable in month
+   * view by paging back far enough - the two views were reading different windows of the same data
+   * and had no reason to agree. A renewal overdue by 89 days is exactly as real as one due in 89
+   * days, so the same number bounds both directions.
    */
   readonly ranges = [
-    { key: '90', label: 'Next 90 days', back: 30, forward: 90 },
-    { key: '30', label: 'Next 30 days', back: 14, forward: 30 },
-    { key: '365', label: 'Next 12 months', back: 30, forward: 365 },
+    { key: '90', label: 'Next 90 days', back: 90, forward: 90 },
+    { key: '30', label: 'Next 30 days', back: 30, forward: 30 },
+    { key: '365', label: 'Next 12 months', back: 365, forward: 365 },
   ];
   readonly activeRange = signal(this.ranges[0]);
 
@@ -72,8 +77,10 @@ export class AgentDeadlinesComponent implements OnInit {
 
   // ── View mode ────────────────────────────────────────────────────────────
   //
-  // Two readings of the same data. The list answers "what is next"; the month answers "how is the
-  // quarter shaped". Neither is the better default for everyone, so the choice is the agent's.
+  // Two readings of the same data, and it has to be the same data: the range chips above set one
+  // fetch window and both views page within it, month view a month at a time. The list answers
+  // "what is next"; the month answers "how is the quarter shaped". Neither is the better default
+  // for everyone, so the choice is the agent's - the window they're both reading is not.
 
   readonly view = signal<'list' | 'month'>('list');
   /** First day of the month on screen. */
@@ -82,16 +89,34 @@ export class AgentDeadlinesComponent implements OnInit {
   readonly monthLabel = computed(() => this.monthCursor().format('MMMM YYYY'));
   readonly weekdayHeadings = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  /** The active range's edges, as whole months - what month view is allowed to page across. */
+  readonly rangeStart = computed(() => dayjs().subtract(this.activeRange().back, 'day').startOf('month'));
+  readonly rangeEnd = computed(() => dayjs().add(this.activeRange().forward, 'day').startOf('month'));
+
+  readonly canStepBack = computed(() => this.monthCursor().isAfter(this.rangeStart(), 'month'));
+  readonly canStepForward = computed(() => this.monthCursor().isBefore(this.rangeEnd(), 'month'));
+
   setView(mode: 'list' | 'month'): void {
     if (this.view() === mode) {
       return;
     }
     this.view.set(mode);
     this.selectedDay.set(null);
+    if (mode === 'month') {
+      // The range may have changed while the agent was in list view; the cursor wasn't touched, so
+      // it can be sitting outside what the (possibly narrower) active range now allows.
+      this.clampMonthCursor();
+    }
     this.load();
   }
 
   stepMonth(delta: number): void {
+    if (delta < 0 && !this.canStepBack()) {
+      return;
+    }
+    if (delta > 0 && !this.canStepForward()) {
+      return;
+    }
     this.monthCursor.set(this.monthCursor().add(delta, 'month'));
     this.selectedDay.set(null);
     this.load();
@@ -101,6 +126,16 @@ export class AgentDeadlinesComponent implements OnInit {
     this.monthCursor.set(dayjs().startOf('month'));
     this.selectedDay.set(null);
     this.load();
+  }
+
+  private clampMonthCursor(): void {
+    const start = this.rangeStart();
+    const end = this.rangeEnd();
+    if (this.monthCursor().isBefore(start, 'month')) {
+      this.monthCursor.set(start);
+    } else if (this.monthCursor().isAfter(end, 'month')) {
+      this.monthCursor.set(end);
+    }
   }
 
   /**
@@ -146,8 +181,17 @@ export class AgentDeadlinesComponent implements OnInit {
     return day ? this.visible().filter(d => d.dueDate === day) : [];
   });
 
+  /**
+   * A day with exactly one item goes straight to the application - that is what "clickable" means
+   * to an agent looking at a single hearing. A day with several stays a click-to-expand, because a
+   * single click on the cell can't say which of several applications the agent meant.
+   */
   selectDay(cell: MonthCell): void {
     if (cell.items.length === 0) {
+      return;
+    }
+    if (cell.items.length === 1 && cell.items[0].trademarkId) {
+      this.openMark(cell.items[0]);
       return;
     }
     this.selectedDay.set(this.selectedDay() === cell.date ? null : cell.date);
@@ -178,21 +222,20 @@ export class AgentDeadlinesComponent implements OnInit {
     this.load();
   }
 
+  /**
+   * One fetch window for both views - the active range, full stop. Month view used to fetch only a
+   * fortnight either side of whichever month was on screen, which is what let it show a renewal
+   * list view's own ranges couldn't reach: the two views were reading different data and had no
+   * reason to agree on what counted as overdue. Now the range chips are the single source of that
+   * window and month view pages within it rather than around itself.
+   */
   load(): void {
     this.loading.set(true);
     this.error.set('');
 
-    let from: string;
-    let to: string;
-    if (this.view() === 'month') {
-      // A fortnight either side so the leading and trailing cells of the grid are populated too.
-      from = this.monthCursor().subtract(14, 'day').format('YYYY-MM-DD');
-      to = this.monthCursor().endOf('month').add(14, 'day').format('YYYY-MM-DD');
-    } else {
-      const range = this.activeRange();
-      from = this.iso(-range.back);
-      to = this.iso(range.forward);
-    }
+    const range = this.activeRange();
+    const from = this.iso(-range.back);
+    const to = this.iso(range.forward);
 
     this.agentData.getDeadlines(from, to).subscribe({
       next: rows => {
@@ -210,6 +253,8 @@ export class AgentDeadlinesComponent implements OnInit {
     const range = this.ranges.find(r => r.key === key);
     if (range && range !== this.activeRange()) {
       this.activeRange.set(range);
+      // A narrower range can leave the month on screen outside the new bounds.
+      this.clampMonthCursor();
       this.load();
     }
   }
@@ -237,6 +282,19 @@ export class AgentDeadlinesComponent implements OnInit {
     () => this.visible().filter(d => d.daysUntilDue < 0 && d.status === 'OPEN' && !this.isRecordOnly(d)).length,
   );
   readonly next7Count = computed(() => this.visible().filter(d => d.daysUntilDue >= 0 && d.daysUntilDue <= 7).length);
+
+  /**
+   * Whether today has anything on it, in the window currently loaded.
+   *
+   * <p>A day this far down a long, date-sorted list is easy to scroll past - especially a hearing,
+   * which reads quiet on purpose so it doesn't look like an overdue task. This is what "Jump to
+   * today" below checks before offering itself.
+   */
+  readonly hasTodayGroup = computed(() => this.groups().some(g => g.today));
+
+  scrollToToday(): void {
+    document.getElementById('deadline-day-today')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   /** Groups in date order, soonest first, with the day itself carrying the context. */
   readonly groups = computed<DayGroup[]>(() => {

@@ -78,8 +78,8 @@ export class AgentPortfolioFormComponent implements OnInit {
       this.loadItem(this.editId);
       return;
     }
-    // Prefilled, not auto-submitted. The HEARING_UNCLAIMED notification links here with the number
-    // the Registry printed; submitting for the agent would be a write they never asked for.
+    // Prefilled, not auto-submitted - a deep link can carry a known application number, and
+    // submitting for the agent would be a write they never asked for.
     const prefill = this.route.snapshot.queryParamMap.get('applicationNo')?.replace(/[^0-9]/g, '');
     if (prefill) {
       this.form.applicationNo = Number(prefill);
