@@ -19,46 +19,85 @@
       </button>
     </div>
 
-    <nav class="sidebar-nav">
-      @for (item of navItems; track item.label) {
-        @if (item.children) {
-          <!-- Group: a disclosure, never a link. See NavItem in the component for why. -->
-          <button type="button"
-                  class="nav-item nav-group"
-                  [class.active]="isGroupActive(item)"
-                  [class.open]="isExpanded(item)"
-                  [attr.aria-expanded]="isExpanded(item)"
-                  (click)="toggleGroup(item)"
-                  [title]="sidebarCollapsed() ? item.label : ''">
-            <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
-            @if (!sidebarCollapsed()) {
-              <span class="nav-label">{{ item.label }}</span>
-              <ap-icon class="nav-caret" [class.open]="isExpanded(item)" name="chevron" [size]="14" />
-            }
-          </button>
-          @if (isExpanded(item) && !sidebarCollapsed()) {
-            <div class="nav-children">
-              @for (child of item.children; track child.route) {
-                <a [routerLink]="child.route"
-                   class="nav-item nav-child"
-                   [class.active]="isActive(child.route)">
-                  <ap-icon class="nav-icon" [name]="child.icon" [size]="16" />
-                  <span class="nav-label">{{ child.label }}</span>
-                </a>
-              }
-            </div>
+    <nav class="sidebar-nav" aria-label="Agent portal">
+      @for (section of navSections; track section.heading; let first = $first) {
+        <div class="nav-section" role="group" [attr.aria-label]="section.heading">
+          <!-- Collapsed, there is no room for words, so the heading becomes a rule: the grouping
+               survives even when its name cannot. -->
+          @if (!sidebarCollapsed()) {
+            <span class="nav-section-heading" aria-hidden="true">{{ section.heading }}</span>
+          } @else if (!first) {
+            <span class="nav-section-rule" aria-hidden="true"></span>
           }
-        } @else {
-          <a [routerLink]="item.route"
-             class="nav-item"
-             [class.active]="isActive(item.route!)"
-             [title]="sidebarCollapsed() ? item.label : ''">
-            <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
-            @if (!sidebarCollapsed()) {
-              <span class="nav-label">{{ item.label }}</span>
+
+          @for (item of section.items; track item.label) {
+            @if (item.children) {
+              <!-- Group: a disclosure, never a link. See NavItem in the component for why. It only
+                   takes the full active treatment while closed, when its active child is hidden. -->
+              <button type="button"
+                      class="nav-item nav-group"
+                      [class.has-active]="isGroupActive(item)"
+                      [class.active]="isGroupActive(item) && (!isExpanded(item) || sidebarCollapsed())"
+                      [attr.aria-expanded]="isExpanded(item)"
+                      [attr.aria-controls]="'nav-group-' + item.id"
+                      (click)="toggleGroup(item)"
+                      [title]="sidebarCollapsed() ? item.label : ''">
+                <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
+                @if (!sidebarCollapsed()) {
+                  <span class="nav-label">{{ item.label }}</span>
+                  @if (itemBadge(item); as badge) {
+                    <span class="nav-badge" [class.nav-badge--alert]="badge.tone === 'alert'">
+                      {{ badge.count }}<span class="visually-hidden"> {{ badge.srLabel }}</span>
+                    </span>
+                  }
+                  <ap-icon class="nav-caret" [class.open]="isExpanded(item)" name="chevron" [size]="14" />
+                } @else {
+                  @if (collapsedDot(item); as badge) {
+                    <span class="nav-dot"><span class="visually-hidden">{{ badge.count }} {{ badge.srLabel }}</span></span>
+                  }
+                }
+              </button>
+              @if (isExpanded(item) && !sidebarCollapsed()) {
+                <div class="nav-children" [attr.id]="'nav-group-' + item.id">
+                  @for (child of item.children; track child.route) {
+                    <a [routerLink]="child.route"
+                       class="nav-item nav-child"
+                       [class.active]="isActive(child.route)"
+                       [attr.aria-current]="isActive(child.route) ? 'page' : null">
+                      <ap-icon class="nav-icon" [name]="child.icon" [size]="16" />
+                      <span class="nav-label">{{ child.label }}</span>
+                      @if (badgeFor(child.badge); as badge) {
+                        <span class="nav-badge" [class.nav-badge--alert]="badge.tone === 'alert'">
+                          {{ badge.count }}<span class="visually-hidden"> {{ badge.srLabel }}</span>
+                        </span>
+                      }
+                    </a>
+                  }
+                </div>
+              }
+            } @else {
+              <a [routerLink]="item.route"
+                 class="nav-item"
+                 [class.active]="isActive(item.route!)"
+                 [attr.aria-current]="isActive(item.route!) ? 'page' : null"
+                 [title]="sidebarCollapsed() ? item.label : ''">
+                <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
+                @if (!sidebarCollapsed()) {
+                  <span class="nav-label">{{ item.label }}</span>
+                  @if (itemBadge(item); as badge) {
+                    <span class="nav-badge" [class.nav-badge--alert]="badge.tone === 'alert'">
+                      {{ badge.count }}<span class="visually-hidden"> {{ badge.srLabel }}</span>
+                    </span>
+                  }
+                } @else {
+                  @if (collapsedDot(item); as badge) {
+                    <span class="nav-dot"><span class="visually-hidden">{{ badge.count }} {{ badge.srLabel }}</span></span>
+                  }
+                }
+              </a>
             }
-          </a>
-        }
+          }
+        </div>
       }
     </nav>
 

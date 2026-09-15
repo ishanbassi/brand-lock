@@ -27,6 +27,10 @@
   --ap-shell-text: rgba(255, 255, 255, 0.82);
   --ap-shell-muted: rgba(255, 255, 255, 0.44);
   --ap-shell-hover: rgba(255, 255, 255, 0.07);
+  /* The accent, lifted for the dark rail: --ap-accent itself is ink blue and vanishes on ink. Used
+     only for the active item's marker bar. */
+  --ap-shell-accent: #9db8d6;
+  --ap-shell-active: rgba(157, 184, 214, 0.14);
 
   /* ── Accent ──────────────────────────────────────────────────────────────
      One accent, used for primary actions and the active nav item only. Ink blue

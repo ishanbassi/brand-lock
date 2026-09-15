@@ -1,11 +1,8 @@
 <div class="ap deadlines">
   <header class="page-head">
     <div>
-      <h1 class="ap-title">Deadlines</h1>
-      <p class="ap-subtitle">
-        Renewals the Registry has confirmed, and hearings as they are listed. Grouped by the day
-        they fall.
-      </p>
+      <h1 class="ap-title">{{ scope.title }}</h1>
+      <p class="ap-subtitle">{{ scope.subtitle }}</p>
     </div>
   </header>
 
@@ -24,28 +21,33 @@
   }
 
   <div class="controls">
-    <div class="range" role="group" aria-label="View">
-      <button type="button" class="range-btn" [class.selected]="view() === 'list'"
-              [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">List</button>
-      <button type="button" class="range-btn" [class.selected]="view() === 'month'"
-              [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
-    </div>
+    @if (scope.monthView) {
+      <div class="range" role="group" aria-label="View">
+        <button type="button" class="range-btn" [class.selected]="view() === 'list'"
+                [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">List</button>
+        <button type="button" class="range-btn" [class.selected]="view() === 'month'"
+                [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
+      </div>
+    }
 
     <!-- The range is the one filter, read by both views alike: it sets the window list scrolls
-         through and the span month view is allowed to page across. -->
-    <div class="range" role="group" aria-label="Date range">
-      @for (range of ranges; track range.key) {
-        <button
-          type="button"
-          class="range-btn"
-          [class.selected]="activeRange().key === range.key"
-          [attr.aria-pressed]="activeRange().key === range.key"
-          (click)="selectRange(range.key)"
-        >
-          {{ range.label }}
-        </button>
-      }
-    </div>
+         through and the span month view is allowed to page across. A single range is no choice,
+         so it is not drawn as one. -->
+    @if (ranges.length > 1) {
+      <div class="range" role="group" aria-label="Date range">
+        @for (range of ranges; track range.key) {
+          <button
+            type="button"
+            class="range-btn"
+            [class.selected]="activeRange().key === range.key"
+            [attr.aria-pressed]="activeRange().key === range.key"
+            (click)="selectRange(range.key)"
+          >
+            {{ range.label }}
+          </button>
+        }
+      </div>
+    }
 
     @if (view() === 'month') {
       <!-- Paging within the range above, not a second, independent window. -->
@@ -67,10 +69,12 @@
       </button>
     }
 
-    <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
-      <ap-icon [name]="showDone() ? 'check' : 'dot'" [size]="15" />
-      {{ showDone() ? 'Hiding nothing' : 'Show completed' }}
-    </button>
+    @if (scope.completable) {
+      <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
+        <ap-icon [name]="showDone() ? 'check' : 'dot'" [size]="15" />
+        {{ showDone() ? 'Hiding nothing' : 'Show completed' }}
+      </button>
+    }
   </div>
 
   @if (error()) {
@@ -98,11 +102,12 @@
     <p class="visually-hidden" role="status">Loading deadlines</p>
   } @else if (groups().length === 0) {
     <div class="ap-panel ap-empty">
-      <p>
-        Nothing falls due in this window. Renewals appear here once the Registry confirms a renewal
-        date on a mark, and hearings appear on the day they are listed.
-      </p>
-      <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange('365')">Look ahead 12 months</button>
+      <p>{{ scope.empty }}</p>
+      @if (scope.emptyAction && activeRange().key !== scope.emptyAction.rangeKey) {
+        <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange(scope.emptyAction.rangeKey)">
+          {{ scope.emptyAction.label }}
+        </button>
+      }
     </div>
   } @else if (view() === 'month') {
     <!--

@@ -5,7 +5,7 @@ $sidebar-width: 244px;
 $sidebar-collapsed-width: 68px;
 $sidebar-bg: var(--ap-shell);
 $sidebar-hover: var(--ap-shell-hover);
-$sidebar-active-bg: rgba(255, 255, 255, 0.1);
+$sidebar-active-bg: var(--ap-shell-active);
 $text-muted: var(--ap-shell-muted);
 $text-main: var(--ap-shell-text);
 $content-bg: var(--ap-paper);
@@ -72,12 +72,37 @@ $content-bg: var(--ap-paper);
 
 .sidebar-nav {
   flex: 1;
-  padding: 0.75rem 0;
+  padding: var(--ap-space-4) 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
+// ── SECTIONS ─────────────────────────────────────────────
+.nav-section + .nav-section { margin-top: var(--ap-space-4); }
+
+// Quieter than any item on purpose: a heading names a kind of work, it is not something to click.
+.nav-section-heading {
+  display: block;
+  // Lines up with the item icons below: item margin + item padding.
+  padding: 0 calc(var(--ap-space-2) + var(--ap-space-3)) var(--ap-space-1);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  color: $text-muted;
+  white-space: nowrap;
+}
+
+.nav-section-rule {
+  display: block;
+  height: 1px;
+  margin: 0 var(--ap-space-4) var(--ap-space-3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
@@ -95,18 +120,91 @@ $content-bg: var(--ap-paper);
 
   .nav-icon { flex-shrink: 0; width: 22px; display: inline-flex; justify-content: center; }
 
+  .nav-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &:hover {
     background: $sidebar-hover;
     color: $text-main;
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--ap-shell-accent);
+    outline-offset: -2px;
+  }
+
+  // Tint plus a bar, not tint alone: the bar is what the eye finds when scanning a long rail, and
+  // it survives on screens where a 14% tint washes out.
   &.active {
     background: $sidebar-active-bg;
-    color: var(--ap-shell-text);
+    color: #fff;
     font-weight: 600;
 
-    .nav-icon { filter: none; }
+    &::before {
+      content: '';
+      position: absolute;
+      // Pinned to the sidebar's own edge, outside the item's margin.
+      left: calc(-1 * var(--ap-space-2));
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: var(--ap-shell-accent);
+    }
   }
+}
+
+// ── BADGES ───────────────────────────────────────────────
+// Trail the label so every label keeps its left alignment whether or not a count is present.
+.nav-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--ap-shell-text);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+
+  // Solid rather than a soft tint: on the ink rail a pale red reads as pink, not as late.
+  &--alert {
+    background: var(--ap-overdue);
+    color: #fff;
+  }
+}
+
+// Collapsed rail: no room for a number, so only an alert survives, as a dot on the icon.
+.nav-dot {
+  position: absolute;
+  top: 8px;
+  left: calc(var(--ap-space-3) + 15px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ap-overdue);
+  box-shadow: 0 0 0 2px $sidebar-bg;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 // ── NAV GROUPS ───────────────────────────────────────────
@@ -121,11 +219,12 @@ $content-bg: var(--ap-paper);
   text-align: left;
   cursor: pointer;
 
-  .nav-label { flex: 1; }
+  // Open with the current screen inside: brighter text says "you are in here" while the child
+  // itself carries the bar, so the highlight is never drawn twice.
+  &.has-active:not(.active) { color: $text-main; }
 }
 
 .nav-caret {
-  margin-left: auto;
   line-height: 0;
   opacity: 0.6;
   transition: transform 0.18s ease;
@@ -152,6 +251,16 @@ $content-bg: var(--ap-paper);
   font-size: 0.82rem;
 
   .nav-icon { width: 22px; opacity: 0.85; }
+
+  // A child's bar sits on the tree line rather than the sidebar edge, lighting the stretch of the
+  // line that belongs to it.
+  &.active::before {
+    left: calc(-0.6rem - 1px);
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 1px;
+  }
 }
 
 .sidebar-footer {

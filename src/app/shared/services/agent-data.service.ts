@@ -29,6 +29,24 @@ import {
   WatchConflictHistory,
 } from '../../../models/agent.model';
 
+/**
+ * How far back an unrenewed mark still counts as overdue rather than lost.
+ *
+ * Twelve months: for six months after expiry a mark can still be renewed with a surcharge
+ * (s.25(3)), and for a year after it the owner can apply for restoration (s.25(4)). Past that there
+ * is nothing left to action, so listing it would only be noise.
+ */
+export const OVERDUE_RENEWAL_LOOKBACK_DAYS = 365;
+
+/** The hearings badge counts the coming week - enough warning to prepare, not a month of noise. */
+export const HEARING_BADGE_DAYS = 7;
+
+/** What the sidenav badges under Deadlines show. */
+export interface DeadlineCounts {
+  overdueRenewals: number;
+  hearingsThisWeek: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AgentDataService {
   private readonly base = `${environment.BaseApiUrl}api`;
@@ -186,6 +204,43 @@ export class AgentDataService {
     if (from) params = params.set('from', from);
     if (to) params = params.set('to', to);
     return this.http.get<Deadline[]>(`${this.base}/agent-portal/deadlines`, { params });
+  }
+
+  /**
+   * The counts the sidenav badges show, as last fetched.
+   *
+   * Held here for the same reason as the profile: the rail shows them while the deadline screens
+   * change them, and a "Done" on an overdue renewal should take the badge down without a reload.
+   */
+  private readonly deadlineCountsState = signal<DeadlineCounts | null>(null);
+  readonly deadlineCounts = this.deadlineCountsState.asReadonly();
+
+  /**
+   * Re-reads the badge counts. Failure leaves the last counts in place - a badge is a hint, and
+   * blanking it on a transient error would read as "nothing overdue".
+   *
+   * The window has to match the widest range of each view the badge points at, or the badge and
+   * the screen it opens disagree: overdue reaches back {@link OVERDUE_RENEWAL_LOOKBACK_DAYS}, the
+   * hearings badge only counts the coming week.
+   */
+  refreshDeadlineCounts(): void {
+    const day = (offset: number) => {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      return d.toISOString().slice(0, 10);
+    };
+    this.getDeadlines(day(-OVERDUE_RENEWAL_LOOKBACK_DAYS), day(HEARING_BADGE_DAYS)).subscribe({
+      next: rows => {
+        const open = (rows ?? []).filter(d => d.status === 'OPEN');
+        this.deadlineCountsState.set({
+          overdueRenewals: open.filter(d => d.deadlineType === 'RENEWAL' && d.daysUntilDue < 0).length,
+          hearingsThisWeek: open.filter(
+            d => d.deadlineType === 'HEARING' && d.daysUntilDue >= 0 && d.daysUntilDue <= HEARING_BADGE_DAYS,
+          ).length,
+        });
+      },
+      error: () => {},
+    });
   }
 
   /**

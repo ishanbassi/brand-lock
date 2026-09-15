@@ -5,8 +5,24 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../models/auth.services';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
 import { NotificationService } from '../shared/services/notification.service';
-import { AgentDataService } from '../shared/services/agent-data.service';
+import { AgentDataService, DeadlineCounts } from '../shared/services/agent-data.service';
 import { IconComponent, IconName } from './ui/icon.component';
+
+/** A count a nav row can carry; names a field of {@link DeadlineCounts}. */
+type BadgeKey = keyof DeadlineCounts;
+
+/** A badge as drawn: the count, how loud it is, and what it counts for a screen reader. */
+interface NavBadge {
+  count: number;
+  /** Alert is for things already late; neutral is for things coming up. */
+  tone: 'alert' | 'neutral';
+  srLabel: string;
+}
+
+const BADGES: Record<BadgeKey, Omit<NavBadge, 'count'>> = {
+  overdueRenewals: { tone: 'alert', srLabel: 'overdue' },
+  hearingsThisWeek: { tone: 'neutral', srLabel: 'this week' },
+};
 
 /** A single destination. */
 interface NavLeaf {
@@ -19,6 +35,7 @@ interface NavLeaf {
    * the agent is on them, Add Trademark is where they are.
    */
   alsoMatches?: string[];
+  badge?: BadgeKey;
 }
 
 /**
@@ -33,9 +50,17 @@ interface NavItem {
   icon: IconName;
   /** Present on leaves only. */
   route?: string;
+  alsoMatches?: string[];
+  badge?: BadgeKey;
   /** Present on groups only; stable key for the expanded/collapsed state. */
   id?: string;
   children?: NavLeaf[];
+}
+
+/** A labelled run of related entries. Headings name a kind of work, never a destination. */
+interface NavSection {
+  heading: string;
+  items: NavItem[];
 }
 
 @Component({
@@ -51,24 +76,25 @@ export class AgentPortalShellComponent {
   expandedGroups = signal<Set<string>>(new Set());
 
   /**
-   * The portal's features, grouped.
+   * The portal's features, in labelled sections.
    *
-   * Everything that acts on the portfolio — finding marks, importing them, adding one — now sits
-   * under My Portfolio rather than alongside it. Flat, they read as six peers of Dashboard when
-   * five of them are ways into the same collection, and the list grew unreadable as features
-   * landed. Every feature keeps a nav link; new ones join the group they belong to, or become a
-   * top-level entry of their own when they are not about the portfolio. Account screens are the
-   * exception - notifications and the profile are reached from the topbar icons instead.
+   * Sections replaced the old top-level disclosures (My Portfolio, Trademark watch): a heading
+   * groups related work without costing a click, so disclosures are kept for the one place a
+   * sub-tree genuinely helps - renewals, which split into two worklists. Every feature keeps a nav
+   * link; new ones join the section they belong to, and anything that acts on the portfolio goes
+   * under Portfolio. Account screens are the exception - notifications and the profile are
+   * reached from the topbar icons instead.
    */
-  navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/agent-portal/dashboard' },
+  navSections: NavSection[] = [
     {
-      label: 'My Portfolio',
-      icon: 'portfolio',
-      id: 'portfolio',
+      heading: 'Overview',
+      items: [{ label: 'Dashboard', icon: 'dashboard', route: '/agent-portal/dashboard' }],
+    },
+    {
+      heading: 'Portfolio',
       // Two entries only. Find my marks and Import Excel are alternative ways of adding, so they
       // are buttons at the top of Add Trademark rather than three nav peers for one job.
-      children: [
+      items: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
         {
           label: 'Add trademark',
@@ -81,41 +107,64 @@ export class AgentPortalShellComponent {
     {
       // Time-critical: marks advertised in a journal are open to opposition for four months, and
       // that window closes whether or not anyone checked. It belongs in the nav, not buried.
-      label: 'Trademark watch',
-      icon: 'watch',
-      id: 'watch',
-      children: [
-        { label: 'Journal watch',       icon: 'journal', route: '/agent-portal/watch/journal' },
+      heading: 'Watch',
+      items: [
+        { label: 'Journal watch', icon: 'journal', route: '/agent-portal/watch/journal' },
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
-        { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts' },
+        { label: 'Portfolio conflicts', icon: 'alert', route: '/agent-portal/watch/conflicts' },
+        // Follows rival firms, not marks against the agent's portfolio. The route stays under
+        // watch/ so existing links keep working.
+        { label: 'Competitors', icon: 'building', route: '/agent-portal/watch/competitors' },
       ],
     },
-    // Its own entry rather than a watch child: it follows rival firms, not marks against the
-    // agent's portfolio. The route stays under watch/ so existing links keep working.
-    { label: 'Competitors',   icon: 'building',  route: '/agent-portal/watch/competitors' },
-    // Deadlines sits close under the watch group: both answer "what needs me, and when".
-    { label: 'Deadlines',     icon: 'calendar',  route: '/agent-portal/deadlines' },
-    { label: 'Search report', icon: 'search',    route: '/agent-portal/reports/search' },
-    { label: 'Documents',     icon: 'documents', route: '/agent-portal/documents' },
+    {
+      // Sits under Watch: both answer "what needs me, and when". The calendar is everything at
+      // once; the entries below it are worklists cut from the same data, one job each.
+      heading: 'Deadlines',
+      items: [
+        { label: 'Calendar', icon: 'calendar', route: '/agent-portal/deadlines' },
+        {
+          label: 'Renewals',
+          icon: 'refresh',
+          id: 'renewals',
+          children: [
+            { label: 'Upcoming', icon: 'clock', route: '/agent-portal/deadlines/renewals/upcoming' },
+            { label: 'Overdue', icon: 'alert', route: '/agent-portal/deadlines/renewals/overdue', badge: 'overdueRenewals' },
+          ],
+        },
+        // No "overdue" twin: a hearing is a listing, not a task, so it is never late.
+        { label: 'Upcoming hearings', icon: 'scales', route: '/agent-portal/deadlines/hearings', badge: 'hearingsThisWeek' },
+      ],
+    },
+    {
+      heading: 'Workspace',
+      items: [
+        { label: 'Search report', icon: 'search', route: '/agent-portal/reports/search' },
+        { label: 'Documents', icon: 'documents', route: '/agent-portal/documents' },
+      ],
+    },
     // Notifications and My profile are deliberately absent: both are reached from the topbar
     // icons, and listing them here gave each screen two entry points that had to agree.
   ];
 
+  private readonly navItems: NavItem[] = this.navSections.flatMap(s => s.items);
+
   /** Every destination in the nav, groups flattened away — the input to active-route matching. */
-  private readonly leaves: NavLeaf[] = this.navItems.flatMap(i =>
-    i.children ?? (i.route ? [{ label: i.label, icon: i.icon, route: i.route }] : []),
+  private readonly leaves: NavLeaf[] = this.navItems.flatMap(
+    i => i.children ?? (i.route ? [{ label: i.label, icon: i.icon, route: i.route, alsoMatches: i.alsoMatches }] : []),
   );
 
   /**
    * The one route to highlight: the most specific nav destination the URL matches.
    *
    * A plain startsWith lights up All Trademarks as well as Add Trademark whenever the URL is
-   * /portfolio/add, because one route is a prefix of the other. Specificity is judged on the path
-   * that matched, so an alsoMatches route beats its parent the same way a route does.
+   * /portfolio/add, because one route is a prefix of the other - and the same holds for Calendar
+   * under every /deadlines/... worklist. Specificity is judged on the path that matched, so an
+   * alsoMatches route beats its parent the same way a route does.
    */
   private readonly bestMatch = computed(() => {
-    const url = this.activeRoute();
+    const url = this.activeRoute().split(/[?#]/)[0];
     let best: { route: string; length: number } | null = null;
     for (const leaf of this.leaves) {
       for (const path of [leaf.route, ...(leaf.alsoMatches ?? [])]) {
@@ -139,6 +188,8 @@ export class AgentPortalShellComponent {
     // Fills the sidebar's firm name. Failure is silent: a missing name falls back to the portal's
     // own label, and blocking the shell on it would leave the whole portal behind a spinner.
     this.agentData.getProfile().subscribe({ error: () => {} });
+    // Same reasoning for the deadline badges: a hint, fetched once, never a gate.
+    this.agentData.refreshDeadlineCounts();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
       this.activeRoute.set(e.urlAfterRedirects);
       this.revealActiveGroup();
@@ -157,7 +208,7 @@ export class AgentPortalShellComponent {
    */
   readonly onProfile = computed(() => this.activeRoute().startsWith('/agent-portal/profile'));
 
-  /** A group is highlighted when the screen being shown is one of its children. */
+  /** Whether the screen being shown is one of this group's children. */
   isGroupActive(item: NavItem): boolean {
     const match = this.bestMatch();
     return !!match && !!item.children?.some(c => c.route === match);
@@ -165,6 +216,40 @@ export class AgentPortalShellComponent {
 
   isExpanded(item: NavItem): boolean {
     return !!item.id && this.expandedGroups().has(item.id);
+  }
+
+  /** Zero draws nothing: a row of "0" pills is noise, and it would teach agents to ignore the badge. */
+  badgeFor(key?: BadgeKey): NavBadge | null {
+    const count = key ? this.agentData.deadlineCounts()?.[key] ?? 0 : 0;
+    return key && count > 0 ? { count, ...BADGES[key] } : null;
+  }
+
+  /**
+   * A row's badge. A closed group rolls its children's counts up onto its header, because a
+   * collapsed Renewals must not hide that something under it is overdue. Open, the children show
+   * their own and the header stays quiet, so no count is drawn twice.
+   */
+  itemBadge(item: NavItem): NavBadge | null {
+    if (!item.children) {
+      return this.badgeFor(item.badge);
+    }
+    if (this.isExpanded(item) && !this.sidebarCollapsed()) {
+      return null;
+    }
+    const badges = item.children.map(c => this.badgeFor(c.badge)).filter((b): b is NavBadge => !!b);
+    if (badges.length === 0) {
+      return null;
+    }
+    const alert = badges.filter(b => b.tone === 'alert');
+    // Only the loudest tone is summed, so "3" on a red pill always means three late things.
+    const shown = alert.length ? alert : badges;
+    return { count: shown.reduce((n, b) => n + b.count, 0), tone: shown[0].tone, srLabel: shown[0].srLabel };
+  }
+
+  /** The collapsed rail has no room for a number, so only an alert survives - as a dot on the icon. */
+  collapsedDot(item: NavItem): NavBadge | null {
+    const badge = this.itemBadge(item);
+    return badge?.tone === 'alert' ? badge : null;
   }
 
   toggleGroup(item: NavItem): void {
