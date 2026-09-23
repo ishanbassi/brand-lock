@@ -42,7 +42,7 @@
       }
       <!-- Exports the current search, filters and sort across every page, not just this one. -->
       <ap-export-menu
-        [busy]="exporting()"
+        [busy]="exporting() || (printing() ? 'pdf' : null)"
         [disabled]="loading() || totalCount === 0"
         (selected)="export($event)"
       />
@@ -162,10 +162,12 @@
 
   <!-- TABLE -->
   @if (!loading() && trademarks().length > 0) {
+    <div class="selection-summary">{{ selectedIds.size }} selected for printing</div>
     <div class="table-card">
       <table class="tm-table">
         <thead>
           <tr>
+            <th class="select-col"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page" /></th>
             <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
             @for (col of columns; track col.field) {
               <th [attr.aria-sort]="ariaSort(col.field)">
@@ -193,6 +195,7 @@
         <tbody>
           @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id">
+              <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
 
               <!-- TRADEMARK NAME + TYPE -->
               <td class="tm-name-cell">

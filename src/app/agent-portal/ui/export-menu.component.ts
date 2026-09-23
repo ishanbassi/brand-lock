@@ -46,7 +46,7 @@ export type ExportFormat = 'excel' | 'pdf';
             <span class="format-badge format-pdf" aria-hidden="true">PDF</span>
             <span class="option-text">
               <strong>PDF</strong>
-              <small>On your firm's letterhead</small>
+              <small>Print or save selected entries as PDF</small>
             </span>
           </button>
         </div>

@@ -276,6 +276,7 @@ $white: #ffffff;
 .conflict-list { display: flex; flex-direction: column; gap: var(--ap-space-3); }
 
 .conflict-card {
+  position: relative;
   display: flex;
   gap: var(--ap-space-4);
   align-items: stretch;
@@ -289,6 +290,18 @@ $white: #ffffff;
   &.risk-medium { border-left-color: $warning; }
   &.risk-low { border-left-color: $gray-400; }
 }
+
+.conflict-select {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  color: $gray-600;
+  white-space: nowrap;
+}
+
+.selected-count { color: $gray-600; font-size: 0.8rem; }
 
 .conflict-score {
   display: flex;

@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
+import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -39,7 +40,7 @@ interface SortableColumn {
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })
-export class AgentPortfolioComponent implements OnInit {
+export class AgentPortfolioComponent implements OnInit, OnDestroy {
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   loading = signal(true);
   error = signal('');
@@ -122,10 +123,30 @@ export class AgentPortfolioComponent implements OnInit {
 
   // Export
   exporting = signal<ExportFormat | null>(null);
+  printing = signal(false);
+  readonly selectedIds = new Set<number>();
+  private readonly selectedMarks = new Map<number, AgentPortfolioTrademark>();
+  private firmName = 'Trademarx';
+  private accentColor = '#1f4e79';
+  private logoUrl: string | null = null;
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
+  ngOnDestroy(): void {
+    if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+  }
+
   ngOnInit(): void {
+    this.agentDataService.getProfile().subscribe({
+      next: profile => {
+        const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
+        this.firmName = branding.firmDisplayName || profile.companyName || 'Trademarx';
+        if (branding.reportAccentColor && /^#?[\da-f]{6}$/i.test(branding.reportAccentColor)) {
+          this.accentColor = branding.reportAccentColor.startsWith('#') ? branding.reportAccentColor : `#${branding.reportAccentColor}`;
+        }
+        this.agentDataService.getLogo().subscribe({ next: blob => this.logoUrl = URL.createObjectURL(blob) });
+      },
+    });
     this.load();
     this.loadPendingImports();
     this.loadFilterOptions();
@@ -268,6 +289,7 @@ export class AgentPortfolioComponent implements OnInit {
   }
 
   onSearchChange(): void {
+    this.clearSelection();
     this.searchSubject.next(this.searchQuery);
   }
 
@@ -279,12 +301,14 @@ export class AgentPortfolioComponent implements OnInit {
 
   /** Any dropdown change restarts at page one - page 483 of an unfiltered list means nothing now. */
   onFilterChange(): void {
+    this.clearSelection();
     this.lastSearched = this.searchQuery.trim();
     this.page = 0;
     this.load();
   }
 
   clearFilters(): void {
+    this.clearSelection();
     this.searchQuery = '';
     this.lastSearched = '';
     this.filterStatus = '';
@@ -378,22 +402,81 @@ export class AgentPortfolioComponent implements OnInit {
    * just the twenty rows on screen.
    */
   export(format: ExportFormat): void {
-    if (this.exporting()) return;
-    this.exporting.set(format);
+    if (this.exporting() || this.printing()) return;
     this.error.set('');
+    if (format === 'pdf') {
+      const selected = [...this.selectedMarks.values()];
+      if (!selected.length) {
+        this.error.set('Select at least one trademark to print.');
+        return;
+      }
+      this.printing.set(true);
+      printReport(this.printHtml(selected)).catch(() => this.error.set('Could not prepare the print view. Please try again.'))
+        .finally(() => this.printing.set(false));
+      return;
+    }
+
+    this.exporting.set(format);
     const query = this.currentQuery();
-    const request = format === 'excel'
-      ? this.agentDataService.exportPortfolioExcel(query)
-      : this.agentDataService.exportPortfolioPdf(query);
+    const request = this.agentDataService.exportPortfolioExcel(query);
     request.subscribe({
       next: (blob) => {
-        saveBlob(blob, format === 'excel' ? 'trademark-portfolio.xlsx' : 'trademark-portfolio.pdf');
+        saveBlob(blob, 'trademark-portfolio.xlsx');
         this.exporting.set(null);
       },
       error: () => {
-        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}. Please try again.`);
+        this.error.set('Could not generate the Excel file. Please try again.');
         this.exporting.set(null);
       },
     });
+  }
+
+  isSelected(tm: AgentPortfolioTrademark): boolean {
+    return tm.id != null && this.selectedIds.has(tm.id);
+  }
+
+  isPageSelected(): boolean {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    return rows.length > 0 && rows.every(tm => this.selectedIds.has(tm.id!));
+  }
+
+  togglePageSelection(): void {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    const remove = this.isPageSelected();
+    for (const tm of rows) this.setSelected(tm, !remove);
+  }
+
+  toggleSelection(tm: AgentPortfolioTrademark): void {
+    if (tm.id == null) return;
+    this.setSelected(tm, !this.selectedIds.has(tm.id));
+  }
+
+  private setSelected(tm: AgentPortfolioTrademark, selected: boolean): void {
+    if (tm.id == null) return;
+    if (selected) {
+      this.selectedIds.add(tm.id);
+      this.selectedMarks.set(tm.id, tm);
+    } else {
+      this.selectedIds.delete(tm.id);
+      this.selectedMarks.delete(tm.id);
+    }
+  }
+
+  private clearSelection(): void {
+    this.selectedIds.clear();
+    this.selectedMarks.clear();
+  }
+
+  private printHtml(marks: AgentPortfolioTrademark[]): string {
+    const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+    const rows = marks.map(tm => `<tr><td><strong>${esc(tm.name)}</strong>${tm.type ? `<br><small>${esc(tm.type)}</small>` : ''}</td><td>${esc(tm.applicationNo)}</td><td>${esc(tm.tmClass)}</td><td>${esc(tm.proprietorName)}</td><td>${esc(tm.trademarkStatus || 'Unknown')}</td><td>${esc(tm.applicationDate)}</td><td>${esc(tm.renewalDate)}</td></tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>Trademark portfolio</title><style>
+      @page{size:A4 landscape;margin:14mm 12mm}*{box-sizing:border-box}body{font:10pt Arial,sans-serif;color:#202a36;margin:0}
+      header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid ${this.accentColor};padding-bottom:10px;margin-bottom:18px}
+      h1{font-size:20pt;margin:0 0 4px}.firm{color:${this.accentColor};font-size:15pt;font-weight:bold;display:flex;align-items:center;gap:10px}.logo{max-width:100px;max-height:44px;object-fit:contain}
+      table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:${this.accentColor};color:white;text-align:left;padding:7px;font-size:8pt}td{padding:7px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere}tr{break-inside:avoid;page-break-inside:avoid}
+      footer{margin-top:12px;border-top:1px solid #d8dde4;padding-top:7px;color:#596575;font-size:8pt}
+      </style></head><body><header><div><h1>Trademark Portfolio</h1><div>${marks.length} selected trademark${marks.length===1?'':'s'}</div></div><div class="firm">${this.logoUrl?`<img class="logo" src="${esc(this.logoUrl)}" alt="">`:''}${esc(this.firmName)}</div></header>
+      <table><thead><tr><th>Trademark</th><th>Application</th><th>Class</th><th>Proprietor</th><th>Status</th><th>Filed</th><th>Renewal</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}. Renewal dates should be verified against the Register before relying on them.</footer></body></html>`;
   }
 }

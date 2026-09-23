@@ -1,7 +1,7 @@
 <div class="search-report-page">
   <header class="page-head">
     <h1>Search report</h1>
-    <p class="subtitle">Check a proposed mark against the Register, then download selected results on your own letterhead.</p>
+    <p class="subtitle">Check a proposed mark against the Register, then print selected results on your own letterhead.</p>
   </header>
   <form class="search-form" (ngSubmit)="run()">
     <div class="field grow">
@@ -60,7 +60,7 @@
           }
           @if (r.tmClasses.length) { <span class="band same">{{ classSentence(r.tmClasses) }} only</span> }
         </div>
-        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
+        <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
       </div>
       @if (r.totalResults === 0) {
         <div class="state empty"><p>No marks were found for “{{ r.query }}”{{ r.tmClasses.length ? ' in ' + classSentence(r.tmClasses) : '' }}.</p></div>

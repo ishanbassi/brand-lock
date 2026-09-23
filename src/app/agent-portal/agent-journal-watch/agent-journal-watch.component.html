@@ -94,7 +94,8 @@
             Open Journal {{ result()!.journalNo }} ↗
           </a>
           @if (counts().total > 0) {
-            <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
+            <span class="selected-count">{{ selectedConflicts.size }} selected to print</span>
+            <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
           }
         </div>
       </div>
@@ -144,6 +145,7 @@
         <div class="conflict-list">
           @for (c of visibleConflicts(); track c.conflictingTrademarkId) {
             <article class="conflict-card" [class]="'risk-' + c.riskLevel.toLowerCase()">
+              <label class="conflict-select"><input type="checkbox" [checked]="isConflictSelected(c)" (change)="toggleConflictSelection(c)" [attr.aria-label]="'Select conflict with ' + (c.conflictingTrademarkName || 'trademark') + ' for printing'" /><span>Select</span></label>
               <div class="conflict-score">
                 <span class="score-value">{{ scorePercent(c.score) }}%</span>
                 <span class="score-label">{{ c.riskLevel }}</span>
