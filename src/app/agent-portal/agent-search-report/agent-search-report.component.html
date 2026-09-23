@@ -1,46 +1,37 @@
 <div class="search-report-page">
   <header class="page-head">
     <h1>Search report</h1>
-    <p class="subtitle">
-      Check a proposed mark against the Register, then download the result on your own letterhead.
-    </p>
+    <p class="subtitle">Check a proposed mark against the Register, then download selected results on your own letterhead.</p>
   </header>
-
   <form class="search-form" (ngSubmit)="run()">
     <div class="field grow">
       <label for="mark">Proposed mark</label>
       <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
     </div>
-
-    <!-- Multi-select rather than a <select multiple>: one mark is often filed in several classes,
-         and a native multi-select hides that ctrl-click is required to pick more than one. -->
+    <div class="field">
+      <label for="searchType">Match rule</label>
+      <select id="searchType" [(ngModel)]="searchType" name="searchType" (change)="onSearchTypeChange()">
+        <option value="startswith">Starts with</option>
+        <option value="contains">Contain search</option>
+        <option value="phonetic">Phonetic</option>
+      </select>
+    </div>
     <div class="field class-picker">
       <label id="classLabel">Classes</label>
-      <button
-        type="button"
-        class="class-trigger"
-        [class.active]="selectedClasses().length > 0"
-        (click)="toggleClassPicker()"
-        aria-labelledby="classLabel"
-        [attr.aria-expanded]="classPickerOpen()"
-      >
-        <span>{{ classSummary() }}</span>
-        <span class="caret" aria-hidden="true">▾</span>
+      <button type="button" class="class-trigger" [class.active]="selectedClasses().length > 0" (click)="toggleClassPicker()"
+        aria-labelledby="classLabel" [attr.aria-expanded]="classPickerOpen()">
+        <span>{{ classSummary() }}</span><span class="caret" aria-hidden="true">▾</span>
       </button>
-
       @if (classPickerOpen()) {
         <div class="class-panel" role="group" aria-labelledby="classLabel">
           <div class="class-panel-head">
             <span>{{ selectedClasses().length || 'No' }} selected</span>
-            <button type="button" class="link-btn" (click)="clearClasses()" [disabled]="selectedClasses().length === 0">
-              All classes
-            </button>
+            <button type="button" class="link-btn" (click)="clearClasses()" [disabled]="selectedClasses().length === 0">All classes</button>
           </div>
           <div class="class-grid">
             @for (c of classes; track c) {
               <label class="class-option" [class.picked]="isClassSelected(c)">
-                <input type="checkbox" [checked]="isClassSelected(c)" (change)="toggleClass(c)" />
-                <span>{{ c }}</span>
+                <input type="checkbox" [checked]="isClassSelected(c)" (change)="toggleClass(c)" /><span>{{ c }}</span>
               </label>
             }
           </div>
@@ -48,88 +39,79 @@
         </div>
       }
     </div>
-
     <div class="field">
       <label for="clientName">Client (optional)</label>
       <input id="clientName" type="text" [(ngModel)]="clientName" name="clientName" placeholder="Shown on the report" />
     </div>
-
-    <button type="submit" class="btn-primary" [disabled]="!query.trim() || loading()">
-      {{ loading() ? 'Searching…' : 'Search' }}
-    </button>
+    <button type="submit" class="btn-primary" [disabled]="!query.trim() || loading()">{{ loading() ? 'Searching…' : 'Search' }}</button>
   </form>
-
-  <!-- Said before the results, not only in the PDF: an agent skimming the screen should not read
-       this as clearance either. -->
-  <p class="disclaimer">
-    Lists marks on the Register that resemble the proposed one. It is not an opinion on
-    registrability and does not constitute legal advice.
-  </p>
-
-  @if (error()) {
-    <div class="error">{{ error() }}</div>
-  }
+  <p class="disclaimer">Lists marks on the Register matching the selected rule. It is not an opinion on registrability and does not constitute legal advice.</p>
+  @if (error()) { <div class="error">{{ error() }}</div> }
 
   @if (report(); as r) {
     <section class="results">
       <div class="results-head">
         <div class="bands">
-          <span class="band high">{{ countFor('HIGH') }} close</span>
-          <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
-          <span class="band low">{{ countFor('LOW') }} distant</span>
-          @if (r.tmClasses.length) {
-            <span class="band same">{{ classSentence(r.tmClasses) }} only</span>
+          <span class="result-total">{{ r.totalResults }} {{ r.totalResults === 1 ? 'result' : 'results' }}</span>
+          @if (reportSearchType === 'phonetic') {
+            <span class="band high">{{ countFor('HIGH') }} close</span>
+            <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
+            <span class="band low">{{ countFor('LOW') }} distant</span>
           }
+          @if (r.tmClasses.length) { <span class="band same">{{ classSentence(r.tmClasses) }} only</span> }
         </div>
-
         <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
       </div>
-
-      @if (r.rows.length === 0) {
-        <div class="state empty">
-          @if (r.tmClasses.length) {
-            <p>No similar marks were found for “{{ r.query }}” in {{ classSentence(r.tmClasses) }}.</p>
-          } @else {
-            <p>No similar marks were found for “{{ r.query }}”.</p>
-          }
-        </div>
+      @if (r.totalResults === 0) {
+        <div class="state empty"><p>No marks were found for “{{ r.query }}”{{ r.tmClasses.length ? ' in ' + classSentence(r.tmClasses) : '' }}.</p></div>
       } @else {
+        <div class="table-tools">
+          <span>{{ selectedIds.size }} selected</span>
+          <span>Showing {{ firstResult }}–{{ lastResult }} of {{ r.totalResults }}</span>
+        </div>
         <div class="table-scroll">
           <table class="results-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Application</th>
-                <th>Class</th>
-                <th>Proprietor</th>
-                <th>Status</th>
-                <th>Filed</th>
-                <th>Similarity</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th class="select-cell"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all results on this page" /></th>
+              <th>Image</th><th>Name</th><th>Application</th><th>Class</th><th>Proprietor</th>
+              <th>Proprietor address</th><th>Status</th><th>Filed</th><th>Renewal</th><th>Journal no.</th><th>Details</th>
+              @if (reportSearchType === 'phonetic') { <th>Similarity</th> }
+            </tr></thead>
             <tbody>
               @for (row of r.rows; track row.trademarkId) {
                 <tr>
-                  <td class="cell-name">{{ row.name }}</td>
-                  <td>{{ row.applicationNo || '—' }}</td>
-                  <td>{{ row.tmClass || '—' }}</td>
-                  <td class="cell-prop">{{ row.proprietorName || '—' }}</td>
-                  <td>{{ statusLabel(row) }}</td>
-                  <td>{{ formatDate(row.applicationDate) }}</td>
-                  <td>
-                    <span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">
-                      {{ bandLabel(row.riskBand) }}
-                    </span>
+                  <td class="select-cell"><input type="checkbox" [checked]="selectedIds.has(row.trademarkId)" (change)="toggleRowSelection(row)"
+                    [attr.aria-label]="'Select ' + (row.name || 'result')" /></td>
+                  <td class="artwork-cell">
+                    @if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> }
+                    @else { <span aria-hidden="true">—</span> }
                   </td>
+                  <td class="cell-name">{{ row.name || '—' }}</td><td>{{ row.applicationNo || '—' }}</td><td>{{ row.tmClass || '—' }}</td>
+                  <td class="cell-prop">{{ row.proprietorName || '—' }}</td><td class="cell-address">{{ row.proprietorAddress || '—' }}</td>
+                  <td>{{ statusLabel(row) }}</td><td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
+                  <td>{{ row.journalNo || '—' }}</td><td class="cell-details">{{ row.details || '—' }}</td>
+                  @if (reportSearchType === 'phonetic') {
+                    <td><span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">{{ bandLabel(row.riskBand) }}</span></td>
+                  }
                 </tr>
               }
             </tbody>
           </table>
         </div>
-
-        @if (r.tmClasses.length) {
-          <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p>
-        }
+        <div class="pagination-bar">
+          <div class="page-size field">
+            <label for="pageSize">Rows per page</label>
+            <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+              <option [ngValue]="10">10</option><option [ngValue]="100">100</option><option [ngValue]="1000">1000</option>
+            </select>
+          </div>
+          <div class="page-nav" aria-label="Results pagination">
+            <button type="button" class="btn-secondary" (click)="previousPage()" [disabled]="currentPage === 0 || loading()">Previous</button>
+            <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+            <button type="button" class="btn-secondary" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages || loading()">Next</button>
+          </div>
+        </div>
+        @if (r.tmClasses.length) { <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p> }
       }
     </section>
   }

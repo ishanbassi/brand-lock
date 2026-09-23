@@ -8,6 +8,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import {
   AGENT_DOCUMENT_TYPES,
+  AgentCustomField,
   AgentDocument,
   AgentPortfolioTrademark,
 } from '../../../models/agent.model';
@@ -45,6 +46,21 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   notes = { agentNotes: '', clientReference: '' };
   savingNotes = signal(false);
   notesSaved = signal(false);
+
+  /**
+   * The firm's own spreadsheet columns.
+   *
+   * Definitions come from the agent's schema and values from this mark's link, so a field the
+   * agent has but never filled in for this mark renders as an empty box rather than vanishing.
+   * These stay editable whatever the mark's provenance — the register has no opinion on a firm's
+   * receipt numbers, so nothing here can contradict it.
+   */
+  customFields = signal<AgentCustomField[]>([]);
+  customValues: Record<string, string> = {};
+  savingCustom = signal(false);
+  customSaved = signal(false);
+  addingField = signal(false);
+  newFieldLabel = '';
 
   // Documents
   documents = signal<AgentDocument[]>([]);
@@ -87,6 +103,15 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     this.trademarkId = id;
     this.load();
     this.loadDocuments();
+    this.loadCustomFields();
+  }
+
+  private loadCustomFields(): void {
+    this.agentDataService.getCustomFields().subscribe({
+      // A firm with no imported spreadsheet has none, which is a normal empty state, not an error.
+      next: fields => this.customFields.set(fields),
+      error: () => this.customFields.set([]),
+    });
   }
 
   load(): void {
@@ -96,6 +121,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
         this.mark.set(tm);
         this.notes.agentNotes = tm.agentNotes ?? '';
         this.notes.clientReference = tm.clientReference ?? '';
+        this.customValues = { ...(tm.customFields ?? {}) };
         this.loading.set(false);
         this.loadArtwork(tm);
       },
@@ -219,6 +245,66 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
         this.savingNotes.set(false);
         this.error.set('Could not save your notes.');
       },
+    });
+  }
+
+  // ── Custom fields ────────────────────────────────────────────────────────
+
+  /**
+   * Saves this mark's values for the firm's own fields.
+   *
+   * Every known key is sent, including the empty ones: the server merges rather than replaces, and
+   * an emptied box has to arrive as a blank so the key is removed. Sending only the filled ones
+   * would make clearing a field impossible.
+   */
+  saveCustomFields(): void {
+    this.savingCustom.set(true);
+    this.customSaved.set(false);
+    const payload: Record<string, string | null> = {};
+    for (const field of this.customFields()) {
+      payload[field.fieldKey] = this.customValues[field.fieldKey] ?? '';
+    }
+    this.agentDataService.updatePortfolioLink(this.trademarkId, { customFields: payload }).subscribe({
+      next: () => {
+        this.savingCustom.set(false);
+        this.customSaved.set(true);
+      },
+      error: () => {
+        this.savingCustom.set(false);
+        this.error.set('Could not save these details.');
+      },
+    });
+  }
+
+  /** Adds a field to the firm's schema, so it appears on every mark, not just this one. */
+  addCustomField(): void {
+    const label = this.newFieldLabel.trim();
+    if (!label) return;
+    this.addingField.set(true);
+    this.agentDataService.createCustomField(label).subscribe({
+      next: field => {
+        this.customFields.set([...this.customFields(), field]);
+        this.newFieldLabel = '';
+        this.addingField.set(false);
+      },
+      error: err => {
+        this.addingField.set(false);
+        this.error.set(err?.error?.detail ?? 'Could not add that field.');
+      },
+    });
+  }
+
+  /**
+   * Removes a field from the firm's schema.
+   *
+   * Worth spelling out in the confirm: this takes the column off every mark, not just this one.
+   * The values are kept server-side, so re-creating a field of the same name brings them back.
+   */
+  removeCustomField(field: AgentCustomField): void {
+    if (!confirm(`Remove "${field.label}" from every mark in your portfolio?`)) return;
+    this.agentDataService.deleteCustomField(field.id).subscribe({
+      next: () => this.customFields.set(this.customFields().filter(f => f.id !== field.id)),
+      error: () => this.error.set('Could not remove that field.'),
     });
   }
 

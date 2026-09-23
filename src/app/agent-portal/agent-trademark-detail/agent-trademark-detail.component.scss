@@ -317,6 +317,68 @@ $white: #ffffff;
 .notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
 .saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
 
+// The firm's own spreadsheet columns. A portfolio workbook contributes sixty-odd of these, so they
+// lay out in columns rather than the single stack the notes fields use — a one-per-row list would
+// run several screens deep before the save button.
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0 var(--ap-space-4);
+
+  .field { margin-bottom: var(--ap-space-3); }
+}
+
+.custom-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+// Deleting a field affects every mark, so the control stays quiet until the row is hovered.
+.field-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--ap-space-1);
+  line-height: 1;
+  font-size: 1rem;
+  color: $gray-400;
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease;
+
+  &:hover, &:focus-visible { color: $danger; }
+}
+
+.field:hover .field-remove,
+.field:focus-within .field-remove { opacity: 1; }
+
+.empty-hint {
+  color: $gray-400;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin: 0 0 var(--ap-space-4);
+  max-width: 70ch;
+}
+
+.add-field {
+  display: flex;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+  padding-top: var(--ap-space-4);
+  border-top: 1px solid $gray-100;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border: 1px solid $gray-200;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 0.9375rem;
+  }
+}
+
 // Files staged for upload, before the request goes out.
 .staged-files {
   list-style: none;

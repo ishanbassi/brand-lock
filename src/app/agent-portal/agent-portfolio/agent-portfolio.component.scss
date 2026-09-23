@@ -51,6 +51,66 @@ $white: #ffffff;
   flex-wrap: wrap;
 }
 
+// ── COLUMN PICKER ───────────────────────────────────────
+// Which of the firm's own imported fields appear as table columns. A workbook contributes sixty-odd
+// of them, so this is opt-in per column rather than showing them all.
+.column-picker {
+  position: relative;
+}
+
+.column-menu {
+  position: absolute;
+  top: calc(100% + var(--ap-space-2));
+  right: 0;
+  z-index: 20;
+  width: 260px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--ap-space-3);
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  li + li { margin-top: var(--ap-space-2); }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-2);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: $gray-800;
+  }
+}
+
+.column-menu-hint {
+  margin: 0 0 var(--ap-space-3);
+  font-size: 0.75rem;
+  color: $gray-600;
+}
+
+.column-menu-error {
+  margin: 0 0 var(--ap-space-2);
+  font-size: 0.75rem;
+  color: $danger;
+}
+
+// Imported values are free text and occasionally very long (a goods description), so they are
+// clamped to one line with the full value on hover rather than allowed to set the row height.
+.custom-col { white-space: nowrap; }
+
+.custom-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $gray-600;
+  font-size: 0.875rem;
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

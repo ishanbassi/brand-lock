@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchReport, SearchReportRow } from '../../../models/agent.model';
+import { SearchReport, SearchReportRow, SearchReportType } from '../../../models/agent.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
@@ -22,9 +22,16 @@ import { fileSlug, saveBlob } from '../ui/save-blob';
 })
 export class AgentSearchReportComponent {
   private readonly agentData = inject(AgentDataService);
+  private readonly destroyRef = inject(DestroyRef);
 
   query = '';
   clientName = '';
+  searchType: SearchReportType = 'phonetic';
+  pageSize: 10 | 100 | 1000 = 100;
+  currentPage = 0;
+  readonly selectedIds = new Set<number>();
+  readonly artworkUrls = signal<Record<number, string>>({});
+  reportSearchType: SearchReportType = 'phonetic';
 
   /**
    * Classes to confine the search to. Empty means every class.
@@ -43,6 +50,10 @@ export class AgentSearchReportComponent {
 
   /** All 45 Nice classes. Optional, but choosing some changes what the report means. */
   readonly classes = Array.from({ length: 45 }, (_, i) => i + 1);
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.clearArtwork());
+  }
 
   toggleClassPicker(): void {
     this.classPickerOpen.update(open => !open);
@@ -85,10 +96,23 @@ export class AgentSearchReportComponent {
     this.loading.set(true);
     this.error.set('');
     this.classPickerOpen.set(false);
+    this.currentPage = 0;
+    this.selectedIds.clear();
 
-    this.agentData.previewSearchReport(term, this.selectedClasses()).subscribe({
+    this.loadPage(term, 0);
+  }
+
+  private loadPage(term: string, page: number): void {
+    this.loading.set(true);
+    this.error.set('');
+
+    this.agentData.previewSearchReport(term, this.selectedClasses(), this.searchType, page, this.pageSize).subscribe({
       next: result => {
+        this.clearArtwork();
         this.report.set(result);
+        this.reportSearchType = this.searchType;
+        this.currentPage = page;
+        this.loadArtwork(result.rows);
         this.loading.set(false);
       },
       error: () => {
@@ -98,17 +122,90 @@ export class AgentSearchReportComponent {
     });
   }
 
+  onSearchTypeChange(): void {
+    if (this.report() && this.query.trim()) this.run();
+  }
+
+  onPageSizeChange(): void {
+    if (!this.report() || !this.query.trim()) return;
+    this.currentPage = 0;
+    this.loadPage(this.query.trim(), 0);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 0 && !this.loading()) this.loadPage(this.report()!.query, this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    if (this.currentPage + 1 < this.totalPages && !this.loading()) this.loadPage(this.report()!.query, this.currentPage + 1);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil((this.report()?.totalResults ?? 0) / this.pageSize));
+  }
+
+  get firstResult(): number {
+    return this.report()?.totalResults ? this.currentPage * this.pageSize + 1 : 0;
+  }
+
+  get lastResult(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.report()?.totalResults ?? 0);
+  }
+
+  isPageSelected(): boolean {
+    const rows = this.report()?.rows ?? [];
+    return rows.length > 0 && rows.every(row => this.selectedIds.has(row.trademarkId));
+  }
+
+  togglePageSelection(): void {
+    const rows = this.report()?.rows ?? [];
+    const remove = this.isPageSelected();
+    for (const row of rows) remove ? this.selectedIds.delete(row.trademarkId) : this.selectedIds.add(row.trademarkId);
+  }
+
+  toggleRowSelection(row: SearchReportRow): void {
+    this.selectedIds.has(row.trademarkId) ? this.selectedIds.delete(row.trademarkId) : this.selectedIds.add(row.trademarkId);
+  }
+
+  artworkUrl(row: SearchReportRow): string | null {
+    return this.artworkUrls()[row.trademarkId] ?? null;
+  }
+
+  private loadArtwork(rows: SearchReportRow[]): void {
+    for (const row of rows.filter(item => item.hasArtwork)) {
+      this.agentData.getSearchResultArtwork(row.trademarkId).subscribe({
+        next: blob => this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: URL.createObjectURL(blob) })),
+      });
+    }
+  }
+
+  private clearArtwork(): void {
+    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+    this.artworkUrls.set({});
+  }
+
   /** The search on screen as Excel (every row) or PDF (on letterhead, with the client name). */
   export(format: ExportFormat): void {
     const current = this.report();
     if (!current || this.exporting()) {
       return;
     }
+    if (this.selectedIds.size === 0) {
+      this.error.set('Select at least one result to download.');
+      return;
+    }
     this.exporting.set(format);
+    const selected = [...this.selectedIds];
 
     const request = format === 'excel'
-      ? this.agentData.downloadSearchReportExcel(current.query, current.tmClasses)
-      : this.agentData.downloadSearchReport(current.query, current.tmClasses, this.clientName.trim() || null);
+      ? this.agentData.downloadSearchReportExcel(current.query, current.tmClasses, this.reportSearchType, selected)
+      : this.agentData.downloadSearchReport(
+          current.query,
+          current.tmClasses,
+          this.reportSearchType,
+          selected,
+          this.clientName.trim() || null,
+        );
     request.subscribe({
       next: blob => {
         saveBlob(blob, `search-report-${fileSlug(current.query, 'mark')}.${format === 'excel' ? 'xlsx' : 'pdf'}`);

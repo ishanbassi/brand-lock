@@ -213,5 +213,55 @@
         @if (notesSaved()) { <span class="saved-flag">Saved</span> }
       </div>
     </section>
+
+    <!-- ── YOUR OWN FIELDS ──────────────────────────────────────────────
+         The firm's spreadsheet columns that our trademark model has no home for. Always editable,
+         registry-verified or not: the register has no opinion on a firm's own receipt numbers. -->
+    <section class="card">
+      <h2>Client &amp; firm details</h2>
+      <p class="card-hint">
+        Your own columns, kept from the spreadsheet you imported. These stay editable even when the mark itself is
+        locked, and every field here appears on every mark in your portfolio.
+      </p>
+
+      @if (customFields().length === 0) {
+        <p class="empty-hint">
+          You have no custom fields yet. Import a portfolio spreadsheet and we will keep its extra columns here, or add
+          one below.
+        </p>
+      } @else {
+        <div class="custom-grid">
+          @for (field of customFields(); track field.id) {
+            <label class="field">
+              <span class="custom-label">
+                {{ field.label }}
+                <button type="button" class="field-remove" (click)="removeCustomField(field)"
+                        [attr.aria-label]="'Remove ' + field.label + ' from every mark'" title="Remove this field from every mark">×</button>
+              </span>
+              @if (field.dataType === 'DATE') {
+                <input type="date" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey" />
+              } @else {
+                <input type="text" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey"
+                       [placeholder]="field.sourceHeader || field.label" />
+              }
+            </label>
+          }
+        </div>
+        <div class="notes-actions">
+          <button class="btn-primary" (click)="saveCustomFields()" [disabled]="savingCustom()">
+            {{ savingCustom() ? 'Saving…' : 'Save details' }}
+          </button>
+          @if (customSaved()) { <span class="saved-flag">Saved</span> }
+        </div>
+      }
+
+      <div class="add-field">
+        <input type="text" [(ngModel)]="newFieldLabel" name="newFieldLabel" placeholder="Add a field, e.g. GST number"
+               (keyup.enter)="addCustomField()" />
+        <button class="btn-ghost" (click)="addCustomField()" [disabled]="addingField() || !newFieldLabel.trim()">
+          {{ addingField() ? 'Adding…' : 'Add field' }}
+        </button>
+      </div>
+    </section>
   }
 </div>

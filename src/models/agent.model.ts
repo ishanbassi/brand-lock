@@ -65,6 +65,15 @@ export interface AgentPortfolioTrademark {
   clientReference?: string;
 
   /**
+   * The firm's own spreadsheet columns for this mark, keyed by AgentCustomField.fieldKey.
+   *
+   * Sits on the agent-private portfolio link, so unlike the mark's own fields these stay editable
+   * after the registry verifies it — the register has no opinion on a firm's receipt numbers.
+   * Only present on agent-scoped responses, never on discovery or public profile payloads.
+   */
+  customFields?: Record<string, string>;
+
+  /**
    * Stored artwork filename; present only when the mark has an image. Treat it as a flag — many
    * are JPEG 2000, which browsers cannot draw, so fetch the image via getTrademarkArtwork.
    */
@@ -85,6 +94,49 @@ export interface AgentImportResult {
   detectedColumns?: Record<string, number>;
   /** Identifies the retained upload, so confirm updates the preview's record. */
   batchId?: number;
+  /** Columns no trademark field claimed, offered to keep as the agent's own fields. */
+  extraColumns?: ExcelExtraColumn[];
+  /**
+   * Fields whose header match was thrown out because the column's data disproved it.
+   *
+   * Shown so a released claim reads as "we found this and rejected it" rather than as a field we
+   * simply failed to locate.
+   */
+  releasedColumns?: Record<string, string>;
+}
+
+/** One column of an uploaded workbook that our trademark model has no home for. */
+export interface ExcelExtraColumn {
+  columnIndex: number;
+  /** The heading as it appeared in the sheet. */
+  header?: string;
+  /** Derived storage key — becomes AgentCustomField.fieldKey on confirm. */
+  fieldKey: string;
+  /** How many of the file's rows carry a value. Empty-everywhere columns are already dropped. */
+  nonEmptyCount: number;
+  samples?: string[];
+  suggestedType?: string;
+  /** True when this agent already has a field under this key, from an earlier upload. */
+  alreadyKnown?: boolean;
+}
+
+/**
+ * One column of the agent's own portfolio schema.
+ *
+ * Every firm's set is different — two firms both having a `remarks` field does not make them the
+ * same field — so these are only ever read and rendered for the signed-in agent.
+ */
+export interface AgentCustomField {
+  id: number;
+  /** Immutable. Values are stored under this key, so a rename never touches it. */
+  fieldKey: string;
+  label: string;
+  sourceHeader?: string;
+  dataType?: 'TEXT' | 'NUMBER' | 'DATE' | 'BOOL';
+  source?: 'IMPORTED' | 'MANUAL';
+  displayOrder?: number;
+  /** Whether this field is also shown as a column in the portfolio grid. */
+  showInList?: boolean;
 }
 
 /** One status bucket of the agent's portfolio, as counted by the server. */
@@ -290,7 +342,11 @@ export interface SearchReportRow {
   applicationNo?: number;
   tmClass?: number;
   proprietorName?: string;
+  proprietorAddress?: string;
   applicationDate?: string;
+  renewalDate?: string;
+  details?: string;
+  journalNo?: number;
   /** Live registry status. The raw similarity search does not return this. */
   trademarkStatus?: string;
   type?: string;
@@ -298,6 +354,8 @@ export interface SearchReportRow {
   riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
   hasArtwork: boolean;
 }
+
+export type SearchReportType = 'startswith' | 'contains' | 'phonetic';
 
 export interface SearchReport {
   query: string;

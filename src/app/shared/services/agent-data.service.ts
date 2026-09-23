@@ -22,6 +22,7 @@ import {
   AgentImportResult,
   AgentPortfolioFilterOptions,
   AgentPortfolioQuery,
+  AgentCustomField,
   AgentPortfolioTrademark,
   AgentProfile,
   AgentPublicProfile,
@@ -156,12 +157,19 @@ export class AgentDataService {
     return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form);
   }
 
-  /** batchId comes from the preview response so both calls share one retained-upload record. */
-  confirmImport(file: File, batchId?: number): Observable<AgentImportResult> {
+  /**
+   * batchId comes from the preview response so both calls share one retained-upload record.
+   *
+   * `keepColumns` is the set of extra-column keys the agent ticked on the preview screen. Leaving
+   * it undefined keeps every column the parser found; passing an empty array keeps none.
+   */
+  confirmImport(file: File, batchId?: number, keepColumns?: string[]): Observable<AgentImportResult> {
     const form = new FormData();
     form.append('file', file);
-    const url = `${this.base}/agent-portal/portfolio/import`;
-    return this.http.post<AgentImportResult>(batchId != null ? `${url}?batchId=${batchId}` : url, form);
+    let params = new HttpParams();
+    if (batchId != null) params = params.set('batchId', batchId);
+    if (keepColumns) params = params.set('keepColumns', keepColumns.join(','));
+    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, form, { params });
   }
 
   /** Every conflict recorded across the whole portfolio — what the digest email links to. */
@@ -274,14 +282,26 @@ export class AgentDataService {
 
   // ── Reports ────────────────────────────────────────────────────────────
 
-  previewSearchReport(query: string, tmClasses?: number[] | null): Observable<SearchReport> {
+  previewSearchReport(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    page: number,
+    size: 10 | 100 | 1000,
+  ): Observable<SearchReport> {
     return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, {
-      params: this.searchReportParams(query, tmClasses),
+      params: this.searchReportParams(query, tmClasses, searchType).set('page', page).set('size', size),
     });
   }
 
-  downloadSearchReport(query: string, tmClasses?: number[] | null, clientName?: string | null): Observable<Blob> {
-    let params = this.searchReportParams(query, tmClasses);
+  downloadSearchReport(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    selectedIds: number[],
+    clientName?: string | null,
+  ): Observable<Blob> {
+    let params = this.searchReportParams(query, tmClasses, searchType, selectedIds);
     if (clientName) params = params.set('clientName', clientName);
     return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, { params, responseType: 'blob' });
   }
@@ -290,20 +310,35 @@ export class AgentDataService {
    * Repeated `tmClasses` params, which is what Spring binds to a List<Integer>. No param at all
    * means every class — an empty one would bind to a list containing a blank and fail.
    */
-  private searchReportParams(query: string, tmClasses?: number[] | null): HttpParams {
-    let params = new HttpParams().set('q', query);
+  private searchReportParams(
+    query: string,
+    tmClasses?: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic' = 'phonetic',
+    selectedIds?: number[],
+  ): HttpParams {
+    let params = new HttpParams().set('q', query).set('searchType', searchType);
     for (const c of tmClasses ?? []) {
       params = params.append('tmClasses', String(c));
     }
+    for (const id of selectedIds ?? []) params = params.append('selectedIds', String(id));
     return params;
   }
 
   /** Every row of the search as a spreadsheet — the PDF stops at a readable length. */
-  downloadSearchReportExcel(query: string, tmClasses?: number[] | null): Observable<Blob> {
+  downloadSearchReportExcel(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    selectedIds: number[],
+  ): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/reports/search.xlsx`, {
-      params: this.searchReportParams(query, tmClasses),
+      params: this.searchReportParams(query, tmClasses, searchType, selectedIds),
       responseType: 'blob',
     });
+  }
+
+  getSearchResultArtwork(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/search/${id}/artwork`, { responseType: 'blob' });
   }
 
   downloadWatchReport(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
@@ -426,9 +461,46 @@ export class AgentDataService {
   /** Updates the agent's private notes for a mark. Allowed whatever the mark's provenance. */
   updatePortfolioLink(
     trademarkId: number,
-    updates: { agentNotes?: string; clientReference?: string },
+    updates: { agentNotes?: string; clientReference?: string; customFields?: Record<string, string | null> },
   ): Observable<Record<string, unknown>> {
     return this.http.patch<Record<string, unknown>>(`${this.base}/agent-portal/portfolio/${trademarkId}/link`, updates);
+  }
+
+  // ── Custom fields ────────────────────────────────────────────────────────
+
+  /**
+   * The firm's own portfolio schema — the spreadsheet columns our trademark model has no home for.
+   *
+   * Every firm's set is different and unrelated to every other firm's, so this is fetched per
+   * session rather than being anything shared or cached globally.
+   */
+  getCustomFields(): Observable<AgentCustomField[]> {
+    return this.http.get<AgentCustomField[]>(`${this.base}/agent-portal/custom-fields`);
+  }
+
+  createCustomField(label: string, dataType = 'TEXT'): Observable<AgentCustomField> {
+    return this.http.post<AgentCustomField>(`${this.base}/agent-portal/custom-fields`, { label, dataType });
+  }
+
+  /** Label, type, order and grid visibility. The key is immutable — values are stored under it. */
+  updateCustomField(
+    fieldId: number,
+    updates: { label?: string; dataType?: string; displayOrder?: number; showInList?: boolean },
+  ): Observable<AgentCustomField> {
+    return this.http.patch<AgentCustomField>(`${this.base}/agent-portal/custom-fields/${fieldId}`, updates);
+  }
+
+  /** Soft — values stay on every mark, so this is recoverable by re-creating the field. */
+  deleteCustomField(fieldId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/custom-fields/${fieldId}`);
+  }
+
+  /** Folds one field's values into another across every mark, then retires the source. */
+  mergeCustomField(fieldId: number, targetId: number): Observable<{ movedValues: number }> {
+    return this.http.post<{ movedValues: number }>(
+      `${this.base}/agent-portal/custom-fields/${fieldId}/merge-into/${targetId}`,
+      {},
+    );
   }
 
   // ── Journal watch ────────────────────────────────────────────────────────

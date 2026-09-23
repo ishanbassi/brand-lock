@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import {
+  AgentCustomField,
   AgentImportSummary,
   AgentPortfolioFilterOptions,
   AgentPortfolioQuery,
@@ -94,6 +95,18 @@ export class AgentPortfolioComponent implements OnInit {
     { field: 'renewalDate', label: 'Renewal', firstDir: 'asc' },
   ];
 
+  /**
+   * The firm's own spreadsheet columns, and which of them are shown in this table.
+   *
+   * Display only for now: sorting and filtering on them needs the query to reach into the jsonb
+   * bag, which the portfolio query does not do yet. An unsortable column is honest about that —
+   * a header that looks sortable and silently does nothing would not be.
+   */
+  customFields = signal<AgentCustomField[]>([]);
+  shownCustomFields = signal<AgentCustomField[]>([]);
+  showColumnPicker = signal(false);
+  columnPickerError = signal('');
+
   // Delete
   deletingId = signal<number | null>(null);
   confirmDeleteId = signal<number | null>(null);
@@ -116,12 +129,48 @@ export class AgentPortfolioComponent implements OnInit {
     this.load();
     this.loadPendingImports();
     this.loadFilterOptions();
+    this.loadCustomFields();
     this.searchSubject.pipe(debounceTime(350)).subscribe((q) => {
       if (q.trim() === this.lastSearched) return;
       this.lastSearched = q.trim();
       this.page = 0;
       this.load();
     });
+  }
+
+  private loadCustomFields(): void {
+    this.agentDataService.getCustomFields().subscribe({
+      next: (fields) => {
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter((f) => f.showInList));
+      },
+      // A firm that has never imported a spreadsheet has none. Normal, not an error.
+      error: () => this.customFields.set([]),
+    });
+  }
+
+  /**
+   * Adds or removes one of the firm's own columns from the table.
+   *
+   * Persisted on the field itself rather than in this component, so the choice follows the agent
+   * between sessions and devices — the same reason it is capped server-side rather than here.
+   */
+  toggleColumn(field: AgentCustomField): void {
+    const next = !field.showInList;
+    this.columnPickerError.set('');
+    this.agentDataService.updateCustomField(field.id, { showInList: next }).subscribe({
+      next: (updated) => {
+        const fields = this.customFields().map((f) => (f.id === updated.id ? updated : f));
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter((f) => f.showInList));
+      },
+      error: (err) => this.columnPickerError.set(err?.error?.detail ?? 'Could not change that column.'),
+    });
+  }
+
+  /** A mark's value for one of the firm's own fields, or a dash when it has none. */
+  customValue(tm: AgentPortfolioTrademark, field: AgentCustomField): string {
+    return tm.customFields?.[field.fieldKey] || '—';
   }
 
   private loadFilterOptions(): void {
