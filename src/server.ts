@@ -434,10 +434,84 @@ app.get('/og-image-proxy', (req, res) => {
     });
 });
 
+// These public pages include data from the CMS and trademark API. Keep their rendered HTML in
+// process so each visitor does not have to wait for those services. Five minutes is shorter than
+// the displayed stats update interval; a stale copy can cover a slow or failed refresh for an hour.
+const PAGE_FRESH_MS = 5 * 60 * 1000;
+const PAGE_STALE_MS = PAGE_FRESH_MS + 60 * 60 * 1000;
+const pageHtmlCache = new Map<string, { html: string; renderedAt: number }>();
+const pageRefreshes = new Map<string, Promise<{ html: string; renderedAt: number }>>();
+const pageRefreshRetryAt = new Map<string, number>();
+
+function cacheablePage(req: express.Request): string | null {
+  // Only the canonical public URLs are known to render the same HTML for every visitor.
+  // Authentication on these pages is read from browser storage, never request cookies.
+  // Requests carrying an Authorization header continue through the normal SSR path.
+  const host = (req.headers['x-forwarded-host'] as string | undefined) || req.headers.host || '';
+  if (req.method !== 'GET' || host !== 'trademarx.in' || req.headers.authorization || req.originalUrl.includes('?')) {
+    return null;
+  }
+  return req.path === '/' || req.path === '/search' ? req.path : null;
+}
+
+function renderPublicPage(req: express.Request, key: string): Promise<{ html: string; renderedAt: number }> {
+  const existing = pageRefreshes.get(key);
+  if (existing) return existing;
+
+  const refresh = (async () => {
+    const context: { statusCode?: number; host?: string } = { host: 'trademarx.in' };
+    // Angular creates its web Request synchronously, before a stale page is sent to the visitor.
+    const response = await angularApp.handle(req, context);
+    if (!response || response.status !== 200 || context.statusCode && context.statusCode !== 200 || response.headers.has('set-cookie')) {
+      throw new Error(`Cannot cache SSR response for ${key}: ${response?.status ?? 'empty'}`);
+    }
+    const page = { html: await response.text(), renderedAt: Date.now() };
+    pageHtmlCache.set(key, page);
+    pageRefreshRetryAt.delete(key);
+    return page;
+  })()
+    .catch(err => {
+      // An unavailable upstream must not trigger a new render on every visitor request.
+      pageRefreshRetryAt.set(key, Date.now() + 60 * 1000);
+      throw err;
+    })
+    .finally(() => pageRefreshes.delete(key));
+
+  pageRefreshes.set(key, refresh);
+  return refresh;
+}
+
 /**
  * Handle all other requests by rendering the Angular application.
  */
 app.use('/**', (req, res, next) => {
+  const cacheKey = cacheablePage(req);
+  if (cacheKey) {
+    const cached = pageHtmlCache.get(cacheKey);
+    const age = cached ? Date.now() - cached.renderedAt : Infinity;
+    // Browser caches may keep a private copy briefly; the process cache is refreshed every five
+    // minutes. No shared proxy cache can accidentally serve this HTML to a signed-in visitor.
+    const sendPage = (page: { html: string }) => {
+      res.setHeader('Cache-Control', 'private, max-age=60');
+      res.type('html').send(page.html);
+    };
+    if (cached && age < PAGE_FRESH_MS) {
+      sendPage(cached);
+      return;
+    }
+    if (cached && age < PAGE_STALE_MS) {
+      if (Date.now() >= (pageRefreshRetryAt.get(cacheKey) ?? 0)) {
+        void renderPublicPage(req, cacheKey).catch(err => console.error(`SSR refresh failed for ${cacheKey}:`, err));
+      }
+      sendPage(cached);
+      return;
+    }
+    void renderPublicPage(req, cacheKey)
+      .then(sendPage)
+      .catch(next);
+    return;
+  }
+
   // Mutable context the app can write to during render (Angular exposes it via
   // REQUEST_CONTEXT; see SsrStatusService). Without it every route — including
   // /not-found — answered 200, so dead URLs read as soft 404s to crawlers.

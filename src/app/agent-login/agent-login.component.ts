@@ -120,4 +120,8 @@ export class AgentLoginComponent implements OnInit {
   mainSiteUrl(path: string): string {
     return this.hostContext.urlOnMainHost(path);
   }
+
+  agentSiteUrl(path: string): string {
+    return this.hostContext.urlOnAgentHost(path);
+  }
 }

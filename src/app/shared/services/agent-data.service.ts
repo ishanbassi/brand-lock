@@ -27,6 +27,7 @@ import {
   AgentProfile,
   AgentPublicProfile,
   AgentRegistration,
+  ProprietorDirectoryEntry,
   WatchConflictHistory,
 } from '../../../models/agent.model';
 
@@ -538,6 +539,16 @@ export class AgentDataService {
     return this.http.get<AgentDirectoryEntry[]>(
       `${this.base}/agent-portal/discover/agents?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
+  }
+
+  searchProprietors(q: string, limit = 20): Observable<ProprietorDirectoryEntry[]> {
+    return this.http.get<ProprietorDirectoryEntry[]>(`${this.base}/agent-portal/discover/proprietors`, {
+      params: { q, limit },
+    });
+  }
+
+  claimProprietorTrademarks(request: AgentClaimRequest): Observable<AgentClaimResult> {
+    return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/proprietor-claim`, request);
   }
 
   /** The marks filed under one exact agent name. */

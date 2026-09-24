@@ -249,6 +249,14 @@ export interface AgentDirectoryEntry {
   addressCount?: number;
 }
 
+/** A proprietor spelling found in the trademark register. */
+export interface ProprietorDirectoryEntry {
+  nameNormalized: string;
+  displayName: string;
+  markCount: number;
+  latestFilingDate?: string;
+}
+
 export interface AgentClaimRequest {
   agentName: string;
   trademarkIds?: number[];

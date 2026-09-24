@@ -47,7 +47,7 @@ export class ForgotPasswordComponent implements OnInit {
         next: (response: any) => {
           this.loadingService.hide();
           this.toastService.success("To reset your password, check your email for instructions.");
-          this.router.navigate(['/login']);
+          this.router.navigate(['/agent-login']);
         }, error: (error: any) => {
           this.loadingService.hide();
           error?.detail && this.toastService.error(error.detail);
@@ -56,7 +56,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/agent-login']);
   }
 
   clearEmail() {

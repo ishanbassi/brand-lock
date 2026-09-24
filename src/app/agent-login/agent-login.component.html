@@ -17,7 +17,6 @@
       </ul>
     </div>
 
-    <p class="brand-foot">Not an agent? <a [href]="mainSiteUrl('/login')">Sign in on the main site</a></p>
   </aside>
 
   <main class="form-pane">
@@ -75,9 +74,9 @@
       <div class="form-links">
         <!-- Password reset and registration live on the main site; a router link cannot cross an
              origin, so these are absolute. -->
-        <a [href]="mainSiteUrl('/forgot-password')">Forgot your password?</a>
+        <a [href]="agentSiteUrl('/forgot-password')">Forgot your password?</a>
         <span class="sep">·</span>
-        <a [href]="mainSiteUrl('/create-agent-account')">Create an agent account</a>
+        <a [href]="agentSiteUrl('/create-agent-account')">Create an agent account</a>
       </div>
     </div>
   </main>

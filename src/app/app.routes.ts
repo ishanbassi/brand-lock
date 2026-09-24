@@ -38,6 +38,18 @@ export const routes: Routes = [
     },
     {
         // ROLE_ADMIN portal — standalone shell, no public navbar/footer.
+        path: 'create-agent-account',
+        loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
+        title: 'Create Agent Account | Trademarx',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'forgot-password',
+        loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+        title: 'Reset Agent Password | Trademarx',
+        canActivate: [agentHostGuard],
+    },
+    {
         path: 'admin-portal',
         loadComponent: () => import('./admin-portal/admin-portal-shell.component').then(m => m.AdminPortalShellComponent),
         loadChildren: () => import('./admin-portal/admin-portal.routes').then(m => m.adminPortalRoutes),
@@ -155,13 +167,6 @@ export const routes: Routes = [
         loadComponent: () => import('./onboarding/onboarding.component').then(m => m.OnboardingComponent),
         loadChildren: () => import('./onboarding/onboarding.routes').then(m => m.onboardingRoutes),
         title: "Trademark Registration",
-    },
-    {
-        path: 'create-agent-account',
-        loadComponent: () => import('./create-agent-account/create-agent-account.component').then(m => m.CreateAgentAccountComponent),
-        title: "Join as IP Agent | Trademarx",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
     },
     {
         path: 'agent/:agentCode',
@@ -376,13 +381,6 @@ export const routes: Routes = [
         path: 'login',
         loadComponent: () => import('./login-v2/login-v2.component').then(m => m.LoginV2Component),
         title: "Login",
-        canActivate: [AuthGuard],
-        data: { roles: ['ROLE_ANONYMOUS'] }
-    },
-    {
-        path: 'forgot-password',
-        loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
-        title: "Forgot Password",
         canActivate: [AuthGuard],
         data: { roles: ['ROLE_ANONYMOUS'] }
     },
