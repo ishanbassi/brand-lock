@@ -444,14 +444,17 @@ const pageRefreshes = new Map<string, Promise<{ html: string; renderedAt: number
 const pageRefreshRetryAt = new Map<string, number>();
 
 function cacheablePage(req: express.Request): string | null {
-  // Only the canonical public URLs are known to render the same HTML for every visitor.
+  // Only the homepage is safe for this in-process HTML cache. The search page has a lazy route
+  // and hydrated client state; caching its entire SSR response has served markup from a previous
+  // request (for example, a trademark-detail page) at /search. The browser later hydrates the
+  // correct URL, which is why visitors see the wrong page briefly before search appears.
   // Authentication on these pages is read from browser storage, never request cookies.
   // Requests carrying an Authorization header continue through the normal SSR path.
   const host = (req.headers['x-forwarded-host'] as string | undefined) || req.headers.host || '';
   if (req.method !== 'GET' || host !== 'trademarx.in' || req.headers.authorization || req.originalUrl.includes('?')) {
     return null;
   }
-  return req.path === '/' || req.path === '/search' ? req.path : null;
+  return req.path === '/' ? req.path : null;
 }
 
 function renderPublicPage(req: express.Request, key: string): Promise<{ html: string; renderedAt: number }> {
