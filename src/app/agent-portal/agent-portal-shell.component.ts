@@ -289,7 +289,9 @@ export class AgentPortalShellComponent {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    // `/login` belongs to the main site. Navigating there first triggers the host guard, which
+    // sends the browser back to this subdomain's agent sign-in page and creates a needless hop.
+    this.router.navigate(['/agent-login']);
   }
 
   /**
