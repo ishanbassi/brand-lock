@@ -1,4 +1,4 @@
-<div class="portal-layout" [class.collapsed]="sidebarCollapsed()">
+<div class="portal-layout" [class.collapsed]="sidebarCollapsed()" [class.mobile-nav-open]="mobileNavOpen()">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -6,8 +6,6 @@
       <a routerLink="/" class="sidebar-brand">
         @if (!sidebarCollapsed()) {
           <span class="brand-tm">TM</span><span class="brand-arx">arx</span>
-        } @else {
-          <span class="brand-tm">TM</span>
         }
       </a>
       <button type="button"
@@ -127,6 +125,11 @@
       the calendar's "today" summary and a global search a home when those land.
     -->
     <header class="topbar">
+      <button type="button" class="mobile-nav-toggle" (click)="toggleMobileNav()"
+              [attr.aria-label]="mobileNavOpen() ? 'Close navigation' : 'Open navigation'"
+              [attr.aria-expanded]="mobileNavOpen()">
+        <ap-icon [name]="mobileNavOpen() ? 'close' : 'portfolio'" [size]="18" />
+      </button>
       <app-notification-bell />
       <!-- Profile lives here rather than in the nav: it is account plumbing, not one of the
            portal's features, and it sits beside the bell that shares that role. -->

@@ -35,6 +35,17 @@ $content-bg: var(--ap-paper);
   width: $sidebar-collapsed-width;
 }
 
+// At 68px the logo and chevron cannot share a line. The button becomes the whole header, which
+// keeps the control centered and makes the collapsed desktop rail reversible.
+.portal-layout.collapsed .sidebar-header {
+  justify-content: center;
+  padding-inline: var(--ap-space-2);
+}
+
+.portal-layout.collapsed .sidebar-brand {
+  display: none;
+}
+
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -410,6 +421,20 @@ $content-bg: var(--ap-paper);
   border-bottom: 1px solid #e2e8f0;
 }
 
+.mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ap-target);
+  min-height: var(--ap-target);
+  padding: var(--ap-space-2);
+  margin-right: auto;
+  border: 1px solid var(--ap-rule);
+  border-radius: 8px;
+  background: var(--ap-surface);
+  color: var(--ap-ink);
+}
+
 // Matches the notification bell's button so the two topbar controls read as a pair.
 .topbar-btn {
   display: inline-flex;
@@ -456,12 +481,16 @@ $content-bg: var(--ap-paper);
     z-index: 999;
   }
 
-  .portal-layout:not(.collapsed) .sidebar {
+  // A desktop collapse state must never turn the phone drawer into a 68px sliver.
+  .portal-layout.collapsed .sidebar { width: $sidebar-width; }
+
+  .portal-layout.mobile-nav-open .sidebar {
     transform: translateX(0);
   }
 
+  .mobile-nav-toggle { display: inline-flex; }
   .main-content { overflow-x: hidden; }
-  .content-scroll { overflow-x: hidden; }
+  .content-scroll { overflow-x: auto; }
 }
 
 

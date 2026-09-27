@@ -457,4 +457,23 @@ $low: var(--ap-done);
   .page-nav {
     justify-content: space-between;
   }
+
+  // A positioned panel is otherwise clipped by the narrow form/viewport. On a phone it becomes a
+  // full-width popover anchored to the page and remains scrollable above the keyboard.
+  .class-picker { position: static; min-width: 0; width: 100%; }
+  .class-trigger { width: 100%; }
+  .class-panel {
+    position: fixed;
+    top: max(var(--ap-space-3), env(safe-area-inset-top));
+    right: var(--ap-space-3);
+    left: var(--ap-space-3);
+    width: auto;
+    max-width: none;
+    max-height: calc(100dvh - 2 * var(--ap-space-3));
+    overflow-y: auto;
+    z-index: 1001;
+  }
+
+  .class-grid { max-height: min(55dvh, 360px); }
+  .search-form > .field, .search-form > .btn-primary { width: 100%; }
 }

@@ -72,6 +72,9 @@ interface NavSection {
 })
 export class AgentPortalShellComponent {
   sidebarCollapsed = signal(false);
+  // The desktop rail may collapse to icons. A phone needs a true off-canvas drawer instead, so it
+  // starts closed and has a persistent trigger in the top bar.
+  mobileNavOpen = signal(false);
   activeRoute = signal('');
   expandedGroups = signal<Set<string>>(new Set());
 
@@ -193,6 +196,7 @@ export class AgentPortalShellComponent {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
       this.activeRoute.set(e.urlAfterRedirects);
       this.revealActiveGroup();
+      this.mobileNavOpen.set(false);
     });
     this.activeRoute.set(this.router.url);
     this.revealActiveGroup();
@@ -284,7 +288,17 @@ export class AgentPortalShellComponent {
   }
 
   toggleSidebar(): void {
+    // In the phone drawer this same control closes the drawer. A collapsed 68px rail would leave
+    // the navigation partly covering the page and would not be a usable mobile state.
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+      this.mobileNavOpen.set(false);
+      return;
+    }
     this.sidebarCollapsed.update(v => !v);
+  }
+
+  toggleMobileNav(): void {
+    this.mobileNavOpen.update(v => !v);
   }
 
   logout(): void {

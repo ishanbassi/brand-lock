@@ -322,12 +322,17 @@ $white: #ffffff;
   background: $white;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+  // Custom Excel columns make this table genuinely wide. The card, not the whole page, owns the
+  // horizontal scroll so the Actions cell always remains reachable.
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
 }
 
 .tm-table {
-  width: 100%;
+  width: max-content;
+  min-width: 1080px;
   border-collapse: collapse;
   font-size: 0.875rem;
 
@@ -589,20 +594,8 @@ $white: #ffffff;
   font-size: 0.875rem;
 }
 
-// ── RESPONSIVE TABLE ─────────────────────────────────────────
-@media (max-width: 1024px) {
-  .tm-table {
-    th:nth-child(7), td:nth-child(7) { display: none; } // renewal
-    th:nth-child(4), td:nth-child(4) { display: none; } // proprietor
-  }
-}
-
-@media (max-width: 768px) {
-  .tm-table {
-    th:nth-child(6), td:nth-child(6) { display: none; } // filing date
-    th:nth-child(3), td:nth-child(3) { display: none; } // class
-  }
-}
+// Dense register rows remain complete on smaller screens; the card above provides the horizontal
+// scroll instead of silently removing statutory fields or the only action.
 
 
 // ── PENDING IMPORT BANNER ───────────────────────────────

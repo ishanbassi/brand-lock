@@ -47,7 +47,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   // Pagination
   page = 0;
-  pageSize = 20;
+  // A portfolio is normally reviewed in batches rather than one screenful at a time. Keeping the
+  // server page at 100 also matches the other agent worklists without loading the entire book.
+  pageSize = 100;
   totalCount = 0;
   totalPages = 0;
 
