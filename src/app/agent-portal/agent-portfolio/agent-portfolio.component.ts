@@ -6,7 +6,7 @@ import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { debounceTime, Subject } from 'rxjs';
+import { debounceTime, forkJoin, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import {
   AgentCustomField,
@@ -47,9 +47,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   // Pagination
   page = 0;
-  // A portfolio is normally reviewed in batches rather than one screenful at a time. Keeping the
-  // server page at 100 also matches the other agent worklists without loading the entire book.
-  pageSize = 100;
+  // The scrollable table keeps navigation accessible even for a large review batch.
+  pageSize = 1000;
   totalCount = 0;
   totalPages = 0;
   private latestLoad = 0;
@@ -190,6 +189,28 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.shownCustomFields.set(fields.filter((f) => f.showInList));
       },
       error: (err) => this.columnPickerError.set(err?.error?.detail ?? 'Could not change that column.'),
+    });
+  }
+
+  get allCustomFieldsShown(): boolean {
+    const fields = this.customFields();
+    return fields.length > 0 && fields.every(field => field.showInList);
+  }
+
+  /** Applies one visibility decision to every custom field in this agent's schema. */
+  toggleAllColumns(show: boolean): void {
+    const changed = this.customFields().filter(field => Boolean(field.showInList) !== show);
+    if (changed.length === 0) return;
+
+    this.columnPickerError.set('');
+    forkJoin(changed.map(field => this.agentDataService.updateCustomField(field.id, { showInList: show }))).subscribe({
+      next: updated => {
+        const byId = new Map(updated.map(field => [field.id, field]));
+        const fields = this.customFields().map(field => byId.get(field.id) ?? field);
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter(field => field.showInList));
+      },
+      error: err => this.columnPickerError.set(err?.error?.detail ?? 'Could not update field visibility.'),
     });
   }
 

@@ -162,13 +162,18 @@
       }
     </div>
       @if (customFields().length > 0 && showColumnPicker()) {
+          <button type="button" class="field-picker-backdrop" (click)="showColumnPicker.set(false)" aria-label="Close fields"></button>
           <section class="field-picker-panel" id="portfolio-field-picker" aria-label="Choose fields to show">
             <div class="field-picker-title">
               <h2>Fields</h2>
               <button type="button" (click)="showColumnPicker.set(false)" aria-label="Close fields"><ap-icon name="close" [size]="16" /></button>
             </div>
             <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
-            <p class="field-picker-count">{{ shownCustomFields().length }} shown</p>
+            <label class="show-all-fields">
+              <input type="checkbox" [checked]="allCustomFieldsShown" (change)="toggleAllColumns($any($event.target).checked)" />
+              <span>Show all fields</span>
+            </label>
+            <p class="field-picker-count">{{ shownCustomFields().length }} of {{ customFields().length }} shown</p>
             @if (columnPickerError()) { <p class="column-menu-error">{{ columnPickerError() }}</p> }
             <ul>
               @for (field of filteredCustomFields; track field.id) {

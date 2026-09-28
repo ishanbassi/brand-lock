@@ -75,10 +75,10 @@ $white: #ffffff;
 }
 
 .field-picker-panel {
-  position: absolute;
-  top: calc(var(--ap-target) + var(--ap-space-2));
+  position: fixed;
+  top: max(var(--ap-space-4), 5vh);
   right: 0;
-  z-index: 12;
+  z-index: 21;
   width: min(340px, calc(100vw - var(--ap-space-6)));
   max-height: min(560px, calc(100vh - var(--ap-space-6)));
   overflow: auto;
@@ -114,6 +114,15 @@ $white: #ffffff;
   }
 }
 
+.field-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .field-picker-title {
   display: flex;
   align-items: center;
@@ -131,6 +140,21 @@ $white: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.show-all-fields {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-3);
+  padding: var(--ap-space-2) 0;
+  border-bottom: 1px solid $gray-100;
+  color: $gray-800;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  input { width: 16px; height: 16px; accent-color: $accent; }
 }
 
 .field-toggle {
