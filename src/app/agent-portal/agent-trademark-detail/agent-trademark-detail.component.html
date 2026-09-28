@@ -216,8 +216,8 @@
             <label class="spreadsheet-field-row" role="row">
               <span class="spreadsheet-field-name" role="cell">
                 {{ field.label }}
-                <button type="button" class="field-remove" (click)="removeCustomField(field)"
-                        [attr.aria-label]="'Remove ' + field.label + ' from every mark'" title="Remove this field from every mark">×</button>
+                <button type="button" class="field-remove" (click)="removeCustomValue(field)"
+                        [attr.aria-label]="'Clear ' + field.label + ' for this trademark'" title="Clear this value for this trademark">×</button>
               </span>
               @if (field.dataType === 'DATE') {
                 <input type="date" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey" />

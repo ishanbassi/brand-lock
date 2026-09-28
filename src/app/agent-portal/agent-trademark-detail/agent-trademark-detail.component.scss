@@ -356,7 +356,7 @@ $white: #ffffff;
   overflow-wrap: anywhere;
 }
 
-// Deleting a field affects every mark, so the control stays quiet until the row is hovered.
+// Clearing a value is available per row, but stays quiet until that row is being inspected.
 .field-remove {
   background: none;
   border: none;
