@@ -265,7 +265,18 @@
 
               <!-- THE FIRM'S OWN COLUMNS -->
               @for (field of shownCustomFields(); track field.id) {
-                <td class="custom-cell" [title]="customValue(tm, field)">{{ customValue(tm, field) }}</td>
+                <td class="custom-cell" [class.is-saving]="isCustomValueSaving(tm, field)">
+                  <div class="custom-input-wrap">
+                    <input
+                      [type]="field.dataType === 'DATE' ? 'date' : 'text'"
+                      [value]="customValue(tm, field)"
+                      [attr.aria-label]="field.label + ' for ' + (tm.name || 'trademark')"
+                      [placeholder]="'Enter ' + field.label"
+                      (input)="onCustomValueInput(tm, field, $any($event.target).value)"
+                    />
+                    @if (isCustomValueSaving(tm, field)) { <span class="autosave-state">Saving</span> }
+                  </div>
+                </td>
               }
 
               <td class="type-cell">{{ tm.type || '—' }}</td>

@@ -110,6 +110,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   showColumnPicker = signal(false);
   columnPickerError = signal('');
   fieldSearch = '';
+  private readonly customValueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly pendingCustomValues = new Map<string, { trademarkId: number; fieldKey: string; value: string }>();
+  private readonly savingCustomValueKeys = signal<Set<string>>(new Set());
 
   // Delete
   deletingId = signal<number | null>(null);
@@ -137,6 +140,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+    for (const timer of this.customValueTimers.values()) clearTimeout(timer);
   }
 
   ngOnInit(): void {
@@ -214,9 +218,64 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** A mark's value for one of the firm's own fields, or a dash when it has none. */
+  /** A mark's private spreadsheet value, kept empty when the workbook had no value. */
   customValue(tm: AgentPortfolioTrademark, field: AgentCustomField): string {
-    return tm.customFields?.[field.fieldKey] || '—';
+    return tm.customFields?.[field.fieldKey] ?? '';
+  }
+
+  /** Keeps the spreadsheet cell responsive, then writes only that agent-private value after typing settles. */
+  onCustomValueInput(tm: AgentPortfolioTrademark, field: AgentCustomField, value: string): void {
+    if (tm.id == null) return;
+    const key = this.customValueKey(tm.id, field.fieldKey);
+    this.trademarks.update(rows => rows.map(mark => mark.id === tm.id
+      ? { ...mark, customFields: { ...(mark.customFields ?? {}), [field.fieldKey]: value } }
+      : mark,
+    ));
+    this.pendingCustomValues.set(key, { trademarkId: tm.id, fieldKey: field.fieldKey, value });
+
+    const existingTimer = this.customValueTimers.get(key);
+    if (existingTimer) clearTimeout(existingTimer);
+    this.customValueTimers.set(key, setTimeout(() => this.saveCustomValue(key), 700));
+  }
+
+  isCustomValueSaving(tm: AgentPortfolioTrademark, field: AgentCustomField): boolean {
+    return tm.id != null && this.savingCustomValueKeys().has(this.customValueKey(tm.id, field.fieldKey));
+  }
+
+  private saveCustomValue(key: string): void {
+    this.customValueTimers.delete(key);
+    // Preserve write order for one cell. A network response from an earlier value must never
+    // arrive after a later edit and become the final stored value.
+    if (this.savingCustomValueKeys().has(key)) {
+      this.customValueTimers.set(key, setTimeout(() => this.saveCustomValue(key), 150));
+      return;
+    }
+    const pending = this.pendingCustomValues.get(key);
+    if (!pending) return;
+    this.pendingCustomValues.delete(key);
+    this.savingCustomValueKeys.update(keys => new Set(keys).add(key));
+
+    this.agentDataService.updatePortfolioLink(pending.trademarkId, {
+      customFields: { [pending.fieldKey]: pending.value.trim() ? pending.value : null },
+    }).subscribe({
+      next: () => this.savingCustomValueKeys.update(keys => {
+        const next = new Set(keys);
+        next.delete(key);
+        return next;
+      }),
+      error: () => {
+        this.savingCustomValueKeys.update(keys => {
+          const next = new Set(keys);
+          next.delete(key);
+          return next;
+        });
+        this.error.set('Could not save that spreadsheet value. Edit the cell again to retry.');
+      },
+    });
+  }
+
+  private customValueKey(trademarkId: number, fieldKey: string): string {
+    return `${trademarkId}:${fieldKey}`;
   }
 
   get filteredCustomFields(): AgentCustomField[] {
