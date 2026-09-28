@@ -48,7 +48,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   // Pagination
   page = 0;
   // The scrollable table keeps navigation accessible even for a large review batch.
-  pageSize = 1000;
+  pageSize = 100;
   totalCount = 0;
   totalPages = 0;
   private latestLoad = 0;
