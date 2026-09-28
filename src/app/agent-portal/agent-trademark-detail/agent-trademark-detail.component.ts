@@ -42,11 +42,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   confirmRemove = signal(false);
   removing = signal(false);
 
-  // Notes (held on the portfolio link, so editable whatever the mark's provenance)
-  notes = { agentNotes: '', clientReference: '' };
-  savingNotes = signal(false);
-  notesSaved = signal(false);
-
   /**
    * The firm's own spreadsheet columns.
    *
@@ -119,8 +114,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     this.agentDataService.getPortfolioItem(this.trademarkId).subscribe({
       next: tm => {
         this.mark.set(tm);
-        this.notes.agentNotes = tm.agentNotes ?? '';
-        this.notes.clientReference = tm.clientReference ?? '';
         this.customValues = { ...(tm.customFields ?? {}) };
         this.loading.set(false);
         this.loadArtwork(tm);
@@ -227,23 +220,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
         this.removing.set(false);
         this.confirmRemove.set(false);
         this.error.set('Could not remove this mark from your portfolio.');
-      },
-    });
-  }
-
-  // ── Notes ────────────────────────────────────────────────────────────────
-
-  saveNotes(): void {
-    this.savingNotes.set(true);
-    this.notesSaved.set(false);
-    this.agentDataService.updatePortfolioLink(this.trademarkId, { ...this.notes }).subscribe({
-      next: () => {
-        this.savingNotes.set(false);
-        this.notesSaved.set(true);
-      },
-      error: () => {
-        this.savingNotes.set(false);
-        this.error.set('Could not save your notes.');
       },
     });
   }

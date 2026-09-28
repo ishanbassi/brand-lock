@@ -294,26 +294,6 @@ $white: #ffffff;
 }
 
 // ── NOTES ───────────────────────────────────────────────
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-1);
-  margin-bottom: var(--ap-space-4);
-
-  span { font-size: 0.8125rem; font-weight: 600; color: $gray-600; }
-
-  input, textarea {
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border: 1px solid $gray-200;
-    border-radius: 9px;
-    font-family: inherit;
-    font-size: 0.9375rem;
-    resize: vertical;
-
-    &:focus { outline: none; border-color: $accent; box-shadow: 0 0 0 3px var(--ap-accent-soft); }
-  }
-}
-
 .notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
 .saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
 

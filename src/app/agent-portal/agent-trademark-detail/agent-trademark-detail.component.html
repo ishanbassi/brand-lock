@@ -191,29 +191,6 @@
       </p>
     </section>
 
-    <!-- ── PRIVATE NOTES ────────────────────────────────────────────── -->
-    <section class="card">
-      <h2>Your private notes</h2>
-      <p class="card-hint">Stored against your copy of this mark. Editable even when the mark itself is not.</p>
-
-      <label class="field">
-        <span>Client reference</span>
-        <input type="text" [(ngModel)]="notes.clientReference" name="clientReference"
-               placeholder="Your matter or client number" />
-      </label>
-      <label class="field">
-        <span>Notes</span>
-        <textarea rows="4" [(ngModel)]="notes.agentNotes" name="agentNotes"
-                  placeholder="Anything you want to remember about this mark"></textarea>
-      </label>
-      <div class="notes-actions">
-        <button class="btn-primary" (click)="saveNotes()" [disabled]="savingNotes()">
-          {{ savingNotes() ? 'Saving…' : 'Save notes' }}
-        </button>
-        @if (notesSaved()) { <span class="saved-flag">Saved</span> }
-      </div>
-    </section>
-
     <!-- ── YOUR OWN FIELDS ──────────────────────────────────────────────
          The firm's spreadsheet columns that our trademark model has no home for. Always editable,
          registry-verified or not: the register has no opinion on a firm's own receipt numbers. -->
