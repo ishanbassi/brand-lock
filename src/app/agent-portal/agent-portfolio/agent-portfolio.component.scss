@@ -51,45 +51,100 @@ $white: #ffffff;
   flex-wrap: wrap;
 }
 
-// ── COLUMN PICKER ───────────────────────────────────────
-// Which of the firm's own imported fields appear as table columns. A workbook contributes sixty-odd
-// of them, so this is opt-in per column rather than showing them all.
-.column-picker {
-  position: relative;
+// ── FIELD PICKER ────────────────────────────────────────
+// The compact trigger lives in the table's header corner, where a person decides what this
+// particular working view should contain, rather than competing with page-level actions.
+.field-picker-trigger {
+  position: sticky;
+  top: var(--ap-space-2);
+  float: right;
+  z-index: 8;
+  width: 28px;
+  height: 28px;
+  margin: var(--ap-space-2) 132px 0 0;
+  border: 1px solid $gray-200;
+  border-radius: 50%;
+  background: $white;
+  color: $gray-600;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover, &:focus-visible { border-color: $accent; color: $accent; outline: none; }
 }
 
-.column-menu {
+.field-picker-panel {
   position: absolute;
-  top: calc(100% + var(--ap-space-2));
+  top: 0;
   right: 0;
-  z-index: 20;
-  width: 260px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding: var(--ap-space-3);
+  z-index: 12;
+  width: min(340px, calc(100vw - var(--ap-space-6)));
+  max-height: min(560px, calc(100vh - var(--ap-space-6)));
+  overflow: auto;
+  padding: var(--ap-space-4);
   background: $white;
-  border: 1.5px solid $gray-200;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  border: 1px solid $gray-200;
+  border-radius: 12px;
+  box-shadow: 0 14px 38px rgb(15 23 42 / 18%);
+
+  input {
+    width: 100%;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border: 1.5px solid $gray-200;
+    border-radius: 8px;
+    font: inherit;
+
+    &:focus { outline: none; border-color: $accent; box-shadow: 0 0 0 3px var(--ap-accent-soft); }
+  }
 
   ul { list-style: none; margin: 0; padding: 0; }
 
-  li + li { margin-top: var(--ap-space-2); }
-
-  label {
+  li {
     display: flex;
     align-items: center;
-    gap: var(--ap-space-2);
-    cursor: pointer;
-    font-size: 0.875rem;
+    justify-content: space-between;
+    gap: var(--ap-space-3);
+    min-height: 40px;
+    border-bottom: 1px solid $gray-100;
     color: $gray-800;
+    font-size: 0.875rem;
+
+    &:last-child { border-bottom: 0; }
   }
 }
 
-.column-menu-hint {
-  margin: 0 0 var(--ap-space-3);
+.field-picker-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ap-space-3);
+
+  h2 { margin: 0; font-size: 1rem; color: $gray-800; }
+  button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: $gray-100; color: $gray-600; cursor: pointer; font-size: 1.25rem; line-height: 1; }
+}
+
+.field-picker-count {
+  margin: var(--ap-space-3) 0 var(--ap-space-1);
+  color: $gray-400;
   font-size: 0.75rem;
-  color: $gray-600;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-toggle {
+  width: 32px;
+  height: 18px;
+  flex: 0 0 auto;
+  padding: 2px;
+  border: 0;
+  border-radius: 99px;
+  background: $gray-200;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  span { display: block; width: 14px; height: 14px; border-radius: 50%; background: $white; transition: transform 0.15s ease; }
+  &.on { background: $accent; span { transform: translateX(14px); } }
 }
 
 .column-menu-error {
@@ -319,13 +374,14 @@ $white: #ffffff;
 
 // ── TABLE ─────────────────────────────────────────
 .table-card {
+  position: relative;
   background: $white;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  // Custom Excel columns make this table genuinely wide. The card, not the whole page, owns the
-  // horizontal scroll so the Actions cell always remains reachable.
-  overflow-x: auto;
-  overflow-y: hidden;
+  // This is a data workbench: both axes belong to the table. A capped height keeps pagination in
+  // reach while sticky identity/action cells preserve the two common routes through every row.
+  max-height: min(62vh, 680px);
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
 }
@@ -333,7 +389,8 @@ $white: #ffffff;
 .tm-table {
   width: max-content;
   min-width: 1080px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.875rem;
 
   thead tr {
@@ -342,6 +399,9 @@ $white: #ffffff;
   }
 
   th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
     padding: var(--ap-space-3) var(--ap-space-4);
     text-align: left;
     font-size: 0.75rem;
@@ -350,6 +410,7 @@ $white: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     white-space: nowrap;
+    background: $gray-50;
   }
 
   tbody tr {
@@ -368,28 +429,41 @@ $white: #ffffff;
   }
 }
 
-.tm-name-cell { max-width: 220px; }
+.select-col {
+  position: sticky !important;
+  left: 0;
+  z-index: 5 !important;
+  width: 48px;
+  min-width: 48px;
+  background: $white;
+}
+
+.tm-table thead .select-col { background: $gray-50; z-index: 7 !important; }
+
+.name-col,
+.tm-name-cell {
+  position: sticky !important;
+  left: 48px;
+  z-index: 4 !important;
+  min-width: 230px;
+  max-width: 230px;
+  background: $white;
+}
+
+.tm-table thead .name-col { background: $gray-50; z-index: 6 !important; }
+.tm-table tbody tr:hover .select-col,
+.tm-table tbody tr:hover .tm-name-cell { background: var(--ap-accent-soft); }
 
 .tm-name {
+  display: block;
   font-weight: 600;
   color: $gray-800;
+  text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
-}
-
-.tm-type-tag {
-  display: inline-block;
-  margin-top: 3px;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  background: var(--ap-accent-soft);
-  color: $accent;
-  border-radius: 4px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  &:hover, &:focus-visible { color: $accent; text-decoration: underline; outline: none; }
 }
 
 .app-no {
@@ -448,6 +522,20 @@ $white: #ffffff;
 
 .actions-col { width: 120px; }
 
+.type-col, .type-cell { white-space: nowrap; }
+.type-cell { color: $gray-600; font-size: 0.8125rem; }
+
+.actions-col,
+.actions-cell {
+  position: sticky !important;
+  right: 0;
+  z-index: 5 !important;
+  background: $white;
+  box-shadow: -8px 0 10px -10px rgb(15 23 42 / 45%);
+}
+
+.tm-table thead .actions-col { background: $gray-50; z-index: 7 !important; }
+.tm-table tbody tr:hover .actions-cell { background: var(--ap-accent-soft); }
 .actions-cell { white-space: nowrap; }
 
 .action-btns {

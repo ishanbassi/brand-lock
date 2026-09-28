@@ -15,31 +15,6 @@
       </p>
     </div>
     <div class="header-actions">
-      <!-- The firm's own imported columns, opt-in per column so the table stays readable: a real
-           portfolio workbook contributes sixty-odd of them. -->
-      @if (customFields().length > 0) {
-        <div class="column-picker">
-          <button type="button" class="btn-outline" (click)="showColumnPicker.set(!showColumnPicker())">
-            <span><ap-icon name="documents" [size]="16" /></span> Columns
-          </button>
-          @if (showColumnPicker()) {
-            <div class="column-menu">
-              <p class="column-menu-hint">Show your own fields as columns.</p>
-              @if (columnPickerError()) { <p class="column-menu-error">{{ columnPickerError() }}</p> }
-              <ul>
-                @for (field of customFields(); track field.id) {
-                  <li>
-                    <label>
-                      <input type="checkbox" [checked]="field.showInList" (change)="toggleColumn(field)" />
-                      <span>{{ field.label }}</span>
-                    </label>
-                  </li>
-                }
-              </ul>
-            </div>
-          }
-        </div>
-      }
       <!-- Exports the current search, filters and sort across every page, not just this one. -->
       <ap-export-menu
         [busy]="exporting() || (printing() ? 'pdf' : null)"
@@ -162,15 +137,43 @@
 
   <!-- TABLE -->
   @if (!loading() && trademarks().length > 0) {
-    <div class="selection-summary">{{ selectedIds.size }} selected for printing</div>
+    @if (selectedIds.size > 0) {
+      <div class="selection-summary">{{ selectedIds.size }} selected for printing</div>
+    }
     <div class="table-card">
+      @if (customFields().length > 0) {
+        <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
+                aria-label="Choose fields to show" title="Choose fields to show">+</button>
+        @if (showColumnPicker()) {
+          <section class="field-picker-panel" aria-label="Choose fields to show">
+            <div class="field-picker-title">
+              <h2>Fields</h2>
+              <button type="button" (click)="showColumnPicker.set(false)" aria-label="Close fields">×</button>
+            </div>
+            <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
+            <p class="field-picker-count">{{ shownCustomFields().length }} shown</p>
+            @if (columnPickerError()) { <p class="column-menu-error">{{ columnPickerError() }}</p> }
+            <ul>
+              @for (field of filteredCustomFields; track field.id) {
+                <li>
+                  <span>{{ field.label }}</span>
+                  <button type="button" class="field-toggle" [class.on]="field.showInList" (click)="toggleColumn(field)"
+                          [attr.aria-pressed]="field.showInList" [attr.aria-label]="(field.showInList ? 'Hide ' : 'Show ') + field.label">
+                    <span></span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      }
       <table class="tm-table">
         <thead>
           <tr>
             <th class="select-col"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page" /></th>
             <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
             @for (col of columns; track col.field) {
-              <th [attr.aria-sort]="ariaSort(col.field)">
+              <th [class.name-col]="col.field === 'name'" [attr.aria-sort]="ariaSort(col.field)">
                 <button
                   type="button"
                   class="sort-btn"
@@ -189,6 +192,7 @@
             @for (field of shownCustomFields(); track field.id) {
               <th class="custom-col">{{ field.label }}</th>
             }
+            <th class="type-col">Type</th>
             <th class="actions-col">Actions</th>
           </tr>
         </thead>
@@ -197,12 +201,9 @@
             <tr [class.deleting]="deletingId() === tm.id">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
 
-              <!-- TRADEMARK NAME + TYPE -->
+              <!-- TRADEMARK NAME -->
               <td class="tm-name-cell">
-                <div class="tm-name">{{ tm.name || '—' }}</div>
-                @if (tm.type) {
-                  <span class="tm-type-tag">{{ tm.type }}</span>
-                }
+                <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-name">{{ tm.name || '—' }}</a>
               </td>
 
               <!-- APP NO -->
@@ -242,6 +243,8 @@
               @for (field of shownCustomFields(); track field.id) {
                 <td class="custom-cell" [title]="customValue(tm, field)">{{ customValue(tm, field) }}</td>
               }
+
+              <td class="type-cell">{{ tm.type || '—' }}</td>
 
               <!--
                 ACTIONS

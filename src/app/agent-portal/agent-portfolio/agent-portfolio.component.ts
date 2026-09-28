@@ -109,6 +109,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   shownCustomFields = signal<AgentCustomField[]>([]);
   showColumnPicker = signal(false);
   columnPickerError = signal('');
+  fieldSearch = '';
 
   // Delete
   deletingId = signal<number | null>(null);
@@ -194,6 +195,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   /** A mark's value for one of the firm's own fields, or a dash when it has none. */
   customValue(tm: AgentPortfolioTrademark, field: AgentCustomField): string {
     return tm.customFields?.[field.fieldKey] || '—';
+  }
+
+  get filteredCustomFields(): AgentCustomField[] {
+    const query = this.fieldSearch.trim().toLowerCase();
+    return query ? this.customFields().filter(field => field.label.toLowerCase().includes(query)) : this.customFields();
   }
 
   private loadFilterOptions(): void {
