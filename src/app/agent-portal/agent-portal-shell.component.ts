@@ -91,13 +91,12 @@ export class AgentPortalShellComponent {
         { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts' },
       ],
     },
-    // Its own entry rather than a watch child: it follows rival firms, not marks against the
-    // agent's portfolio. The route stays under watch/ so existing links keep working.
-    { label: 'Competitors',   icon: 'building',  route: '/agent-portal/watch/competitors' },
-    // Deadlines sits close under the watch group: both answer "what needs me, and when".
-    { label: 'Deadlines',     icon: 'calendar',  route: '/agent-portal/deadlines' },
-    { label: 'Search report', icon: 'search',    route: '/agent-portal/reports/search' },
-    { label: 'Documents',     icon: 'documents', route: '/agent-portal/documents' },
+    {
+      heading: 'Account',
+      // Billing stays in the main rail rather than hiding under the profile icon: agents need a
+      // reliable way to restore access when a paid feature sends them here.
+      items: [{ label: 'Billing & plan', icon: 'card', route: '/agent-portal/billing' }],
+    },
     // Notifications and My profile are deliberately absent: both are reached from the topbar
     // icons, and listing them here gave each screen two entry points that had to agree.
   ];

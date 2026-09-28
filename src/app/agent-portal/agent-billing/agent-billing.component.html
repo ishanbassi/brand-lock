@@ -1,0 +1,139 @@
+<main class="billing-page">
+  <header class="page-header">
+    <div>
+      <h1>Billing &amp; plan</h1>
+      <p>Choose the coverage your practice needs and keep your subscription in one place.</p>
+    </div>
+    @if (state(); as billingState) {
+      <span class="plan-chip" [class.is-paid]="billingState.entitled">
+        <ap-icon [name]="billingState.entitled ? 'check' : 'card'" [size]="16" />
+        {{ billingState.effectivePlanName }}
+      </span>
+    }
+  </header>
+
+  @if (error()) {
+    <section class="alert alert-error" role="alert">
+      <ap-icon name="alert" [size]="18" />
+      <div><strong>Billing is temporarily unavailable.</strong><span>{{ error() }}</span></div>
+      <button type="button" class="text-button" (click)="load()">Try again</button>
+    </section>
+  }
+
+  @if (actionError()) {
+    <section class="alert alert-error" role="alert">
+      <ap-icon name="alert" [size]="18" />
+      <div>{{ actionError() }}</div>
+    </section>
+  }
+
+  @if (loading()) {
+    <section class="loading-layout" aria-label="Loading billing details">
+      <div class="skeleton status-skeleton"></div>
+      <div class="skeleton plan-skeleton"></div><div class="skeleton plan-skeleton"></div><div class="skeleton plan-skeleton"></div>
+    </section>
+  } @else {
+    @if (state(); as billingState) {
+      <section class="subscription-panel" [class.attention]="!billingState.entitled || billingState.cancelAtPeriodEnd">
+        <div class="subscription-copy">
+          <span class="section-label">Your subscription</span>
+          <h2>{{ billingState.effectivePlanName }}</h2>
+          @if (billingState.cancelAtPeriodEnd && billingState.currentPeriodEnd) {
+            <p>Your plan will remain active until {{ billingState.currentPeriodEnd | date:'d MMMM y' }}. You can renew at any time.</p>
+          } @else if (billingState.nextChargeAt) {
+            <p>Next renewal on {{ billingState.nextChargeAt | date:'d MMMM y' }}. Your practice stays covered without interruption.</p>
+          } @else if (billingState.trialEndsAt) {
+            <p>Your trial ends on {{ billingState.trialEndsAt | date:'d MMMM y' }}. Choose a plan before then to keep paid features available.</p>
+          } @else if (billingState.lastFailureReason) {
+            <p>{{ billingState.lastFailureReason }} Choose a plan below to restore paid coverage.</p>
+          } @else {
+            <p>You are using the included plan. Upgrade whenever your portfolio needs more room.</p>
+          }
+        </div>
+        <div class="subscription-actions">
+          @if (billingState.currentPeriodEnd) {
+            <span class="date-note">{{ billingState.cancelAtPeriodEnd ? 'Access until' : 'Current period ends' }}<strong>{{ billingState.currentPeriodEnd | date:'d MMM y' }}</strong></span>
+          }
+          @if (billingState.subscribedPlanCode && !billingState.cancelAtPeriodEnd) {
+            <button type="button" class="btn-secondary" (click)="confirmingCancel.set(true)" [disabled]="processing()">Cancel renewal</button>
+          }
+        </div>
+      </section>
+
+      @if (confirmingCancel()) {
+        <section class="confirm-strip" role="region" aria-label="Confirm cancellation">
+          <ap-icon name="alert" [size]="20" />
+          <div><strong>Cancel at the end of this billing period?</strong><span>Your paid features stay available until the date shown above.</span></div>
+          <div class="confirm-actions">
+            <button type="button" class="btn-danger" (click)="cancelSubscription()" [disabled]="processing()">{{ processing() ? 'Scheduling…' : 'Cancel renewal' }}</button>
+            <button type="button" class="text-button" (click)="confirmingCancel.set(false)">Keep my plan</button>
+          </div>
+        </section>
+      }
+
+      <section class="usage-section" aria-labelledby="usage-title">
+        <div class="section-heading"><div><h2 id="usage-title">Plan usage</h2><p>What is currently available to your practice.</p></div></div>
+        <div class="usage-list">
+          @for (feature of features(); track feature.key) {
+            @if (stateEntitlement(feature.key); as entitlement) {
+              <div class="usage-row">
+                <span class="usage-name">{{ feature.label }}</span>
+                <span class="usage-value" [class.over-limit]="entitlement.limit != null && entitlement.used != null && entitlement.used > entitlement.limit">
+                  {{ formatLimit(entitlement, true) }}
+                </span>
+                <span class="usage-status" [class.included]="entitlement.allowed">{{ entitlement.allowed ? 'Available' : 'Not included' }}</span>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    }
+
+    <section class="plans-section" aria-labelledby="plans-title">
+      <div class="section-heading"><div><h2 id="plans-title">Choose your plan</h2><p>Every plan is billed securely through Razorpay. You can cancel future renewals at any time.</p></div></div>
+      <div class="plan-grid">
+        @for (plan of plans(); track plan.code) {
+          <article class="plan-card" [class.is-selected]="pendingPlan()?.code === plan.code" [class.is-current]="isCurrentPlan(plan)">
+            <div class="plan-card-head">
+              <div><h3>{{ plan.name }}</h3><span>{{ plan.billingInterval === 'ANNUAL' ? 'Annual billing' : 'Monthly billing' }}</span></div>
+              @if (isCurrentPlan(plan)) { <span class="current-badge">Current plan</span> }
+            </div>
+            <div class="price"><strong>{{ formatMoney(plan.monthlyEquivalentPaise, plan.currency) }}</strong><span>/ month</span></div>
+            @if (plan.billingInterval === 'ANNUAL') { <p class="billing-note">{{ formatMoney(plan.amountPaise, plan.currency) }} billed annually</p> }
+            <ul class="feature-list">
+              @for (feature of features(); track feature.key) {
+                @if (entitlement(plan, feature.key); as item) {
+                  <li [class.muted]="!item.allowed"><ap-icon [name]="item.allowed ? 'check' : 'close'" [size]="16" /><span>{{ feature.label }}</span><strong>{{ formatLimit(item) }}</strong></li>
+                }
+              }
+            </ul>
+            <button type="button" class="plan-action" [class.selected]="pendingPlan()?.code === plan.code" [disabled]="isCurrentPlan(plan) || processing()" (click)="choose(plan)">
+              {{ isCurrentPlan(plan) ? 'Your current plan' : pendingPlan()?.code === plan.code ? 'Selected' : 'Choose ' + plan.name }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+
+    @if (pendingPlan(); as plan) {
+      <section class="checkout-strip" aria-live="polite">
+        <div><span class="section-label">Ready to continue</span><h2>{{ plan.name }} — {{ formatMoney(plan.amountPaise, plan.currency) }}{{ plan.billingInterval === 'ANNUAL' ? ' per year' : ' per month' }}</h2><p>You will complete payment in Razorpay’s secure checkout.</p></div>
+        <div class="checkout-actions"><button type="button" class="text-button" (click)="pendingPlan.set(null)" [disabled]="processing()">Not now</button><button type="button" class="btn-primary" (click)="startCheckout()" [disabled]="processing()">{{ processing() ? 'Opening checkout…' : 'Continue to payment' }}</button></div>
+      </section>
+    }
+
+    <section class="payments-section" aria-labelledby="payments-title">
+      <div class="section-heading"><div><h2 id="payments-title">Payment history</h2><p>Your subscription charges appear here after they are processed.</p></div></div>
+      @if (payments().length === 0) {
+        <div class="empty-payments"><ap-icon name="card" [size]="22" /><div><strong>No subscription payments yet</strong><span>Your first successful subscription payment will appear here.</span></div></div>
+      } @else {
+        <div class="payment-table" role="table" aria-label="Subscription payments">
+          <div class="payment-row payment-heading" role="row"><span>Date</span><span>Amount</span><span>Method</span><span>Status</span></div>
+          @for (payment of payments(); track payment.id) {
+            <div class="payment-row" role="row"><span>{{ payment.paidAt ? (payment.paidAt | date:'d MMM y') : '—' }}</span><strong>{{ formatMoney(payment.amountPaise, payment.currency ?? 'INR') }}</strong><span>{{ payment.paymentMethod || 'Razorpay' }}</span><span class="payment-state" [class.paid]="payment.state === 'PAID'">{{ payment.state || 'Processing' }}</span></div>
+          }
+        </div>
+      }
+    </section>
+  }
+</main>

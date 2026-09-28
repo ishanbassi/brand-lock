@@ -92,6 +92,12 @@ export const agentPortalRoutes: Routes = [
     title: 'My Profile | Agent Portal',
   },
   {
+    // Billing deliberately has no entitlement guard: it is where a lapsed agent restores access.
+    path: 'billing',
+    loadComponent: () => import('./agent-billing/agent-billing.component').then(m => m.AgentBillingComponent),
+    title: 'Billing & Plan | Agent Portal',
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
