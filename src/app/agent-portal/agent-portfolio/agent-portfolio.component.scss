@@ -61,7 +61,7 @@ $white: #ffffff;
   z-index: 8;
   width: 28px;
   height: 28px;
-  margin: var(--ap-space-2) 132px 0 0;
+  margin: var(--ap-space-2) var(--ap-space-2) 0 0;
   border: 1px solid $gray-200;
   border-radius: 50%;
   background: $white;
@@ -525,17 +525,6 @@ $white: #ffffff;
 .type-col, .type-cell { white-space: nowrap; }
 .type-cell { color: $gray-600; font-size: 0.8125rem; }
 
-.actions-col,
-.actions-cell {
-  position: sticky !important;
-  right: 0;
-  z-index: 5 !important;
-  background: $white;
-  box-shadow: -8px 0 10px -10px rgb(15 23 42 / 45%);
-}
-
-.tm-table thead .actions-col { background: $gray-50; z-index: 7 !important; }
-.tm-table tbody tr:hover .actions-cell { background: var(--ap-accent-soft); }
 .actions-cell { white-space: nowrap; }
 
 .action-btns {
