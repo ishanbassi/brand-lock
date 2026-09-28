@@ -168,9 +168,13 @@ export class TrademarkService {
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  /** Trademarks published in a given journal (scoped to the scraped journal corpus, never customer-owned applications). */
+  /** Trademarks carrying a given journal number from the public registry corpus, never customer-owned applications. */
   queryByJournal(journalNo: number, req?: any): Observable<EntityArrayResponseType> {
-    const options = createRequestOption({ ...req, 'journalNo.equals': journalNo, 'source.equals': 'JOURNAL_PUBLICATION' });
+    const options = createRequestOption({
+      ...req,
+      'journalNo.equals': journalNo,
+      'source.in': ['JOURNAL_PUBLICATION', 'SCRAPPER'],
+    });
     return this.http
       .get<RestTrademark[]>(this.resourceUrl, { params: options, observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
