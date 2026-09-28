@@ -78,6 +78,10 @@ export type IconName =
   | 'building'
   | 'globe'
   | 'scales'
+  | 'columns'
+  | 'sort'
+  | 'sort-asc'
+  | 'sort-desc'
   | 'dot';
 
 /** Paths only; the wrapper supplies the svg element so stroke and sizing stay uniform. */
@@ -109,5 +113,9 @@ const ICONS: Record<string, string> = {
   building: '<path d="M4 20V5.5A1.5 1.5 0 0 1 5.5 4h7A1.5 1.5 0 0 1 14 5.5V20"/><path d="M14 10h4.5A1.5 1.5 0 0 1 20 11.5V20"/><path d="M7 8h4"/><path d="M7 12h4"/><path d="M2.5 20h19"/>',
   globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5z"/>',
   scales: '<path d="M12 4v16"/><path d="M6 8h12"/><path d="M3 15l3-7 3 7a3 3 0 0 1-6 0z"/><path d="M15 15l3-7 3 7a3 3 0 0 1-6 0z"/>',
+  columns: '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M9 5v14"/><path d="M15 5v14"/>',
+  sort: '<path d="M8 5v14"/><path d="M5 8l3-3 3 3"/><path d="M16 19V5"/><path d="M13 16l3 3 3-3"/>',
+  'sort-asc': '<path d="M12 19V5"/><path d="M7.5 9.5L12 5l4.5 4.5"/>',
+  'sort-desc': '<path d="M12 5v14"/><path d="M7.5 14.5L12 19l4.5-4.5"/>',
   dot: '<circle cx="12" cy="12" r="3"/>',
 };

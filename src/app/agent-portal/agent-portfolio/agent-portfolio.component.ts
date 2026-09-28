@@ -52,6 +52,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   pageSize = 100;
   totalCount = 0;
   totalPages = 0;
+  private latestLoad = 0;
 
   // Filters. Applied by the server: the client holds one page of twenty out of thousands of marks,
   // so filtering what it has in hand searched the wrong 20 rows and normally found nothing.
@@ -266,12 +267,14 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   }
 
   load(): void {
+    const requestId = ++this.latestLoad;
     this.loading.set(true);
     this.error.set('');
     this.agentDataService
       .getPortfolio(this.page, this.pageSize, this.currentQuery())
       .subscribe({
         next: (res) => {
+          if (requestId !== this.latestLoad) return;
           this.trademarks.set(res.body || []);
           const total = res.headers.get('X-Total-Count');
           // Counts the filtered set, so the pager shrinks with the filter rather than offering
@@ -281,7 +284,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('Failed to load portfolio.');
+          if (requestId !== this.latestLoad) return;
+          this.trademarks.set([]);
+          this.error.set('Could not load your portfolio. Check your connection and try again.');
           this.loading.set(false);
         },
       });
@@ -340,6 +345,15 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {
     if (this.sortField !== field) return 'none';
     return this.sortDir === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortLabel(column: SortableColumn): string {
+    if (this.sortField !== column.field) return `Sort by ${column.label}`;
+    return `Sort by ${column.label}, ${this.sortDir === 'asc' ? 'descending' : 'ascending'}`;
+  }
+
+  get visibleRangeEnd(): number {
+    return Math.min((this.page + 1) * this.pageSize, this.totalCount);
   }
 
   goToPage(p: number): void {
@@ -446,6 +460,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   isPageSelected(): boolean {
     const rows = this.trademarks().filter(tm => tm.id != null);
     return rows.length > 0 && rows.every(tm => this.selectedIds.has(tm.id!));
+  }
+
+  isPagePartlySelected(): boolean {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    return rows.some(tm => this.selectedIds.has(tm.id!)) && !this.isPageSelected();
   }
 
   togglePageSelection(): void {

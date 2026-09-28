@@ -31,7 +31,7 @@
   </div>
 
   <!-- FILTERS BAR -->
-  <div class="filters-bar">
+  <div class="filters-bar" role="search" aria-label="Filter trademark portfolio">
     <!-- Field picker and text box read as one control: "search [Proprietor] for ___". -->
     <div class="search-group">
       <select
@@ -47,15 +47,16 @@
       <div class="search-wrap">
         <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
         <input
-          type="text"
+          type="search"
           class="search-input"
+          [attr.aria-label]="searchPlaceholder"
           [attr.inputmode]="searchBy === 'APPLICATION_NO' ? 'numeric' : null"
           [placeholder]="searchPlaceholder"
           [(ngModel)]="searchQuery"
           (ngModelChange)="onSearchChange()"
         />
         @if (searchQuery) {
-          <button class="search-clear" aria-label="Clear search" (click)="searchQuery = ''; onSearchChange()"><ap-icon name="close" [size]="16" /></button>
+          <button type="button" class="search-clear" aria-label="Clear search" (click)="searchQuery = ''; onSearchChange()"><ap-icon name="close" [size]="16" /></button>
         }
       </div>
     </div>
@@ -65,14 +66,14 @@
       They used to offer a fixed seven status words and all 45 classes and filter the twenty rows
       already on screen, so almost every choice emptied the table.
     -->
-    <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+    <select class="filter-select" aria-label="Filter by status" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
       <option value="">All Statuses</option>
       @for (s of filterOptions()?.statuses ?? []; track s.key) {
         <option [value]="s.key">{{ s.label }} ({{ s.count }})</option>
       }
     </select>
 
-    <select class="filter-select" [(ngModel)]="filterClass" (ngModelChange)="onFilterChange()">
+    <select class="filter-select" aria-label="Filter by class" [(ngModel)]="filterClass" (ngModelChange)="onFilterChange()">
       <option value="">All Classes</option>
       @for (c of filterOptions()?.classes ?? []; track c.tmClass) {
         <option [value]="c.tmClass">Class {{ c.tmClass }} ({{ c.count }})</option>
@@ -80,8 +81,8 @@
     </select>
 
     @if (hasFilters) {
-      <button class="btn-ghost" (click)="clearFilters()">
-        Clear filters
+      <button type="button" class="btn-ghost" (click)="clearFilters()">
+        <ap-icon name="close" [size]="14" /> Clear filters
       </button>
     }
   </div>
@@ -93,7 +94,7 @@
   -->
   @if (pendingImports().length > 0) {
     <div class="alert-pending">
-      <span class="pending-icon" aria-hidden="true">&#128340;</span>
+      <span class="pending-icon" aria-hidden="true"><ap-icon name="clock" [size]="18" /></span>
       <div>
         <strong>We're checking your uploaded file</strong>
         @for (imp of pendingImports(); track imp.id) {
@@ -117,13 +118,19 @@
   @if (refreshMessage()) {
     <div class="alert-info">
       {{ refreshMessage() }}
-      <button class="alert-dismiss" (click)="refreshMessage.set('')" aria-label="Dismiss">&times;</button>
+      <button type="button" class="alert-dismiss" (click)="refreshMessage.set('')" aria-label="Dismiss update"><ap-icon name="close" [size]="16" /></button>
     </div>
   }
 
   <!-- ERROR -->
   @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
+    <div class="alert-error" role="alert">
+      <ap-icon name="alert" [size]="18" />
+      <span>{{ error() }}</span>
+      @if (!loading() && trademarks().length === 0) {
+        <button type="button" (click)="load()">Try again</button>
+      }
+    </div>
   }
 
   <!-- TABLE SKELETON -->
@@ -137,18 +144,28 @@
 
   <!-- TABLE -->
   @if (!loading() && trademarks().length > 0) {
-    @if (selectedIds.size > 0) {
-      <div class="selection-summary">{{ selectedIds.size }} selected for printing</div>
-    }
-    <div class="table-card">
+    <div class="table-workspace">
+    <div class="table-toolbar">
+      <div class="table-toolbar-copy" aria-live="polite">
+        @if (selectedIds.size > 0) {
+          <strong>{{ selectedIds.size }} selected</strong><span>Choose Download → PDF to print these marks.</span>
+        } @else {
+          <strong>{{ page * pageSize + 1 }}–{{ visibleRangeEnd }} of {{ totalCount }}</strong><span>trademarks</span>
+        }
+        <span class="scroll-hint">Scroll table to see all columns</span>
+      </div>
       @if (customFields().length > 0) {
         <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
-                aria-label="Choose fields to show" title="Choose fields to show">+</button>
-        @if (showColumnPicker()) {
-          <section class="field-picker-panel" aria-label="Choose fields to show">
+                [attr.aria-expanded]="showColumnPicker()" [attr.aria-controls]="showColumnPicker() ? 'portfolio-field-picker' : null">
+          <ap-icon name="columns" [size]="16" /> Columns
+        </button>
+      }
+    </div>
+      @if (customFields().length > 0 && showColumnPicker()) {
+          <section class="field-picker-panel" id="portfolio-field-picker" aria-label="Choose fields to show">
             <div class="field-picker-title">
               <h2>Fields</h2>
-              <button type="button" (click)="showColumnPicker.set(false)" aria-label="Close fields">×</button>
+              <button type="button" (click)="showColumnPicker.set(false)" aria-label="Close fields"><ap-icon name="close" [size]="16" /></button>
             </div>
             <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
             <p class="field-picker-count">{{ shownCustomFields().length }} shown</p>
@@ -165,24 +182,26 @@
               }
             </ul>
           </section>
-        }
       }
+    <div class="table-card" tabindex="0" role="region" aria-label="Trademark portfolio table; scroll to see more columns">
       <table class="tm-table">
+        <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
         <thead>
           <tr>
-            <th class="select-col"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page" /></th>
+            <th class="select-col" scope="col"><input type="checkbox" [checked]="isPageSelected()" [indeterminate]="isPagePartlySelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page for printing" /></th>
             <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
             @for (col of columns; track col.field) {
-              <th [class.name-col]="col.field === 'name'" [attr.aria-sort]="ariaSort(col.field)">
+              <th scope="col" [class.name-col]="col.field === 'name'" [attr.aria-sort]="ariaSort(col.field)">
                 <button
                   type="button"
                   class="sort-btn"
                   [class.sorted]="sortField === col.field"
+                  [attr.aria-label]="sortLabel(col)"
                   (click)="toggleSort(col)"
                 >
                   {{ col.label }}
                   <span class="sort-indicator" aria-hidden="true">
-                    @if (sortField !== col.field) { ↕ } @else if (sortDir === 'asc') { ↑ } @else { ↓ }
+                    <ap-icon [name]="sortField !== col.field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" />
                   </span>
                 </button>
               </th>
@@ -190,15 +209,15 @@
             <!-- The firm's own columns. Not sortable: the query does not reach into the stored
                  values yet, and a header that looks sortable but does nothing is worse than none. -->
             @for (field of shownCustomFields(); track field.id) {
-              <th class="custom-col">{{ field.label }}</th>
+              <th scope="col" class="custom-col">{{ field.label }}</th>
             }
-            <th class="type-col">Type</th>
-            <th class="actions-col">Actions</th>
+            <th scope="col" class="type-col">Type</th>
+            <th scope="col" class="actions-col">Actions</th>
           </tr>
         </thead>
         <tbody>
           @for (tm of trademarks(); track tm.id; let i = $index) {
-            <tr [class.deleting]="deletingId() === tm.id">
+            <tr [class.deleting]="deletingId() === tm.id" [class.selected]="isSelected(tm)">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
 
               <!-- TRADEMARK NAME -->
@@ -233,7 +252,7 @@
               <!-- RENEWAL DATE -->
               <td class="date-cell">
                 @if (tm.renewalDate) {
-                  <span [class.warn-date]="isExpiringSoon(tm.renewalDate?.toString())">
+                  <span [class.warn-date]="isExpiringSoon(tm.renewalDate.toString())">
                     {{ tm.renewalDate | date:'dd MMM yyyy' }}
                   </span>
                 } @else { — }
@@ -253,8 +272,8 @@
                 the surrounding context to decide on, so they live on the detail screen.
               -->
               <td class="actions-cell">
-                <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="view-details-btn">
-                  View details
+                <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="view-details-btn" [attr.aria-label]="'View details for ' + (tm.name || 'trademark')">
+                  View <ap-icon name="chevron" [size]="14" />
                 </a>
               </td>
             </tr>
@@ -262,26 +281,27 @@
         </tbody>
       </table>
     </div>
+    </div>
 
     <!-- PAGINATION -->
     @if (totalPages > 1) {
-      <div class="pagination">
-        <button class="page-btn" [disabled]="page === 0" (click)="goToPage(0)">«</button>
-        <button class="page-btn" [disabled]="page === 0" (click)="goToPage(page - 1)">‹</button>
+      <nav class="pagination" aria-label="Portfolio pages">
+        <button type="button" class="page-btn" [disabled]="page === 0" (click)="goToPage(0)" aria-label="First page"><ap-icon name="chevron" [size]="16" class="flip" /><ap-icon name="chevron" [size]="16" class="double-chevron flip" /></button>
+        <button type="button" class="page-btn" [disabled]="page === 0" (click)="goToPage(page - 1)" aria-label="Previous page"><ap-icon name="chevron" [size]="16" class="flip" /></button>
 
         @for (p of getPageRange(); track p) {
           @if (p === -1) {
             <span class="page-ellipsis">…</span>
           } @else {
-            <button class="page-btn" [class.active]="p === page" (click)="goToPage(p)">{{ p + 1 }}</button>
+            <button type="button" class="page-btn" [class.active]="p === page" [attr.aria-current]="p === page ? 'page' : null" [attr.aria-label]="'Page ' + (p + 1)" (click)="goToPage(p)">{{ p + 1 }}</button>
           }
         }
 
-        <button class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)">›</button>
-        <button class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(totalPages - 1)">»</button>
+        <button type="button" class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)" aria-label="Next page"><ap-icon name="chevron" [size]="16" /></button>
+        <button type="button" class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(totalPages - 1)" aria-label="Last page"><ap-icon name="chevron" [size]="16" /><ap-icon name="chevron" [size]="16" class="double-chevron" /></button>
 
         <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
-      </div>
+      </nav>
     }
   }
 

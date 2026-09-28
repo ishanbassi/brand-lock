@@ -1,6 +1,4 @@
 $accent: var(--ap-accent);
-$accent-light: var(--ap-accent);
-$success: var(--ap-done);
 $warning: var(--ap-due);
 $danger: var(--ap-overdue);
 $gray-50: var(--ap-paper);
@@ -16,7 +14,8 @@ $white: #ffffff;
 .portfolio-page {
   padding: var(--ap-space-6);
   max-width: 1400px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: var(--ap-font-ui);
+  min-width: 0;
 
   @media (max-width: 768px) { padding: var(--ap-space-4); }
 }
@@ -26,20 +25,23 @@ $white: #ffffff;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: var(--ap-space-5);
+  margin-bottom: var(--ap-space-6);
   gap: var(--ap-space-4);
   flex-wrap: wrap;
 }
 
 .page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-family: var(--ap-font-display);
+  font-size: var(--ap-text-xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
   color: $gray-800;
   margin: 0 0 var(--ap-space-1);
 }
 
 .page-sub {
-  color: $gray-400;
+  color: $gray-600;
   font-size: 0.875rem;
   margin: 0;
   min-height: 1.2em;
@@ -49,33 +51,32 @@ $white: #ffffff;
   display: flex;
   gap: var(--ap-space-3);
   flex-wrap: wrap;
+  align-items: center;
 }
 
 // ── FIELD PICKER ────────────────────────────────────────
-// The compact trigger lives in the table's header corner, where a person decides what this
-// particular working view should contain, rather than competing with page-level actions.
 .field-picker-trigger {
-  position: sticky;
-  top: var(--ap-space-2);
-  float: right;
-  z-index: 8;
-  width: 28px;
-  height: 28px;
-  margin: var(--ap-space-2) var(--ap-space-2) 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  min-height: var(--ap-target);
+  padding: 0 var(--ap-space-3);
   border: 1px solid $gray-200;
-  border-radius: 50%;
+  border-radius: var(--ap-radius);
   background: $white;
   color: $gray-600;
-  font-size: 1.25rem;
-  line-height: 1;
+  font: inherit;
+  font-size: var(--ap-text-sm);
+  font-weight: 600;
   cursor: pointer;
 
-  &:hover, &:focus-visible { border-color: $accent; color: $accent; outline: none; }
+  &:hover, &[aria-expanded='true'] { border-color: $accent; color: $accent; }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .field-picker-panel {
   position: absolute;
-  top: 0;
+  top: calc(var(--ap-target) + var(--ap-space-2));
   right: 0;
   z-index: 12;
   width: min(340px, calc(100vw - var(--ap-space-6)));
@@ -84,8 +85,8 @@ $white: #ffffff;
   padding: var(--ap-space-4);
   background: $white;
   border: 1px solid $gray-200;
-  border-radius: 12px;
-  box-shadow: 0 14px 38px rgb(15 23 42 / 18%);
+  border-radius: 10px;
+  box-shadow: var(--ap-shadow);
 
   input {
     width: 100%;
@@ -120,12 +121,12 @@ $white: #ffffff;
   margin-bottom: var(--ap-space-3);
 
   h2 { margin: 0; font-size: 1rem; color: $gray-800; }
-  button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: $gray-100; color: $gray-600; cursor: pointer; font-size: 1.25rem; line-height: 1; }
+  button { display: grid; place-items: center; width: var(--ap-target); height: var(--ap-target); border: 0; border-radius: var(--ap-radius); background: $gray-100; color: $gray-600; cursor: pointer; }
 }
 
 .field-picker-count {
   margin: var(--ap-space-3) 0 var(--ap-space-1);
-  color: $gray-400;
+  color: $gray-600;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -133,8 +134,8 @@ $white: #ffffff;
 }
 
 .field-toggle {
-  width: 32px;
-  height: 18px;
+  width: 44px;
+  height: 26px;
   flex: 0 0 auto;
   padding: 2px;
   border: 0;
@@ -143,8 +144,9 @@ $white: #ffffff;
   cursor: pointer;
   transition: background 0.15s ease;
 
-  span { display: block; width: 14px; height: 14px; border-radius: 50%; background: $white; transition: transform 0.15s ease; }
-  &.on { background: $accent; span { transform: translateX(14px); } }
+  span { display: block; width: 22px; height: 22px; border-radius: 50%; background: $white; transition: transform 0.15s ease; }
+  &.on { background: $accent; span { transform: translateX(18px); } }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .column-menu-error {
@@ -170,11 +172,12 @@ $white: #ffffff;
   display: inline-flex;
   align-items: center;
   gap: var(--ap-space-2);
+  min-height: var(--ap-target);
   padding: var(--ap-space-2) var(--ap-space-4);
-  background: linear-gradient(135deg, $accent, $accent-light);
+  background: $accent;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--ap-radius);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
@@ -182,22 +185,23 @@ $white: #ffffff;
   transition: transform 0.15s, box-shadow 0.15s;
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--ap-accent-soft);
+    background: var(--ap-accent-hover);
     color: white;
     text-decoration: none;
   }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 3px; }
 }
 
 .btn-outline {
   display: inline-flex;
   align-items: center;
   gap: var(--ap-space-2);
+  min-height: var(--ap-target);
   padding: var(--ap-space-2) var(--ap-space-4);
   background: $white;
   color: $gray-600;
   border: 1.5px solid $gray-200;
-  border-radius: 8px;
+  border-radius: var(--ap-radius);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
@@ -209,13 +213,15 @@ $white: #ffffff;
     color: $accent;
     text-decoration: none;
   }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-2) var(--ap-space-4);
+  min-height: var(--ap-target);
+  padding: var(--ap-space-2) var(--ap-space-3);
   background: none;
   color: $gray-600;
   border: none;
@@ -225,7 +231,8 @@ $white: #ffffff;
   cursor: pointer;
   transition: color 0.15s;
 
-  &:hover { color: $danger; }
+  &:hover { color: $accent; background: var(--ap-accent-soft); }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 // ── FILTERS BAR ─────────────────────────────────────────
@@ -235,6 +242,10 @@ $white: #ffffff;
   flex-wrap: wrap;
   margin-bottom: var(--ap-space-5);
   align-items: center;
+  padding: var(--ap-space-3);
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 10px;
 }
 
 // The field picker and the text box share one border so they read as a single control.
@@ -245,6 +256,8 @@ $white: #ffffff;
 
   .search-by {
     flex-shrink: 0;
+    min-height: var(--ap-target);
+    max-width: 138px;
     padding: var(--ap-space-2) var(--ap-space-3);
     border: 1.5px solid $gray-200;
     border-right: none;
@@ -254,9 +267,7 @@ $white: #ffffff;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    outline: none;
-
-    &:focus { border-color: $accent; }
+    &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
   }
 
   .search-input { border-radius: 0 8px 8px 0; }
@@ -288,7 +299,6 @@ $white: #ffffff;
 }
 
 .sort-indicator {
-  font-size: 0.75rem;
   opacity: 0.35;
 
   .sorted & { opacity: 1; }
@@ -299,12 +309,13 @@ $white: #ffffff;
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.85rem;
+  color: $gray-600;
   pointer-events: none;
 }
 
 .search-input {
   width: 100%;
+  min-height: var(--ap-target);
   padding: var(--ap-space-2) var(--ap-space-6) var(--ap-space-2) var(--ap-space-6);
   border: 1.5px solid $gray-200;
   border-radius: 8px;
@@ -312,33 +323,37 @@ $white: #ffffff;
   background: $white;
   color: $gray-800;
   transition: border-color 0.15s, box-shadow 0.15s;
-  outline: none;
 
   &:focus {
     border-color: $accent;
     box-shadow: 0 0 0 3px var(--ap-accent-soft);
   }
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder { color: $gray-600; }
 }
 
 .search-clear {
   position: absolute;
-  right: 0.75rem;
+  right: 0.25rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: $gray-400;
   cursor: pointer;
-  font-size: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   padding: 0;
   line-height: 1;
 
   &:hover { color: $gray-800; }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 0; }
 }
 
 .filter-select {
+  min-height: var(--ap-target);
   padding: var(--ap-space-2) var(--ap-space-4);
   border: 1.5px solid $gray-200;
   border-radius: 8px;
@@ -346,10 +361,9 @@ $white: #ffffff;
   color: $gray-800;
   background: $white;
   cursor: pointer;
-  outline: none;
   transition: border-color 0.15s;
 
-  &:focus { border-color: $accent; }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 // ── SKELETON ─────────────────────────────────────────
@@ -373,17 +387,43 @@ $white: #ffffff;
 }
 
 // ── TABLE ─────────────────────────────────────────
+.table-workspace { position: relative; }
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  min-height: var(--ap-target);
+  margin-bottom: var(--ap-space-2);
+}
+
+.table-toolbar-copy {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+  color: $gray-600;
+  font-size: var(--ap-text-sm);
+
+  strong { color: $gray-800; font-weight: 650; font-variant-numeric: tabular-nums; }
+}
+
+.scroll-hint { display: none; }
+
 .table-card {
   position: relative;
   background: $white;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid $gray-200;
+  border-radius: 10px;
   // This is a data workbench: both axes belong to the table. A capped height keeps pagination in
   // reach while sticky identity/action cells preserve the two common routes through every row.
   max-height: min(62vh, 680px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
+
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .tm-table {
@@ -402,10 +442,11 @@ $white: #ffffff;
     position: sticky;
     top: 0;
     z-index: 3;
-    padding: var(--ap-space-3) var(--ap-space-4);
+    padding: 0 var(--ap-space-4);
+    height: 46px;
     text-align: left;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 650;
     color: $gray-600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -418,15 +459,19 @@ $white: #ffffff;
     transition: background 0.1s;
 
     &:last-child { border-bottom: none; }
-    &:hover { background: var(--ap-accent-soft); }
+    &:hover, &.selected { background: var(--ap-accent-soft); }
     &.deleting { opacity: 0.5; pointer-events: none; }
   }
 
   td {
     padding: var(--ap-space-3) var(--ap-space-4);
+    border-top: 1px solid $gray-200;
     color: $gray-800;
     vertical-align: middle;
   }
+
+  input[type='checkbox'] { width: 16px; height: 16px; accent-color: $accent; cursor: pointer; }
+  input[type='checkbox']:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .select-col {
@@ -452,7 +497,9 @@ $white: #ffffff;
 
 .tm-table thead .name-col { background: $gray-50; z-index: 6 !important; }
 .tm-table tbody tr:hover .select-col,
-.tm-table tbody tr:hover .tm-name-cell { background: var(--ap-accent-soft); }
+.tm-table tbody tr:hover .tm-name-cell,
+.tm-table tbody tr.selected .select-col,
+.tm-table tbody tr.selected .tm-name-cell { background: var(--ap-accent-soft); }
 
 .tm-name {
   display: block;
@@ -463,13 +510,15 @@ $white: #ffffff;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
-  &:hover, &:focus-visible { color: $accent; text-decoration: underline; outline: none; }
+  &:hover { color: $accent; text-decoration: underline; text-underline-offset: 3px; }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
 .app-no {
   color: $gray-600;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--ap-font-data);
   font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .class-badge {
@@ -483,6 +532,7 @@ $white: #ffffff;
   border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 700;
+  font-family: var(--ap-font-data);
 }
 
 .proprietor {
@@ -504,15 +554,17 @@ $white: #ffffff;
 
   &.status--active   { background: var(--ap-done-soft); color: var(--ap-done); }
   &.status--warning  { background: var(--ap-due-soft); color: var(--ap-due); }
-  &.status--inactive { background: $gray-100;            color: $gray-400; }
-  &.status--pending  { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
-  &.status--unknown  { background: $gray-100;            color: $gray-400; }
+  &.status--inactive { background: $gray-100;            color: $gray-600; }
+  &.status--pending  { background: var(--ap-accent-soft); color: var(--ap-accent); }
+  &.status--unknown  { background: $gray-100;            color: $gray-600; }
 }
 
 .date-cell {
   color: $gray-600;
   font-size: 0.82rem;
   white-space: nowrap;
+  font-family: var(--ap-font-data);
+  font-variant-numeric: tabular-nums;
 }
 
 .warn-date {
@@ -527,70 +579,6 @@ $white: #ffffff;
 
 .actions-cell { white-space: nowrap; }
 
-.action-btns {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-1);
-}
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 7px;
-  background: none;
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.15s, border-color 0.15s;
-
-  &.watch-btn:hover { background: var(--ap-accent-soft); border-color: var(--ap-accent-soft); }
-  &.edit-btn:hover  { background: var(--ap-done-soft); border-color: var(--ap-done-soft); }
-  &.delete-btn:hover { background: var(--ap-overdue-soft); border-color: var(--ap-overdue-soft); }
-
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
-}
-
-.confirm-delete-wrap {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-1);
-  white-space: nowrap;
-}
-
-.confirm-text { font-size: 0.78rem; color: $danger; font-weight: 600; }
-
-.btn-danger-xs {
-  padding: var(--ap-space-1) var(--ap-space-2);
-  background: $danger;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
-
-  &:hover { opacity: 0.85; }
-}
-
-.btn-ghost-xs {
-  padding: var(--ap-space-1) var(--ap-space-2);
-  background: $gray-100;
-  color: $gray-600;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover { background: $gray-200; }
-}
-
 // ── PAGINATION ─────────────────────────────────────────
 .pagination {
   display: flex;
@@ -598,11 +586,15 @@ $white: #ffffff;
   gap: var(--ap-space-1);
   margin-top: var(--ap-space-4);
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .page-btn {
-  width: 36px;
-  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ap-target);
+  height: var(--ap-target);
   border: 1.5px solid $gray-200;
   background: $white;
   border-radius: 8px;
@@ -624,6 +616,10 @@ $white: #ffffff;
   }
 
   &:disabled { opacity: 0.35; cursor: not-allowed; }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
+
+  .flip { transform: rotate(180deg); }
+  .double-chevron { margin-left: -12px; }
 }
 
 .page-ellipsis {
@@ -635,7 +631,7 @@ $white: #ffffff;
 .page-info {
   margin-left: var(--ap-space-2);
   font-size: 0.8rem;
-  color: $gray-400;
+  color: $gray-600;
   font-weight: 500;
 }
 
@@ -644,13 +640,14 @@ $white: #ffffff;
   text-align: center;
   padding: var(--ap-space-7) var(--ap-space-6);
   background: $white;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid $gray-200;
+  border-radius: 10px;
 
-  .empty-icon { font-size: 3rem; display: block; margin-bottom: var(--ap-space-4); }
+  .empty-icon { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto var(--ap-space-4); border-radius: 14px; color: $accent; background: var(--ap-accent-soft); }
+  .empty-icon ap-icon { display: inline-flex; transform: scale(1.5); }
 
   h3 { font-size: 1.2rem; font-weight: 700; color: $gray-800; margin: 0 0 var(--ap-space-2); }
-  p  { color: $gray-400; margin: 0 0 var(--ap-space-5); font-size: 0.9rem; }
+  p  { color: $gray-600; margin: 0 0 var(--ap-space-5); font-size: 0.9rem; }
 }
 
 .empty-actions {
@@ -669,6 +666,12 @@ $white: #ffffff;
   border-radius: 10px;
   margin-bottom: var(--ap-space-5);
   font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+
+  button { margin-left: auto; padding: var(--ap-space-2) var(--ap-space-3); border: 1px solid currentColor; border-radius: var(--ap-radius); background: transparent; color: inherit; font: inherit; font-weight: 600; cursor: pointer; }
+  button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 }
 
 // Dense register rows remain complete on smaller screens; the card above provides the horizontal
@@ -715,8 +718,8 @@ $white: #ffffff;
   align-items: flex-start;
   gap: var(--ap-space-4);
   background: var(--ap-accent-soft);
-  border: 1px solid #c7d2fe;
-  color: #3730a3;
+  border: 1px solid var(--ap-rule);
+  color: var(--ap-accent);
   border-radius: 10px;
   padding: var(--ap-space-3) var(--ap-space-4);
   font-size: 0.875rem;
@@ -727,29 +730,23 @@ $white: #ffffff;
   background: none;
   border: none;
   color: inherit;
-  font-size: 1.125rem;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 36px;
   cursor: pointer;
   opacity: 0.6;
 
   &:hover { opacity: 1; }
-}
-
-.refresh-btn:disabled { opacity: 0.5; cursor: wait; }
-
-// A lock rather than a hidden button: an absent control reads as a missing feature, whereas this
-// says the mark is register-backed and invites the note instead.
-.locked-btn {
-  opacity: 0.4;
-  cursor: default;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  &:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 }
 
 // One clear way into a mark, replacing the old inline action cluster.
 .view-details-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  min-height: 36px;
   padding: var(--ap-space-1) var(--ap-space-3);
   border: 1px solid var(--ap-rule);
   border-radius: 8px;
@@ -760,4 +757,38 @@ $white: #ffffff;
   white-space: nowrap;
 
   &:hover { border-color: var(--ap-accent); color: var(--ap-accent); }
+  &:focus-visible { outline: 2px solid var(--ap-accent); outline-offset: 2px; }
+}
+
+@media (max-width: 900px) {
+  .scroll-hint { display: inline; color: $gray-600; }
+  .tm-table .name-col,
+  .tm-table .tm-name-cell { position: static !important; }
+}
+
+@media (max-width: 700px) {
+  .page-header { gap: var(--ap-space-4); }
+  .header-actions { width: 100%; }
+  .header-actions > a { flex: 1 1 auto; justify-content: center; }
+  .filters-bar { align-items: stretch; }
+  .search-group { flex-basis: 100%; min-width: 0; }
+  .filter-select { flex: 1 1 140px; min-width: 0; }
+  .table-toolbar-copy { max-width: 70%; }
+  .table-card { max-height: 60vh; }
+  .pagination { justify-content: center; }
+  .page-info { flex-basis: 100%; text-align: center; margin: var(--ap-space-2) 0 0; }
+}
+
+@media (max-width: 420px) {
+  .header-actions > a { flex-basis: 100%; }
+  .header-actions ap-export-menu { flex: 1 1 100%; }
+  .filter-select { flex-basis: 100%; }
+  .table-toolbar { align-items: flex-start; }
+  .table-toolbar-copy { max-width: calc(100% - 108px); }
+  .field-picker-trigger { flex: 0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row { animation: none; }
+  .portfolio-page *, .portfolio-page *::before, .portfolio-page *::after { transition-duration: 0.01ms !important; }
 }
