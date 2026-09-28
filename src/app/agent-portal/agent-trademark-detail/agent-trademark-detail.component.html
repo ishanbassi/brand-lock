@@ -218,10 +218,10 @@
          The firm's spreadsheet columns that our trademark model has no home for. Always editable,
          registry-verified or not: the register has no opinion on a firm's own receipt numbers. -->
     <section class="card">
-      <h2>Client &amp; firm details</h2>
+      <h2>Imported spreadsheet details</h2>
       <p class="card-hint">
-        Your own columns, kept from the spreadsheet you imported. These stay editable even when the mark itself is
-        locked, and every field here appears on every mark in your portfolio.
+        Extra columns from your workbook, kept in spreadsheet order. These stay editable even when the mark itself is
+        locked.
       </p>
 
       @if (customFields().length === 0) {
@@ -230,10 +230,14 @@
           one below.
         </p>
       } @else {
-        <div class="custom-grid">
+        <div class="spreadsheet-fields" role="table" aria-label="Imported spreadsheet details">
+          <div class="spreadsheet-heading" role="row">
+            <span role="columnheader">Column</span>
+            <span role="columnheader">Value</span>
+          </div>
           @for (field of customFields(); track field.id) {
-            <label class="field">
-              <span class="custom-label">
+            <label class="spreadsheet-field-row" role="row">
+              <span class="spreadsheet-field-name" role="cell">
                 {{ field.label }}
                 <button type="button" class="field-remove" (click)="removeCustomField(field)"
                         [attr.aria-label]="'Remove ' + field.label + ' from every mark'" title="Remove this field from every mark">×</button>

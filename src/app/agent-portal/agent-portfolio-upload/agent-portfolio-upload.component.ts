@@ -24,16 +24,6 @@ export class AgentPortfolioUploadComponent {
   importResult = signal<AgentImportResult | null>(null);
   errorMessage = signal('');
 
-  /**
-   * Which of the workbook's extra columns to keep, by field key.
-   *
-   * Everything the parser found is ticked by default — the point of the feature is that an import
-   * does not lose the firm's own data, so keeping is the expected outcome and unticking is the
-   * deliberate act. It also lets an agent drop a column they would rather we did not hold, which
-   * matters when the sheet carries their clients' phone numbers.
-   */
-  keepColumn: Record<string, boolean> = {};
-
   /** Extra columns collapse by default: a real workbook contributes sixty-odd of them. */
   showColumns = signal(false);
 
@@ -83,10 +73,6 @@ export class AgentPortfolioUploadComponent {
     this.agentDataService.previewImport(file).subscribe({
       next: (result) => {
         this.previewResult.set(result);
-        this.keepColumn = {};
-        for (const col of result.extraColumns ?? []) {
-          this.keepColumn[col.fieldKey] = true;
-        }
         // Nothing importable means our parser could not read the layout — not that the agent picked
         // the wrong file. Sending them back to retry would fail identically, so the file (already
         // retained server-side) goes to an admin and the agent moves on to their portfolio.
@@ -105,7 +91,7 @@ export class AgentPortfolioUploadComponent {
     const file = this.selectedFile();
     if (!file) return;
     this.phase.set('importing');
-    this.agentDataService.confirmImport(file, this.previewResult()?.batchId, this.keptColumnKeys).subscribe({
+    this.agentDataService.confirmImport(file, this.previewResult()?.batchId).subscribe({
       next: (result) => {
         this.importResult.set(result);
         this.phase.set('done');
@@ -123,7 +109,6 @@ export class AgentPortfolioUploadComponent {
     this.previewResult.set(null);
     this.importResult.set(null);
     this.errorMessage.set('');
-    this.keepColumn = {};
     this.showColumns.set(false);
   }
 
@@ -142,10 +127,6 @@ export class AgentPortfolioUploadComponent {
     return this.previewResult()?.extraColumns ?? [];
   }
 
-  get keptColumnKeys(): string[] {
-    return this.extraColumns.filter(c => this.keepColumn[c.fieldKey]).map(c => c.fieldKey);
-  }
-
   get newColumnCount(): number {
     return this.extraColumns.filter(c => !c.alreadyKnown).length;
   }
@@ -154,16 +135,6 @@ export class AgentPortfolioUploadComponent {
   get releasedColumns(): { field: string; reason: string }[] {
     const released = this.previewResult()?.releasedColumns ?? {};
     return Object.entries(released).map(([field, reason]) => ({ field, reason }));
-  }
-
-  toggleColumn(key: string): void {
-    this.keepColumn[key] = !this.keepColumn[key];
-  }
-
-  setAllColumns(keep: boolean): void {
-    for (const col of this.extraColumns) {
-      this.keepColumn[col.fieldKey] = keep;
-    }
   }
 
   /** "6,841 of 7,056 rows" — what makes a column worth keeping obvious at a glance. */

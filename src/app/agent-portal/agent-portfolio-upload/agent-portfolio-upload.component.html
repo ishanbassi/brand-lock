@@ -172,25 +172,16 @@
 
             @if (showColumns()) {
               <p class="extra-hint">
-                These do not match any trademark field, so we keep them against your copy of each mark, editable at any
-                time. Untick anything you would rather we did not store. Columns that were empty in every row have
-                already been left out.
+                These do not match a standard trademark field, so they will be kept with each mark in the same order as
+                your workbook. Columns empty in every row have already been left out.
               </p>
-              <div class="extra-actions">
-                <button type="button" class="link-btn" (click)="setAllColumns(true)">Select all</button>
-                <button type="button" class="link-btn" (click)="setAllColumns(false)">Select none</button>
-              </div>
               <ul class="extra-list">
                 @for (col of extraColumns; track col.fieldKey) {
-                  <li class="extra-item" [class.unchecked]="!keepColumn[col.fieldKey]">
-                    <label>
-                      <input type="checkbox" [ngModel]="keepColumn[col.fieldKey]" (ngModelChange)="toggleColumn(col.fieldKey)"
-                             [name]="'keep-' + col.fieldKey" />
-                      <span class="extra-head">
-                        {{ col.header || col.fieldKey }}
-                        @if (col.alreadyKnown) { <em class="extra-known">already in your fields</em> }
-                      </span>
-                    </label>
+                  <li class="extra-item">
+                    <span class="extra-head">
+                      {{ col.header || col.fieldKey }}
+                      @if (col.alreadyKnown) { <em class="extra-known">already in your fields</em> }
+                    </span>
                     <span class="extra-fill">{{ fillLabel(col) }}</span>
                     @if (col.samples?.length) {
                       <span class="extra-samples">{{ col.samples!.join(' · ') }}</span>

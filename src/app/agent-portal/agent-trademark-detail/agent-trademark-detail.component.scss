@@ -317,22 +317,62 @@ $white: #ffffff;
 .notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
 .saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
 
-// The firm's own spreadsheet columns. A portfolio workbook contributes sixty-odd of these, so they
-// lay out in columns rather than the single stack the notes fields use — a one-per-row list would
-// run several screens deep before the save button.
-.custom-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0 var(--ap-space-4);
-
-  .field { margin-bottom: var(--ap-space-3); }
+// A workbook is inherently a column/value record. Keeping this as a compact two-column sheet
+// makes long imports scannable and preserves the source column order supplied by the API.
+.spreadsheet-fields {
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.custom-label {
+.spreadsheet-heading,
+.spreadsheet-field-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 30%) minmax(0, 1fr);
+}
+
+.spreadsheet-heading {
+  background: $gray-50;
+  border-bottom: 1px solid $gray-200;
+  color: $gray-500;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  span { padding: var(--ap-space-2) var(--ap-space-3); }
+}
+
+.spreadsheet-field-row {
+  align-items: center;
+  border-bottom: 1px solid $gray-100;
+  margin: 0;
+
+  &:last-child { border-bottom: 0; }
+
+  input {
+    width: 100%;
+    border: 0;
+    border-left: 1px solid $gray-100;
+    border-radius: 0;
+    padding: var(--ap-space-3);
+    background: transparent;
+
+    &:focus { outline: none; box-shadow: inset 0 0 0 2px var(--ap-accent-soft); }
+  }
+}
+
+.spreadsheet-field-name {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--ap-space-2);
+  min-width: 0;
+  padding: var(--ap-space-3);
+  color: $gray-600;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
 }
 
 // Deleting a field affects every mark, so the control stays quiet until the row is hovered.
@@ -350,8 +390,27 @@ $white: #ffffff;
   &:hover, &:focus-visible { color: $danger; }
 }
 
-.field:hover .field-remove,
-.field:focus-within .field-remove { opacity: 1; }
+.spreadsheet-field-row:hover .field-remove,
+.spreadsheet-field-row:focus-within .field-remove { opacity: 1; }
+
+@media (max-width: 560px) {
+  .spreadsheet-heading { display: none; }
+
+  .spreadsheet-field-row {
+    display: block;
+    padding: var(--ap-space-3);
+
+    & + .spreadsheet-field-row { border-top: 1px solid $gray-100; }
+
+    input {
+      border: 1px solid $gray-200;
+      border-radius: 7px;
+      margin-top: var(--ap-space-1);
+    }
+  }
+
+  .spreadsheet-field-name { padding: 0; }
+}
 
 .empty-hint {
   color: $gray-400;
