@@ -1,0 +1,161 @@
+<div class="admin-page">
+
+  <a class="back-link" routerLink="/admin-portal/billing">← Billing</a>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="skeleton-line" style="max-width: 320px; height: 24px; margin-bottom: 1rem;"></div>
+    <div class="skeleton-line" style="height: 200px;"></div>
+  } @else {
+    @if (sub(); as s) {
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">{{ s.firmName || s.contactName || ('Agent ' + s.tmAgentId) }}</h1>
+          <p class="page-sub">
+            {{ s.email || '—' }} · TmAgent #{{ s.tmAgentId }} ·
+            <a [routerLink]="['/admin-portal/agents']">agents</a>
+          </p>
+        </div>
+        <span class="badge" [ngClass]="badgeClass(s.status)">{{ statusLabel(s.status) }}</span>
+      </div>
+
+      <div class="detail-grid">
+
+        <!-- ── Left: state + payments + events ─────────────────────────── -->
+        <div>
+          <div class="detail-card">
+            <h2>Subscription</h2>
+            <div class="field-row"><span class="field-label">Plan</span><span class="field-value">{{ s.planName || '—' }}</span></div>
+            <div class="field-row"><span class="field-label">Entitled</span><span class="field-value">{{ s.entitled ? 'Yes' : 'No' }}</span></div>
+            <div class="field-row"><span class="field-label">Access until</span><span class="field-value">{{ fmt(s.entitledUntil) }}</span></div>
+            @if (s.trialEndsAt) {
+              <div class="field-row"><span class="field-label">Trial ends</span><span class="field-value">{{ fmtDate(s.trialEndsAt) }}</span></div>
+            }
+            @if (s.currentPeriodEnd) {
+              <div class="field-row"><span class="field-label">Period ends</span><span class="field-value">{{ fmtDate(s.currentPeriodEnd) }}</span></div>
+            }
+            @if (s.nextChargeAt) {
+              <div class="field-row"><span class="field-label">Next charge</span><span class="field-value">{{ fmt(s.nextChargeAt) }}</span></div>
+            }
+            <div class="field-row"><span class="field-label">Cancel at period end</span><span class="field-value">{{ s.cancelAtPeriodEnd ? 'Yes' : 'No' }}</span></div>
+            @if (s.razorpaySubscriptionId) {
+              <div class="field-row"><span class="field-label">Razorpay ID</span><span class="field-value mono">{{ s.razorpaySubscriptionId }}</span></div>
+            } @else {
+              <div class="field-row"><span class="field-label">Razorpay</span><span class="field-value">Not backed (comp / trial)</span></div>
+            }
+            @if (s.lastFailureReason) {
+              <div class="field-row"><span class="field-label">Last failure</span><span class="field-value">{{ s.lastFailureReason }}</span></div>
+            }
+            @if (s.adminNote) {
+              <div class="field-row"><span class="field-label">Admin note</span><span class="field-value">{{ s.adminNote }}</span></div>
+            }
+            <div class="field-row"><span class="field-label">Created</span><span class="field-value">{{ fmt(s.createdDate) }}</span></div>
+          </div>
+
+          <div class="detail-card" style="margin-top: 1.25rem;">
+            <h2>Payments ({{ detail()!.payments.length }})</h2>
+            @if (detail()!.payments.length === 0) {
+              <p class="muted">No charges recorded.</p>
+            } @else {
+              <table class="mini-table">
+                <thead><tr><th>Date</th><th>Amount</th><th>State</th><th>Method</th><th>Razorpay payment</th></tr></thead>
+                <tbody>
+                  @for (p of detail()!.payments; track p.id) {
+                    <tr>
+                      <td>{{ fmtDate(p.paidAt) }}</td>
+                      <td>{{ rupees(p.amountPaise) }}</td>
+                      <td>{{ p.state || '—' }}</td>
+                      <td>{{ methodLabel(p.paymentMethod) }}</td>
+                      <td class="mono">{{ p.razorpayPaymentId || '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+
+          <div class="detail-card" style="margin-top: 1.25rem;">
+            <h2>Webhook events ({{ detail()!.events.length }})</h2>
+            @if (detail()!.events.length === 0) {
+              <p class="muted">No events — this subscription never reached Razorpay, or none have arrived yet.</p>
+            } @else {
+              <table class="mini-table">
+                <thead><tr><th>Received</th><th>Type</th><th>Verified</th><th>Processed</th></tr></thead>
+                <tbody>
+                  @for (e of detail()!.events; track e.id) {
+                    <tr [class.event-failed]="!e.processedAt && e.receivedAt">
+                      <td>{{ fmt(e.receivedAt) }}</td>
+                      <td class="mono">{{ e.eventType }}</td>
+                      <td>
+                        @if (e.signatureVerified) { <span class="badge badge--success">ok</span> }
+                        @else { <span class="badge badge--danger">bad sig</span> }
+                      </td>
+                      <td>
+                        @if (e.processedAt) { {{ fmt(e.processedAt) }} }
+                        @else if (e.processError) { <span class="muted" [title]="e.processError">error</span> }
+                        @else { <span class="muted">pending</span> }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        </div>
+
+        <!-- ── Right: actions ─────────────────────────────────────────── -->
+        <div>
+          <div class="detail-card">
+            <h2>Actions</h2>
+
+            <button class="btn-ghost act-btn" type="button"
+                    [disabled]="!isRazorpayBacked() || busy() !== ''"
+                    (click)="sync()">
+              {{ busy() === 'sync' ? 'Syncing…' : 'Re-sync from Razorpay' }}
+            </button>
+            @if (!isRazorpayBacked()) {
+              <p class="act-hint">Nothing to sync — not backed by a Razorpay subscription.</p>
+            } @else {
+              <p class="act-hint">Re-reads the subscription from Razorpay and applies its current state now.</p>
+            }
+
+            <hr />
+
+            @if (!cancelOpen()) {
+              <button class="act act--reject act-btn" type="button"
+                      [disabled]="!canCancel() || busy() !== ''"
+                      (click)="cancelOpen.set(true)">
+                Cancel subscription
+              </button>
+              @if (!canCancel()) {
+                <p class="act-hint">Already ended or cancelled.</p>
+              }
+            } @else {
+              <div class="cancel-box">
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="cancelImmediate" />
+                  <span>Stop access immediately (otherwise the paid period runs out first)</span>
+                </label>
+                <label class="form-group">
+                  <span class="form-label">Note (why)</span>
+                  <input class="form-control" type="text" [(ngModel)]="cancelNote" placeholder="reason for the audit trail" />
+                </label>
+                <div class="cancel-box__actions">
+                  <button class="act act--reject" type="button" [disabled]="busy() !== ''" (click)="submitCancel()">
+                    {{ busy() === 'cancel' ? 'Cancelling…' : 'Confirm cancel' }}
+                  </button>
+                  <button class="btn-ghost" type="button" [disabled]="busy() !== ''" (click)="cancelOpen.set(false)">Back</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+    }
+  }
+</div>

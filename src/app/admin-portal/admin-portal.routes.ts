@@ -78,6 +78,16 @@ export const adminPortalRoutes: Routes = [
       import('./scraped-trademarks/admin-scraped-trademark-detail.component').then(m => m.AdminScrapedTrademarkDetailComponent),
     title: 'Scraped Trademark | Admin',
   },
+  {
+    path: 'billing',
+    loadComponent: () => import('./billing/admin-billing.component').then(m => m.AdminBillingComponent),
+    title: 'Billing | Admin',
+  },
+  {
+    path: 'billing/:id',
+    loadComponent: () => import('./billing/admin-billing-detail.component').then(m => m.AdminBillingDetailComponent),
+    title: 'Subscription | Admin',
+  },
   // Any unknown admin path falls back to the dashboard so sidebar links never 404.
   {
     path: '',

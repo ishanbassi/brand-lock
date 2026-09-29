@@ -87,6 +87,8 @@ export type IconName =
 
 /** Paths only; the wrapper supplies the svg element so stroke and sizing stay uniform. */
 const ICONS: Record<string, string> = {
+  // A payment card: the billing screen. Magnetic stripe, and a short line for the number.
+  card: '<rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="M3 10h18"/><path d="M7 15h3.5"/>',
   dashboard: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
   // A stack of records, which is what a portfolio is here.
   portfolio: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>',

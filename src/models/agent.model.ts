@@ -1,3 +1,5 @@
+import { SimilarityMatchType } from '../app/enumerations/similarity-match-type.model';
+
 export interface AgentProfile {
   id?: number;
   firstName?: string;
@@ -283,9 +285,19 @@ export interface SearchReportRow {
   trademarkStatus?: string;
   type?: string;
   score: number;
-  riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
+  /**
+   * EMBEDDED is not a fourth point on the same scale. It says the row is listed because one mark
+   * carries the other — ZARA inside AAFIZARA — which the score, a whole-string measure, cannot see.
+   */
+  riskBand: SearchRiskBand;
+  /** Why the row is listed. Present on every row the current backend returns. */
+  matchType?: SimilarityMatchType | null;
+  /** The mark found inside the other one, when there is one. */
+  embeddedMark?: string | null;
   hasArtwork: boolean;
 }
+
+export type SearchRiskBand = 'HIGH' | 'MEDIUM' | 'LOW' | 'EMBEDDED';
 
 export interface SearchReport {
   query: string;
@@ -293,7 +305,7 @@ export interface SearchReport {
   tmClasses: number[];
   generatedOn: string;
   totalResults: number;
-  countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
+  countsByRisk: Record<SearchRiskBand, number>;
   rows: SearchReportRow[];
 }
 

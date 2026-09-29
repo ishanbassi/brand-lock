@@ -77,6 +77,9 @@
           <span class="band high">{{ countFor('HIGH') }} close</span>
           <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
           <span class="band low">{{ countFor('LOW') }} distant</span>
+          @if (countFor('EMBEDDED')) {
+            <span class="band embedded">{{ countFor('EMBEDDED') }} embedded</span>
+          }
           @if (r.tmClasses.length) {
             <span class="band same">{{ classSentence(r.tmClasses) }} only</span>
           }
@@ -119,8 +122,13 @@
                   <td>{{ statusLabel(row) }}</td>
                   <td>{{ formatDate(row.applicationDate) }}</td>
                   <td>
-                    <span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">
-                      {{ bandLabel(row.riskBand) }}
+                    <span
+                      class="chip"
+                      [class.high]="row.riskBand === 'HIGH'"
+                      [class.medium]="row.riskBand === 'MEDIUM'"
+                      [class.embedded]="row.riskBand === 'EMBEDDED'"
+                    >
+                      {{ bandLabel(row) }}
                     </span>
                   </td>
                 </tr>
@@ -128,6 +136,13 @@
             </tbody>
           </table>
         </div>
+
+        @if (countFor('EMBEDDED')) {
+          <p class="footnote">
+            Marks shown as “Contains …” are listed because the proposed mark carries them, or is carried by them, rather than
+            for how closely the two names resemble each other overall.
+          </p>
+        }
 
         @if (r.tmClasses.length) {
           <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p>

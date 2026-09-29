@@ -154,6 +154,16 @@ $content-bg: var(--ap-paper);
   .nav-icon { width: 22px; opacity: 0.85; }
 }
 
+// A screen outside the agent's plan. Pushed to the end of the row and kept faint: the screen is
+// still reachable and still shows what the agent has, so the badge is a note, not a barrier.
+.nav-lock {
+  margin-left: auto;
+  display: inline-flex;
+  line-height: 0;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
 .sidebar-footer {
   padding: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);

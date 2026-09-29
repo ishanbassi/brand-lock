@@ -44,6 +44,9 @@
                    [class.active]="isActive(child.route)">
                   <ap-icon class="nav-icon" [name]="child.icon" [size]="16" />
                   <span class="nav-label">{{ child.label }}</span>
+                  @if (locked(child.feature)) {
+                    <span class="nav-lock" title="Needs a paid plan"><ap-icon name="lock" [size]="12" /></span>
+                  }
                 </a>
               }
             </div>
@@ -56,6 +59,9 @@
             <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
             @if (!sidebarCollapsed()) {
               <span class="nav-label">{{ item.label }}</span>
+              @if (locked(item.feature)) {
+                <span class="nav-lock" title="Needs a paid plan"><ap-icon name="lock" [size]="12" /></span>
+              }
             }
           </a>
         }
@@ -68,7 +74,7 @@
         @if (!sidebarCollapsed()) {
           <div class="agent-info">
             <span class="agent-name" [title]="firmName()">{{ firmName() }}</span>
-            <span class="agent-badge">Active</span>
+            <span class="agent-badge">{{ planBadge() }}</span>
           </div>
         }
       </div>
@@ -99,6 +105,12 @@
         <ap-icon name="user" [size]="16" />
       </a>
     </header>
+
+    <!-- Trial countdown, a failed payment, a lapsed plan, or the last upgrade prompt. Above the
+         scroll area so it stays in view, and absent on the billing screen, which says it all in full. -->
+    @if (!onBilling()) {
+      <ap-billing-banner />
+    }
 
     <div class="content-scroll">
       <router-outlet></router-outlet>

@@ -9,6 +9,7 @@ import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-sect
 import { SearchExpertOpinionComponent } from '../search-expert-opinion/search-expert-opinion.component';
 import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { ITrademark } from '../../models/trademark.model';
+import { SimilarityMatchType } from '../enumerations/similarity-match-type.model';
 import { environment } from '../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
 import { TrademarkService } from '../shared/services/trademark.service';
@@ -94,6 +95,25 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
     if (!this.query) return text;
     const regex = new RegExp(`(${this.query})`, 'gi');
     return text.substring(0,100).replace(regex, '<mark>$1</mark>');
+  }
+
+  /**
+   * Why an embedded mark is on the page, said in the visitor's words.
+   *
+   * These rows do not resemble the search term as wholes — "ZARA" against "AAFIZARA" is half a
+   * different string — so they would read as noise without the reason being given. Returns an
+   * empty string for ordinary results, which the template treats as nothing to show.
+   */
+  embeddedNote(trademark: ITrademark): string {
+    const mark = (trademark.embeddedMark ?? '').toUpperCase();
+    if (!mark) return '';
+    if (trademark.matchType === SimilarityMatchType.CONTAINS_MARK) {
+      return `Your search contains the registered mark “${mark}”.`;
+    }
+    if (trademark.matchType === SimilarityMatchType.CONTAINED_IN_MARK) {
+      return `This mark contains “${mark}”.`;
+    }
+    return '';
   }
 
   getStatusClass(status?: string): string {

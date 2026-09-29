@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchReport, SearchReportRow } from '../../../models/agent.model';
+import { SearchReport, SearchReportRow, SearchRiskBand } from '../../../models/agent.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 
 /**
@@ -120,13 +120,19 @@ export class AgentSearchReportComponent {
     });
   }
 
-  countFor(band: 'HIGH' | 'MEDIUM' | 'LOW'): number {
+  countFor(band: SearchRiskBand): number {
     return this.report()?.countsByRisk?.[band] ?? 0;
   }
 
-  bandLabel(band: string): string {
+  bandLabel(row: SearchReportRow): string {
     // Spelled out rather than left to colour alone — these reports get printed and photocopied.
-    return band === 'HIGH' ? 'Close' : band === 'MEDIUM' ? 'Moderate' : 'Distant';
+    if (row.riskBand !== 'EMBEDDED') {
+      return row.riskBand === 'HIGH' ? 'Close' : row.riskBand === 'MEDIUM' ? 'Moderate' : 'Distant';
+    }
+    // An embedded mark is named, not graded: it is on the list because one mark carries the other,
+    // and "Distant" — which is what its score says — would tell the agent the opposite of the truth.
+    const mark = (row.embeddedMark ?? '').toUpperCase();
+    return row.matchType === 'CONTAINS_MARK' ? `Contains ${mark}` : 'Contains your term';
   }
 
   statusLabel(row: SearchReportRow): string {

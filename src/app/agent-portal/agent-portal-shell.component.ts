@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../models/auth.services';
+import { FeatureKey } from '../../models/billing.model';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
 import { NotificationService } from '../shared/services/notification.service';
 import { AgentDataService } from '../shared/services/agent-data.service';
+import { BillingService } from '../shared/services/billing.service';
+import { AgentBillingBannerComponent } from './agent-billing-banner/agent-billing-banner.component';
 import { IconComponent, IconName } from './ui/icon.component';
 
 /** A single destination. */
@@ -19,6 +22,12 @@ interface NavLeaf {
    * the agent is on them, Add Trademark is where they are.
    */
   alsoMatches?: string[];
+  /**
+   * The plan feature this screen depends on, if any. Drives a lock badge when the agent's plan does
+   * not include it. The screen stays reachable either way - it shows what the agent already has
+   * and says what a plan would add, which is more useful than a link that goes nowhere.
+   */
+  feature?: FeatureKey;
 }
 
 /**
@@ -36,12 +45,14 @@ interface NavItem {
   /** Present on groups only; stable key for the expanded/collapsed state. */
   id?: string;
   children?: NavLeaf[];
+  /** Leaves only - see NavLeaf. */
+  feature?: FeatureKey;
 }
 
 @Component({
   selector: 'app-agent-portal-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, NotificationBellComponent, IconComponent],
+  imports: [CommonModule, RouterModule, NotificationBellComponent, IconComponent, AgentBillingBannerComponent],
   templateUrl: './agent-portal-shell.component.html',
   styleUrl: './agent-portal-shell.component.scss',
 })
@@ -58,7 +69,8 @@ export class AgentPortalShellComponent {
    * five of them are ways into the same collection, and the list grew unreadable as features
    * landed. Every feature keeps a nav link; new ones join the group they belong to, or become a
    * top-level entry of their own when they are not about the portfolio. Account screens are the
-   * exception - notifications and the profile are reached from the topbar icons instead.
+   * exception - notifications and the profile are reached from the topbar icons instead. Billing is
+   * the one account screen in the nav; see its entry for why.
    */
   navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/agent-portal/dashboard' },
@@ -88,15 +100,20 @@ export class AgentPortalShellComponent {
         { label: 'Journal watch',       icon: 'journal', route: '/agent-portal/watch/journal' },
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
-        { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts' },
+        { label: 'Portfolio conflicts', icon: 'alert',   route: '/agent-portal/watch/conflicts', feature: 'CONFLICT_WATCH' },
       ],
     },
-    {
-      heading: 'Account',
-      // Billing stays in the main rail rather than hiding under the profile icon: agents need a
-      // reliable way to restore access when a paid feature sends them here.
-      items: [{ label: 'Billing & plan', icon: 'card', route: '/agent-portal/billing' }],
-    },
+    // Its own entry rather than a watch child: it follows rival firms, not marks against the
+    // agent's portfolio. The route stays under watch/ so existing links keep working.
+    { label: 'Competitors',   icon: 'building',  route: '/agent-portal/watch/competitors', feature: 'COMPETITOR_WATCHES' },
+    // Deadlines sits close under the watch group: both answer "what needs me, and when".
+    { label: 'Deadlines',     icon: 'calendar',  route: '/agent-portal/deadlines', feature: 'DEADLINES' },
+    { label: 'Search report', icon: 'search',    route: '/agent-portal/reports/search' },
+    { label: 'Documents',     icon: 'documents', route: '/agent-portal/documents' },
+    // The exception to "account screens live in the topbar". It is where a lapsed agent goes to
+    // stop being lapsed, and every upgrade prompt points at it, so it has to be findable from the
+    // nav rather than hidden behind an icon.
+    { label: 'Billing',       icon: 'card',      route: '/agent-portal/billing' },
     // Notifications and My profile are deliberately absent: both are reached from the topbar
     // icons, and listing them here gave each screen two entry points that had to agree.
   ];
@@ -131,6 +148,7 @@ export class AgentPortalShellComponent {
     private readonly authService: AuthService,
     private readonly notifications: NotificationService,
     private readonly agentData: AgentDataService,
+    private readonly billing: BillingService,
   ) {
     // Started here rather than in the bell so the badge is current the moment the portal opens,
     // and so it survives the bell being re-created by a route change.
@@ -138,9 +156,15 @@ export class AgentPortalShellComponent {
     // Fills the sidebar's firm name. Failure is silent: a missing name falls back to the portal's
     // own label, and blocking the shell on it would leave the whole portal behind a spinner.
     this.agentData.getProfile().subscribe({ error: () => {} });
+    // Plan and entitlements, for the banner and the lock badges. Same silent-failure policy: the
+    // billing service fails open, so an unloaded state shows the portal exactly as it was.
+    this.billing.refreshState();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
       this.activeRoute.set(e.urlAfterRedirects);
       this.revealActiveGroup();
+      // An upgrade prompt belongs to the screen that raised it. Carried across a navigation it
+      // would read as being about the new screen.
+      this.billing.lastEntitlementError.set(null);
     });
     this.activeRoute.set(this.router.url);
     this.revealActiveGroup();
@@ -155,6 +179,14 @@ export class AgentPortalShellComponent {
    * bestMatch(), which only knows the routes still listed in the nav.
    */
   readonly onProfile = computed(() => this.activeRoute().startsWith('/agent-portal/profile'));
+
+  /** The billing screen shows the same facts as the banner, in full, so the banner steps aside there. */
+  readonly onBilling = computed(() => this.activeRoute().startsWith('/agent-portal/billing'));
+
+  /** Whether a nav entry's feature is outside the agent's plan. False until billing state loads. */
+  locked(feature: FeatureKey | undefined): boolean {
+    return !!feature && !this.billing.can(feature);
+  }
 
   /** A group is highlighted when the screen being shown is one of its children. */
   isGroupActive(item: NavItem): boolean {
@@ -212,6 +244,17 @@ export class AgentPortalShellComponent {
    * or for an account that gave no company name at onboarding.
    */
   readonly firmName = computed(() => this.agentData.agentProfile()?.companyName?.trim() || 'Agent Portal');
+
+  /**
+   * The plan, in a word, under the firm name. Was a fixed "Active", which said nothing once there
+   * were plans to be on.
+   */
+  readonly planBadge = computed(() => {
+    const state = this.billing.state();
+    if (!state) return 'Active';
+    if (state.status === 'TRIALING' && state.entitled) return 'Trial';
+    return state.effectivePlanCode === 'FREE' ? 'Free plan' : 'Pro';
+  });
 
   /** Initials for the sidebar avatar, taken from whichever name the pill is showing. */
   readonly agentInitials = computed(() => {

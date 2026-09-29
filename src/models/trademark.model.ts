@@ -8,6 +8,7 @@ import { IDocuments } from './documents.model';
 import { ITrademarkClass } from './trademark-class.model';
 import { ITrademarkPlan } from './trademark-plan.model';
 import { TrademarkStatus } from '../app/enumerations/trademark-status.model';
+import { SimilarityMatchType } from '../app/enumerations/similarity-match-type.model';
 
 export interface ITrademark {
   id: number;
@@ -49,6 +50,13 @@ export interface ITrademark {
   url?:string;
   faqs?:{question:string;answer:string;opened:boolean}[];
   slug?:string;
+
+  /** How alike this mark and the searched term are, 0..1. Set only by the scored search paths. */
+  score?: number;
+  /** Why a search returned this row — resemblance, or one mark carrying the other. */
+  matchType?: SimilarityMatchType | null;
+  /** The mark found inside the other one, when `matchType` says there is one. */
+  embeddedMark?: string | null;
 
   
 

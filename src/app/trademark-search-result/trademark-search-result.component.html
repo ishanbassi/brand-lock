@@ -94,6 +94,9 @@
                   </b>
                 </span>
               </div>
+              <!-- Said on the card, not left to the ordering: this mark is here because one name
+                   sits inside the other, which is not what a visitor reads "similar" to mean. -->
+              <p class="embedded-note" *ngIf="embeddedNote(trademark) as note">{{ note }}</p>
               <div class="trademark-class">
                 <span class="trademark-details" [innerHTML]="highlight(trademark.details)"></span>
               </div>

@@ -2,7 +2,7 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, from, concatMap, reduce } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentClaimResult, AgentDirectoryEntry, AgentPortfolioTrademark } from '../../../models/agent.model';
 
@@ -36,6 +36,13 @@ export class AgentPortfolioClaimComponent {
   agents = signal<AgentDirectoryEntry[]>([]);
   searched = signal(false);
 
+  /**
+   * Name variants ticked directly in the search results (keyed by nameNormalized), for claiming
+   * several spellings of the same firm in one go instead of opening and claiming each separately.
+   */
+  selectedAgentNames = signal<Set<string>>(new Set());
+  bulkClaiming = signal(false);
+
   selectedAgent = signal<AgentDirectoryEntry | null>(null);
   marks = signal<AgentPortfolioTrademark[]>([]);
   totalMarks = signal(0);
@@ -57,6 +64,12 @@ export class AgentPortfolioClaimComponent {
   });
 
   totalPages = computed(() => Math.ceil(this.totalMarks() / this.pageSize));
+
+  selectedAgentsList = computed(() => this.agents().filter(a => this.selectedAgentNames().has(a.nameNormalized)));
+
+  selectedAgentsMarkTotal = computed(() =>
+    this.selectedAgentsList().reduce((sum, a) => sum + (a.markCount ?? 0), 0),
+  );
 
   constructor(
     private readonly agentDataService: AgentDataService,
@@ -87,6 +100,7 @@ export class AgentPortfolioClaimComponent {
   onQueryChange(value: string): void {
     this.query = value;
     this.errorMessage.set('');
+    this.selectedAgentNames.set(new Set());
     // Matches the backend's own minimum: a single character matches thousands of firms.
     if (value.trim().length < 2) {
       this.agents.set([]);
@@ -96,9 +110,62 @@ export class AgentPortfolioClaimComponent {
     this.search$.next(value.trim());
   }
 
+  toggleAgentSelection(agent: AgentDirectoryEntry, event?: Event): void {
+    event?.stopPropagation();
+    const next = new Set(this.selectedAgentNames());
+    if (next.has(agent.nameNormalized)) {
+      next.delete(agent.nameNormalized);
+    } else {
+      next.add(agent.nameNormalized);
+    }
+    this.selectedAgentNames.set(next);
+  }
+
+  isAgentSelected(agent: AgentDirectoryEntry): boolean {
+    return this.selectedAgentNames().has(agent.nameNormalized);
+  }
+
+  /** Claims every mark under each ticked name variant, one name at a time, and reports the totals. */
+  claimSelectedAgentNames(): void {
+    const agents = this.selectedAgentsList();
+    if (agents.length === 0 || this.bulkClaiming()) return;
+    this.bulkClaiming.set(true);
+    this.errorMessage.set('');
+    from(agents)
+      .pipe(
+        concatMap(agent =>
+          this.agentDataService.claimTrademarks({ agentName: agent.nameNormalized, claimAllUnderName: true }),
+        ),
+        reduce<AgentClaimResult, AgentClaimResult>(
+          (acc, result) => ({
+            claimed: acc.claimed + result.claimed,
+            alreadyHeld: acc.alreadyHeld + result.alreadyHeld,
+            rejected: acc.rejected + result.rejected,
+            autoVerified: acc.autoVerified + result.autoVerified,
+            // A running total in the DB, not a per-call amount - the last call's value is current.
+            portfolioTotal: result.portfolioTotal,
+          }),
+          { claimed: 0, alreadyHeld: 0, rejected: 0, autoVerified: 0, portfolioTotal: 0 },
+        ),
+      )
+      .subscribe({
+        next: aggregated => {
+          this.result.set(aggregated);
+          this.phase.set('done');
+          this.bulkClaiming.set(false);
+          this.selectedAgentNames.set(new Set());
+        },
+        error: err => {
+          this.errorMessage.set(err?.error?.message || 'Could not add these marks. Please try again.');
+          this.bulkClaiming.set(false);
+        },
+      });
+  }
+
   openAgent(agent: AgentDirectoryEntry): void {
     this.selectedAgent.set(agent);
     this.selectedIds.set(new Set());
+    this.selectedAgentNames.set(new Set());
     this.page.set(0);
     this.phase.set('browse');
     this.loadMarks();
@@ -191,6 +258,7 @@ export class AgentPortfolioClaimComponent {
     this.phase.set('search');
     this.selectedAgent.set(null);
     this.selectedIds.set(new Set());
+    this.selectedAgentNames.set(new Set());
     this.marks.set([]);
     this.result.set(null);
     this.query = '';

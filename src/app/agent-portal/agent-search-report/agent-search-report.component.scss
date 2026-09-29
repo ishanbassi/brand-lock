@@ -287,6 +287,13 @@ $low: var(--ap-done);
     background: var(--ap-accent-soft);
     color: $accent;
   }
+
+  // Deliberately not one of the risk colours: an embedded mark is not a degree of resemblance,
+  // and dressing it as one would invite the agent to read it against the other three.
+  &.embedded {
+    background: var(--ap-accent-soft);
+    color: $accent;
+  }
 }
 
 .table-scroll {
@@ -352,6 +359,13 @@ $low: var(--ap-done);
   &.medium {
     background: var(--ap-due-soft);
     color: $medium;
+  }
+
+  &.embedded {
+    background: var(--ap-accent-soft);
+    color: $accent;
+    // The label carries a mark name, so it is the one chip that can run long.
+    white-space: normal;
   }
 }
 

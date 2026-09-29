@@ -31,8 +31,16 @@
     <p class="hint" *ngIf="query.trim().length < 2">Type at least two characters.</p>
 
     <ul class="agent-list" *ngIf="agents().length > 0">
-      <li *ngFor="let agent of agents()">
-        <button type="button" class="agent-row" (click)="openAgent(agent)">
+      <li *ngFor="let agent of agents()" class="agent-row" [class.selected]="isAgentSelected(agent)">
+        <label class="agent-check" (click)="$event.stopPropagation()">
+          <input
+            type="checkbox"
+            [checked]="isAgentSelected(agent)"
+            (change)="toggleAgentSelection(agent)"
+            [attr.aria-label]="'Select ' + agent.displayName"
+          />
+        </label>
+        <button type="button" class="agent-main" (click)="openAgent(agent)">
           <span class="agent-text">
             <span class="agent-name">{{ agent.displayName }}</span>
             <span class="agent-addr" *ngIf="agent.primaryAddress">
@@ -50,6 +58,10 @@
       </li>
     </ul>
 
+    <p class="hint" *ngIf="agents().length > 1">
+      Tick more than one if your firm is listed under a few spellings — they’ll all be added together.
+    </p>
+
     <div class="empty" *ngIf="searched() && agents().length === 0 && !searching()">
       <p>No agent found matching “{{ query }}”.</p>
       <p class="hint">
@@ -57,6 +69,16 @@
         of the name. If your marks genuinely aren’t in our data yet, you can
         <a routerLink="/agent-portal/portfolio/upload">import a spreadsheet</a> instead.
       </p>
+    </div>
+
+    <div class="bulk-bar" *ngIf="selectedAgentNames().size > 0">
+      <span class="selected-count">
+        {{ selectedAgentNames().size }} name{{ selectedAgentNames().size > 1 ? 's' : '' }} selected ·
+        {{ selectedAgentsMarkTotal() | number }} marks
+      </span>
+      <button type="button" class="btn-primary" [disabled]="bulkClaiming()" (click)="claimSelectedAgentNames()">
+        {{ bulkClaiming() ? 'Adding…' : 'Add all ' + (selectedAgentsMarkTotal() | number) + ' marks to my portfolio' }}
+      </button>
     </div>
   </section>
 
@@ -68,6 +90,12 @@
         <h2>{{ selectedAgent()?.displayName }}</h2>
         <p class="hint">{{ totalMarks() | number }} marks filed under this name</p>
       </div>
+    </div>
+
+    <div class="top-action">
+      <button type="button" class="btn-secondary" [disabled]="phase() === 'claiming'" (click)="claimAll()">
+        Add all {{ totalMarks() | number }} under this name
+      </button>
     </div>
 
     <div class="toolbar">
@@ -125,9 +153,6 @@
         (click)="claimSelected()"
       >
         {{ phase() === 'claiming' ? 'Adding…' : 'Add ' + (selectedCount() | number) + ' to my portfolio' }}
-      </button>
-      <button type="button" class="btn-secondary" [disabled]="phase() === 'claiming'" (click)="claimAll()">
-        Add all {{ totalMarks() | number }} under this name
       </button>
     </footer>
   </section>

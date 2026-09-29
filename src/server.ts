@@ -47,8 +47,11 @@ app.use((_req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader(
+    // frame-src takes all of *.razorpay.com: subscription checkout's mandate flows (UPI Autopay,
+    // card mandate, e-NACH) can frame Razorpay hosts beyond api. and checkout., and a CSP refusal
+    // shows up only as a blank payment window with a console error.
     'Content-Security-Policy',
-    `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in https://checkout.razorpay.com https://cdn.razorpay.com ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self'${devOrigins} https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.google-analytics.com https://analytics.google.com https://www.google.com https://www.googleadservices.com https://*.doubleclick.net https://api.razorpay.com https://checkout.razorpay.com https://lumberjack.razorpay.com ; frame-src https://www.google.com https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';`,
+    `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://kit.fontawesome.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://admin.trademarx.in https://cms.trademarx.in https://checkout.razorpay.com https://cdn.razorpay.com ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://ka-f.fontawesome.com data:; img-src 'self' data: https: blob:; connect-src 'self'${devOrigins} https://cms.trademarx.in https://admin.trademarx.in https://www.googletagmanager.com https://region1.google-analytics.com https://ka-f.fontawesome.com https://www.google-analytics.com https://analytics.google.com https://www.google.com https://www.googleadservices.com https://*.doubleclick.net https://api.razorpay.com https://checkout.razorpay.com https://lumberjack.razorpay.com ; frame-src https://www.google.com https://*.razorpay.com; object-src 'none'; base-uri 'self';`,
   );
   next();
 });

@@ -92,10 +92,12 @@ export const agentPortalRoutes: Routes = [
     title: 'My Profile | Agent Portal',
   },
   {
-    // Billing deliberately has no entitlement guard: it is where a lapsed agent restores access.
+    // Deliberately free of any entitlement guard: this is where a lapsed agent goes to stop being
+    // lapsed, and every upgrade prompt points here. The backend keeps the same promise - nothing
+    // under /api/agent-portal/billing is gated. Only ROLE_AGENT, inherited from the portal route.
     path: 'billing',
     loadComponent: () => import('./agent-billing/agent-billing.component').then(m => m.AgentBillingComponent),
-    title: 'Billing & Plan | Agent Portal',
+    title: 'Billing | Agent Portal',
   },
   {
     path: '',

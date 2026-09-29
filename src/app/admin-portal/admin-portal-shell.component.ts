@@ -32,6 +32,7 @@ export class AdminPortalShellComponent {
     { label: 'E-filing',     icon: '🖊️', route: '/admin-portal/efiling' },
     { label: 'Documents',    icon: '📄', route: '/admin-portal/documents' },
     { label: 'Payments',     icon: '💳', route: '/admin-portal/payments' },
+    { label: 'Billing',      icon: '🧾', route: '/admin-portal/billing' },
     { label: 'Agents',       icon: '🧑‍⚖️', route: '/admin-portal/agents' },
     { label: 'Agent Imports', icon: '📥', route: '/admin-portal/agent-imports' },
     { label: 'Scraped Trademarks', icon: '🔍', route: '/admin-portal/scraped-trademarks' },

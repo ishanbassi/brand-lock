@@ -282,6 +282,19 @@
   margin-bottom: 20px;
 }
 
+// Why a mark with no obvious resemblance to the search term is on the page. Quiet, but not so
+// quiet it can be skimmed past — without it the row reads as a bad result.
+.embedded-note {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dark-text, #1f2937);
+  background: #eef2ff;
+  border-left: 3px solid #6366f1;
+  border-radius: var(--radius-sm);
+}
+
 .trademark-class {
   display: flex;
   align-items: center;

@@ -1,0 +1,22 @@
+@if (blocked(); as problem) {
+  <!-- The server's own sentence about what was just refused. Dismissible: the agent may simply
+       want to carry on with what they can do. -->
+  <div class="bb bb--blocked" role="status">
+    <ap-icon class="bb__icon" name="lock" [size]="16" />
+    <span class="bb__msg">{{ problem.detail }}</span>
+    <a class="bb__action"
+       routerLink="/agent-portal/billing"
+       [queryParams]="problem.feature ? { feature: problem.feature } : {}">See plans</a>
+    <button type="button" class="bb__close" aria-label="Dismiss" (click)="dismissBlocked()">
+      <ap-icon name="close" [size]="14" />
+    </button>
+  </div>
+} @else {
+  <!-- Nested rather than `@else if (…; as b)`: Angular allows an alias only on the primary @if. -->
+  @if (banner(); as b) {
+    <div class="bb" [ngClass]="'bb--' + b.tone" role="status">
+      <span class="bb__msg">{{ b.message }}</span>
+      <a class="bb__action" routerLink="/agent-portal/billing">{{ b.action }}</a>
+    </div>
+  }
+}
