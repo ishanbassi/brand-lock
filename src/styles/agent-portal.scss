@@ -14,31 +14,31 @@
      Paper is barely warm; a full cream reads as a lifestyle brand, and this is a
      professional register. Ink is a cool near-black, never pure #000, which is
      harsh on a light ground at small sizes. */
-  --ap-paper: #fcfbf9;
+  --ap-paper: #f5f8fc;
   --ap-surface: #ffffff;
-  --ap-ink: #16191d;
-  --ap-ink-muted: #6b6f76;
-  --ap-ink-faint: #9aa0a6;
-  --ap-rule: #e4e1db;
-  --ap-rule-strong: #cfcbc3;
+  --ap-ink: #142238;
+  --ap-ink-muted: #52647b;
+  --ap-ink-faint: #6e7f93;
+  --ap-rule: #dce5f0;
+  --ap-rule-strong: #b9c9dc;
 
   /* Sidebar keeps the ink ground so the portal reads as one surface. */
-  --ap-shell: #16191d;
+  --ap-shell: #111e31;
   --ap-shell-text: rgba(255, 255, 255, 0.82);
-  --ap-shell-muted: rgba(255, 255, 255, 0.44);
+  --ap-shell-muted: rgba(255, 255, 255, 0.68);
   --ap-shell-hover: rgba(255, 255, 255, 0.07);
   /* The accent, lifted for the dark rail: --ap-accent itself is ink blue and vanishes on ink. Used
      only for the active item's marker bar. */
-  --ap-shell-accent: #9db8d6;
-  --ap-shell-active: rgba(157, 184, 214, 0.14);
+  --ap-shell-accent: #40a8ff;
+  --ap-shell-active: rgba(27, 126, 220, 0.24);
 
   /* ── Accent ──────────────────────────────────────────────────────────────
      One accent, used for primary actions and the active nav item only. Ink blue
      rather than the indigo this portal shipped with: #6366f1 is the default
      every generated interface arrives wearing. */
-  --ap-accent: #24405c;
-  --ap-accent-hover: #1b3149;
-  --ap-accent-soft: #eaeef3;
+  --ap-accent: #0869c6;
+  --ap-accent-hover: #0758a6;
+  --ap-accent-soft: #e5f1fd;
 
   /* ── Status ──────────────────────────────────────────────────────────────
      The only other colour in the portal. If something is coloured, it is because

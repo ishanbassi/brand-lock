@@ -540,6 +540,12 @@ export class AgentDataService {
     );
   }
 
+  searchAgentAddresses(q: string, limit = 20): Observable<AgentDirectoryEntry[]> {
+    return this.http.get<AgentDirectoryEntry[]>(`${this.base}/agent-portal/discover/agent-addresses`, {
+      params: { q, limit },
+    });
+  }
+
   searchProprietors(q: string, limit = 20): Observable<ProprietorDirectoryEntry[]> {
     return this.http.get<ProprietorDirectoryEntry[]>(`${this.base}/agent-portal/discover/proprietors`, {
       params: { q, limit },

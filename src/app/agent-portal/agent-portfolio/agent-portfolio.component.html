@@ -211,10 +211,14 @@
                 </button>
               </th>
             }
-            <!-- The firm's own columns. Not sortable: the query does not reach into the stored
-                 values yet, and a header that looks sortable but does nothing is worse than none. -->
             @for (field of shownCustomFields(); track field.id) {
-              <th scope="col" class="custom-col">{{ field.label }}</th>
+              <th scope="col" class="custom-col" [attr.aria-sort]="ariaSort(customSortColumn(field).field)">
+                <button type="button" class="sort-btn" [class.sorted]="sortField === customSortColumn(field).field"
+                  [attr.aria-label]="sortLabel(customSortColumn(field))" (click)="toggleSort(customSortColumn(field))">
+                  {{ field.label }}
+                  <span class="sort-indicator" aria-hidden="true"><ap-icon [name]="sortField !== customSortColumn(field).field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" /></span>
+                </button>
+              </th>
             }
             <th scope="col" class="type-col">Type</th>
             <th scope="col" class="actions-col">Actions</th>

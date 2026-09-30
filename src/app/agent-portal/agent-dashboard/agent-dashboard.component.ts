@@ -119,16 +119,12 @@ export class AgentDashboardComponent implements OnInit {
     });
   }
 
-  get greeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  get agentFirstName(): string {
+  get agentName(): string {
     const user = this.authService.getUser();
-    return user?.firstName || 'Agent';
+    return this.agentDataService.agentProfile()?.fullName
+      || [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim()
+      || this.agentDataService.agentProfile()?.companyName
+      || 'Agent Portal';
   }
 
   /** Percentage of the portfolio, rounded to a whole number. */

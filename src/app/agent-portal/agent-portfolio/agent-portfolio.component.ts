@@ -101,11 +101,12 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   /**
    * The firm's own spreadsheet columns, and which of them are shown in this table.
    *
-   * Display only for now: sorting and filtering on them needs the query to reach into the jsonb
-   * bag, which the portfolio query does not do yet. An unsortable column is honest about that —
-   * a header that looks sortable and silently does nothing would not be.
+   * Custom columns sort on the server across the whole portfolio, including export order.
    */
   customFields = signal<AgentCustomField[]>([]);
+  customSortColumn(field: AgentCustomField): SortableColumn {
+    return { field: `custom:${field.fieldKey}`, label: field.label, firstDir: field.dataType === 'DATE' ? 'desc' : 'asc' };
+  }
   shownCustomFields = signal<AgentCustomField[]>([]);
   showColumnPicker = signal(false);
   columnPickerError = signal('');
