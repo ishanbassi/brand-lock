@@ -79,7 +79,6 @@ export type IconName =
   | 'globe'
   | 'scales'
   | 'columns'
-  | 'card'
   | 'sort'
   | 'sort-asc'
   | 'sort-desc'
@@ -87,8 +86,6 @@ export type IconName =
 
 /** Paths only; the wrapper supplies the svg element so stroke and sizing stay uniform. */
 const ICONS: Record<string, string> = {
-  // A payment card: the billing screen. Magnetic stripe, and a short line for the number.
-  card: '<rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="M3 10h18"/><path d="M7 15h3.5"/>',
   dashboard: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
   // A stack of records, which is what a portfolio is here.
   portfolio: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>',
@@ -117,7 +114,6 @@ const ICONS: Record<string, string> = {
   globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5z"/>',
   scales: '<path d="M12 4v16"/><path d="M6 8h12"/><path d="M3 15l3-7 3 7a3 3 0 0 1-6 0z"/><path d="M15 15l3-7 3 7a3 3 0 0 1-6 0z"/>',
   columns: '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M9 5v14"/><path d="M15 5v14"/>',
-  card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/>',
   sort: '<path d="M8 5v14"/><path d="M5 8l3-3 3 3"/><path d="M16 19V5"/><path d="M13 16l3 3 3-3"/>',
   'sort-asc': '<path d="M12 19V5"/><path d="M7.5 9.5L12 5l4.5 4.5"/>',
   'sort-desc': '<path d="M12 5v14"/><path d="M7.5 14.5L12 19l4.5-4.5"/>',

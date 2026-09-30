@@ -1,29 +1,57 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { saveBlob } from '../ui/save-blob';
+import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { debounceTime, Subject } from 'rxjs';
+import { debounceTime, forkJoin, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentImportSummary, AgentPortfolioFilterOptions, AgentPortfolioTrademark } from '../../../models/agent.model';
+import {
+  AgentCustomField,
+  AgentImportSummary,
+  AgentPortfolioFilterOptions,
+  AgentPortfolioQuery,
+  AgentPortfolioTrademark,
+  PortfolioSearchField,
+  PortfolioSortField,
+} from '../../../models/agent.model';
+
+/** One option of the "search by" dropdown. */
+interface SearchFieldOption {
+  value: PortfolioSearchField;
+  label: string;
+  placeholder: string;
+}
+
+/** A sortable column header. */
+interface SortableColumn {
+  field: PortfolioSortField;
+  label: string;
+  /** Dates open newest-first — "oldest filing" is rarely the first question. Text opens A→Z. */
+  firstDir: 'asc' | 'desc';
+}
 
 @Component({
   selector: 'app-agent-portfolio',
   standalone: true,
-  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })
-export class AgentPortfolioComponent implements OnInit {
+export class AgentPortfolioComponent implements OnInit, OnDestroy {
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   loading = signal(true);
   error = signal('');
 
   // Pagination
   page = 0;
-  pageSize = 20;
+  // The scrollable table keeps navigation accessible even for a large review batch.
+  pageSize = 100;
   totalCount = 0;
   totalPages = 0;
+  private latestLoad = 0;
 
   // Filters. Applied by the server: the client holds one page of twenty out of thousands of marks,
   // so filtering what it has in hand searched the wrong 20 rows and normally found nothing.
@@ -31,6 +59,17 @@ export class AgentPortfolioComponent implements OnInit {
   filterStatus = '';
   filterClass = '';
   private searchSubject = new Subject<string>();
+
+  /**
+   * Which field the search box matches. One field at a time: searching all three at once meant a
+   * number like "25" matched every mark whose name, proprietor or application number contained it.
+   */
+  searchBy: PortfolioSearchField = 'NAME';
+  readonly searchFields: SearchFieldOption[] = [
+    { value: 'NAME', label: 'Trademark', placeholder: 'Search by trademark name…' },
+    { value: 'APPLICATION_NO', label: 'Application no.', placeholder: 'Search by application number…' },
+    { value: 'PROPRIETOR', label: 'Proprietor', placeholder: 'Search by proprietor name…' },
+  ];
 
   // The query the table currently reflects. Tracked here rather than with distinctUntilChanged so
   // that clearing the filters can reset it: the operator would otherwise still be holding the old
@@ -41,6 +80,39 @@ export class AgentPortfolioComponent implements OnInit {
   // Only the buckets and classes this agent actually holds, with counts, so no option can be
   // chosen that is guaranteed to return an empty table.
   filterOptions = signal<AgentPortfolioFilterOptions | null>(null);
+
+  /**
+   * Sorting is done by the server across the whole filtered set — sorting the twenty rows on screen
+   * would put page one's "A" marks first and leave every other "A" on later pages. Null keeps the
+   * default order, most recently added first.
+   */
+  sortField: PortfolioSortField | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
+  readonly columns: SortableColumn[] = [
+    { field: 'name', label: 'Trademark', firstDir: 'asc' },
+    { field: 'applicationNo', label: 'App No.', firstDir: 'asc' },
+    { field: 'tmClass', label: 'Class', firstDir: 'asc' },
+    { field: 'proprietorName', label: 'Proprietor', firstDir: 'asc' },
+    { field: 'trademarkStatus', label: 'Status', firstDir: 'asc' },
+    { field: 'applicationDate', label: 'Filing Date', firstDir: 'desc' },
+    { field: 'renewalDate', label: 'Renewal', firstDir: 'asc' },
+  ];
+
+  /**
+   * The firm's own spreadsheet columns, and which of them are shown in this table.
+   *
+   * Display only for now: sorting and filtering on them needs the query to reach into the jsonb
+   * bag, which the portfolio query does not do yet. An unsortable column is honest about that —
+   * a header that looks sortable and silently does nothing would not be.
+   */
+  customFields = signal<AgentCustomField[]>([]);
+  shownCustomFields = signal<AgentCustomField[]>([]);
+  showColumnPicker = signal(false);
+  columnPickerError = signal('');
+  fieldSearch = '';
+  private readonly customValueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly pendingCustomValues = new Map<string, { trademarkId: number; fieldKey: string; value: string }>();
+  private readonly savingCustomValueKeys = signal<Set<string>>(new Set());
 
   // Delete
   deletingId = signal<number | null>(null);
@@ -56,21 +128,159 @@ export class AgentPortfolioComponent implements OnInit {
   pendingImports = signal<AgentImportSummary[]>([]);
 
   // Export
-  exportingExcel = signal(false);
-  exportingPdf = signal(false);
+  exporting = signal<ExportFormat | null>(null);
+  printing = signal(false);
+  readonly selectedIds = new Set<number>();
+  private readonly selectedMarks = new Map<number, AgentPortfolioTrademark>();
+  private firmName = 'Trademarx';
+  private accentColor = '#1f4e79';
+  private logoUrl: string | null = null;
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
+  ngOnDestroy(): void {
+    if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+    for (const timer of this.customValueTimers.values()) clearTimeout(timer);
+  }
+
   ngOnInit(): void {
+    this.agentDataService.getProfile().subscribe({
+      next: profile => {
+        const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
+        this.firmName = branding.firmDisplayName || profile.companyName || 'Trademarx';
+        if (branding.reportAccentColor && /^#?[\da-f]{6}$/i.test(branding.reportAccentColor)) {
+          this.accentColor = branding.reportAccentColor.startsWith('#') ? branding.reportAccentColor : `#${branding.reportAccentColor}`;
+        }
+        this.agentDataService.getLogo().subscribe({ next: blob => this.logoUrl = URL.createObjectURL(blob) });
+      },
+    });
     this.load();
     this.loadPendingImports();
     this.loadFilterOptions();
+    this.loadCustomFields();
     this.searchSubject.pipe(debounceTime(350)).subscribe((q) => {
       if (q.trim() === this.lastSearched) return;
       this.lastSearched = q.trim();
       this.page = 0;
       this.load();
     });
+  }
+
+  private loadCustomFields(): void {
+    this.agentDataService.getCustomFields().subscribe({
+      next: (fields) => {
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter((f) => f.showInList));
+      },
+      // A firm that has never imported a spreadsheet has none. Normal, not an error.
+      error: () => this.customFields.set([]),
+    });
+  }
+
+  /**
+   * Adds or removes one of the firm's own columns from the table.
+   *
+   * Persisted on the field itself rather than in this component, so the choice follows the agent
+   * between sessions and devices — the same reason it is capped server-side rather than here.
+   */
+  toggleColumn(field: AgentCustomField): void {
+    const next = !field.showInList;
+    this.columnPickerError.set('');
+    this.agentDataService.updateCustomField(field.id, { showInList: next }).subscribe({
+      next: (updated) => {
+        const fields = this.customFields().map((f) => (f.id === updated.id ? updated : f));
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter((f) => f.showInList));
+      },
+      error: (err) => this.columnPickerError.set(err?.error?.detail ?? 'Could not change that column.'),
+    });
+  }
+
+  get allCustomFieldsShown(): boolean {
+    const fields = this.customFields();
+    return fields.length > 0 && fields.every(field => field.showInList);
+  }
+
+  /** Applies one visibility decision to every custom field in this agent's schema. */
+  toggleAllColumns(show: boolean): void {
+    const changed = this.customFields().filter(field => Boolean(field.showInList) !== show);
+    if (changed.length === 0) return;
+
+    this.columnPickerError.set('');
+    forkJoin(changed.map(field => this.agentDataService.updateCustomField(field.id, { showInList: show }))).subscribe({
+      next: updated => {
+        const byId = new Map(updated.map(field => [field.id, field]));
+        const fields = this.customFields().map(field => byId.get(field.id) ?? field);
+        this.customFields.set(fields);
+        this.shownCustomFields.set(fields.filter(field => field.showInList));
+      },
+      error: err => this.columnPickerError.set(err?.error?.detail ?? 'Could not update field visibility.'),
+    });
+  }
+
+  /** A mark's private spreadsheet value, kept empty when the workbook had no value. */
+  customValue(tm: AgentPortfolioTrademark, field: AgentCustomField): string {
+    return tm.customFields?.[field.fieldKey] ?? '';
+  }
+
+  /** Keeps the spreadsheet cell responsive, then writes only that agent-private value after typing settles. */
+  onCustomValueInput(tm: AgentPortfolioTrademark, field: AgentCustomField, value: string): void {
+    if (tm.id == null) return;
+    const key = this.customValueKey(tm.id, field.fieldKey);
+    this.trademarks.update(rows => rows.map(mark => mark.id === tm.id
+      ? { ...mark, customFields: { ...(mark.customFields ?? {}), [field.fieldKey]: value } }
+      : mark,
+    ));
+    this.pendingCustomValues.set(key, { trademarkId: tm.id, fieldKey: field.fieldKey, value });
+
+    const existingTimer = this.customValueTimers.get(key);
+    if (existingTimer) clearTimeout(existingTimer);
+    this.customValueTimers.set(key, setTimeout(() => this.saveCustomValue(key), 700));
+  }
+
+  isCustomValueSaving(tm: AgentPortfolioTrademark, field: AgentCustomField): boolean {
+    return tm.id != null && this.savingCustomValueKeys().has(this.customValueKey(tm.id, field.fieldKey));
+  }
+
+  private saveCustomValue(key: string): void {
+    this.customValueTimers.delete(key);
+    // Preserve write order for one cell. A network response from an earlier value must never
+    // arrive after a later edit and become the final stored value.
+    if (this.savingCustomValueKeys().has(key)) {
+      this.customValueTimers.set(key, setTimeout(() => this.saveCustomValue(key), 150));
+      return;
+    }
+    const pending = this.pendingCustomValues.get(key);
+    if (!pending) return;
+    this.pendingCustomValues.delete(key);
+    this.savingCustomValueKeys.update(keys => new Set(keys).add(key));
+
+    this.agentDataService.updatePortfolioLink(pending.trademarkId, {
+      customFields: { [pending.fieldKey]: pending.value.trim() ? pending.value : null },
+    }).subscribe({
+      next: () => this.savingCustomValueKeys.update(keys => {
+        const next = new Set(keys);
+        next.delete(key);
+        return next;
+      }),
+      error: () => {
+        this.savingCustomValueKeys.update(keys => {
+          const next = new Set(keys);
+          next.delete(key);
+          return next;
+        });
+        this.error.set('Could not save that spreadsheet value. Edit the cell again to retry.');
+      },
+    });
+  }
+
+  private customValueKey(trademarkId: number, fieldKey: string): string {
+    return `${trademarkId}:${fieldKey}`;
+  }
+
+  get filteredCustomFields(): AgentCustomField[] {
+    const query = this.fieldSearch.trim().toLowerCase();
+    return query ? this.customFields().filter(field => field.label.toLowerCase().includes(query)) : this.customFields();
   }
 
   private loadFilterOptions(): void {
@@ -125,17 +335,26 @@ export class AgentPortfolioComponent implements OnInit {
     });
   }
 
+  /** The filter and sort the table reflects — sent with the listing and with both exports. */
+  private currentQuery(): AgentPortfolioQuery {
+    return {
+      search: this.searchQuery,
+      searchBy: this.searchBy,
+      status: this.filterStatus,
+      tmClass: this.filterClass === '' ? null : Number(this.filterClass),
+      sort: this.sortField ? { field: this.sortField, dir: this.sortDir } : null,
+    };
+  }
+
   load(): void {
+    const requestId = ++this.latestLoad;
     this.loading.set(true);
     this.error.set('');
     this.agentDataService
-      .getPortfolio(this.page, this.pageSize, {
-        search: this.searchQuery,
-        status: this.filterStatus,
-        tmClass: this.filterClass === '' ? null : Number(this.filterClass),
-      })
+      .getPortfolio(this.page, this.pageSize, this.currentQuery())
       .subscribe({
         next: (res) => {
+          if (requestId !== this.latestLoad) return;
           this.trademarks.set(res.body || []);
           const total = res.headers.get('X-Total-Count');
           // Counts the filtered set, so the pager shrinks with the filter rather than offering
@@ -145,7 +364,9 @@ export class AgentPortfolioComponent implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('Failed to load portfolio.');
+          if (requestId !== this.latestLoad) return;
+          this.trademarks.set([]);
+          this.error.set('Could not load your portfolio. Check your connection and try again.');
           this.loading.set(false);
         },
       });
@@ -156,24 +377,63 @@ export class AgentPortfolioComponent implements OnInit {
     return !!(this.searchQuery.trim() || this.filterStatus || this.filterClass);
   }
 
+  get searchPlaceholder(): string {
+    return this.searchFields.find(f => f.value === this.searchBy)?.placeholder ?? 'Search…';
+  }
+
   onSearchChange(): void {
+    this.clearSelection();
     this.searchSubject.next(this.searchQuery);
+  }
+
+  /** Switching the field only changes the results when there is text to match. */
+  onSearchByChange(): void {
+    if (!this.searchQuery.trim()) return;
+    this.onFilterChange();
   }
 
   /** Any dropdown change restarts at page one - page 483 of an unfiltered list means nothing now. */
   onFilterChange(): void {
+    this.clearSelection();
     this.lastSearched = this.searchQuery.trim();
     this.page = 0;
     this.load();
   }
 
   clearFilters(): void {
+    this.clearSelection();
     this.searchQuery = '';
     this.lastSearched = '';
     this.filterStatus = '';
     this.filterClass = '';
     this.page = 0;
     this.load();
+  }
+
+  /** First click sorts by the column, the next reverses it. Restarts at page one either way. */
+  toggleSort(column: SortableColumn): void {
+    if (this.sortField === column.field) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = column.field;
+      this.sortDir = column.firstDir;
+    }
+    this.page = 0;
+    this.load();
+  }
+
+  ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {
+    if (this.sortField !== field) return 'none';
+    return this.sortDir === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortLabel(column: SortableColumn): string {
+    if (this.sortField !== column.field) return `Sort by ${column.label}`;
+    return `Sort by ${column.label}, ${this.sortDir === 'asc' ? 'descending' : 'ascending'}`;
+  }
+
+  get visibleRangeEnd(): number {
+    return Math.min((this.page + 1) * this.pageSize, this.totalCount);
   }
 
   goToPage(p: number): void {
@@ -239,34 +499,91 @@ export class AgentPortfolioComponent implements OnInit {
     return tm.id;
   }
 
-  exportExcel(): void {
-    this.exportingExcel.set(true);
-    this.agentDataService.exportPortfolioExcel().subscribe({
+  /**
+   * Downloads what the table shows — the same search, filters and order — across every page, not
+   * just the twenty rows on screen.
+   */
+  export(format: ExportFormat): void {
+    if (this.exporting() || this.printing()) return;
+    this.error.set('');
+    if (format === 'pdf') {
+      const selected = [...this.selectedMarks.values()];
+      if (!selected.length) {
+        this.error.set('Select at least one trademark to print.');
+        return;
+      }
+      this.printing.set(true);
+      printReport(this.printHtml(selected)).catch(() => this.error.set('Could not prepare the print view. Please try again.'))
+        .finally(() => this.printing.set(false));
+      return;
+    }
+
+    this.exporting.set(format);
+    const query = this.currentQuery();
+    const request = this.agentDataService.exportPortfolioExcel(query);
+    request.subscribe({
       next: (blob) => {
-        this.downloadBlob(blob, 'trademark-portfolio.xlsx');
-        this.exportingExcel.set(false);
+        saveBlob(blob, 'trademark-portfolio.xlsx');
+        this.exporting.set(null);
       },
-      error: () => this.exportingExcel.set(false),
+      error: () => {
+        this.error.set('Could not generate the Excel file. Please try again.');
+        this.exporting.set(null);
+      },
     });
   }
 
-  exportPdf(): void {
-    this.exportingPdf.set(true);
-    this.agentDataService.exportPortfolioPdf().subscribe({
-      next: (blob) => {
-        this.downloadBlob(blob, 'trademark-portfolio.pdf');
-        this.exportingPdf.set(false);
-      },
-      error: () => this.exportingPdf.set(false),
-    });
+  isSelected(tm: AgentPortfolioTrademark): boolean {
+    return tm.id != null && this.selectedIds.has(tm.id);
   }
 
-  private downloadBlob(blob: Blob, filename: string): void {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+  isPageSelected(): boolean {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    return rows.length > 0 && rows.every(tm => this.selectedIds.has(tm.id!));
+  }
+
+  isPagePartlySelected(): boolean {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    return rows.some(tm => this.selectedIds.has(tm.id!)) && !this.isPageSelected();
+  }
+
+  togglePageSelection(): void {
+    const rows = this.trademarks().filter(tm => tm.id != null);
+    const remove = this.isPageSelected();
+    for (const tm of rows) this.setSelected(tm, !remove);
+  }
+
+  toggleSelection(tm: AgentPortfolioTrademark): void {
+    if (tm.id == null) return;
+    this.setSelected(tm, !this.selectedIds.has(tm.id));
+  }
+
+  private setSelected(tm: AgentPortfolioTrademark, selected: boolean): void {
+    if (tm.id == null) return;
+    if (selected) {
+      this.selectedIds.add(tm.id);
+      this.selectedMarks.set(tm.id, tm);
+    } else {
+      this.selectedIds.delete(tm.id);
+      this.selectedMarks.delete(tm.id);
+    }
+  }
+
+  private clearSelection(): void {
+    this.selectedIds.clear();
+    this.selectedMarks.clear();
+  }
+
+  private printHtml(marks: AgentPortfolioTrademark[]): string {
+    const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+    const rows = marks.map(tm => `<tr><td><strong>${esc(tm.name)}</strong>${tm.type ? `<br><small>${esc(tm.type)}</small>` : ''}</td><td>${esc(tm.applicationNo)}</td><td>${esc(tm.tmClass)}</td><td>${esc(tm.proprietorName)}</td><td>${esc(tm.trademarkStatus || 'Unknown')}</td><td>${esc(tm.applicationDate)}</td><td>${esc(tm.renewalDate)}</td></tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>Trademark portfolio</title><style>
+      @page{size:A4 landscape;margin:14mm 12mm}*{box-sizing:border-box}body{font:10pt Arial,sans-serif;color:#202a36;margin:0}
+      header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid ${this.accentColor};padding-bottom:10px;margin-bottom:18px}
+      h1{font-size:20pt;margin:0 0 4px}.firm{color:${this.accentColor};font-size:15pt;font-weight:bold;display:flex;align-items:center;gap:10px}.logo{max-width:100px;max-height:44px;object-fit:contain}
+      table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:${this.accentColor};color:white;text-align:left;padding:7px;font-size:8pt}td{padding:7px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere}tr{break-inside:avoid;page-break-inside:avoid}
+      footer{margin-top:12px;border-top:1px solid #d8dde4;padding-top:7px;color:#596575;font-size:8pt}
+      </style></head><body><header><div><h1>Trademark Portfolio</h1><div>${marks.length} selected trademark${marks.length===1?'':'s'}</div></div><div class="firm">${this.logoUrl?`<img class="logo" src="${esc(this.logoUrl)}" alt="">`:''}${esc(this.firmName)}</div></header>
+      <table><thead><tr><th>Trademark</th><th>Application</th><th>Class</th><th>Proprietor</th><th>Status</th><th>Filed</th><th>Renewal</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}. Renewal dates should be verified against the Register before relying on them.</footer></body></html>`;
   }
 }

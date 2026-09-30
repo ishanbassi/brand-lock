@@ -1,5 +1,3 @@
-import { SimilarityMatchType } from '../app/enumerations/similarity-match-type.model';
-
 export interface AgentProfile {
   id?: number;
   firstName?: string;
@@ -65,6 +63,21 @@ export interface AgentPortfolioTrademark {
   /** Agent-private annotation. Lives on the portfolio link, so it is always editable. */
   agentNotes?: string;
   clientReference?: string;
+
+  /**
+   * The firm's own spreadsheet columns for this mark, keyed by AgentCustomField.fieldKey.
+   *
+   * Sits on the agent-private portfolio link, so unlike the mark's own fields these stay editable
+   * after the registry verifies it — the register has no opinion on a firm's receipt numbers.
+   * Only present on agent-scoped responses, never on discovery or public profile payloads.
+   */
+  customFields?: Record<string, string>;
+
+  /**
+   * Stored artwork filename; present only when the mark has an image. Treat it as a flag — many
+   * are JPEG 2000, which browsers cannot draw, so fetch the image via getTrademarkArtwork.
+   */
+  imgUrl?: string | null;
 }
 
 export interface AgentImportResult {
@@ -81,6 +94,49 @@ export interface AgentImportResult {
   detectedColumns?: Record<string, number>;
   /** Identifies the retained upload, so confirm updates the preview's record. */
   batchId?: number;
+  /** Columns no trademark field claimed, offered to keep as the agent's own fields. */
+  extraColumns?: ExcelExtraColumn[];
+  /**
+   * Fields whose header match was thrown out because the column's data disproved it.
+   *
+   * Shown so a released claim reads as "we found this and rejected it" rather than as a field we
+   * simply failed to locate.
+   */
+  releasedColumns?: Record<string, string>;
+}
+
+/** One column of an uploaded workbook that our trademark model has no home for. */
+export interface ExcelExtraColumn {
+  columnIndex: number;
+  /** The heading as it appeared in the sheet. */
+  header?: string;
+  /** Derived storage key — becomes AgentCustomField.fieldKey on confirm. */
+  fieldKey: string;
+  /** How many of the file's rows carry a value. Empty-everywhere columns are already dropped. */
+  nonEmptyCount: number;
+  samples?: string[];
+  suggestedType?: string;
+  /** True when this agent already has a field under this key, from an earlier upload. */
+  alreadyKnown?: boolean;
+}
+
+/**
+ * One column of the agent's own portfolio schema.
+ *
+ * Every firm's set is different — two firms both having a `remarks` field does not make them the
+ * same field — so these are only ever read and rendered for the signed-in agent.
+ */
+export interface AgentCustomField {
+  id: number;
+  /** Immutable. Values are stored under this key, so a rename never touches it. */
+  fieldKey: string;
+  label: string;
+  sourceHeader?: string;
+  dataType?: 'TEXT' | 'NUMBER' | 'DATE' | 'BOOL';
+  source?: 'IMPORTED' | 'MANUAL';
+  displayOrder?: number;
+  /** Whether this field is also shown as a column in the portfolio grid. */
+  showInList?: boolean;
 }
 
 /** One status bucket of the agent's portfolio, as counted by the server. */
@@ -104,12 +160,29 @@ export interface AgentPortfolioFilterOptions {
   classes: { tmClass: number; count: number }[];
 }
 
+/** The field the portfolio search box matches against. */
+export type PortfolioSearchField = 'NAME' | 'APPLICATION_NO' | 'PROPRIETOR';
+
+/** Portfolio columns the server can sort by — the DTO property names, whitelisted server-side. */
+export type PortfolioSortField =
+  | 'name'
+  | 'applicationNo'
+  | 'tmClass'
+  | 'proprietorName'
+  | 'trademarkStatus'
+  | 'applicationDate'
+  | 'renewalDate';
+
 /** Server-side narrowing of the portfolio listing. Anything unset is "no filter". */
 export interface AgentPortfolioQuery {
   search?: string;
+  /** Which field `search` matches. Unset searches name, number and proprietor together. */
+  searchBy?: PortfolioSearchField;
   /** A status bucket key, never a raw registry status. */
   status?: string;
   tmClass?: number | null;
+  /** Unset keeps the default order: most recently added to the portfolio first. */
+  sort?: { field: PortfolioSortField; dir: 'asc' | 'desc' } | null;
 }
 
 export interface AgentDashboardStats {
@@ -122,17 +195,6 @@ export interface AgentDashboardStats {
   /** Newest application date first; marks not yet filed are excluded. */
   recentFilings: AgentPortfolioTrademark[];
   expiringSoon: AgentPortfolioTrademark[];
-}
-
-export interface TrademarkConflict {
-  id?: number;
-  name?: string;
-  applicationNo?: number;
-  proprietorName?: string;
-  trademarkStatus?: string;
-  tmClass?: number;
-  score: number;
-  similarityScore?: number;
 }
 
 export interface WatchConflictHistory {
@@ -185,6 +247,14 @@ export interface AgentDirectoryEntry {
   primaryAddress?: string;
   /** Distinct addresses on file under this name; > 1 means two firms may share the name. */
   addressCount?: number;
+}
+
+/** A proprietor spelling found in the trademark register. */
+export interface ProprietorDirectoryEntry {
+  nameNormalized: string;
+  displayName: string;
+  markCount: number;
+  latestFilingDate?: string;
 }
 
 export interface AgentClaimRequest {
@@ -280,24 +350,20 @@ export interface SearchReportRow {
   applicationNo?: number;
   tmClass?: number;
   proprietorName?: string;
+  proprietorAddress?: string;
   applicationDate?: string;
+  renewalDate?: string;
+  details?: string;
+  journalNo?: number;
   /** Live registry status. The raw similarity search does not return this. */
   trademarkStatus?: string;
   type?: string;
   score: number;
-  /**
-   * EMBEDDED is not a fourth point on the same scale. It says the row is listed because one mark
-   * carries the other — ZARA inside AAFIZARA — which the score, a whole-string measure, cannot see.
-   */
-  riskBand: SearchRiskBand;
-  /** Why the row is listed. Present on every row the current backend returns. */
-  matchType?: SimilarityMatchType | null;
-  /** The mark found inside the other one, when there is one. */
-  embeddedMark?: string | null;
+  riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
   hasArtwork: boolean;
 }
 
-export type SearchRiskBand = 'HIGH' | 'MEDIUM' | 'LOW' | 'EMBEDDED';
+export type SearchReportType = 'startswith' | 'contains' | 'phonetic';
 
 export interface SearchReport {
   query: string;
@@ -305,7 +371,7 @@ export interface SearchReport {
   tmClasses: number[];
   generatedOn: string;
   totalResults: number;
-  countsByRisk: Record<SearchRiskBand, number>;
+  countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
   rows: SearchReportRow[];
 }
 
@@ -362,6 +428,8 @@ export interface AgentJournalConflict {
   portfolioTrademarkName?: string;
   portfolioApplicationNo?: number;
   portfolioTmClass?: number;
+  /** Goods / services of the agent's mark. */
+  portfolioDetails?: string;
 
   conflictingTrademarkId: number;
   conflictingTrademarkName?: string;
@@ -370,6 +438,8 @@ export interface AgentJournalConflict {
   conflictingProprietorName?: string;
   conflictingApplicationDate?: string;
   conflictingImgUrl?: string;
+  /** Goods / services of the advertised mark — what tells a similar name apart from a real clash. */
+  conflictingDetails?: string;
   /** Public detail page for the advertised mark. Absent when it has no application number. */
   conflictingDetailUrl?: string;
 }

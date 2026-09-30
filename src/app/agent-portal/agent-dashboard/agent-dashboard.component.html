@@ -105,7 +105,7 @@
             @for (row of statusRows(); track row.key) {
               <div class="status-row" [class.is-zero]="row.count === 0">
                 <span class="status-swatch" [style.background]="row.color"></span>
-                <span class="status-name">{{ row.icon }} {{ row.label }}</span>
+                <span class="status-name"><ap-icon [name]="row.icon" [size]="14" /> {{ row.label }}</span>
                 <span class="status-count">{{ row.count }}</span>
                 <span class="status-share">{{ row.share }}%</span>
               </div>

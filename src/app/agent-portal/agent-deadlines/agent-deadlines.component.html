@@ -1,11 +1,8 @@
 <div class="ap deadlines">
   <header class="page-head">
     <div>
-      <h1 class="ap-title">Deadlines</h1>
-      <p class="ap-subtitle">
-        Renewals the Registry has confirmed, and hearings as they are listed. Grouped by the day
-        they fall.
-      </p>
+      <h1 class="ap-title">{{ scope.title }}</h1>
+      <p class="ap-subtitle">{{ scope.subtitle }}</p>
     </div>
   </header>
 
@@ -24,45 +21,60 @@
   }
 
   <div class="controls">
-    <div class="range" role="group" aria-label="View">
-      <button type="button" class="range-btn" [class.selected]="view() === 'list'"
-              [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">List</button>
-      <button type="button" class="range-btn" [class.selected]="view() === 'month'"
-              [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
-    </div>
+    @if (scope.monthView) {
+      <div class="range" role="group" aria-label="View">
+        <button type="button" class="range-btn" [class.selected]="view() === 'list'"
+                [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">List</button>
+        <button type="button" class="range-btn" [class.selected]="view() === 'month'"
+                [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Month</button>
+      </div>
+    }
 
-    @if (view() === 'list') {
-    <div class="range" role="group" aria-label="Date range">
-      @for (range of ranges; track range.key) {
-        <button
-          type="button"
-          class="range-btn"
-          [class.selected]="activeRange().key === range.key"
-          [attr.aria-pressed]="activeRange().key === range.key"
-          (click)="selectRange(range.key)"
-        >
-          {{ range.label }}
-        </button>
-      }
-    </div>
-    } @else {
-      <!-- Month paging replaces the range chips: the visible month is the range. -->
+    <!-- The range is the one filter, read by both views alike: it sets the window list scrolls
+         through and the span month view is allowed to page across. A single range is no choice,
+         so it is not drawn as one. -->
+    @if (ranges.length > 1) {
+      <div class="range" role="group" aria-label="Date range">
+        @for (range of ranges; track range.key) {
+          <button
+            type="button"
+            class="range-btn"
+            [class.selected]="activeRange().key === range.key"
+            [attr.aria-pressed]="activeRange().key === range.key"
+            (click)="selectRange(range.key)"
+          >
+            {{ range.label }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (view() === 'month') {
+      <!-- Paging within the range above, not a second, independent window. -->
       <div class="month-nav">
-        <button type="button" class="month-step" (click)="stepMonth(-1)" aria-label="Previous month">
+        <button type="button" class="month-step" (click)="stepMonth(-1)" aria-label="Previous month" [disabled]="!canStepBack()">
           <ap-icon name="chevron" [size]="16" class="flip" />
         </button>
         <span class="month-label">{{ monthLabel() }}</span>
-        <button type="button" class="month-step" (click)="stepMonth(1)" aria-label="Next month">
+        <button type="button" class="month-step" (click)="stepMonth(1)" aria-label="Next month" [disabled]="!canStepForward()">
           <ap-icon name="chevron" [size]="16" />
         </button>
         <button type="button" class="month-today" (click)="goToThisMonth()">Today</button>
       </div>
     }
 
-    <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
-      <ap-icon [name]="showDone() ? 'check' : 'dot'" [size]="15" />
-      {{ showDone() ? 'Hiding nothing' : 'Show completed' }}
-    </button>
+    @if (view() === 'list' && hasTodayGroup()) {
+      <button type="button" class="ap-btn ap-btn--quiet jump-today" (click)="scrollToToday()">
+        Jump to today
+      </button>
+    }
+
+    @if (scope.completable) {
+      <button type="button" class="ap-btn ap-btn--quiet toggle-done" (click)="toggleDone()" [attr.aria-pressed]="showDone()">
+        <ap-icon [name]="showDone() ? 'check' : 'dot'" [size]="15" />
+        {{ showDone() ? 'Hiding nothing' : 'Show completed' }}
+      </button>
+    }
   </div>
 
   @if (error()) {
@@ -90,11 +102,12 @@
     <p class="visually-hidden" role="status">Loading deadlines</p>
   } @else if (groups().length === 0) {
     <div class="ap-panel ap-empty">
-      <p>
-        Nothing falls due in this window. Renewals appear here once the Registry confirms a renewal
-        date on a mark, and hearings appear on the day they are listed.
-      </p>
-      <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange('365')">Look ahead 12 months</button>
+      <p>{{ scope.empty }}</p>
+      @if (scope.emptyAction && activeRange().key !== scope.emptyAction.rangeKey) {
+        <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange(scope.emptyAction.rangeKey)">
+          {{ scope.emptyAction.label }}
+        </button>
+      }
     </div>
   } @else if (view() === 'month') {
     <!--
@@ -132,14 +145,27 @@
             <span class="cell-date ap-num">{{ cell.dayOfMonth }}</span>
 
             @if (cell.items.length > 0) {
-              <span class="cell-markers">
-                @for (item of cell.items.slice(0, 4); track item.derivedKey || item.id) {
-                  <span [class]="markerClass(item)" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')"></span>
+              <!-- Up to two items named in the box itself, so the common case - one hearing, one
+                   renewal - reads without a click. A busier day still shows a dot per item beyond
+                   that, so the count is never lost, just not spelled out. -->
+              <ul class="cell-items">
+                @for (item of cell.items.slice(0, 2); track item.derivedKey || item.id) {
+                  <li class="cell-item" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')">
+                    <span [class]="markerClass(item)"></span>
+                    <span class="cell-item-label">{{ item.trademarkName || typeLabel(item) }}</span>
+                  </li>
                 }
-                @if (cell.items.length > 4) {
-                  <span class="cell-more">+{{ cell.items.length - 4 }}</span>
-                }
-              </span>
+              </ul>
+              @if (cell.items.length > 2) {
+                <span class="cell-markers">
+                  @for (item of cell.items.slice(2, 6); track item.derivedKey || item.id) {
+                    <span [class]="markerClass(item)" [title]="typeLabel(item) + ' — ' + (item.trademarkName || '')"></span>
+                  }
+                  @if (cell.items.length > 6) {
+                    <span class="cell-more">+{{ cell.items.length - 6 }}</span>
+                  }
+                </span>
+              }
             }
           </div>
         }
@@ -187,7 +213,7 @@
     -->
     <ol class="days">
       @for (day of groups(); track day.date) {
-        <li class="day" [class.is-past]="day.past" [class.is-today]="day.today">
+        <li class="day" [attr.id]="day.today ? 'deadline-day-today' : null" [class.is-past]="day.past" [class.is-today]="day.today">
           <div class="day-rail">
             <span class="day-num ap-num">{{ day.label }}</span>
             <span class="day-weekday">{{ day.weekday }}</span>

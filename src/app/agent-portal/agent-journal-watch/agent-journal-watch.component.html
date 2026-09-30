@@ -94,9 +94,8 @@
             Open Journal {{ result()!.journalNo }} ↗
           </a>
           @if (counts().total > 0) {
-            <button class="btn-outline" [disabled]="downloading()" (click)="downloadPdf()">
-              {{ downloading() ? 'Preparing…' : 'Download PDF' }}
-            </button>
+            <span class="selected-count">{{ selectedConflicts.size }} selected to print</span>
+            <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
           }
         </div>
       </div>
@@ -146,6 +145,7 @@
         <div class="conflict-list">
           @for (c of visibleConflicts(); track c.conflictingTrademarkId) {
             <article class="conflict-card" [class]="'risk-' + c.riskLevel.toLowerCase()">
+              <label class="conflict-select"><input type="checkbox" [checked]="isConflictSelected(c)" (change)="toggleConflictSelection(c)" [attr.aria-label]="'Select conflict with ' + (c.conflictingTrademarkName || 'trademark') + ' for printing'" /><span>Select</span></label>
               <div class="conflict-score">
                 <span class="score-value">{{ scorePercent(c.score) }}%</span>
                 <span class="score-label">{{ c.riskLevel }}</span>
@@ -161,6 +161,14 @@
                     @if (c.portfolioApplicationNo) { App {{ c.portfolioApplicationNo }} · }
                     Class {{ c.portfolioTmClass || '—' }}
                   </span>
+                  <!-- Goods/services on both sides: a same-class, similar-sounding mark covering
+                       unrelated goods is a very different threat from one covering the same. -->
+                  <div class="goods">
+                    <span class="goods-label">Goods / services</span>
+                    <p class="goods-text" [class.clamped]="isLong(c.portfolioDetails) && !isExpanded(c)">
+                      {{ c.portfolioDetails || 'No description on record.' }}
+                    </p>
+                  </div>
                 </div>
 
                 <div class="versus" aria-hidden="true">vs</div>
@@ -175,6 +183,12 @@
                   @if (c.conflictingProprietorName) {
                     <span class="proprietor">{{ c.conflictingProprietorName }}</span>
                   }
+                  <div class="goods">
+                    <span class="goods-label">Goods / services</span>
+                    <p class="goods-text" [class.clamped]="isLong(c.conflictingDetails) && !isExpanded(c)">
+                      {{ c.conflictingDetails || 'No description on record.' }}
+                    </p>
+                  </div>
                   @if (c.conflictingDetailUrl) {
                     <a
                       class="view-mark"
@@ -186,6 +200,12 @@
                     </a>
                   }
                 </div>
+
+                @if (isLong(c.portfolioDetails) || isLong(c.conflictingDetails)) {
+                  <button type="button" class="link-btn goods-toggle" (click)="toggleExpanded(c)">
+                    {{ isExpanded(c) ? 'Show less' : 'Show full descriptions' }}
+                  </button>
+                }
               </div>
             </article>
           }

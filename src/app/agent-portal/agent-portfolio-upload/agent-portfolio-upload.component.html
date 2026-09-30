@@ -154,6 +154,61 @@
           </div>
         }
 
+        <!-- ── YOUR OWN COLUMNS ──────────────────────────────────────────
+             The columns our model has no field for. Kept as the firm's own fields rather than
+             dropped, which is what stops an import feeling like data loss. -->
+        @if (extraColumns.length > 0) {
+          <div class="extra-columns">
+            <button type="button" class="extra-toggle" [class.open]="showColumns()" (click)="showColumns.set(!showColumns())">
+              <ap-icon name="chevron" [size]="16" />
+              <span>
+                <strong>{{ extraColumns.length }}</strong> further column{{ extraColumns.length !== 1 ? 's' : '' }} will be
+                kept as your own fields
+                @if (newColumnCount < extraColumns.length) {
+                  <em>({{ newColumnCount }} new, {{ extraColumns.length - newColumnCount }} you already have)</em>
+                }
+              </span>
+            </button>
+
+            @if (showColumns()) {
+              <p class="extra-hint">
+                These do not match a standard trademark field, so they will be kept with each mark in the same order as
+                your workbook. Columns empty in every row have already been left out.
+              </p>
+              <ul class="extra-list">
+                @for (col of extraColumns; track col.fieldKey) {
+                  <li class="extra-item">
+                    <span class="extra-head">
+                      {{ col.header || col.fieldKey }}
+                      @if (col.alreadyKnown) { <em class="extra-known">already in your fields</em> }
+                    </span>
+                    <span class="extra-fill">{{ fillLabel(col) }}</span>
+                    @if (col.samples?.length) {
+                      <span class="extra-samples">{{ col.samples!.join(' · ') }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        <!-- Header matches the column's own data disproved. Shown so a rejected guess reads as a
+             decision rather than as a field we failed to find. -->
+        @if (releasedColumns.length > 0) {
+          <div class="released-note">
+            <ap-icon name="alert" [size]="16" />
+            <div>
+              <strong>We ignored a column that looked right but was not:</strong>
+              <ul>
+                @for (r of releasedColumns; track r.field) {
+                  <li>{{ r.reason }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+
         <!-- CONFIRM / CANCEL -->
         <div class="confirm-bar">
           <button class="btn-ghost" (click)="reset()">Cancel</button>

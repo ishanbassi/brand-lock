@@ -61,11 +61,6 @@ export const agentPortalRoutes: Routes = [
     title: 'Edit Trademark | Agent Portal',
   },
   {
-    path: 'portfolio/:id/watch',
-    loadComponent: () => import('./agent-trademark-watch/agent-trademark-watch.component').then(m => m.AgentTrademarkWatchComponent),
-    title: 'Trademark Watch | Agent Portal',
-  },
-  {
     path: 'reports/search',
     loadComponent: () => import('./agent-search-report/agent-search-report.component').then(m => m.AgentSearchReportComponent),
     title: 'Search Report | Agent Portal',
@@ -74,6 +69,26 @@ export const agentPortalRoutes: Routes = [
     path: 'deadlines',
     loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
     title: 'Deadlines | Agent Portal',
+  },
+  // Focused worklists over the same calendar data. One component with a scope rather than three
+  // copies of the row markup, so a fix to how a renewal row reads lands on every screen at once.
+  {
+    path: 'deadlines/renewals/upcoming',
+    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    data: { scope: 'renewals-upcoming' },
+    title: 'Upcoming Renewals | Agent Portal',
+  },
+  {
+    path: 'deadlines/renewals/overdue',
+    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    data: { scope: 'renewals-overdue' },
+    title: 'Overdue Renewals | Agent Portal',
+  },
+  {
+    path: 'deadlines/hearings',
+    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    data: { scope: 'hearings-upcoming' },
+    title: 'Upcoming Hearings | Agent Portal',
   },
   {
     path: 'documents',

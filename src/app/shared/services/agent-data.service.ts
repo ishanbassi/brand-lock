@@ -22,13 +22,32 @@ import {
   AgentImportResult,
   AgentPortfolioFilterOptions,
   AgentPortfolioQuery,
+  AgentCustomField,
   AgentPortfolioTrademark,
   AgentProfile,
   AgentPublicProfile,
   AgentRegistration,
-  TrademarkConflict,
+  ProprietorDirectoryEntry,
   WatchConflictHistory,
 } from '../../../models/agent.model';
+
+/**
+ * How far back an unrenewed mark still counts as overdue rather than lost.
+ *
+ * Twelve months: for six months after expiry a mark can still be renewed with a surcharge
+ * (s.25(3)), and for a year after it the owner can apply for restoration (s.25(4)). Past that there
+ * is nothing left to action, so listing it would only be noise.
+ */
+export const OVERDUE_RENEWAL_LOOKBACK_DAYS = 365;
+
+/** The hearings badge counts the coming week - enough warning to prepare, not a month of noise. */
+export const HEARING_BADGE_DAYS = 7;
+
+/** What the sidenav badges under Deadlines show. */
+export interface DeadlineCounts {
+  overdueRenewals: number;
+  hearingsThisWeek: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AgentDataService {
@@ -79,9 +98,21 @@ export class AgentDataService {
    * almost always came back empty.
    */
   getPortfolio(page = 0, size = 20, query: AgentPortfolioQuery = {}): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
-    let params = new HttpParams().set('page', page).set('size', size);
+    const params = this.portfolioParams(query).set('page', page).set('size', size);
+    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
+      params,
+      observe: 'response',
+    });
+  }
+
+  /** The listing's filter and sort as query params — shared by the listing and both exports. */
+  private portfolioParams(query: AgentPortfolioQuery): HttpParams {
+    let params = new HttpParams();
     if (query.search?.trim()) {
       params = params.set('search', query.search.trim());
+      if (query.searchBy) {
+        params = params.set('searchBy', query.searchBy);
+      }
     }
     if (query.status) {
       params = params.set('status', query.status);
@@ -89,10 +120,10 @@ export class AgentDataService {
     if (query.tmClass != null) {
       params = params.set('tmClass', query.tmClass);
     }
-    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
-      params,
-      observe: 'response',
-    });
+    if (query.sort) {
+      params = params.set('sort', `${query.sort.field},${query.sort.dir}`);
+    }
+    return params;
   }
 
   /** The status buckets and classes actually present in this agent's portfolio, with counts. */
@@ -127,26 +158,18 @@ export class AgentDataService {
     return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form);
   }
 
-  /** batchId comes from the preview response so both calls share one retained-upload record. */
+  /**
+   * batchId comes from the preview response so both calls share one retained-upload record.
+   *
+   * All usable spreadsheet columns are retained automatically, so the import request has no
+   * per-column selection state to lose or accidentally omit.
+   */
   confirmImport(file: File, batchId?: number): Observable<AgentImportResult> {
     const form = new FormData();
     form.append('file', file);
-    const url = `${this.base}/agent-portal/portfolio/import`;
-    return this.http.post<AgentImportResult>(batchId != null ? `${url}?batchId=${batchId}` : url, form);
-  }
-
-  // Trademark watch
-  findConflicts(portfolioItemId: number): Observable<TrademarkConflict[]> {
-    return this.http.get<TrademarkConflict[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflicts`);
-  }
-
-  getConflicts(portfolioItemId: number): Observable<TrademarkConflict[]> {
-    return this.findConflicts(portfolioItemId);
-  }
-
-  // Phase 2 — Conflict history
-  getConflictHistory(portfolioItemId: number): Observable<WatchConflictHistory[]> {
-    return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/portfolio/${portfolioItemId}/conflict-history`);
+    let params = new HttpParams();
+    if (batchId != null) params = params.set('batchId', batchId);
+    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, form, { params });
   }
 
   /** Every conflict recorded across the whole portfolio — what the digest email links to. */
@@ -204,6 +227,43 @@ export class AgentDataService {
   }
 
   /**
+   * The counts the sidenav badges show, as last fetched.
+   *
+   * Held here for the same reason as the profile: the rail shows them while the deadline screens
+   * change them, and a "Done" on an overdue renewal should take the badge down without a reload.
+   */
+  private readonly deadlineCountsState = signal<DeadlineCounts | null>(null);
+  readonly deadlineCounts = this.deadlineCountsState.asReadonly();
+
+  /**
+   * Re-reads the badge counts. Failure leaves the last counts in place - a badge is a hint, and
+   * blanking it on a transient error would read as "nothing overdue".
+   *
+   * The window has to match the widest range of each view the badge points at, or the badge and
+   * the screen it opens disagree: overdue reaches back {@link OVERDUE_RENEWAL_LOOKBACK_DAYS}, the
+   * hearings badge only counts the coming week.
+   */
+  refreshDeadlineCounts(): void {
+    const day = (offset: number) => {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      return d.toISOString().slice(0, 10);
+    };
+    this.getDeadlines(day(-OVERDUE_RENEWAL_LOOKBACK_DAYS), day(HEARING_BADGE_DAYS)).subscribe({
+      next: rows => {
+        const open = (rows ?? []).filter(d => d.status === 'OPEN');
+        this.deadlineCountsState.set({
+          overdueRenewals: open.filter(d => d.deadlineType === 'RENEWAL' && d.daysUntilDue < 0).length,
+          hearingsThisWeek: open.filter(
+            d => d.deadlineType === 'HEARING' && d.daysUntilDue >= 0 && d.daysUntilDue <= HEARING_BADGE_DAYS,
+          ).length,
+        });
+      },
+      error: () => {},
+    });
+  }
+
+  /**
    * Marks a deadline done, waived or missed.
    *
    * A computed entry has no id yet, so it is identified by its derivedKey; the server turns it
@@ -222,14 +282,26 @@ export class AgentDataService {
 
   // ── Reports ────────────────────────────────────────────────────────────
 
-  previewSearchReport(query: string, tmClasses?: number[] | null): Observable<SearchReport> {
+  previewSearchReport(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    page: number,
+    size: 10 | 100 | 1000,
+  ): Observable<SearchReport> {
     return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, {
-      params: this.searchReportParams(query, tmClasses),
+      params: this.searchReportParams(query, tmClasses, searchType).set('page', page).set('size', size),
     });
   }
 
-  downloadSearchReport(query: string, tmClasses?: number[] | null, clientName?: string | null): Observable<Blob> {
-    let params = this.searchReportParams(query, tmClasses);
+  downloadSearchReport(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    selectedIds: number[],
+    clientName?: string | null,
+  ): Observable<Blob> {
+    let params = this.searchReportParams(query, tmClasses, searchType, selectedIds);
     if (clientName) params = params.set('clientName', clientName);
     return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, { params, responseType: 'blob' });
   }
@@ -238,12 +310,35 @@ export class AgentDataService {
    * Repeated `tmClasses` params, which is what Spring binds to a List<Integer>. No param at all
    * means every class — an empty one would bind to a list containing a blank and fail.
    */
-  private searchReportParams(query: string, tmClasses?: number[] | null): HttpParams {
-    let params = new HttpParams().set('q', query);
+  private searchReportParams(
+    query: string,
+    tmClasses?: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic' = 'phonetic',
+    selectedIds?: number[],
+  ): HttpParams {
+    let params = new HttpParams().set('q', query).set('searchType', searchType);
     for (const c of tmClasses ?? []) {
       params = params.append('tmClasses', String(c));
     }
+    for (const id of selectedIds ?? []) params = params.append('selectedIds', String(id));
     return params;
+  }
+
+  /** Every row of the search as a spreadsheet — the PDF stops at a readable length. */
+  downloadSearchReportExcel(
+    query: string,
+    tmClasses: number[] | null,
+    searchType: 'startswith' | 'contains' | 'phonetic',
+    selectedIds: number[],
+  ): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/search.xlsx`, {
+      params: this.searchReportParams(query, tmClasses, searchType, selectedIds),
+      responseType: 'blob',
+    });
+  }
+
+  getSearchResultArtwork(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/search/${id}/artwork`, { responseType: 'blob' });
   }
 
   downloadWatchReport(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
@@ -251,6 +346,32 @@ export class AgentDataService {
       params: this.tmClassParams(tmClasses),
       responseType: 'blob',
     });
+  }
+
+  /** The same watch run as a spreadsheet, with both marks' goods and services. */
+  downloadWatchReportExcel(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.xlsx`, {
+      params: this.tmClassParams(tmClasses),
+      responseType: 'blob',
+    });
+  }
+
+  /** One mark's register record, as a spreadsheet. */
+  exportTrademarkExcel(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/export/excel`, { responseType: 'blob' });
+  }
+
+  /** One mark's register record on the firm's letterhead. */
+  exportTrademarkPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/trademark/${id}.pdf`, { responseType: 'blob' });
+  }
+
+  /**
+   * A mark's artwork in a browser-drawable format (JPEG 2000 is transcoded server-side). Fetched as
+   * a blob because the endpoint needs the auth header an <img src> cannot send. 404s when absent.
+   */
+  getTrademarkArtwork(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/artwork`, { responseType: 'blob' });
   }
 
   // ── Report branding ────────────────────────────────────────────────────
@@ -340,9 +461,46 @@ export class AgentDataService {
   /** Updates the agent's private notes for a mark. Allowed whatever the mark's provenance. */
   updatePortfolioLink(
     trademarkId: number,
-    updates: { agentNotes?: string; clientReference?: string },
+    updates: { agentNotes?: string; clientReference?: string; customFields?: Record<string, string | null> },
   ): Observable<Record<string, unknown>> {
     return this.http.patch<Record<string, unknown>>(`${this.base}/agent-portal/portfolio/${trademarkId}/link`, updates);
+  }
+
+  // ── Custom fields ────────────────────────────────────────────────────────
+
+  /**
+   * The firm's own portfolio schema — the spreadsheet columns our trademark model has no home for.
+   *
+   * Every firm's set is different and unrelated to every other firm's, so this is fetched per
+   * session rather than being anything shared or cached globally.
+   */
+  getCustomFields(): Observable<AgentCustomField[]> {
+    return this.http.get<AgentCustomField[]>(`${this.base}/agent-portal/custom-fields`);
+  }
+
+  createCustomField(label: string, dataType = 'TEXT'): Observable<AgentCustomField> {
+    return this.http.post<AgentCustomField>(`${this.base}/agent-portal/custom-fields`, { label, dataType });
+  }
+
+  /** Label, type, order and grid visibility. The key is immutable — values are stored under it. */
+  updateCustomField(
+    fieldId: number,
+    updates: { label?: string; dataType?: string; displayOrder?: number; showInList?: boolean },
+  ): Observable<AgentCustomField> {
+    return this.http.patch<AgentCustomField>(`${this.base}/agent-portal/custom-fields/${fieldId}`, updates);
+  }
+
+  /** Soft — values stay on every mark, so this is recoverable by re-creating the field. */
+  deleteCustomField(fieldId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/custom-fields/${fieldId}`);
+  }
+
+  /** Folds one field's values into another across every mark, then retires the source. */
+  mergeCustomField(fieldId: number, targetId: number): Observable<{ movedValues: number }> {
+    return this.http.post<{ movedValues: number }>(
+      `${this.base}/agent-portal/custom-fields/${fieldId}/merge-into/${targetId}`,
+      {},
+    );
   }
 
   // ── Journal watch ────────────────────────────────────────────────────────
@@ -382,6 +540,16 @@ export class AgentDataService {
     );
   }
 
+  searchProprietors(q: string, limit = 20): Observable<ProprietorDirectoryEntry[]> {
+    return this.http.get<ProprietorDirectoryEntry[]>(`${this.base}/agent-portal/discover/proprietors`, {
+      params: { q, limit },
+    });
+  }
+
+  claimProprietorTrademarks(request: AgentClaimRequest): Observable<AgentClaimResult> {
+    return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/proprietor-claim`, request);
+  }
+
   /** The marks filed under one exact agent name. */
   discoverTrademarks(agentName: string, page = 0, size = 100): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
     return this.http.get<AgentPortfolioTrademark[]>(
@@ -395,8 +563,12 @@ export class AgentDataService {
     return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/claim`, request);
   }
 
-  exportPortfolioExcel(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, { responseType: 'blob' });
+  /** The portfolio as a spreadsheet, narrowed and ordered as the listing is. No query = everything. */
+  exportPortfolioExcel(query: AgentPortfolioQuery = {}): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/portfolio/export/excel`, {
+      params: this.portfolioParams(query),
+      responseType: 'blob',
+    });
   }
 
   /**
@@ -406,8 +578,11 @@ export class AgentDataService {
    * unbranded table with a dark grey header — fine as an internal export, not something to send a
    * client. It is left on the server for now so nothing that still calls it breaks.
    */
-  exportPortfolioPdf(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, { responseType: 'blob' });
+  exportPortfolioPdf(query: AgentPortfolioQuery = {}): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/portfolio.pdf`, {
+      params: this.portfolioParams(query),
+      responseType: 'blob',
+    });
   }
 
 

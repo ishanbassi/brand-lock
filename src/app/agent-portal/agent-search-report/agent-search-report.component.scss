@@ -260,6 +260,49 @@ $low: var(--ap-done);
   flex-wrap: wrap;
 }
 
+.result-total {
+  align-self: center;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ap-ink);
+}
+
+.table-tools,
+.pagination-bar,
+.page-nav {
+  display: flex;
+  align-items: center;
+}
+
+.table-tools {
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-2);
+  font-size: 0.76rem;
+  color: $muted;
+}
+
+.pagination-bar {
+  justify-content: space-between;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-3);
+}
+
+.page-nav {
+  gap: var(--ap-space-3);
+  font-size: 0.78rem;
+  color: $muted;
+
+  .btn-secondary {
+    width: auto;
+    min-width: 84px;
+  }
+}
+
+.page-size {
+  min-width: 110px;
+}
+
 .band {
   font-size: 0.76rem;
   font-weight: 600;
@@ -307,7 +350,7 @@ $low: var(--ap-done);
   width: 100%;
   border-collapse: collapse;
   font-size: 0.83rem;
-  min-width: 780px;
+  min-width: 1540px;
 
   th {
     text-align: left;
@@ -333,6 +376,25 @@ $low: var(--ap-done);
   }
 }
 
+.select-cell {
+  width: 36px;
+  text-align: center !important;
+}
+
+.artwork-cell {
+  width: 72px;
+
+  img {
+    display: block;
+    width: 56px;
+    height: 42px;
+    object-fit: contain;
+    border: 1px solid $border;
+    border-radius: 5px;
+    background: #fff;
+  }
+}
+
 .cell-name {
   font-weight: 600;
   color: var(--ap-ink);
@@ -340,6 +402,14 @@ $low: var(--ap-done);
 
 .cell-prop {
   max-width: 220px;
+}
+
+.cell-address,
+.cell-details {
+  min-width: 220px;
+  max-width: 320px;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .chip {
@@ -392,4 +462,32 @@ $low: var(--ap-done);
   .search-report-page {
     padding: var(--ap-space-4) var(--ap-space-4) var(--ap-space-6);
   }
+
+  .pagination-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-nav {
+    justify-content: space-between;
+  }
+
+  // A positioned panel is otherwise clipped by the narrow form/viewport. On a phone it becomes a
+  // full-width popover anchored to the page and remains scrollable above the keyboard.
+  .class-picker { position: static; min-width: 0; width: 100%; }
+  .class-trigger { width: 100%; }
+  .class-panel {
+    position: fixed;
+    top: max(var(--ap-space-3), env(safe-area-inset-top));
+    right: var(--ap-space-3);
+    left: var(--ap-space-3);
+    width: auto;
+    max-width: none;
+    max-height: calc(100dvh - 2 * var(--ap-space-3));
+    overflow-y: auto;
+    z-index: 1001;
+  }
+
+  .class-grid { max-height: min(55dvh, 360px); }
+  .search-form > .field, .search-form > .btn-primary { width: 100%; }
 }

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { Deadline } from '../../../models/agent.model';
-import { AgentDataService } from '../../shared/services/agent-data.service';
+import { AgentDataService, OVERDUE_RENEWAL_LOOKBACK_DAYS } from '../../shared/services/agent-data.service';
 import { IconComponent } from '../ui/icon.component';
 
 /** One cell of the month grid. */
@@ -25,6 +25,98 @@ interface DayGroup {
   today: boolean;
   items: Deadline[];
 }
+
+/** Which slice of the calendar a screen shows. Set per route in agent-portal.routes.ts. */
+type DeadlineScope = 'all' | 'renewals-upcoming' | 'renewals-overdue' | 'hearings-upcoming';
+
+interface DeadlineRange {
+  key: string;
+  label: string;
+  back: number;
+  forward: number;
+}
+
+interface ScopeConfig {
+  title: string;
+  subtitle: string;
+  ranges: DeadlineRange[];
+  /** Which fetched rows belong on this screen. The server fetches by date only; kind is decided here. */
+  includes: (d: Deadline) => boolean;
+  /** Month view answers "how is the quarter shaped" - a question about the whole calendar, not one kind of entry. */
+  monthView: boolean;
+  /** False where every row is record-only (see isRecordOnly), so there is nothing to complete. */
+  completable: boolean;
+  empty: string;
+  emptyAction?: { label: string; rangeKey: string };
+}
+
+const SCOPES: Record<DeadlineScope, ScopeConfig> = {
+  all: {
+    title: 'Deadline calendar',
+    subtitle: 'Renewals the Registry has confirmed, and hearings as they are listed. Grouped by the day they fall.',
+    /**
+     * Symmetric back and forward on purpose. They used to differ (a fixed 14-30 day lookback
+     * regardless of how far forward the range reached), which is what let a renewal overdue by more
+     * than a month quietly vanish from every range on this page while still being reachable in month
+     * view by paging back far enough - the two views were reading different windows of the same data
+     * and had no reason to agree. A renewal overdue by 89 days is exactly as real as one due in 89
+     * days, so the same number bounds both directions.
+     */
+    ranges: [
+      { key: '90', label: 'Next 90 days', back: 90, forward: 90 },
+      { key: '30', label: 'Next 30 days', back: 30, forward: 30 },
+      { key: '365', label: 'Next 12 months', back: 365, forward: 365 },
+    ],
+    includes: () => true,
+    monthView: true,
+    completable: true,
+    empty:
+      'Nothing falls due in this window. Renewals appear here once the Registry confirms a renewal date on a mark, and hearings appear on the day they are listed.',
+    emptyAction: { label: 'Look ahead 12 months', rangeKey: '365' },
+  },
+  'renewals-upcoming': {
+    title: 'Upcoming renewals',
+    subtitle: 'Marks whose Registry renewal date is still ahead, soonest first.',
+    // Forward only: anything already past its date belongs on the overdue screen, not mixed in here.
+    ranges: [
+      { key: '180', label: 'Next 6 months', back: 0, forward: 180 },
+      { key: '90', label: 'Next 90 days', back: 0, forward: 90 },
+      { key: '365', label: 'Next 12 months', back: 0, forward: 365 },
+    ],
+    includes: d => d.deadlineType === 'RENEWAL' && d.daysUntilDue >= 0,
+    monthView: false,
+    completable: true,
+    empty: 'No renewals fall due in this window. A renewal appears once the Registry records a renewal date on a mark.',
+    emptyAction: { label: 'Look ahead 12 months', rangeKey: '365' },
+  },
+  'renewals-overdue': {
+    title: 'Overdue renewals',
+    subtitle:
+      'Past their renewal date and not yet marked done. Within six months of expiry a mark can still be renewed with a surcharge; within a year, restored.',
+    // The widest range comes first and equals the sidenav badge's window, so the badge count and
+    // the list it opens agree.
+    ranges: [
+      { key: '365', label: 'Last 12 months', back: OVERDUE_RENEWAL_LOOKBACK_DAYS, forward: 0 },
+      { key: '180', label: 'Last 6 months', back: 180, forward: 0 },
+    ],
+    includes: d => d.deadlineType === 'RENEWAL' && d.daysUntilDue < 0,
+    monthView: false,
+    completable: true,
+    empty: 'Nothing overdue. Every renewal in this window is either done or not yet due.',
+  },
+  'hearings-upcoming': {
+    title: 'Upcoming hearings',
+    subtitle:
+      "Hearings listed on your marks from today on. The Registry's hearing board runs about five weeks ahead; a hearing known only from the cause list appears on the day.",
+    // One range: the board never publishes further out than this, so a wider choice would only
+    // ever return the same rows.
+    ranges: [{ key: '45', label: 'Next 6 weeks', back: 0, forward: 45 }],
+    includes: d => d.deadlineType === 'HEARING' && d.daysUntilDue >= 0,
+    monthView: false,
+    completable: false,
+    empty: 'No hearings are listed on your marks in the next six weeks.',
+  },
+};
 
 /**
  * What needs the firm's attention, and when.
@@ -49,6 +141,12 @@ export class AgentDeadlinesComponent implements OnInit {
   private readonly agentData = inject(AgentDataService);
   private readonly router = inject(Router);
 
+  /**
+   * The calendar in full, or one worklist cut from it. Read once: navigating between scopes goes
+   * through different route configs, so Angular builds a fresh component rather than reusing this one.
+   */
+  readonly scope: ScopeConfig = SCOPES[(inject(ActivatedRoute).snapshot.data['scope'] as DeadlineScope) ?? 'all'] ?? SCOPES.all;
+
   readonly deadlines = signal<Deadline[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
@@ -56,24 +154,20 @@ export class AgentDeadlinesComponent implements OnInit {
   readonly saving = signal<string | null>(null);
 
   /**
-   * Ranges the agent actually asks for, with the default first.
-   *
-   * <p>Every range reaches into the past. Hearings are only ever known on or after the day, so a
-   * strictly forward window would show an empty page to someone who had a hearing this morning.
+   * Ranges the agent actually asks for, with the default first. Shared by both views - see the
+   * class comment on {@link view}. Each scope sets its own; see SCOPES.
    */
-  readonly ranges = [
-    { key: '90', label: 'Next 90 days', back: 30, forward: 90 },
-    { key: '30', label: 'Next 30 days', back: 14, forward: 30 },
-    { key: '365', label: 'Next 12 months', back: 30, forward: 365 },
-  ];
+  readonly ranges = this.scope.ranges;
   readonly activeRange = signal(this.ranges[0]);
 
   readonly showDone = signal(false);
 
   // ── View mode ────────────────────────────────────────────────────────────
   //
-  // Two readings of the same data. The list answers "what is next"; the month answers "how is the
-  // quarter shaped". Neither is the better default for everyone, so the choice is the agent's.
+  // Two readings of the same data, and it has to be the same data: the range chips above set one
+  // fetch window and both views page within it, month view a month at a time. The list answers
+  // "what is next"; the month answers "how is the quarter shaped". Neither is the better default
+  // for everyone, so the choice is the agent's - the window they're both reading is not.
 
   readonly view = signal<'list' | 'month'>('list');
   /** First day of the month on screen. */
@@ -82,16 +176,34 @@ export class AgentDeadlinesComponent implements OnInit {
   readonly monthLabel = computed(() => this.monthCursor().format('MMMM YYYY'));
   readonly weekdayHeadings = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  /** The active range's edges, as whole months - what month view is allowed to page across. */
+  readonly rangeStart = computed(() => dayjs().subtract(this.activeRange().back, 'day').startOf('month'));
+  readonly rangeEnd = computed(() => dayjs().add(this.activeRange().forward, 'day').startOf('month'));
+
+  readonly canStepBack = computed(() => this.monthCursor().isAfter(this.rangeStart(), 'month'));
+  readonly canStepForward = computed(() => this.monthCursor().isBefore(this.rangeEnd(), 'month'));
+
   setView(mode: 'list' | 'month'): void {
     if (this.view() === mode) {
       return;
     }
     this.view.set(mode);
     this.selectedDay.set(null);
+    if (mode === 'month') {
+      // The range may have changed while the agent was in list view; the cursor wasn't touched, so
+      // it can be sitting outside what the (possibly narrower) active range now allows.
+      this.clampMonthCursor();
+    }
     this.load();
   }
 
   stepMonth(delta: number): void {
+    if (delta < 0 && !this.canStepBack()) {
+      return;
+    }
+    if (delta > 0 && !this.canStepForward()) {
+      return;
+    }
     this.monthCursor.set(this.monthCursor().add(delta, 'month'));
     this.selectedDay.set(null);
     this.load();
@@ -101,6 +213,16 @@ export class AgentDeadlinesComponent implements OnInit {
     this.monthCursor.set(dayjs().startOf('month'));
     this.selectedDay.set(null);
     this.load();
+  }
+
+  private clampMonthCursor(): void {
+    const start = this.rangeStart();
+    const end = this.rangeEnd();
+    if (this.monthCursor().isBefore(start, 'month')) {
+      this.monthCursor.set(start);
+    } else if (this.monthCursor().isAfter(end, 'month')) {
+      this.monthCursor.set(end);
+    }
   }
 
   /**
@@ -146,8 +268,17 @@ export class AgentDeadlinesComponent implements OnInit {
     return day ? this.visible().filter(d => d.dueDate === day) : [];
   });
 
+  /**
+   * A day with exactly one item goes straight to the application - that is what "clickable" means
+   * to an agent looking at a single hearing. A day with several stays a click-to-expand, because a
+   * single click on the cell can't say which of several applications the agent meant.
+   */
   selectDay(cell: MonthCell): void {
     if (cell.items.length === 0) {
+      return;
+    }
+    if (cell.items.length === 1 && cell.items[0].trademarkId) {
+      this.openMark(cell.items[0]);
       return;
     }
     this.selectedDay.set(this.selectedDay() === cell.date ? null : cell.date);
@@ -178,21 +309,20 @@ export class AgentDeadlinesComponent implements OnInit {
     this.load();
   }
 
+  /**
+   * One fetch window for both views - the active range, full stop. Month view used to fetch only a
+   * fortnight either side of whichever month was on screen, which is what let it show a renewal
+   * list view's own ranges couldn't reach: the two views were reading different data and had no
+   * reason to agree on what counted as overdue. Now the range chips are the single source of that
+   * window and month view pages within it rather than around itself.
+   */
   load(): void {
     this.loading.set(true);
     this.error.set('');
 
-    let from: string;
-    let to: string;
-    if (this.view() === 'month') {
-      // A fortnight either side so the leading and trailing cells of the grid are populated too.
-      from = this.monthCursor().subtract(14, 'day').format('YYYY-MM-DD');
-      to = this.monthCursor().endOf('month').add(14, 'day').format('YYYY-MM-DD');
-    } else {
-      const range = this.activeRange();
-      from = this.iso(-range.back);
-      to = this.iso(range.forward);
-    }
+    const range = this.activeRange();
+    const from = this.iso(-range.back);
+    const to = this.iso(range.forward);
 
     this.agentData.getDeadlines(from, to).subscribe({
       next: rows => {
@@ -210,6 +340,8 @@ export class AgentDeadlinesComponent implements OnInit {
     const range = this.ranges.find(r => r.key === key);
     if (range && range !== this.activeRange()) {
       this.activeRange.set(range);
+      // A narrower range can leave the month on screen outside the new bounds.
+      this.clampMonthCursor();
       this.load();
     }
   }
@@ -221,7 +353,7 @@ export class AgentDeadlinesComponent implements OnInit {
   // ── Grouping ─────────────────────────────────────────────────────────────
 
   readonly visible = computed(() => {
-    const rows = this.deadlines();
+    const rows = this.deadlines().filter(this.scope.includes);
     return this.showDone() ? rows : rows.filter(d => d.status === 'OPEN' || d.status === 'MISSED');
   });
 
@@ -237,6 +369,19 @@ export class AgentDeadlinesComponent implements OnInit {
     () => this.visible().filter(d => d.daysUntilDue < 0 && d.status === 'OPEN' && !this.isRecordOnly(d)).length,
   );
   readonly next7Count = computed(() => this.visible().filter(d => d.daysUntilDue >= 0 && d.daysUntilDue <= 7).length);
+
+  /**
+   * Whether today has anything on it, in the window currently loaded.
+   *
+   * <p>A day this far down a long, date-sorted list is easy to scroll past - especially a hearing,
+   * which reads quiet on purpose so it doesn't look like an overdue task. This is what "Jump to
+   * today" below checks before offering itself.
+   */
+  readonly hasTodayGroup = computed(() => this.groups().some(g => g.today));
+
+  scrollToToday(): void {
+    document.getElementById('deadline-day-today')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   /** Groups in date order, soonest first, with the day itself carrying the context. */
   readonly groups = computed<DayGroup[]>(() => {
@@ -359,6 +504,8 @@ export class AgentDeadlinesComponent implements OnInit {
       next: saved => {
         this.patchLocal(item, 'DONE', saved.id);
         this.saving.set(null);
+        // The sidenav badges count open items; a renewal just closed should leave them.
+        this.agentData.refreshDeadlineCounts();
       },
       error: () => {
         this.patchLocal(item, previous);
@@ -375,7 +522,10 @@ export class AgentDeadlinesComponent implements OnInit {
     this.patchLocal(item, 'OPEN');
 
     this.agentData.setDeadlineStatus({ id: item.id, derivedKey: item.derivedKey }, 'OPEN').subscribe({
-      next: () => this.saving.set(null),
+      next: () => {
+        this.saving.set(null);
+        this.agentData.refreshDeadlineCounts();
+      },
       error: () => {
         this.patchLocal(item, previous);
         this.saving.set(null);

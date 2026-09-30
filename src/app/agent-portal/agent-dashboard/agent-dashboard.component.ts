@@ -23,12 +23,12 @@ const BUCKET_COLORS: Record<AgentStatusCount['key'], string> = {
   OTHER_UNKNOWN: '#94a3b8',
 };
 
-const BUCKET_ICONS: Record<AgentStatusCount['key'], string> = {
-  REGISTERED: '✅',
-  UNDER_EXAMINATION_OR_ADVERTISED: '🔍',
-  OBJECTED_OR_OPPOSED: '⚠️',
-  ABANDONED_WITHDRAWN_REJECTED: '⛔',
-  OTHER_UNKNOWN: '❔',
+const BUCKET_ICONS: Record<AgentStatusCount['key'], 'check' | 'search' | 'alert' | 'close' | 'dot'> = {
+  REGISTERED: 'check',
+  UNDER_EXAMINATION_OR_ADVERTISED: 'search',
+  OBJECTED_OR_OPPOSED: 'alert',
+  ABANDONED_WITHDRAWN_REJECTED: 'close',
+  OTHER_UNKNOWN: 'dot',
 };
 
 @Component({

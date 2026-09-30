@@ -1,11 +1,14 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { fileSlug, saveBlob } from '../ui/save-blob';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import {
   AGENT_DOCUMENT_TYPES,
+  AgentCustomField,
   AgentDocument,
   AgentPortfolioTrademark,
 } from '../../../models/agent.model';
@@ -21,11 +24,11 @@ import {
 @Component({
   selector: 'app-agent-trademark-detail',
   standalone: true,
-  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-trademark-detail.component.html',
   styleUrl: './agent-trademark-detail.component.scss',
 })
-export class AgentTrademarkDetailComponent implements OnInit {
+export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   readonly documentTypes = AGENT_DOCUMENT_TYPES;
 
   trademarkId!: number;
@@ -39,10 +42,20 @@ export class AgentTrademarkDetailComponent implements OnInit {
   confirmRemove = signal(false);
   removing = signal(false);
 
-  // Notes (held on the portfolio link, so editable whatever the mark's provenance)
-  notes = { agentNotes: '', clientReference: '' };
-  savingNotes = signal(false);
-  notesSaved = signal(false);
+  /**
+   * The firm's own spreadsheet columns.
+   *
+   * Definitions come from the agent's schema and values from this mark's link, so a field the
+   * agent has but never filled in for this mark renders as an empty box rather than vanishing.
+   * These stay editable whatever the mark's provenance — the register has no opinion on a firm's
+   * receipt numbers, so nothing here can contradict it.
+   */
+  customFields = signal<AgentCustomField[]>([]);
+  customValues: Record<string, string> = {};
+  savingCustom = signal(false);
+  customSaved = signal(false);
+  addingField = signal(false);
+  newFieldLabel = '';
 
   // Documents
   documents = signal<AgentDocument[]>([]);
@@ -57,6 +70,17 @@ export class AgentTrademarkDetailComponent implements OnInit {
 
   /** Registry-backed marks are read-only; only agent-entered ones can still be edited. */
   editable = computed(() => this.mark()?.editable === true);
+
+  // Export
+  exporting = signal<ExportFormat | null>(null);
+
+  /**
+   * The mark's artwork as an object URL. Fetched through the API rather than linked from /files/:
+   * about a third of stored images are JPEG 2000, which no browser draws, and the server transcodes
+   * those. 'failed' keeps the frame with a note rather than silently dropping the image.
+   */
+  artworkUrl = signal<string | null>(null);
+  artworkState = signal<'none' | 'loading' | 'ready' | 'failed'>('none');
 
   constructor(
     private readonly agentDataService: AgentDataService,
@@ -74,6 +98,15 @@ export class AgentTrademarkDetailComponent implements OnInit {
     this.trademarkId = id;
     this.load();
     this.loadDocuments();
+    this.loadCustomFields();
+  }
+
+  private loadCustomFields(): void {
+    this.agentDataService.getCustomFields().subscribe({
+      // A firm with no imported spreadsheet has none, which is a normal empty state, not an error.
+      next: fields => this.customFields.set(fields),
+      error: () => this.customFields.set([]),
+    });
   }
 
   load(): void {
@@ -81,13 +114,61 @@ export class AgentTrademarkDetailComponent implements OnInit {
     this.agentDataService.getPortfolioItem(this.trademarkId).subscribe({
       next: tm => {
         this.mark.set(tm);
-        this.notes.agentNotes = tm.agentNotes ?? '';
-        this.notes.clientReference = tm.clientReference ?? '';
+        this.customValues = { ...(tm.customFields ?? {}) };
         this.loading.set(false);
+        this.loadArtwork(tm);
       },
       error: () => {
         this.error.set('Could not load this trademark.');
         this.loading.set(false);
+      },
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.releaseArtwork();
+  }
+
+  private loadArtwork(tm: AgentPortfolioTrademark): void {
+    this.releaseArtwork();
+    if (!tm.imgUrl) {
+      this.artworkState.set('none');
+      return;
+    }
+    this.artworkState.set('loading');
+    this.agentDataService.getTrademarkArtwork(this.trademarkId).subscribe({
+      next: blob => {
+        this.artworkUrl.set(URL.createObjectURL(blob));
+        this.artworkState.set('ready');
+      },
+      error: () => this.artworkState.set('failed'),
+    });
+  }
+
+  private releaseArtwork(): void {
+    const url = this.artworkUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.artworkUrl.set(null);
+  }
+
+  // ── Export ───────────────────────────────────────────────────────────────
+
+  export(format: ExportFormat): void {
+    if (this.exporting()) return;
+    this.exporting.set(format);
+    const tm = this.mark();
+    const key = tm?.applicationNo ? String(tm.applicationNo) : fileSlug(tm?.name, 'trademark');
+    const request = format === 'excel'
+      ? this.agentDataService.exportTrademarkExcel(this.trademarkId)
+      : this.agentDataService.exportTrademarkPdf(this.trademarkId);
+    request.subscribe({
+      next: blob => {
+        saveBlob(blob, `trademark-${key}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+        this.exporting.set(null);
+      },
+      error: () => {
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.exporting.set(null);
       },
     });
   }
@@ -143,19 +224,77 @@ export class AgentTrademarkDetailComponent implements OnInit {
     });
   }
 
-  // ── Notes ────────────────────────────────────────────────────────────────
+  // ── Custom fields ────────────────────────────────────────────────────────
 
-  saveNotes(): void {
-    this.savingNotes.set(true);
-    this.notesSaved.set(false);
-    this.agentDataService.updatePortfolioLink(this.trademarkId, { ...this.notes }).subscribe({
+  /**
+   * Saves this mark's values for the firm's own fields.
+   *
+   * Every known key is sent, including the empty ones: the server merges rather than replaces, and
+   * an emptied box has to arrive as a blank so the key is removed. Sending only the filled ones
+   * would make clearing a field impossible.
+   */
+  saveCustomFields(): void {
+    this.savingCustom.set(true);
+    this.customSaved.set(false);
+    const payload: Record<string, string | null> = {};
+    for (const field of this.customFields()) {
+      payload[field.fieldKey] = this.customValues[field.fieldKey] ?? '';
+    }
+    this.agentDataService.updatePortfolioLink(this.trademarkId, { customFields: payload }).subscribe({
       next: () => {
-        this.savingNotes.set(false);
-        this.notesSaved.set(true);
+        this.savingCustom.set(false);
+        this.customSaved.set(true);
       },
       error: () => {
-        this.savingNotes.set(false);
-        this.error.set('Could not save your notes.');
+        this.savingCustom.set(false);
+        this.error.set('Could not save these details.');
+      },
+    });
+  }
+
+  /** Adds a field to the firm's schema, so it appears on every mark, not just this one. */
+  addCustomField(): void {
+    const label = this.newFieldLabel.trim();
+    if (!label) return;
+    this.addingField.set(true);
+    this.agentDataService.createCustomField(label).subscribe({
+      next: field => {
+        this.customFields.set([...this.customFields(), field]);
+        this.newFieldLabel = '';
+        this.addingField.set(false);
+      },
+      error: err => {
+        this.addingField.set(false);
+        this.error.set(err?.error?.detail ?? 'Could not add that field.');
+      },
+    });
+  }
+
+  /**
+   * Removes a field from the firm's schema.
+   *
+   * Worth spelling out in the confirm: this takes the column off every mark, not just this one.
+   * The values are kept server-side, so re-creating a field of the same name brings them back.
+   */
+  removeCustomValue(field: AgentCustomField): void {
+    const value = this.customValues[field.fieldKey];
+    if (value == null || value === '') return;
+    if (!confirm(`Clear "${field.label}" for this trademark? Other trademarks will not be changed.`)) return;
+
+    // A null update removes just this key from this mark's portfolio link. The field definition
+    // stays intact, so it remains available for every other trademark and for future imports.
+    delete this.customValues[field.fieldKey];
+    this.savingCustom.set(true);
+    this.customSaved.set(false);
+    this.agentDataService.updatePortfolioLink(this.trademarkId, { customFields: { [field.fieldKey]: null } }).subscribe({
+      next: () => {
+        this.savingCustom.set(false);
+        this.customSaved.set(true);
+      },
+      error: () => {
+        this.customValues[field.fieldKey] = value;
+        this.savingCustom.set(false);
+        this.error.set(`Could not clear ${field.label}.`);
       },
     });
   }
@@ -230,14 +369,7 @@ export class AgentTrademarkDetailComponent implements OnInit {
    */
   download(doc: AgentDocument): void {
     this.agentDataService.downloadDocument(doc.id).subscribe({
-      next: blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = doc.originalFileName || `document-${doc.id}`;
-        a.click();
-        URL.revokeObjectURL(url);
-      },
+      next: blob => saveBlob(blob, doc.originalFileName || `document-${doc.id}`),
       error: () => this.error.set('Could not download that document.'),
     });
   }

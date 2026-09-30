@@ -3,14 +3,15 @@ import { IconComponent } from '../ui/icon.component';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentImportResult, AgentPortfolioTrademark } from '../../../models/agent.model';
+import { FormsModule } from '@angular/forms';
+import { AgentImportResult, AgentPortfolioTrademark, ExcelExtraColumn } from '../../../models/agent.model';
 
 type UploadPhase = 'select' | 'preview' | 'importing' | 'done' | 'error' | 'handoff';
 
 @Component({
   selector: 'app-agent-portfolio-upload',
   standalone: true,
-  imports: [IconComponent, CommonModule, RouterModule],
+  imports: [IconComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio-upload.component.html',
   styleUrl: './agent-portfolio-upload.component.scss',
 })
@@ -22,6 +23,9 @@ export class AgentPortfolioUploadComponent {
   previewResult = signal<AgentImportResult | null>(null);
   importResult = signal<AgentImportResult | null>(null);
   errorMessage = signal('');
+
+  /** Extra columns collapse by default: a real workbook contributes sixty-odd of them. */
+  showColumns = signal(false);
 
   onDragOver(e: DragEvent): void {
     e.preventDefault();
@@ -105,6 +109,7 @@ export class AgentPortfolioUploadComponent {
     this.previewResult.set(null);
     this.importResult.set(null);
     this.errorMessage.set('');
+    this.showColumns.set(false);
   }
 
   fileSizeLabel(bytes: number): string {
@@ -115,6 +120,27 @@ export class AgentPortfolioUploadComponent {
 
   get preview(): AgentPortfolioTrademark[] {
     return this.previewResult()?.previewRows ?? [];
+  }
+
+  /** Columns our trademark model has no home for, which we will keep as the firm's own fields. */
+  get extraColumns(): ExcelExtraColumn[] {
+    return this.previewResult()?.extraColumns ?? [];
+  }
+
+  get newColumnCount(): number {
+    return this.extraColumns.filter(c => !c.alreadyKnown).length;
+  }
+
+  /** Header matches the data disproved, as [field, reason] pairs for the template. */
+  get releasedColumns(): { field: string; reason: string }[] {
+    const released = this.previewResult()?.releasedColumns ?? {};
+    return Object.entries(released).map(([field, reason]) => ({ field, reason }));
+  }
+
+  /** "6,841 of 7,056 rows" — what makes a column worth keeping obvious at a glance. */
+  fillLabel(col: ExcelExtraColumn): string {
+    const total = this.previewResult()?.totalRows ?? 0;
+    return `${col.nonEmptyCount.toLocaleString()} of ${total.toLocaleString()} rows`;
   }
 
   /** Leaves the upload screen for the portfolio, where the pending-import banner takes over. */

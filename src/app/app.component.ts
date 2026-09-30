@@ -48,11 +48,12 @@ export class AppComponent {
       // guards fight: this bounced /agent-login to trademarx.in, agentHostGuard bounced it
       // straight back, and the browser ping-ponged between the hosts forever.
       //
-      // The sign-up and password routes are deliberately absent. They are children of the ''
-      // route, so mainHostGuard already moves them to the main site before this ever runs, and
-      // agent-login.component.html links to them there by absolute URL. Listing them here only
-      // suggested they worked on this host.
-      const allowed = ['/agent-portal', '/agent-login'];
+      // Registration and password recovery are top-level agent-host routes too. They must stay
+      // here as well as in their own `agentHostGuard`: without this allowlist, the guard accepts
+      // /create-agent-account on agent.trademarx.in, then this global NavigationEnd handler sends
+      // it to the main host, where the guard sends it straight back. The same contradiction also
+      // affects /forgot-password.
+      const allowed = ['/agent-portal', '/agent-login', '/create-agent-account', '/forgot-password'];
       if (allowed.some(prefix => url === prefix || url.startsWith(prefix + '/'))) {
         return;
       }

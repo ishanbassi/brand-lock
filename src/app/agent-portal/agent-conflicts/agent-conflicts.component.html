@@ -87,7 +87,7 @@
               <tr>
                 <td>
                   @if (c.trademarkId) {
-                    <a [routerLink]="['/agent-portal/portfolio', c.trademarkId, 'watch']">{{ c.trademarkName || '—' }}</a>
+                    <a [routerLink]="['/agent-portal/portfolio', c.trademarkId]">{{ c.trademarkName || '—' }}</a>
                   } @else {
                     {{ c.trademarkName || '—' }}
                   }

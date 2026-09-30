@@ -63,8 +63,9 @@ export class TrademarkJournalListComponent implements OnInit {
         this.journals = res.body ?? [];
         this.totalItems = Number(res.headers.get('X-Total-Count')) || 0;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-        this.currentPage = page;
+        this.currentPage = Math.min(Math.max(page, 1), Math.max(this.totalPages, 1));
+        const firstPage = Math.max(1, Math.min(this.currentPage - 3, this.totalPages - 6));
+        this.pages = Array.from({ length: Math.min(7, this.totalPages) }, (_, i) => firstPage + i);
         this.loading = false;
       },
       error: () => {

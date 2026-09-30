@@ -22,6 +22,7 @@
         consequential enough that they need the surrounding context to decide on.
       -->
       <div class="detail-actions">
+        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
         @if (mark()!.applicationNo) {
           <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
             @if (refreshing()) {
@@ -31,7 +32,6 @@
             }
           </button>
         }
-        <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'watch']" class="btn-ghost"><ap-icon name="eye" [size]="16" /> Check conflicts</a>
         @if (editable()) {
           <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']" class="btn-ghost"><ap-icon name="edit" [size]="16" />Edit</a>
         }
@@ -83,6 +83,22 @@
     <!-- ── DETAILS ──────────────────────────────────────────────────── -->
     <section class="card">
       <h2>Details</h2>
+      <div class="details-layout" [class.has-artwork]="artworkState() !== 'none'">
+      @if (artworkState() !== 'none') {
+        <figure class="artwork">
+          @switch (artworkState()) {
+            @case ('ready') {
+              <img [src]="artworkUrl()" [alt]="'Artwork for ' + (mark()!.name || 'this mark')" />
+            }
+            @case ('loading') {
+              <span class="artwork-note">Loading image…</span>
+            }
+            @default {
+              <span class="artwork-note">The image for this mark could not be displayed.</span>
+            }
+          }
+        </figure>
+      }
       <dl class="detail-grid">
         <div><dt>Proprietor</dt><dd>{{ mark()!.proprietorName || '—' }}</dd></div>
         <div><dt>Class</dt><dd>{{ mark()!.tmClass || '—' }}</dd></div>
@@ -93,6 +109,7 @@
         <div><dt>State</dt><dd>{{ mark()!.state || '—' }}</dd></div>
         <div><dt>Source</dt><dd>{{ mark()!.source || '—' }}</dd></div>
       </dl>
+      </div>
       @if (mark()!.details) {
         <div class="goods"><dt>Goods / services</dt><p>{{ mark()!.details }}</p></div>
       }
@@ -174,26 +191,57 @@
       </p>
     </section>
 
-    <!-- ── PRIVATE NOTES ────────────────────────────────────────────── -->
+    <!-- ── YOUR OWN FIELDS ──────────────────────────────────────────────
+         The firm's spreadsheet columns that our trademark model has no home for. Always editable,
+         registry-verified or not: the register has no opinion on a firm's own receipt numbers. -->
     <section class="card">
-      <h2>Your private notes</h2>
-      <p class="card-hint">Stored against your copy of this mark. Editable even when the mark itself is not.</p>
+      <h2>Imported spreadsheet details</h2>
+      <p class="card-hint">
+        Extra columns from your workbook, kept in spreadsheet order. These stay editable even when the mark itself is
+        locked.
+      </p>
 
-      <label class="field">
-        <span>Client reference</span>
-        <input type="text" [(ngModel)]="notes.clientReference" name="clientReference"
-               placeholder="Your matter or client number" />
-      </label>
-      <label class="field">
-        <span>Notes</span>
-        <textarea rows="4" [(ngModel)]="notes.agentNotes" name="agentNotes"
-                  placeholder="Anything you want to remember about this mark"></textarea>
-      </label>
-      <div class="notes-actions">
-        <button class="btn-primary" (click)="saveNotes()" [disabled]="savingNotes()">
-          {{ savingNotes() ? 'Saving…' : 'Save notes' }}
+      @if (customFields().length === 0) {
+        <p class="empty-hint">
+          You have no custom fields yet. Import a portfolio spreadsheet and we will keep its extra columns here, or add
+          one below.
+        </p>
+      } @else {
+        <div class="spreadsheet-fields" role="table" aria-label="Imported spreadsheet details">
+          <div class="spreadsheet-heading" role="row">
+            <span role="columnheader">Column</span>
+            <span role="columnheader">Value</span>
+          </div>
+          @for (field of customFields(); track field.id) {
+            <label class="spreadsheet-field-row" role="row">
+              <span class="spreadsheet-field-name" role="cell">
+                {{ field.label }}
+                <button type="button" class="field-remove" (click)="removeCustomValue(field)"
+                        [attr.aria-label]="'Clear ' + field.label + ' for this trademark'" title="Clear this value for this trademark">×</button>
+              </span>
+              @if (field.dataType === 'DATE') {
+                <input type="date" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey" />
+              } @else {
+                <input type="text" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey"
+                       [placeholder]="field.sourceHeader || field.label" />
+              }
+            </label>
+          }
+        </div>
+        <div class="notes-actions">
+          <button class="btn-primary" (click)="saveCustomFields()" [disabled]="savingCustom()">
+            {{ savingCustom() ? 'Saving…' : 'Save details' }}
+          </button>
+          @if (customSaved()) { <span class="saved-flag">Saved</span> }
+        </div>
+      }
+
+      <div class="add-field">
+        <input type="text" [(ngModel)]="newFieldLabel" name="newFieldLabel" placeholder="Add a field, e.g. GST number"
+               (keyup.enter)="addCustomField()" />
+        <button class="btn-ghost" (click)="addCustomField()" [disabled]="addingField() || !newFieldLabel.trim()">
+          {{ addingField() ? 'Adding…' : 'Add field' }}
         </button>
-        @if (notesSaved()) { <span class="saved-flag">Saved</span> }
       </div>
     </section>
   }

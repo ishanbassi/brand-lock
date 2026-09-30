@@ -6,6 +6,7 @@ $gray-50: var(--ap-paper);
 $gray-100: var(--ap-paper);
 $gray-200: var(--ap-rule);
 $gray-400: var(--ap-ink-faint);
+$gray-500: var(--ap-ink-muted);
 $gray-600: var(--ap-ink-muted);
 $gray-800: var(--ap-ink);
 $white: #ffffff;
@@ -39,6 +40,42 @@ $white: #ffffff;
 }
 
 .loading-inline, .empty-inline { padding: var(--ap-space-3) 0; font-size: 0.875rem; }
+
+// ── ARTWORK ─────────────────────────────────────────────
+// Image beside the facts on wide screens, above them on narrow ones.
+.details-layout.has-artwork {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr;
+  gap: var(--ap-space-5);
+  align-items: start;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.artwork {
+  margin: var(--ap-space-3) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: var(--ap-space-3);
+  background: var(--ap-paper);
+  border: 1px solid var(--ap-rule);
+  border-radius: 10px;
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+  }
+}
+
+.artwork-note {
+  font-size: 0.8125rem;
+  color: var(--ap-ink-faint);
+  text-align: center;
+}
 
 // ── HEADER ──────────────────────────────────────────────
 .detail-header {
@@ -258,28 +295,129 @@ $white: #ffffff;
 }
 
 // ── NOTES ───────────────────────────────────────────────
-.field {
+.notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
+.saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
+
+// A workbook is inherently a column/value record. Keeping this as a compact two-column sheet
+// makes long imports scannable and preserves the source column order supplied by the API.
+.spreadsheet-fields {
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.spreadsheet-heading,
+.spreadsheet-field-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 30%) minmax(0, 1fr);
+}
+
+.spreadsheet-heading {
+  background: $gray-50;
+  border-bottom: 1px solid $gray-200;
+  color: $gray-500;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  span { padding: var(--ap-space-2) var(--ap-space-3); }
+}
+
+.spreadsheet-field-row {
+  align-items: center;
+  border-bottom: 1px solid $gray-100;
+  margin: 0;
+
+  &:last-child { border-bottom: 0; }
+
+  input {
+    width: 100%;
+    border: 0;
+    border-left: 1px solid $gray-100;
+    border-radius: 0;
+    padding: var(--ap-space-3);
+    background: transparent;
+
+    &:focus { outline: none; box-shadow: inset 0 0 0 2px var(--ap-accent-soft); }
+  }
+}
+
+.spreadsheet-field-name {
   display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-1);
-  margin-bottom: var(--ap-space-4);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  min-width: 0;
+  padding: var(--ap-space-3);
+  color: $gray-600;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
 
-  span { font-size: 0.8125rem; font-weight: 600; color: $gray-600; }
+// Clearing a value is available per row, but stays quiet until that row is being inspected.
+.field-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--ap-space-1);
+  line-height: 1;
+  font-size: 1rem;
+  color: $gray-400;
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease;
 
-  input, textarea {
+  &:hover, &:focus-visible { color: $danger; }
+}
+
+.spreadsheet-field-row:hover .field-remove,
+.spreadsheet-field-row:focus-within .field-remove { opacity: 1; }
+
+@media (max-width: 560px) {
+  .spreadsheet-heading { display: none; }
+
+  .spreadsheet-field-row {
+    display: block;
+    padding: var(--ap-space-3);
+
+    & + .spreadsheet-field-row { border-top: 1px solid $gray-100; }
+
+    input {
+      border: 1px solid $gray-200;
+      border-radius: 7px;
+      margin-top: var(--ap-space-1);
+    }
+  }
+
+  .spreadsheet-field-name { padding: 0; }
+}
+
+.empty-hint {
+  color: $gray-400;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin: 0 0 var(--ap-space-4);
+  max-width: 70ch;
+}
+
+.add-field {
+  display: flex;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+  padding-top: var(--ap-space-4);
+  border-top: 1px solid $gray-100;
+
+  input {
+    flex: 1;
+    min-width: 0;
     padding: var(--ap-space-2) var(--ap-space-3);
     border: 1px solid $gray-200;
     border-radius: 9px;
     font-family: inherit;
     font-size: 0.9375rem;
-    resize: vertical;
-
-    &:focus { outline: none; border-color: $accent; box-shadow: 0 0 0 3px var(--ap-accent-soft); }
   }
 }
-
-.notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
-.saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
 
 // Files staged for upload, before the request goes out.
 .staged-files {

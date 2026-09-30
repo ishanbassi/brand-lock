@@ -35,7 +35,7 @@
       Something went wrong loading trademark journals. Please try again later.
     </div>
 
-    <ul class="flex items-center justify-center gap-1" *ngIf="totalPages > 1">
+    <ul class="flex flex-wrap items-center justify-center gap-1 max-w-full" *ngIf="totalPages > 1">
       <li [class.opacity-50]="currentPage === 1" [class.pointer-events-none]="currentPage === 1">
         <a [routerLink]="['/trademark-journal']" [queryParams]="{ page: currentPage - 1 }"
           class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
