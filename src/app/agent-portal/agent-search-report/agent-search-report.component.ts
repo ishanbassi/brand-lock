@@ -32,7 +32,7 @@ export class AgentSearchReportComponent {
 
   query = '';
   clientName = '';
-  searchType: SearchReportType = 'phonetic';
+  searchType: SearchReportType = 'startswith';
   pageSize: 10 | 100 | 1000 = 100;
   currentPage = 0;
   readonly selectedIds = new Set<number>();
@@ -40,7 +40,7 @@ export class AgentSearchReportComponent {
   reportSearchType: SearchReportType = 'phonetic';
 
   /**
-   * Classes to confine the search to. Empty means every class.
+   * Classes to confine the search to. At least one class is required.
    *
    * <p>A set rather than one class because a single mark is commonly filed in several — a clothing
    * brand in 25 and 35 — and running that as one report per class leaves the agent reconciling
@@ -57,7 +57,7 @@ export class AgentSearchReportComponent {
   /** Printable report is rendered in an isolated frame so the portal UI never appears on paper. */
   readonly printing = signal(false);
 
-  /** All 45 Nice classes. Optional, but choosing some changes what the report means. */
+  /** All 45 Nice classes. The user must choose at least one before searching. */
   readonly classes = Array.from({ length: 45 }, (_, i) => i + 1);
 
   constructor() {
@@ -96,6 +96,9 @@ export class AgentSearchReportComponent {
     this.selectedClasses.update(current =>
       current.includes(c) ? current.filter(x => x !== c) : [...current, c].sort((a, b) => a - b),
     );
+    if (this.selectedClasses().length > 0 && this.error() === 'Select at least one class to search.') {
+      this.error.set('');
+    }
   }
 
   clearClasses(): void {
@@ -105,7 +108,7 @@ export class AgentSearchReportComponent {
   /** What the closed picker reads as. Spelled out up to three, counted beyond that. */
   classSummary(): string {
     const selected = this.selectedClasses();
-    if (selected.length === 0) return 'All classes';
+    if (selected.length === 0) return 'Select classes';
     if (selected.length <= 3) return selected.map(c => `Class ${c}`).join(', ');
     return `${selected.length} classes`;
   }
@@ -119,6 +122,11 @@ export class AgentSearchReportComponent {
   run(): void {
     const term = this.query.trim();
     if (!term || this.loading()) {
+      return;
+    }
+    if (this.selectedClasses().length === 0) {
+      this.error.set('Select at least one class to search.');
+      this.classPickerOpen.set(true);
       return;
     }
     this.loading.set(true);
@@ -275,19 +283,7 @@ export class AgentSearchReportComponent {
     const classes = current.tmClasses.length
       ? `Class${current.tmClasses.length === 1 ? '' : 'es'} ${current.tmClasses.join(', ')}`
       : 'All classes';
-    const rows = selectedRows.map(row => {
-      const image = this.artworkUrl(row);
-      return `<tr>
-        <td class="artwork">${image ? `<img src="${this.escapeAttribute(image)}" alt="">` : '—'}</td>
-        <td><strong>${this.escapeHtml(row.name || '—')}</strong></td>
-        <td>${this.escapeHtml(row.applicationNo ?? '—')}</td>
-        <td>${this.escapeHtml(row.tmClass ?? '—')}</td>
-        <td>${this.escapeHtml(row.proprietorName || '—')}</td>
-        <td>${this.escapeHtml(row.trademarkStatus && row.trademarkStatus.toUpperCase() !== 'UNKNOWN' ? row.trademarkStatus : 'Not recorded')}</td>
-        ${this.reportSearchType === 'phonetic' ? `<td><span class="risk ${row.riskBand.toLowerCase()}">${this.bandLabel(row.riskBand)}</span></td>` : ''}
-      </tr>`;
-    }).join('');
-    const similarityHead = this.reportSearchType === 'phonetic' ? '<th>Similarity</th>' : '';
+    const rows = this.printableResults(selectedRows);
     const client = this.clientName.trim();
 
     doc.open();
@@ -301,16 +297,17 @@ export class AgentSearchReportComponent {
         .logo { max-width:100px; max-height:45px; object-fit:contain; }
         .title { margin: 0 0 3px; font-size: 20pt; }
         .meta { color:#596575; font-size:9pt; line-height:1.5; }
-        table { width:100%; border-collapse:collapse; table-layout:fixed; }
-        th { background:${accent}; color:#fff; text-align:left; font-size:8pt; padding:7px 6px; }
-        td { border-bottom:1px solid #d8dde4; padding:6px; vertical-align:top; overflow-wrap:anywhere; }
-        tbody tr { break-inside:avoid; page-break-inside:avoid; }
-        th:first-child, td:first-child { width:7%; }
-        th:nth-child(2), td:nth-child(2) { width:19%; }
-        th:nth-child(3), td:nth-child(3), th:nth-child(4), td:nth-child(4) { width:10%; }
-        th:nth-child(5), td:nth-child(5) { width:24%; }
-        th:nth-child(6), td:nth-child(6) { width:15%; }
-        td.artwork img { width:54px; height:42px; object-fit:contain; }
+        .result { display:grid; grid-template-columns:76px 1fr; gap:10px; padding:10px 0; border-bottom:1px solid #d8dde4; break-inside:avoid; page-break-inside:avoid; }
+        .result:last-of-type { border-bottom:0; }
+        .artwork { display:flex; align-items:flex-start; justify-content:center; color:#7a8491; padding-top:2px; }
+        .artwork img { width:68px; height:54px; object-fit:contain; border:1px solid #d8dde4; }
+        .register-fields { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px 12px; }
+        .field { min-width:0; overflow-wrap:anywhere; }
+        .field.wide { grid-column:span 2; }
+        .field.full { grid-column:1 / -1; }
+        .label { display:block; margin-bottom:2px; color:#667383; font-size:7pt; font-weight:700; letter-spacing:.03em; text-transform:uppercase; }
+        .value { display:block; font-size:9pt; line-height:1.35; }
+        .field:first-child .value { color:${accent}; font-size:10pt; font-weight:700; }
         .risk { font-weight:700; }
         .risk.high { color:#a12b2b; } .risk.medium { color:#895600; } .risk.low { color:#24643a; }
         footer { margin-top:12px; padding-top:7px; border-top:1px solid #d8dde4; color:#596575; font-size:8pt; }
@@ -318,7 +315,7 @@ export class AgentSearchReportComponent {
       </style></head><body>
       <header><div><h1 class="title">Trademark Search Report</h1><div class="meta">${this.escapeHtml(current.query)} · ${this.escapeHtml(this.reportSearchType)} search · ${this.escapeHtml(classes)}${client ? ` · For ${this.escapeHtml(client)}` : ''}</div></div>
       <div class="firm">${this.logoUrl ? `<img class="logo" src="${this.escapeAttribute(this.logoUrl)}" alt="">` : ''}${this.escapeHtml(firmName)}</div></header>
-      <table><thead><tr><th>Image</th><th>Mark</th><th>Application</th><th>Class</th><th>Proprietor</th><th>Status</th>${similarityHead}</tr></thead><tbody>${rows}</tbody></table>
+      <main>${rows}</main>
       <footer>${selectedRows.length} selected result${selectedRows.length === 1 ? '' : 's'} · Generated ${this.escapeHtml(new Date().toLocaleDateString('en-IN'))}. This search is not an opinion on registrability. Verify status against the Registry before relying on it.</footer>
       </body></html>`);
     doc.close();
@@ -334,6 +331,30 @@ export class AgentSearchReportComponent {
         frame.contentWindow?.print();
       }, 50);
     });
+  }
+
+  private printableResults(selectedRows: SearchReportRow[]): string {
+    return selectedRows.map(row => {
+      const image = this.artworkUrl(row);
+      return `<section class="result">
+        <div class="artwork">${image ? `<img src="${this.escapeAttribute(image)}" alt="">` : '<span>—</span>'}</div>
+        <div class="register-fields">
+          ${this.printField('Name', row.name)}
+          ${this.printField('Application', row.applicationNo)}
+          ${this.printField('Class', row.tmClass)}
+          ${this.printField('Proprietor', row.proprietorName, 'wide')}
+          ${this.printField('Proprietor address', row.proprietorAddress, 'full')}
+          ${this.printField('Status', this.statusLabel(row))}
+          ${this.printField('Filed', this.formatDate(row.applicationDate))}
+          ${this.printField('Renewal', this.formatDate(row.renewalDate))}
+          ${this.printField('Journal no.', row.journalNo)}
+          ${this.printField('Details', row.details, 'full')}
+          ${this.reportSearchType === 'phonetic'
+            ? this.printField('Similarity', `<span class="risk ${row.riskBand.toLowerCase()}">${this.bandLabel(row.riskBand)}</span>`, '', true)
+            : ''}
+        </div>
+      </section>`;
+    }).join('');
   }
 
   private ensurePrintFrame(): HTMLIFrameElement {
@@ -366,6 +387,11 @@ export class AgentSearchReportComponent {
 
   private escapeAttribute(value: string): string {
     return this.escapeHtml(value);
+  }
+
+  private printField(label: string, value: unknown, className = '', trustedValue = false): string {
+    const rendered = value === null || value === undefined || value === '' ? '—' : String(value);
+    return `<div class="field${className ? ` ${className}` : ''}"><span class="label">${this.escapeHtml(label)}</span><span class="value">${trustedValue ? rendered : this.escapeHtml(rendered)}</span></div>`;
   }
 
   countFor(band: 'HIGH' | 'MEDIUM' | 'LOW'): number {
