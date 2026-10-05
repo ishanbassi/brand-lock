@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
@@ -111,6 +111,25 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   showColumnPicker = signal(false);
   columnPickerError = signal('');
   fieldSearch = '';
+  fieldPickerTab: 'create' | 'existing' = 'create';
+  newFieldLabel = '';
+  newFieldType: 'TEXT' | 'NUMBER' | 'DATE' = 'TEXT';
+  creatingField = signal(false);
+  draft = signal<Partial<AgentPortfolioTrademark> | null>(null);
+  draftCustomValues: Record<string, string> = {};
+  savingDraft = signal(false);
+  draftError = signal('');
+  readonly classOptions = Array.from({ length: 45 }, (_, i) => i + 1);
+  readonly statusOptions = ['Not yet filed', 'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'];
+  readonly typeOptions = [
+    { value: 'TRADEMARK', label: 'Word Mark' },
+    { value: 'IMAGEMARK', label: 'Image / Device Mark' },
+    { value: 'TRADEMARK_WITH_IMAGE', label: 'Word + Image' },
+    { value: 'SOUNDMARK', label: 'Sound Mark' },
+    { value: 'SLOGAN', label: 'Slogan' },
+  ];
+  columnWidths: Record<string, number> = {};
+  private resizeState: { key: string; startX: number; startWidth: number } | null = null;
   private readonly customValueTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly pendingCustomValues = new Map<string, { trademarkId: number; fieldKey: string; value: string }>();
   private readonly savingCustomValueKeys = signal<Set<string>>(new Set());
@@ -145,6 +164,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    try { this.columnWidths = JSON.parse(localStorage.getItem('agent-portfolio-column-widths') || '{}'); } catch { this.columnWidths = {}; }
     this.agentDataService.getProfile().subscribe({
       next: profile => {
         const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
@@ -176,6 +196,114 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       // A firm that has never imported a spreadsheet has none. Normal, not an error.
       error: () => this.customFields.set([]),
     });
+  }
+
+  openDraft(): void {
+    if (this.draft()) return;
+    this.draft.set({ name: '', trademarkStatus: 'Not yet filed' });
+    this.draftCustomValues = {};
+    this.draftError.set('');
+    // The first editable cell is added to the DOM by Angular after this event.
+    setTimeout(() => document.getElementById('new-trademark-name')?.focus());
+  }
+
+  cancelDraft(): void {
+    if (this.savingDraft()) return;
+    this.draft.set(null);
+    this.draftError.set('');
+  }
+
+  saveDraft(): void {
+    const draft = this.draft();
+    if (!draft || this.savingDraft()) return;
+    if (!draft.name?.trim() && !draft.applicationNo) {
+      this.draftError.set('Enter a trademark name or application number.');
+      return;
+    }
+    this.draftError.set('');
+    this.savingDraft.set(true);
+    const customFields = Object.fromEntries(Object.entries(this.draftCustomValues)
+      .filter(([, value]) => String(value ?? '').trim())
+      .map(([key, value]) => [key, String(value)]));
+    this.agentDataService.addPortfolioItem({ ...draft, name: draft.name?.trim(), customFields }).subscribe({
+      next: () => {
+        this.savingDraft.set(false);
+        this.draft.set(null);
+        this.draftCustomValues = {};
+        this.searchQuery = '';
+        this.lastSearched = '';
+        this.filterStatus = '';
+        this.filterClass = '';
+        this.sortField = null;
+        this.page = 0;
+        this.load();
+        this.loadFilterOptions();
+      },
+      error: err => {
+        this.savingDraft.set(false);
+        this.draftError.set(err?.error?.message || err?.error?.detail || 'Could not save this trademark. Try again.');
+      },
+    });
+  }
+
+  createField(): void {
+    const label = this.newFieldLabel.trim();
+    if (!label || this.creatingField()) return;
+    this.columnPickerError.set('');
+    this.creatingField.set(true);
+    this.agentDataService.createCustomField(label, this.newFieldType).subscribe({
+      next: field => {
+        this.creatingField.set(false);
+        this.newFieldLabel = '';
+        this.customFields.update(fields => [...fields, field]);
+        if (field.showInList) this.shownCustomFields.update(fields => [...fields, field]);
+        else this.toggleColumn(field);
+      },
+      error: err => {
+        this.creatingField.set(false);
+        this.columnPickerError.set(err?.error?.detail || 'Could not create that field.');
+      },
+    });
+  }
+
+  columnWidth(key: string): number {
+    const defaults: Record<string, number> = { name: 230, applicationNo: 150, tmClass: 100, proprietorName: 180, trademarkStatus: 150, applicationDate: 150, renewalDate: 150, type: 150, actions: 120 };
+    return this.columnWidths[key] || defaults[key] || 220;
+  }
+
+  get tableWidth(): number {
+    return 48 + this.columns.reduce((sum, col) => sum + this.columnWidth(col.field), 0)
+      + this.shownCustomFields().reduce((sum, field) => sum + this.columnWidth(`custom:${field.fieldKey}`), 0)
+      + this.columnWidth('type') + this.columnWidth('actions');
+  }
+
+  startResize(event: PointerEvent, key: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.resizeState = { key, startX: event.clientX, startWidth: this.columnWidth(key) };
+  }
+
+  resizeWithKeyboard(event: KeyboardEvent, key: string): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const delta = event.key === 'ArrowRight' ? 16 : -16;
+    this.columnWidths = { ...this.columnWidths, [key]: Math.max(90, Math.min(600, this.columnWidth(key) + delta)) };
+    try { localStorage.setItem('agent-portfolio-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Browsers can disable storage. */ }
+  }
+
+  @HostListener('window:pointermove', ['$event'])
+  onResizeMove(event: PointerEvent): void {
+    if (!this.resizeState) return;
+    const { key, startX, startWidth } = this.resizeState;
+    this.columnWidths = { ...this.columnWidths, [key]: Math.max(90, Math.min(600, startWidth + event.clientX - startX)) };
+  }
+
+  @HostListener('window:pointerup')
+  @HostListener('window:pointercancel')
+  endResize(): void {
+    if (!this.resizeState) return;
+    this.resizeState = null;
+    try { localStorage.setItem('agent-portfolio-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Browsers can disable storage. */ }
   }
 
   /**

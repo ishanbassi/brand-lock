@@ -54,8 +54,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   customValues: Record<string, string> = {};
   savingCustom = signal(false);
   customSaved = signal(false);
-  addingField = signal(false);
-  newFieldLabel = '';
 
   // Documents
   documents = signal<AgentDocument[]>([]);
@@ -248,53 +246,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
       error: () => {
         this.savingCustom.set(false);
         this.error.set('Could not save these details.');
-      },
-    });
-  }
-
-  /** Adds a field to the firm's schema, so it appears on every mark, not just this one. */
-  addCustomField(): void {
-    const label = this.newFieldLabel.trim();
-    if (!label) return;
-    this.addingField.set(true);
-    this.agentDataService.createCustomField(label).subscribe({
-      next: field => {
-        this.customFields.set([...this.customFields(), field]);
-        this.newFieldLabel = '';
-        this.addingField.set(false);
-      },
-      error: err => {
-        this.addingField.set(false);
-        this.error.set(err?.error?.detail ?? 'Could not add that field.');
-      },
-    });
-  }
-
-  /**
-   * Removes a field from the firm's schema.
-   *
-   * Worth spelling out in the confirm: this takes the column off every mark, not just this one.
-   * The values are kept server-side, so re-creating a field of the same name brings them back.
-   */
-  removeCustomValue(field: AgentCustomField): void {
-    const value = this.customValues[field.fieldKey];
-    if (value == null || value === '') return;
-    if (!confirm(`Clear "${field.label}" for this trademark? Other trademarks will not be changed.`)) return;
-
-    // A null update removes just this key from this mark's portfolio link. The field definition
-    // stays intact, so it remains available for every other trademark and for future imports.
-    delete this.customValues[field.fieldKey];
-    this.savingCustom.set(true);
-    this.customSaved.set(false);
-    this.agentDataService.updatePortfolioLink(this.trademarkId, { customFields: { [field.fieldKey]: null } }).subscribe({
-      next: () => {
-        this.savingCustom.set(false);
-        this.customSaved.set(true);
-      },
-      error: () => {
-        this.customValues[field.fieldKey] = value;
-        this.savingCustom.set(false);
-        this.error.set(`Could not clear ${field.label}.`);
       },
     });
   }

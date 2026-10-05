@@ -24,9 +24,13 @@
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
         <span><ap-icon name="upload" [size]="16" /></span> Import Excel
       </a>
-      <a routerLink="/agent-portal/portfolio/add" class="btn-primary">
+      <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
+              [attr.aria-expanded]="showColumnPicker()" aria-controls="portfolio-field-picker">
+        <ap-icon name="plus" [size]="16" /> Fields
+      </button>
+      <button type="button" class="btn-primary" (click)="openDraft()">
         <span><ap-icon name="plus" [size]="16" /></span> Add Trademark
-      </a>
+      </button>
     </div>
   </div>
 
@@ -143,54 +147,73 @@
   }
 
   <!-- TABLE -->
-  @if (!loading() && trademarks().length > 0) {
+  @if (!loading() && (trademarks().length > 0 || draft() || showColumnPicker())) {
     <div class="table-workspace">
     <div class="table-toolbar">
       <div class="table-toolbar-copy" aria-live="polite">
+        <button type="button" class="table-add-btn" (click)="openDraft()" aria-label="Add trademark in the first row" title="Add trademark">
+          <ap-icon name="plus" [size]="17" />
+        </button>
         @if (selectedIds.size > 0) {
           <strong>{{ selectedIds.size }} selected</strong><span>Choose Download → PDF to print these marks.</span>
         } @else {
-          <strong>{{ page * pageSize + 1 }}–{{ visibleRangeEnd }} of {{ totalCount }}</strong><span>trademarks</span>
+          <strong>{{ totalCount === 0 ? '0' : (page * pageSize + 1) + '–' + visibleRangeEnd + ' of ' + totalCount }}</strong><span>trademarks</span>
         }
         <span class="scroll-hint">Scroll table to see all columns</span>
       </div>
-      @if (customFields().length > 0) {
-        <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
-                [attr.aria-expanded]="showColumnPicker()" [attr.aria-controls]="showColumnPicker() ? 'portfolio-field-picker' : null">
-          <ap-icon name="columns" [size]="16" /> Columns
-        </button>
-      }
     </div>
-      @if (customFields().length > 0 && showColumnPicker()) {
+      @if (showColumnPicker()) {
           <button type="button" class="field-picker-backdrop" (click)="showColumnPicker.set(false)" aria-label="Close fields"></button>
           <section class="field-picker-panel" id="portfolio-field-picker" aria-label="Choose fields to show">
             <div class="field-picker-title">
               <h2>Fields</h2>
               <button type="button" (click)="showColumnPicker.set(false)" aria-label="Close fields"><ap-icon name="close" [size]="16" /></button>
             </div>
-            <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
-            <label class="show-all-fields">
-              <input type="checkbox" [checked]="allCustomFieldsShown" (change)="toggleAllColumns($any($event.target).checked)" />
-              <span>Show all fields</span>
-            </label>
-            <p class="field-picker-count">{{ shownCustomFields().length }} of {{ customFields().length }} shown</p>
+            <div class="field-picker-tabs" aria-label="Field actions">
+              <button type="button" [attr.aria-pressed]="fieldPickerTab === 'create'" (click)="fieldPickerTab = 'create'">Create new</button>
+              <button type="button" [attr.aria-pressed]="fieldPickerTab === 'existing'" (click)="fieldPickerTab = 'existing'">Add existing</button>
+            </div>
             @if (columnPickerError()) { <p class="column-menu-error">{{ columnPickerError() }}</p> }
-            <ul>
-              @for (field of filteredCustomFields; track field.id) {
-                <li>
-                  <span>{{ field.label }}</span>
-                  <button type="button" class="field-toggle" [class.on]="field.showInList" (click)="toggleColumn(field)"
-                          [attr.aria-pressed]="field.showInList" [attr.aria-label]="(field.showInList ? 'Hide ' : 'Show ') + field.label">
-                    <span></span>
-                  </button>
-                </li>
-              }
-            </ul>
+            @if (fieldPickerTab === 'create') {
+              <div class="create-field-form">
+                <label for="new-portfolio-field">Field name</label>
+                <input id="new-portfolio-field" type="text" [(ngModel)]="newFieldLabel" placeholder="e.g. Client reference" (keyup.enter)="createField()" />
+                <label for="new-portfolio-field-type">Field type</label>
+                <select id="new-portfolio-field-type" [(ngModel)]="newFieldType">
+                  <option value="TEXT">Text</option><option value="NUMBER">Number</option><option value="DATE">Date</option>
+                </select>
+                <button type="button" class="btn-primary" (click)="createField()" [disabled]="creatingField() || !newFieldLabel.trim()">{{ creatingField() ? 'Creating…' : 'Create field' }}</button>
+              </div>
+            } @else {
+              <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
+              <label class="show-all-fields">
+                <input type="checkbox" [checked]="allCustomFieldsShown" (change)="toggleAllColumns($any($event.target).checked)" />
+                <span>Show all fields</span>
+              </label>
+              <p class="field-picker-count">{{ shownCustomFields().length }} of {{ customFields().length }} shown</p>
+              <ul>
+                @for (field of filteredCustomFields; track field.id) {
+                  <li>
+                    <span>{{ field.label }}</span>
+                    <button type="button" class="field-toggle" [class.on]="field.showInList" (click)="toggleColumn(field)"
+                            [attr.aria-pressed]="field.showInList" [attr.aria-label]="(field.showInList ? 'Hide ' : 'Show ') + field.label">
+                      <span></span>
+                    </button>
+                  </li>
+                } @empty { <li>No fields yet. Create one to add a column.</li> }
+              </ul>
+            }
           </section>
       }
     <div class="table-card" tabindex="0" role="region" aria-label="Trademark portfolio table; scroll to see more columns">
-      <table class="tm-table">
+      <table class="tm-table" [style.width.px]="tableWidth">
         <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
+        <colgroup>
+          <col style="width: 48px" />
+          @for (col of columns; track col.field) { <col [style.width.px]="columnWidth(col.field)" /> }
+          @for (field of shownCustomFields(); track field.id) { <col [style.width.px]="columnWidth('custom:' + field.fieldKey)" /> }
+          <col [style.width.px]="columnWidth('type')" /><col [style.width.px]="columnWidth('actions')" />
+        </colgroup>
         <thead>
           <tr>
             <th class="select-col" scope="col"><input type="checkbox" [checked]="isPageSelected()" [indeterminate]="isPagePartlySelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page for printing" /></th>
@@ -209,6 +232,7 @@
                     <ap-icon [name]="sortField !== col.field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" />
                   </span>
                 </button>
+                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + col.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, col.field)" (keydown)="resizeWithKeyboard($event, col.field)"></span>
               </th>
             }
             @for (field of shownCustomFields(); track field.id) {
@@ -218,13 +242,32 @@
                   {{ field.label }}
                   <span class="sort-indicator" aria-hidden="true"><ap-icon [name]="sortField !== customSortColumn(field).field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" /></span>
                 </button>
+                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + field.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, 'custom:' + field.fieldKey)" (keydown)="resizeWithKeyboard($event, 'custom:' + field.fieldKey)"></span>
               </th>
             }
-            <th scope="col" class="type-col">Type</th>
+            <th scope="col" class="type-col">Type<span class="column-resize" role="separator" tabindex="0" aria-label="Resize type column" aria-orientation="vertical" (pointerdown)="startResize($event, 'type')" (keydown)="resizeWithKeyboard($event, 'type')"></span></th>
             <th scope="col" class="actions-col">Actions</th>
           </tr>
         </thead>
         <tbody>
+          @if (draft(); as newMark) {
+            <tr class="draft-row">
+              <td class="select-col"></td>
+              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="saveDraft()" /></td>
+              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" placeholder="Application no." aria-label="New application number" /></td>
+              <td><select [(ngModel)]="newMark.tmClass" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
+              <td><input type="text" [(ngModel)]="newMark.proprietorName" placeholder="Proprietor" aria-label="New proprietor" /></td>
+              <td><select [(ngModel)]="newMark.trademarkStatus" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
+              <td><input type="date" [(ngModel)]="newMark.applicationDate" aria-label="New filing date" /></td>
+              <td><input type="date" [(ngModel)]="newMark.renewalDate" aria-label="New renewal date" /></td>
+              @for (field of shownCustomFields(); track field.id) {
+                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" /></td>
+              }
+              <td><select [(ngModel)]="newMark.type" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
+              <td class="draft-actions"><button type="button" class="draft-save" (click)="saveDraft()" [disabled]="savingDraft()">{{ savingDraft() ? 'Saving…' : 'Save' }}</button><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
+            </tr>
+            @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 3" role="alert">{{ draftError() }}</td></tr> }
+          }
           @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id" [class.selected]="isSelected(tm)">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
@@ -272,7 +315,7 @@
                 <td class="custom-cell" [class.is-saving]="isCustomValueSaving(tm, field)">
                   <div class="custom-input-wrap">
                     <input
-                      [type]="field.dataType === 'DATE' ? 'date' : 'text'"
+                      [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'"
                       [value]="customValue(tm, field)"
                       [attr.aria-label]="field.label + ' for ' + (tm.name || 'trademark')"
                       [placeholder]="'Enter ' + field.label"
@@ -326,7 +369,7 @@
   }
 
   <!-- EMPTY STATE -->
-  @if (!loading() && trademarks().length === 0 && !error()) {
+  @if (!loading() && trademarks().length === 0 && !draft() && !showColumnPicker() && !error()) {
     <div class="empty-state">
       @if (hasFilters) {
         <div class="empty-icon"><ap-icon name="search" [size]="16" /></div>
@@ -341,7 +384,7 @@
         <p>Import an Excel file or add trademarks one by one to get started.</p>
         <div class="empty-actions">
           <a routerLink="/agent-portal/portfolio/upload" class="btn-primary"><ap-icon name="upload" [size]="16" /> Import from Excel</a>
-          <a routerLink="/agent-portal/portfolio/add" class="btn-outline"><ap-icon name="plus" [size]="16" /> Add Manually</a>
+          <button type="button" class="btn-outline" (click)="openDraft()"><ap-icon name="plus" [size]="16" /> Add Manually</button>
         </div>
       }
     </div>

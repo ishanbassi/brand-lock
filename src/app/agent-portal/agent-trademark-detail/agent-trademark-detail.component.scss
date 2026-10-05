@@ -356,24 +356,6 @@ $white: #ffffff;
   overflow-wrap: anywhere;
 }
 
-// Clearing a value is available per row, but stays quiet until that row is being inspected.
-.field-remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 var(--ap-space-1);
-  line-height: 1;
-  font-size: 1rem;
-  color: $gray-400;
-  opacity: 0;
-  transition: opacity 0.12s ease, color 0.12s ease;
-
-  &:hover, &:focus-visible { color: $danger; }
-}
-
-.spreadsheet-field-row:hover .field-remove,
-.spreadsheet-field-row:focus-within .field-remove { opacity: 1; }
-
 @media (max-width: 560px) {
   .spreadsheet-heading { display: none; }
 
@@ -399,24 +381,6 @@ $white: #ffffff;
   line-height: 1.5;
   margin: 0 0 var(--ap-space-4);
   max-width: 70ch;
-}
-
-.add-field {
-  display: flex;
-  gap: var(--ap-space-2);
-  margin-top: var(--ap-space-4);
-  padding-top: var(--ap-space-4);
-  border-top: 1px solid $gray-100;
-
-  input {
-    flex: 1;
-    min-width: 0;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border: 1px solid $gray-200;
-    border-radius: 9px;
-    font-family: inherit;
-    font-size: 0.9375rem;
-  }
 }
 
 // Files staged for upload, before the request goes out.
