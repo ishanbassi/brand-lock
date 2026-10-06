@@ -24,10 +24,6 @@
       <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
         <span><ap-icon name="upload" [size]="16" /></span> Import Excel
       </a>
-      <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
-              [attr.aria-expanded]="showColumnPicker()" aria-controls="portfolio-field-picker">
-        <ap-icon name="plus" [size]="16" /> Fields
-      </button>
       <button type="button" class="btn-primary" (click)="openDraft()">
         <span><ap-icon name="plus" [size]="16" /></span> Add Trademark
       </button>
@@ -161,6 +157,10 @@
         }
         <span class="scroll-hint">Scroll table to see all columns</span>
       </div>
+      <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
+              [attr.aria-expanded]="showColumnPicker()" aria-controls="portfolio-field-picker">
+        <ap-icon name="columns" [size]="16" /> Columns
+      </button>
     </div>
       @if (showColumnPicker()) {
           <button type="button" class="field-picker-backdrop" (click)="showColumnPicker.set(false)" aria-label="Close fields"></button>
@@ -253,18 +253,18 @@
           @if (draft(); as newMark) {
             <tr class="draft-row">
               <td class="select-col"></td>
-              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="saveDraft()" /></td>
-              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" placeholder="Application no." aria-label="New application number" /></td>
-              <td><select [(ngModel)]="newMark.tmClass" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
-              <td><input type="text" [(ngModel)]="newMark.proprietorName" placeholder="Proprietor" aria-label="New proprietor" /></td>
-              <td><select [(ngModel)]="newMark.trademarkStatus" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
-              <td><input type="date" [(ngModel)]="newMark.applicationDate" aria-label="New filing date" /></td>
-              <td><input type="date" [(ngModel)]="newMark.renewalDate" aria-label="New renewal date" /></td>
+              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" (ngModelChange)="queueDraftSave()" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="queueDraftSave(0)" /></td>
+              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" (ngModelChange)="queueDraftSave()" placeholder="Application no." aria-label="New application number" /></td>
+              <td><select [(ngModel)]="newMark.tmClass" (ngModelChange)="queueDraftSave()" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
+              <td><input type="text" [(ngModel)]="newMark.proprietorName" (ngModelChange)="queueDraftSave()" placeholder="Proprietor" aria-label="New proprietor" /></td>
+              <td><select [(ngModel)]="newMark.trademarkStatus" (ngModelChange)="queueDraftSave()" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
+              <td><input type="date" [(ngModel)]="newMark.applicationDate" (ngModelChange)="queueDraftSave()" aria-label="New filing date" /></td>
+              <td><input type="date" [(ngModel)]="newMark.renewalDate" (ngModelChange)="queueDraftSave()" aria-label="New renewal date" /></td>
               @for (field of shownCustomFields(); track field.id) {
-                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" /></td>
+                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" (ngModelChange)="queueDraftSave()" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" /></td>
               }
-              <td><select [(ngModel)]="newMark.type" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
-              <td class="draft-actions"><button type="button" class="draft-save" (click)="saveDraft()" [disabled]="savingDraft()">{{ savingDraft() ? 'Saving…' : 'Save' }}</button><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
+              <td><select [(ngModel)]="newMark.type" (ngModelChange)="queueDraftSave()" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
+              <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Auto-save' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
             </tr>
             @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 3" role="alert">{{ draftError() }}</td></tr> }
           }

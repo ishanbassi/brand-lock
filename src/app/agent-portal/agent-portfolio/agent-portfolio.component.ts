@@ -119,6 +119,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   draftCustomValues: Record<string, string> = {};
   savingDraft = signal(false);
   draftError = signal('');
+  private draftAutosaveTimer: ReturnType<typeof setTimeout> | null = null;
   readonly classOptions = Array.from({ length: 45 }, (_, i) => i + 1);
   readonly statusOptions = ['Not yet filed', 'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'];
   readonly typeOptions = [
@@ -161,6 +162,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
+    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
   }
 
   ngOnInit(): void {
@@ -209,15 +211,29 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   cancelDraft(): void {
     if (this.savingDraft()) return;
+    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
+    this.draftAutosaveTimer = null;
     this.draft.set(null);
     this.draftError.set('');
+  }
+
+  /**
+   * A new row behaves like the editable custom-value cells: wait until typing pauses, then save.
+   * An empty row remains a draft so opening it never creates a blank trademark.
+   */
+  queueDraftSave(delay = 900): void {
+    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
+    this.draftError.set('');
+    this.draftAutosaveTimer = setTimeout(() => {
+      this.draftAutosaveTimer = null;
+      this.saveDraft();
+    }, delay);
   }
 
   saveDraft(): void {
     const draft = this.draft();
     if (!draft || this.savingDraft()) return;
     if (!draft.name?.trim() && !draft.applicationNo) {
-      this.draftError.set('Enter a trademark name or application number.');
       return;
     }
     this.draftError.set('');
