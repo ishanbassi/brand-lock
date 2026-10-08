@@ -23,12 +23,18 @@ export const agentPortalRoutes: Routes = [
     // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
     path: 'watch/conflicts',
     loadComponent: () => import('./agent-conflicts/agent-conflicts.component').then(m => m.AgentConflictsComponent),
-    title: 'Portfolio Conflicts | Agent Portal',
+    title: 'New Filing Conflicts | Agent Portal',
   },
   {
     path: 'watch/journal',
     loadComponent: () => import('./agent-journal-watch/agent-journal-watch.component').then(m => m.AgentJournalWatchComponent),
     title: 'Trademark Watch | Agent Portal',
+  },
+  {
+    path: 'watch/journal/marks/:id',
+    loadComponent: () =>
+      import('./agent-journal-mark-detail/agent-journal-mark-detail.component').then(m => m.AgentJournalMarkDetailComponent),
+    title: 'Journal Trademark | Agent Portal',
   },
   {
     // Rival firms an agent follows. Sits under watch/ with the other two: all three answer "what

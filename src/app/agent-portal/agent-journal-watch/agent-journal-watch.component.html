@@ -1,7 +1,7 @@
 <div class="watch-page">
   <header class="watch-header">
     <div>
-      <h1>Trademark Watch</h1>
+      <h1>Trademark Journal Watch</h1>
       <p class="subtitle">
         Check your portfolio against a published journal issue. Marks advertised in a journal are
         open to opposition for four months from the date of advertisement.
@@ -13,23 +13,127 @@
     <div class="alert-error">{{ error() }}</div>
   }
 
-  <section class="run-card">
-    <label class="journal-select">
-      <span>Journal issue</span>
-      @if (loadingJournals()) {
-        <span class="loading-inline">Loading…</span>
-      } @else {
-        <select
-          [value]="selectedJournal()"
-          (change)="selectedJournal.set(+$any($event.target).value)"
-          [disabled]="running()"
-        >
-          @for (j of journals(); track j) {
-            <option [value]="j">Journal {{ j }}</option>
+  <section class="journal-shelf" aria-labelledby="journal-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="journal-heading">Choose a journal</h2>
+        <p>Open an issue to browse every published mark or check it against your portfolio.</p>
+      </div>
+      <span class="issue-count">{{ journals().length }} available</span>
+    </div>
+
+    @if (loadingJournals()) {
+      <div class="journal-loading" role="status">Loading journal issues…</div>
+    } @else if (journals().length === 0) {
+      <div class="journal-loading">No journal issues are available yet.</div>
+    } @else {
+      <div class="journal-grid">
+        @for (j of journals(); track j; let first = $first) {
+          <button
+            type="button"
+            class="journal-tile"
+            [class.selected]="selectedJournal() === j"
+            [attr.aria-pressed]="selectedJournal() === j"
+            [disabled]="running()"
+            (click)="selectJournal(j)"
+          >
+            <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
+            <span class="journal-copy">
+              <strong>Journal {{ j }}</strong>
+              <small>{{ first ? 'Latest available issue' : 'Published issue' }}</small>
+            </span>
+            @if (first) { <span class="latest-badge">Latest</span> }
+            <ap-icon class="journal-arrow" name="chevron" [size]="16" />
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  @if (selectedJournal() !== null) {
+  <section class="journal-workspace">
+    <div class="workspace-head">
+      <div>
+        <h2>Journal {{ selectedJournal() }}</h2>
+        <p>Search this issue, find your own publications, or run a portfolio conflict check.</p>
+      </div>
+      <div class="workspace-actions">
+        <button type="button" class="btn-outline" (click)="findMyPublishedMarks()" [disabled]="browsing()">
+          <ap-icon name="portfolio" [size]="16" /> Find my published marks
+        </button>
+      </div>
+    </div>
+
+    <div class="search-panel">
+      <div class="search-types" aria-label="Search by">
+        @for (field of searchFields; track field.value) {
+          <button
+            type="button"
+            [class.active]="searchField() === field.value"
+            (click)="setSearchField(field.value)"
+          >{{ field.label }}</button>
+        }
+      </div>
+      <div class="search-row">
+        <label class="search-box">
+          <span class="sr-only">{{ searchPlaceholder() }}</span>
+          <ap-icon name="search" [size]="18" />
+          <input
+            type="search"
+            [placeholder]="searchPlaceholder()"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+          />
+          @if (searchTerm) {
+            <button type="button" class="clear-search" (click)="clearSearch()" aria-label="Clear search">
+              <ap-icon name="close" [size]="15" />
+            </button>
           }
-        </select>
-      }
-    </label>
+        </label>
+      </div>
+    </div>
+
+    @if (browseError()) {
+      <div class="browse-message error">{{ browseError() }}</div>
+    } @else if (browsing()) {
+      <div class="browse-message" role="status"><span class="spinner"></span> Loading Journal {{ selectedJournal() }}…</div>
+    } @else if (journalMarks().length === 0) {
+      <div class="browse-message">No published marks match this search.</div>
+    } @else {
+      <div class="journal-table-wrap">
+        <table class="journal-table">
+          <thead><tr><th>Trademark</th><th>Application no.</th><th>Class</th><th>Party</th><th>Agent</th><th></th></tr></thead>
+          <tbody>
+            @for (tm of journalMarks(); track tm.id) {
+              <tr>
+                <td><strong>{{ tm.name || 'Untitled mark' }}</strong></td>
+                <td class="tabular">{{ tm.applicationNo || '—' }}</td>
+                <td class="tabular">{{ tm.tmClass || '—' }}</td>
+                <td>{{ tm.proprietorName || '—' }}</td>
+                <td>{{ tm.agentName || '—' }}</td>
+                <td><a class="view-mark" [routerLink]="['/agent-portal/watch/journal/marks', tm.id]">View mark</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="browse-footer">
+        <span>{{ browseTotal() | number }} published mark{{ browseTotal() === 1 ? '' : 's' }}</span>
+        @if (browsePages() > 1) {
+          <div class="pager">
+            <button type="button" (click)="goToBrowsePage(browsePage() - 1)" [disabled]="browsePage() === 1">Previous</button>
+            <span>Page {{ browsePage() }} of {{ browsePages() }}</span>
+            <button type="button" (click)="goToBrowsePage(browsePage() + 1)" [disabled]="browsePage() === browsePages()">Next</button>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="watch-controls">
+      <div class="watch-copy">
+        <ap-icon name="watch" [size]="20" />
+        <div><strong>Check for portfolio conflicts</strong><span>Compare your marks with every relevant publication in this issue.</span></div>
+      </div>
 
     <div class="class-select">
       <span>Classes</span>
@@ -66,9 +170,11 @@
     </div>
 
     <button class="btn-primary" [disabled]="running() || selectedJournal() === null" (click)="run()">
-      {{ running() ? 'Checking…' : 'Run check' }}
+      {{ running() ? 'Checking portfolio…' : 'Run journal watch' }}
     </button>
+    </div>
   </section>
+  }
 
   @if (running()) {
     <div class="running-note">
@@ -85,14 +191,6 @@
           possible conflict{{ counts().total === 1 ? '' : 's' }} in Journal {{ result()!.journalNo }}
         </div>
         <div class="summary-actions">
-          <a
-            class="btn-outline"
-            [routerLink]="['/trademark-journal', result()!.journalNo, 'browse']"
-            target="_blank"
-            rel="noopener"
-          >
-            Open Journal {{ result()!.journalNo }} ↗
-          </a>
           @if (counts().total > 0) {
             <span class="selected-count">{{ selectedConflicts.size }} selected to print</span>
             <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
@@ -189,14 +287,12 @@
                       {{ c.conflictingDetails || 'No description on record.' }}
                     </p>
                   </div>
-                  @if (c.conflictingDetailUrl) {
+                  @if (c.conflictingTrademarkId) {
                     <a
                       class="view-mark"
-                      [href]="c.conflictingDetailUrl"
-                      target="_blank"
-                      rel="noopener"
+                      [routerLink]="['/agent-portal/watch/journal/marks', c.conflictingTrademarkId]"
                     >
-                      View mark ↗
+                      View mark
                     </a>
                   }
                 </div>

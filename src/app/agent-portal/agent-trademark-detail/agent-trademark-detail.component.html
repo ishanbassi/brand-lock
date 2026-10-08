@@ -26,7 +26,7 @@
         @if (mark()!.applicationNo) {
           <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
             @if (refreshing()) {
-              Requesting…
+              <span class="refresh-spinner" aria-hidden="true"></span> Searching register…
             } @else {
               <ap-icon name="refresh" [size]="15" /> Refresh from register
             }
@@ -38,6 +38,17 @@
         <button class="btn-danger-ghost" (click)="confirmRemove.set(true)">Remove</button>
       </div>
     </header>
+
+    @if (refreshMessage()) {
+      <div class="refresh-status" role="status" aria-live="polite"
+        [class.success]="refreshState() === 'updated'"
+        [class.warning]="refreshState() === 'busy' || refreshState() === 'failed'">
+        @if (refreshing()) { <span class="refresh-spinner" aria-hidden="true"></span> }
+        @else if (refreshState() === 'updated') { <ap-icon name="check" [size]="16" /> }
+        @else { <ap-icon name="alert" [size]="16" /> }
+        <span>{{ refreshMessage() }}</span>
+      </div>
+    }
 
     @if (notice()) {
       <div class="alert-info">{{ notice() }}<button class="alert-dismiss" (click)="notice.set('')">&times;</button></div>

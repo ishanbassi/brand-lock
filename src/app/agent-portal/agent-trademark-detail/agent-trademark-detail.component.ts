@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { TrademarkService } from '../../shared/services/trademark.service';
+import { Subscription, switchMap, take, timer } from 'rxjs';
 import {
   AGENT_DOCUMENT_TYPES,
   AgentCustomField,
@@ -39,6 +41,11 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
 
   // Actions
   refreshing = signal(false);
+  refreshState = signal<'idle' | 'queued' | 'fetching' | 'updated' | 'busy' | 'failed'>('idle');
+  refreshMessage = signal('');
+  private refreshPoll?: Subscription;
+  private static readonly REFRESH_POLL_INTERVAL_MS = 5000;
+  private static readonly REFRESH_MAX_POLLS = 60;
   confirmRemove = signal(false);
   removing = signal(false);
 
@@ -84,6 +91,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly trademarkService: TrademarkService,
   ) {}
 
   ngOnInit(): void {
@@ -125,6 +133,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.releaseArtwork();
+    this.refreshPoll?.unsubscribe();
   }
 
   private loadArtwork(tm: AgentPortfolioTrademark): void {
@@ -176,29 +185,81 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   refresh(): void {
     if (this.refreshing()) return;
     this.refreshing.set(true);
+    this.refreshState.set('queued');
+    this.refreshMessage.set('Sending this application to the trademark registry…');
     this.notice.set('');
     this.agentDataService.refreshFromRegistry(this.trademarkId).subscribe({
       next: res => {
-        this.refreshing.set(false);
         switch (res.state) {
           case 'QUEUED':
-            this.notice.set('Requested an update from the register. It usually lands within a few minutes.');
+            this.refreshState.set('fetching');
+            this.refreshMessage.set('Searching the trademark registry — this can take a couple of minutes.');
+            this.pollRegistryRefresh();
             break;
           case 'BUSY':
-            this.notice.set('The register queue is busy right now — please try again shortly.');
+            this.finishRefresh('busy', 'The registry queue is busy right now. Please try again in a few minutes.');
             break;
           case 'NO_APPLICATION_NO':
-            this.notice.set('This mark has no application number, so there is nothing to look up yet.');
+            this.finishRefresh('failed', 'This mark has no application number, so there is nothing to look up yet.');
             break;
           default:
-            this.notice.set('Update requested.');
+            this.finishRefresh('failed', 'The registry did not accept the refresh request. Please try again.');
         }
       },
       error: () => {
-        this.refreshing.set(false);
-        this.error.set('Could not request an update.');
+        this.finishRefresh('failed', 'Could not reach the trademark registry. Please try again in a few minutes.');
       },
     });
+  }
+
+  private pollRegistryRefresh(): void {
+    const applicationNo = this.mark()?.applicationNo;
+    if (!applicationNo) {
+      this.finishRefresh('failed', 'This mark has no application number, so there is nothing to look up yet.');
+      return;
+    }
+    let settled = false;
+    this.refreshPoll?.unsubscribe();
+    this.refreshPoll = timer(
+      AgentTrademarkDetailComponent.REFRESH_POLL_INTERVAL_MS,
+      AgentTrademarkDetailComponent.REFRESH_POLL_INTERVAL_MS,
+    )
+      .pipe(
+        take(AgentTrademarkDetailComponent.REFRESH_MAX_POLLS),
+        switchMap(() => this.trademarkService.getLiveRefreshStatus(applicationNo)),
+      )
+      .subscribe({
+        next: response => {
+          if (response.state === 'COMPLETED') {
+            settled = true;
+            this.load();
+            this.finishRefresh('updated', 'Updated with the latest details from the trademark registry.');
+            this.refreshPoll?.unsubscribe();
+          } else if (['FAILED', 'NOT_FOUND', 'NONE'].includes(response.state)) {
+            settled = true;
+            this.finishRefresh('failed', 'The registry could not return this application. Please try again later.');
+            this.refreshPoll?.unsubscribe();
+          }
+        },
+        error: () => {
+          settled = true;
+          this.finishRefresh('failed', 'Could not reach the trademark registry. Please try again in a few minutes.');
+        },
+        complete: () => {
+          if (!settled) {
+            this.finishRefresh('failed', 'The registry is taking longer than usual. Please try again in a few minutes.');
+          }
+        },
+      });
+  }
+
+  private finishRefresh(
+    state: 'updated' | 'busy' | 'failed',
+    message: string,
+  ): void {
+    this.refreshing.set(false);
+    this.refreshState.set(state);
+    this.refreshMessage.set(message);
   }
 
   // ── Remove from portfolio ────────────────────────────────────────────────

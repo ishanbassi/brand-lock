@@ -115,7 +115,7 @@ export class AgentPortalShellComponent {
         { label: 'Journal watch', icon: 'journal', route: '/agent-portal/watch/journal' },
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
-        { label: 'Portfolio conflicts', icon: 'alert', route: '/agent-portal/watch/conflicts' },
+        { label: 'New filing conflicts', icon: 'alert', route: '/agent-portal/watch/conflicts' },
         // Follows rival firms, not marks against the agent's portfolio. The route stays under
         // watch/ so existing links keep working.
         { label: 'Competitors', icon: 'building', route: '/agent-portal/watch/competitors' },

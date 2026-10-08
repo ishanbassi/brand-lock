@@ -7,6 +7,12 @@ import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/a
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
+import { IconComponent } from '../ui/icon.component';
+import { TrademarkService } from '../../shared/services/trademark.service';
+import { ITrademark } from '../../../models/trademark.model';
+import { Subject, Subscription, debounceTime } from 'rxjs';
+
+type JournalSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
 
 /** Descriptions longer than this are clamped until the agent asks for the rest. */
 const DESCRIPTION_PREVIEW_CHARS = 160;
@@ -21,7 +27,7 @@ const DESCRIPTION_PREVIEW_CHARS = 160;
 @Component({
   selector: 'app-agent-journal-watch',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ExportMenuComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ExportMenuComponent, IconComponent],
   templateUrl: './agent-journal-watch.component.html',
   styleUrl: './agent-journal-watch.component.scss',
 })
@@ -29,6 +35,24 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   journals = signal<number[]>([]);
   loadingJournals = signal(true);
   selectedJournal = signal<number | null>(null);
+
+  readonly searchFields: { value: JournalSearchField; label: string; placeholder: string }[] = [
+    { value: 'name', label: 'Trademark', placeholder: 'Search trademark name' },
+    { value: 'agentName', label: 'Agent', placeholder: 'Search agent name' },
+    { value: 'proprietorName', label: 'Party', placeholder: 'Search party name' },
+    { value: 'applicationNo', label: 'Application no.', placeholder: 'Enter application number' },
+  ];
+  searchField = signal<JournalSearchField>('name');
+  searchTerm = '';
+  journalMarks = signal<ITrademark[]>([]);
+  browsing = signal(false);
+  browseError = signal('');
+  browsePage = signal(1);
+  browseTotal = signal(0);
+  readonly browsePageSize = 20;
+  private readonly searchChanges = new Subject<void>();
+  private searchSubscription?: Subscription;
+  private agentSearchName = '';
 
   /** All 45 Nice classes. None selected means every class — the default. */
   readonly allClasses = Array.from({ length: 45 }, (_, i) => i + 1);
@@ -57,10 +81,12 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
+    private readonly trademarkService: TrademarkService,
   ) {}
 
   ngOnDestroy(): void {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+    this.searchSubscription?.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -68,6 +94,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       next: profile => {
         const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
         this.firmName = branding.firmDisplayName || profile.companyName || 'Trademarx';
+        this.agentSearchName = profile.companyName || profile.fullName || `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim();
         if (branding.reportAccentColor && /^#?[\da-f]{6}$/i.test(branding.reportAccentColor)) {
           this.accentColor = branding.reportAccentColor.startsWith('#') ? branding.reportAccentColor : `#${branding.reportAccentColor}`;
         }
@@ -79,6 +106,11 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     const requested = Number(this.route.snapshot.queryParamMap.get('journalNo'));
     const deepLinked = Number.isFinite(requested) && requested > 0 ? requested : null;
 
+    this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => {
+      this.browsePage.set(1);
+      this.loadJournalEntries();
+    });
+
     this.agentDataService.getWatchJournals().subscribe({
       next: list => {
         this.journals.set(list);
@@ -86,10 +118,14 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
         if (deepLinked != null && list.includes(deepLinked)) {
           this.selectedJournal.set(deepLinked);
           this.loadingJournals.set(false);
+          this.loadJournalEntries();
           this.run();
           return;
         }
-        if (list.length > 0) this.selectedJournal.set(list[0]);
+        if (list.length > 0) {
+          this.selectedJournal.set(list[0]);
+          this.loadJournalEntries();
+        }
         this.loadingJournals.set(false);
       },
       error: () => {
@@ -104,6 +140,88 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     const filter = this.riskFilter();
     return filter ? all.filter(c => c.riskLevel === filter) : all;
   });
+
+  searchPlaceholder = computed(() =>
+    this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
+  );
+
+  browsePages = computed(() => Math.max(1, Math.ceil(this.browseTotal() / this.browsePageSize)));
+
+  selectJournal(journalNo: number): void {
+    if (this.running()) return;
+    this.selectedJournal.set(journalNo);
+    this.result.set(null);
+    this.riskFilter.set('');
+    this.browsePage.set(1);
+    this.loadJournalEntries();
+  }
+
+  setSearchField(field: JournalSearchField): void {
+    this.searchField.set(field);
+    if (this.searchTerm.trim()) this.searchChanges.next();
+  }
+
+  onSearchChange(): void {
+    this.searchChanges.next();
+  }
+
+  findMyPublishedMarks(): void {
+    this.searchField.set('agentName');
+    this.searchTerm = this.agentSearchName || this.firmName;
+    this.browsePage.set(1);
+    this.loadJournalEntries();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.browsePage.set(1);
+    this.loadJournalEntries();
+  }
+
+  goToBrowsePage(page: number): void {
+    if (page < 1 || page > this.browsePages() || page === this.browsePage()) return;
+    this.browsePage.set(page);
+    this.loadJournalEntries();
+  }
+
+  private loadJournalEntries(): void {
+    const journalNo = this.selectedJournal();
+    if (journalNo == null) return;
+    this.browsing.set(true);
+    this.browseError.set('');
+    const req: Record<string, string | number> = {
+      page: this.browsePage() - 1,
+      size: this.browsePageSize,
+      sort: 'applicationNo,desc',
+    };
+    const term = this.searchTerm.trim();
+    if (term) {
+      if (this.searchField() === 'applicationNo') {
+        if (!/^\d+$/.test(term)) {
+          this.journalMarks.set([]);
+          this.browseTotal.set(0);
+          this.browseError.set('Application number must contain digits only.');
+          this.browsing.set(false);
+          return;
+        }
+        req['applicationNo.equals'] = term;
+      } else {
+        req[`${this.searchField()}.contains`] = term;
+      }
+    }
+    this.trademarkService.queryByJournal(journalNo, req).subscribe({
+      next: response => {
+        this.journalMarks.set(response.body ?? []);
+        this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
+        this.browsing.set(false);
+      },
+      error: () => {
+        this.journalMarks.set([]);
+        this.browseError.set('Could not load this journal. Please try again.');
+        this.browsing.set(false);
+      },
+    });
+  }
 
   counts = computed(() => {
     const all = this.result()?.conflicts ?? [];
