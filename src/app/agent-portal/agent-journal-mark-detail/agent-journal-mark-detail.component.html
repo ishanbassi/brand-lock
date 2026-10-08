@@ -1,62 +1,82 @@
-<div class="mark-page">
-  <a routerLink="/agent-portal/watch/journal" class="back-link"><ap-icon name="chevron" [size]="14" /> Back to Journal Watch</a>
+<div class="detail-page">
+  <a routerLink="/agent-portal/watch/journal" class="back-link">&lsaquo; Back to Journal Watch</a>
 
   @if (loading()) {
-    <div class="state-card">Loading trademark details…</div>
-  } @else if (error() || !trademark()) {
-    <div class="state-card error">{{ error() || 'Trademark not found.' }}</div>
+    <div class="loading-state">Loading trademark…</div>
+  } @else if (!trademark()) {
+    <div class="alert-error">{{ error() || 'Trademark not found.' }}</div>
   } @else {
-    <header class="mark-header">
-      <div>
+    <header class="detail-header">
+      <div class="title-block">
         <h1>{{ trademark()!.name || 'Application ' + trademark()!.applicationNo }}</h1>
-        <div class="header-meta">
-          <span>Application {{ trademark()!.applicationNo || '—' }}</span>
-          <span>Class {{ trademark()!.tmClass || '—' }}</span>
-          <span class="status-chip">{{ trademark()!.trademarkStatus || 'Unknown status' }}</span>
+        <div class="title-meta">
+          @if (trademark()!.applicationNo) { <span>Application {{ trademark()!.applicationNo }}</span> }
+          @if (trademark()!.tmClass) { <span>Class {{ trademark()!.tmClass }}</span> }
+          <span class="status-chip">{{ trademark()!.trademarkStatus || 'Unknown' }}</span>
         </div>
       </div>
-      @if (trademark()!.applicationNo) {
-        <button class="refresh-button" type="button" (click)="refresh()" [disabled]="refreshState() === 'fetching'">
-          <ap-icon name="refresh" [size]="16" />
-          {{ refreshState() === 'fetching' ? 'Checking registry…' : 'Refresh from register' }}
-        </button>
-      }
+
+      <div class="detail-actions">
+        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
+        @if (trademark()!.applicationNo) {
+          <button class="btn-ghost" type="button" (click)="refresh()" [disabled]="refreshState() === 'fetching'">
+            @if (refreshState() === 'fetching') {
+              <span class="refresh-spinner" aria-hidden="true"></span> Searching register…
+            } @else {
+              <ap-icon name="refresh" [size]="15" /> Refresh from register
+            }
+          </button>
+        }
+      </div>
     </header>
 
     @if (refreshMessage()) {
-      <div class="refresh-progress" role="status" aria-live="polite"
+      <div class="refresh-status" role="status" aria-live="polite"
         [class.success]="refreshState() === 'updated' || refreshState() === 'fresh'"
         [class.warning]="refreshState() === 'busy' || refreshState() === 'failed'">
-        @if (refreshState() === 'fetching') { <span class="spinner"></span> }
-        @else if (refreshState() === 'updated' || refreshState() === 'fresh') { <ap-icon name="check" [size]="17" /> }
-        @else { <ap-icon name="alert" [size]="17" /> }
+        @if (refreshState() === 'fetching') { <span class="refresh-spinner" aria-hidden="true"></span> }
+        @else if (refreshState() === 'updated' || refreshState() === 'fresh') { <ap-icon name="check" [size]="16" /> }
+        @else { <ap-icon name="alert" [size]="16" /> }
         <span>{{ refreshMessage() }}</span>
       </div>
     }
 
-    <div class="detail-grid">
-      <section class="artwork-panel">
-        <img [src]="imageUrl()" [alt]="(trademark()!.name || 'Trademark') + ' artwork'" />
-        <span>Published in Journal {{ trademark()!.journalNo || '—' }}</span>
-      </section>
+    @if (error()) {
+      <div class="alert-error">{{ error() }}</div>
+    }
 
-      <section class="facts-panel">
-        <h2>Trademark information</h2>
-        <dl>
-          <div><dt>Trademark</dt><dd>{{ trademark()!.name || '—' }}</dd></div>
-          <div><dt>Type</dt><dd>{{ trademark()!.type === 'IMAGEMARK' ? 'Image (Device)' : (trademark()!.type || 'Wordmark') }}</dd></div>
-          <div><dt>Application number</dt><dd>{{ trademark()!.applicationNo || '—' }}</dd></div>
-          <div><dt>Class</dt><dd>{{ trademark()!.tmClass || '—' }}</dd></div>
-          <div><dt>Filing date</dt><dd>{{ trademark()!.applicationDate?.format('ddd, DD MMM YYYY') || '—' }}</dd></div>
-          <div><dt>Status</dt><dd>{{ trademark()!.trademarkStatus || 'Unknown' }}</dd></div>
-          <div class="wide"><dt>Goods / services</dt><dd>{{ trademark()!.details || 'No description on record.' }}</dd></div>
-          @if (trademark()!.proprietorName) { <div><dt>Party</dt><dd>{{ trademark()!.proprietorName }}</dd></div> }
-          @if (trademark()!.proprietorAddress) { <div class="wide"><dt>Party address</dt><dd>{{ trademark()!.proprietorAddress }}</dd></div> }
-          @if (trademark()!.headOffice) { <div><dt>Jurisdiction</dt><dd>{{ trademark()!.headOffice }}</dd></div> }
-          @if (trademark()!.agentName) { <div><dt>Agent</dt><dd>{{ trademark()!.agentName }}</dd></div> }
-          @if (trademark()!.agentAddress) { <div class="wide"><dt>Agent address</dt><dd>{{ trademark()!.agentAddress }}</dd></div> }
-        </dl>
-      </section>
+    <div class="source-banner">
+      <ap-icon name="journal" [size]="16" />
+      <span>Published in Trade Marks Journal {{ trademark()!.journalNo || '—' }}.</span>
     </div>
+
+    <section class="card">
+      <h2>Details</h2>
+      <div class="details-layout has-artwork">
+        <figure class="artwork">
+          <img [src]="imageUrl()" [alt]="'Artwork for ' + (trademark()!.name || 'this mark')" />
+        </figure>
+        <dl class="detail-grid">
+          <div><dt>Party</dt><dd>{{ trademark()!.proprietorName || '—' }}</dd></div>
+          <div><dt>Class</dt><dd>{{ trademark()!.tmClass || '—' }}</dd></div>
+          <div><dt>Status</dt><dd>{{ trademark()!.trademarkStatus || 'Unknown' }}</dd></div>
+          <div><dt>Type</dt><dd>{{ trademark()!.type === 'IMAGEMARK' ? 'Image (Device)' : (trademark()!.type || 'Wordmark') }}</dd></div>
+          <div><dt>Filed</dt><dd>{{ trademark()!.applicationDate?.format('DD MMM YYYY') || '—' }}</dd></div>
+          <div><dt>Journal</dt><dd>{{ trademark()!.journalNo || '—' }}</dd></div>
+          <div><dt>Jurisdiction</dt><dd>{{ trademark()!.headOffice || '—' }}</dd></div>
+          <div><dt>Agent</dt><dd>{{ trademark()!.agentName || '—' }}</dd></div>
+        </dl>
+      </div>
+      @if (trademark()!.proprietorAddress || trademark()!.agentAddress) {
+        <dl class="detail-grid address-grid">
+          @if (trademark()!.proprietorAddress) { <div><dt>Party address</dt><dd>{{ trademark()!.proprietorAddress }}</dd></div> }
+          @if (trademark()!.agentAddress) { <div><dt>Agent address</dt><dd>{{ trademark()!.agentAddress }}</dd></div> }
+        </dl>
+      }
+      <div class="goods">
+        <dt>Goods / services</dt>
+        <p>{{ trademark()!.details || 'No description on record.' }}</p>
+      </div>
+    </section>
   }
 </div>

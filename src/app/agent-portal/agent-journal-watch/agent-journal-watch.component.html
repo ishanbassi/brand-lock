@@ -13,6 +13,7 @@
     <div class="alert-error">{{ error() }}</div>
   }
 
+  @if (selectedJournal() === null) {
   <section class="journal-shelf" aria-labelledby="journal-heading">
     <div class="section-heading">
       <div>
@@ -49,56 +50,97 @@
       </div>
     }
   </section>
-
-  @if (selectedJournal() !== null) {
+  } @else {
   <section class="journal-workspace">
     <div class="workspace-head">
       <div>
+        <button type="button" class="back-to-journals" (click)="backToJournals()">
+          <ap-icon name="chevron" [size]="14" /> All journals
+        </button>
         <h2>Journal {{ selectedJournal() }}</h2>
         <p>Search this issue, find your own publications, or run a portfolio conflict check.</p>
       </div>
       <div class="workspace-actions">
-        <button type="button" class="btn-outline" (click)="findMyPublishedMarks()" [disabled]="browsing()">
-          <ap-icon name="portfolio" [size]="16" /> Find my published marks
+        <button type="button" class="btn-outline" [class.active]="portfolioOnly()" (click)="findMyPublishedMarks()" [disabled]="browsing()">
+          <ap-icon name="portfolio" [size]="16" /> {{ portfolioOnly() ? 'Showing my published marks' : 'Find my published marks' }}
         </button>
       </div>
     </div>
 
-    <div class="search-panel">
-      <div class="search-types" aria-label="Search by">
-        @for (field of searchFields; track field.value) {
-          <button
-            type="button"
-            [class.active]="searchField() === field.value"
-            (click)="setSearchField(field.value)"
-          >{{ field.label }}</button>
-        }
-      </div>
-      <div class="search-row">
-        <label class="search-box">
-          <span class="sr-only">{{ searchPlaceholder() }}</span>
-          <ap-icon name="search" [size]="18" />
+    <div class="filters-bar" role="search" [attr.aria-label]="'Filter Journal ' + selectedJournal()">
+      <div class="search-group">
+        <select
+          class="search-by"
+          aria-label="Search by"
+          [ngModel]="searchField()"
+          (ngModelChange)="setSearchField($event)"
+        >
+          @for (field of searchFields; track field.value) {
+            <option [value]="field.value">{{ field.label }}</option>
+          }
+        </select>
+        <div class="search-wrap">
+          <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
           <input
             type="search"
+            class="search-input"
+            [attr.aria-label]="searchPlaceholder()"
+            [attr.inputmode]="searchField() === 'applicationNo' ? 'numeric' : null"
             [placeholder]="searchPlaceholder()"
             [(ngModel)]="searchTerm"
             (ngModelChange)="onSearchChange()"
+            autocomplete="off"
           />
           @if (searchTerm) {
-            <button type="button" class="clear-search" (click)="clearSearch()" aria-label="Clear search">
-              <ap-icon name="close" [size]="15" />
+            <button type="button" class="search-clear" (click)="clearSearch()" aria-label="Clear search">
+              <ap-icon name="close" [size]="16" />
             </button>
           }
-        </label>
+          @if (suggestionsLoading()) { <span class="suggestion-spinner spinner" aria-hidden="true"></span> }
+
+          @if (suggestionsOpen() && searchField() !== 'applicationNo') {
+            <div class="suggestion-panel">
+              @if (suggestions().length) {
+                @for (suggestion of suggestions(); track suggestion) {
+                  <label class="suggestion-row" [class.selected]="isSuggestionSelected(suggestion)">
+                    <input type="checkbox" [checked]="isSuggestionSelected(suggestion)" (change)="toggleSuggestion(suggestion)" />
+                    <span>{{ suggestion }}</span>
+                  </label>
+                }
+              } @else if (!suggestionsLoading()) {
+                <div class="suggestion-empty">No matching {{ searchFieldLabel().toLowerCase() }} found in this journal.</div>
+              }
+            </div>
+          }
+        </div>
       </div>
     </div>
+
+    @if (portfolioOnly() || selectedFilterEntries().length) {
+      <div class="active-filters" aria-label="Selected filters">
+        @if (portfolioOnly()) {
+          <span class="filter-token portfolio-token"><ap-icon name="portfolio" [size]="14" /> In my portfolio</span>
+        }
+        @for (filter of selectedFilterEntries(); track filter.field + filter.value) {
+          <span class="filter-token">
+            <small>{{ filter.label }}</small> {{ filter.value }}
+            <button type="button" (click)="removeFilter(filter.field, filter.value)" [attr.aria-label]="'Remove ' + filter.value">
+              <ap-icon name="close" [size]="13" />
+            </button>
+          </span>
+        }
+        <button type="button" class="clear-filters" (click)="clearAllFilters()">Clear filters</button>
+      </div>
+    }
 
     @if (browseError()) {
       <div class="browse-message error">{{ browseError() }}</div>
     } @else if (browsing()) {
       <div class="browse-message" role="status"><span class="spinner"></span> Loading Journal {{ selectedJournal() }}…</div>
     } @else if (journalMarks().length === 0) {
-      <div class="browse-message">No published marks match this search.</div>
+      <div class="browse-message">
+        {{ portfolioOnly() ? 'No marks from your portfolio were published in this journal.' : 'No published marks match this search.' }}
+      </div>
     } @else {
       <div class="journal-table-wrap">
         <table class="journal-table">
@@ -111,7 +153,11 @@
                 <td class="tabular">{{ tm.tmClass || '—' }}</td>
                 <td>{{ tm.proprietorName || '—' }}</td>
                 <td>{{ tm.agentName || '—' }}</td>
-                <td><a class="view-mark" [routerLink]="['/agent-portal/watch/journal/marks', tm.id]">View mark</a></td>
+                <td>
+                  <a class="view-mark" [routerLink]="markRoute(tm)">
+                    {{ tm.applicationNo && portfolioLinks()[tm.applicationNo.toString()] ? 'Open portfolio mark' : 'View mark' }}
+                  </a>
+                </td>
               </tr>
             }
           </tbody>

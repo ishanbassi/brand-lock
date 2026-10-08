@@ -6,22 +6,30 @@ import { ITrademark } from '../../../models/trademark.model';
 import { environment } from '../../../environments/environment';
 import { TrademarkService } from '../../shared/services/trademark.service';
 import { IconComponent } from '../ui/icon.component';
+import { AgentDataService } from '../../shared/services/agent-data.service';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { fileSlug, saveBlob } from '../ui/save-blob';
 
 type RefreshState = 'idle' | 'fetching' | 'updated' | 'fresh' | 'busy' | 'failed';
 
 @Component({
   selector: 'app-agent-journal-mark-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, IconComponent],
+  imports: [CommonModule, RouterModule, IconComponent, ExportMenuComponent],
   templateUrl: './agent-journal-mark-detail.component.html',
-  styleUrl: './agent-journal-mark-detail.component.scss',
+  styleUrls: [
+    '../agent-trademark-detail/agent-trademark-detail.component.scss',
+    './agent-journal-mark-detail.component.scss',
+  ],
 })
 export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
+  trademarkId!: number;
   trademark = signal<ITrademark | null>(null);
   loading = signal(true);
   error = signal('');
   refreshState = signal<RefreshState>('idle');
   refreshMessage = signal('');
+  exporting = signal<ExportFormat | null>(null);
   readonly baseUrl = environment.BaseApiUrl;
   private refreshPoll?: Subscription;
   private readonly pollIntervalMs = 5000;
@@ -30,6 +38,7 @@ export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly trademarkService: TrademarkService,
+    private readonly agentDataService: AgentDataService,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +48,7 @@ export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
+    this.trademarkId = id;
     this.trademarkService.find(id).subscribe({
       next: response => {
         this.trademark.set(response.body);
@@ -59,6 +69,26 @@ export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
     return this.trademark()?.imgUrl
       ? `${this.baseUrl}files/${this.trademark()!.imgUrl}`
       : '/assets/images/trademark.png';
+  }
+
+  export(format: ExportFormat): void {
+    if (this.exporting()) return;
+    this.exporting.set(format);
+    const tm = this.trademark();
+    const key = tm?.applicationNo ? String(tm.applicationNo) : fileSlug(tm?.name, 'journal-mark');
+    const request = format === 'excel'
+      ? this.agentDataService.exportJournalTrademarkExcel(this.trademarkId)
+      : this.agentDataService.exportJournalTrademarkPdf(this.trademarkId);
+    request.subscribe({
+      next: blob => {
+        saveBlob(blob, `journal-mark-${key}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+        this.exporting.set(null);
+      },
+      error: () => {
+        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.exporting.set(null);
+      },
+    });
   }
 
   refresh(): void {

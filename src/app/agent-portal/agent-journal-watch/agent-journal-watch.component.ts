@@ -13,6 +13,7 @@ import { ITrademark } from '../../../models/trademark.model';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 
 type JournalSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
+type SuggestionField = Exclude<JournalSearchField, 'applicationNo'>;
 
 /** Descriptions longer than this are clamped until the agent asks for the rest. */
 const DESCRIPTION_PREVIEW_CHARS = 160;
@@ -44,6 +45,12 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   ];
   searchField = signal<JournalSearchField>('name');
   searchTerm = '';
+  selectedFilters = signal<Record<SuggestionField, string[]>>({ name: [], agentName: [], proprietorName: [] });
+  suggestions = signal<string[]>([]);
+  suggestionsLoading = signal(false);
+  suggestionsOpen = signal(false);
+  portfolioOnly = signal(false);
+  portfolioLinks = signal<Record<string, number>>({});
   journalMarks = signal<ITrademark[]>([]);
   browsing = signal(false);
   browseError = signal('');
@@ -52,7 +59,6 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   readonly browsePageSize = 20;
   private readonly searchChanges = new Subject<void>();
   private searchSubscription?: Subscription;
-  private agentSearchName = '';
 
   /** All 45 Nice classes. None selected means every class — the default. */
   readonly allClasses = Array.from({ length: 45 }, (_, i) => i + 1);
@@ -94,7 +100,6 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       next: profile => {
         const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
         this.firmName = branding.firmDisplayName || profile.companyName || 'Trademarx';
-        this.agentSearchName = profile.companyName || profile.fullName || `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim();
         if (branding.reportAccentColor && /^#?[\da-f]{6}$/i.test(branding.reportAccentColor)) {
           this.accentColor = branding.reportAccentColor.startsWith('#') ? branding.reportAccentColor : `#${branding.reportAccentColor}`;
         }
@@ -106,10 +111,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     const requested = Number(this.route.snapshot.queryParamMap.get('journalNo'));
     const deepLinked = Number.isFinite(requested) && requested > 0 ? requested : null;
 
-    this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => {
-      this.browsePage.set(1);
-      this.loadJournalEntries();
-    });
+    this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => this.handleSearchInput());
 
     this.agentDataService.getWatchJournals().subscribe({
       next: list => {
@@ -121,10 +123,6 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
           this.loadJournalEntries();
           this.run();
           return;
-        }
-        if (list.length > 0) {
-          this.selectedJournal.set(list[0]);
-          this.loadJournalEntries();
         }
         this.loadingJournals.set(false);
       },
@@ -144,6 +142,9 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   searchPlaceholder = computed(() =>
     this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
   );
+  searchFieldLabel = computed(() =>
+    this.searchFields.find(field => field.value === this.searchField())?.label ?? 'value',
+  );
 
   browsePages = computed(() => Math.max(1, Math.ceil(this.browseTotal() / this.browsePageSize)));
 
@@ -156,9 +157,31 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.loadJournalEntries();
   }
 
+  backToJournals(): void {
+    this.selectedJournal.set(null);
+    this.result.set(null);
+    this.journalMarks.set([]);
+    this.browseTotal.set(0);
+    this.browsePage.set(1);
+    this.searchTerm = '';
+    this.searchField.set('name');
+    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
+    this.suggestions.set([]);
+    this.suggestionsOpen.set(false);
+    this.portfolioOnly.set(false);
+    this.browseError.set('');
+    this.error.set('');
+    this.classPickerOpen.set(false);
+  }
+
   setSearchField(field: JournalSearchField): void {
     this.searchField.set(field);
-    if (this.searchTerm.trim()) this.searchChanges.next();
+    this.searchTerm = '';
+    this.suggestions.set([]);
+    this.suggestionsOpen.set(false);
+    this.portfolioOnly.set(false);
+    this.browsePage.set(1);
+    this.loadJournalEntries();
   }
 
   onSearchChange(): void {
@@ -166,14 +189,70 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   findMyPublishedMarks(): void {
-    this.searchField.set('agentName');
-    this.searchTerm = this.agentSearchName || this.firmName;
+    this.portfolioOnly.set(true);
+    this.searchTerm = '';
+    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
+    this.suggestions.set([]);
+    this.suggestionsOpen.set(false);
     this.browsePage.set(1);
     this.loadJournalEntries();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.suggestions.set([]);
+    this.suggestionsOpen.set(false);
+    this.browsePage.set(1);
+    if (this.searchField() === 'applicationNo') this.loadJournalEntries();
+  }
+
+  selectedFilterEntries = computed(() => {
+    const selected = this.selectedFilters();
+    return (Object.keys(selected) as SuggestionField[]).flatMap(field =>
+      selected[field].map(value => ({ field, value, label: this.searchFields.find(item => item.value === field)?.label ?? field })),
+    );
+  });
+
+  isSuggestionSelected(value: string): boolean {
+    const field = this.searchField();
+    return field !== 'applicationNo' && this.selectedFilters()[field].includes(value);
+  }
+
+  toggleSuggestion(value: string): void {
+    const field = this.searchField();
+    if (field === 'applicationNo') return;
+    this.portfolioOnly.set(false);
+    this.selectedFilters.update(current => {
+      const values = current[field];
+      return {
+        ...current,
+        [field]: values.includes(value) ? values.filter(item => item !== value) : [...values, value],
+      };
+    });
+    this.browsePage.set(1);
+    this.loadJournalEntries();
+  }
+
+  markRoute(mark: ITrademark): (string | number)[] {
+    const portfolioId = mark.applicationNo ? this.portfolioLinks()[String(mark.applicationNo)] : undefined;
+    return portfolioId
+      ? ['/agent-portal/portfolio', portfolioId]
+      : ['/agent-portal/watch/journal/marks', mark.id!];
+  }
+
+  removeFilter(field: SuggestionField, value: string): void {
+    this.portfolioOnly.set(false);
+    this.selectedFilters.update(current => ({ ...current, [field]: current[field].filter(item => item !== value) }));
+    this.browsePage.set(1);
+    this.loadJournalEntries();
+  }
+
+  clearAllFilters(): void {
+    this.portfolioOnly.set(false);
+    this.searchTerm = '';
+    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
+    this.suggestions.set([]);
+    this.suggestionsOpen.set(false);
     this.browsePage.set(1);
     this.loadJournalEntries();
   }
@@ -189,11 +268,32 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     if (journalNo == null) return;
     this.browsing.set(true);
     this.browseError.set('');
-    const req: Record<string, string | number> = {
+    if (this.portfolioOnly()) {
+      this.agentDataService.getPortfolioPublications(journalNo, this.browsePage() - 1, this.browsePageSize).subscribe({
+        next: response => {
+          const marks = response.body ?? [];
+          this.journalMarks.set(marks);
+          this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
+          this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
+        },
+        error: () => {
+          this.journalMarks.set([]);
+          this.browseError.set('Could not find portfolio marks in this journal. Please try again.');
+          this.browsing.set(false);
+        },
+      });
+      return;
+    }
+
+    const req: Record<string, string | number | string[]> = {
       page: this.browsePage() - 1,
       size: this.browsePageSize,
       sort: 'applicationNo,desc',
     };
+    const selected = this.selectedFilters();
+    for (const field of Object.keys(selected) as SuggestionField[]) {
+      if (selected[field].length) req[`${field}.in`] = selected[field];
+    }
     const term = this.searchTerm.trim();
     if (term) {
       if (this.searchField() === 'applicationNo') {
@@ -206,19 +306,80 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
         }
         req['applicationNo.equals'] = term;
       } else {
-        req[`${this.searchField()}.contains`] = term;
+        // Text entry for name fields drives suggestions; only checked values filter the journal.
       }
     }
     this.trademarkService.queryByJournal(journalNo, req).subscribe({
       next: response => {
-        this.journalMarks.set(response.body ?? []);
+        const marks = response.body ?? [];
+        this.journalMarks.set(marks);
+        this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
         this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
-        this.browsing.set(false);
       },
       error: () => {
         this.journalMarks.set([]);
         this.browseError.set('Could not load this journal. Please try again.');
         this.browsing.set(false);
+      },
+    });
+  }
+
+  private resolvePortfolioLinks(marks: ITrademark[], settled: () => void): void {
+    const applicationNos = [...new Set(marks.map(mark => mark.applicationNo).filter((value): value is number => value != null))];
+    if (!applicationNos.length) {
+      this.portfolioLinks.set({});
+      settled();
+      return;
+    }
+    this.agentDataService.getPortfolioLinks(applicationNos).subscribe({
+      next: links => {
+        this.portfolioLinks.set(links);
+        settled();
+      },
+      error: () => {
+        this.portfolioLinks.set({});
+        settled();
+      },
+    });
+  }
+
+  private handleSearchInput(): void {
+    const term = this.searchTerm.trim();
+    if (this.searchField() === 'applicationNo') {
+      this.portfolioOnly.set(false);
+      this.browsePage.set(1);
+      this.loadJournalEntries();
+      return;
+    }
+    if (term.length < 2) {
+      this.suggestions.set([]);
+      this.suggestionsOpen.set(false);
+      return;
+    }
+    this.loadSuggestions(term, this.searchField() as SuggestionField);
+  }
+
+  private loadSuggestions(term: string, field: SuggestionField): void {
+    const journalNo = this.selectedJournal();
+    if (journalNo == null) return;
+    this.suggestionsLoading.set(true);
+    this.suggestionsOpen.set(true);
+    this.trademarkService.queryByJournal(journalNo, {
+      page: 0,
+      size: 30,
+      sort: `${field},asc`,
+      [`${field}.contains`]: term,
+    }).subscribe({
+      next: response => {
+        const values = (response.body ?? [])
+          .map(mark => String(mark[field] ?? '').trim())
+          .filter(Boolean);
+        this.suggestions.set([...new Set(values)].slice(0, 12));
+        this.suggestionsLoading.set(false);
+      },
+      error: () => {
+        this.suggestions.set([]);
+        this.suggestionsLoading.set(false);
       },
     });
   }

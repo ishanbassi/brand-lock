@@ -1,61 +1,12 @@
-$ink: var(--ap-ink);
-$muted: var(--ap-ink-muted);
-$rule: var(--ap-rule);
-$paper: var(--ap-paper);
-$accent: var(--ap-accent);
-
-* { box-sizing: border-box; }
-
-.mark-page { max-width: 1080px; padding: var(--ap-space-6); color: $ink; }
-.back-link { display: inline-flex; align-items: center; gap: 5px; margin-bottom: var(--ap-space-5); color: $muted; font-size: .8125rem; text-decoration: none; }
-.back-link ap-icon { transform: rotate(180deg); }
-.back-link:hover { color: $accent; text-decoration: underline; text-underline-offset: 3px; }
-
-.mark-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--ap-space-5); margin-bottom: var(--ap-space-4); }
-h1 { margin: 0 0 var(--ap-space-2); font-size: 1.75rem; letter-spacing: -.02em; }
-.header-meta { display: flex; align-items: center; gap: var(--ap-space-2); flex-wrap: wrap; color: $muted; font-size: .8125rem; font-variant-numeric: tabular-nums; }
-.header-meta > span + span::before { content: '·'; margin-right: var(--ap-space-2); color: var(--ap-ink-faint); }
-.status-chip { display: inline-flex; padding: 4px 9px; border-radius: 999px; background: var(--ap-done-soft); color: var(--ap-done); font-weight: 700; }
-.status-chip::before { display: none; }
-
-.refresh-button { display: inline-flex; align-items: center; justify-content: center; gap: var(--ap-space-2); min-height: 40px; padding: 8px 13px; border: 1px solid $rule; border-radius: 10px; background: white; color: $ink; font: inherit; font-size: .8125rem; font-weight: 650; cursor: pointer; white-space: nowrap; }
-.refresh-button:hover:not(:disabled) { border-color: $accent; color: $accent; }
-.refresh-button:focus-visible { outline: 3px solid color-mix(in srgb, $accent 25%, transparent); outline-offset: 2px; }
-.refresh-button:disabled { opacity: .65; cursor: wait; }
-
-.refresh-progress { display: flex; align-items: center; gap: var(--ap-space-2); margin-bottom: var(--ap-space-4); padding: var(--ap-space-3) var(--ap-space-4); border-radius: 12px; background: color-mix(in srgb, $accent 8%, white); color: $accent; font-size: .8125rem; }
-.refresh-progress.success { background: var(--ap-done-soft); color: var(--ap-done); }
-.refresh-progress.warning { background: var(--ap-due-soft); color: var(--ap-due); }
-.spinner { width: 15px; height: 15px; border: 2px solid color-mix(in srgb, $accent 20%, white); border-top-color: $accent; border-radius: 50%; animation: spin .8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.detail-grid { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: var(--ap-space-4); align-items: start; }
-.artwork-panel, .facts-panel, .state-card { background: white; border: 1px solid $rule; border-radius: 14px; }
-.artwork-panel { padding: var(--ap-space-5); text-align: center; }
-.artwork-panel img { display: block; width: 100%; height: 210px; object-fit: contain; margin-bottom: var(--ap-space-3); }
-.artwork-panel span { color: $muted; font-size: .75rem; font-variant-numeric: tabular-nums; }
-.facts-panel { overflow: hidden; }
-.facts-panel h2 { margin: 0; padding: var(--ap-space-4) var(--ap-space-5); border-bottom: 1px solid $rule; font-size: 1rem; }
-dl { display: grid; grid-template-columns: 1fr 1fr; margin: 0; }
-dl > div { min-width: 0; padding: var(--ap-space-4) var(--ap-space-5); border-bottom: 1px solid $rule; }
-dl > div:nth-child(odd):not(.wide) { border-right: 1px solid $rule; }
-dl > div.wide { grid-column: 1 / -1; }
-dt { margin-bottom: 5px; color: $muted; font-size: .6875rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-dd { margin: 0; color: $ink; font-size: .875rem; line-height: 1.55; overflow-wrap: anywhere; }
-.state-card { padding: var(--ap-space-6); color: $muted; }
-.state-card.error { color: var(--ap-overdue); background: var(--ap-overdue-soft); }
-
-@media (max-width: 760px) {
-  .mark-page { padding: var(--ap-space-4); }
-  .mark-header { flex-direction: column; }
-  .refresh-button { width: 100%; }
-  .detail-grid { grid-template-columns: 1fr; }
-  .artwork-panel img { height: 170px; }
+// The portfolio detail stylesheet is shared by this component so both agent-side mark views use
+// the same hierarchy and spacing. Only journal-specific additions live here.
+.source-banner {
+  justify-content: flex-start;
+  align-items: center;
 }
 
-@media (max-width: 520px) {
-  dl { grid-template-columns: 1fr; }
-  dl > div, dl > div:nth-child(odd):not(.wide) { grid-column: 1; border-right: 0; }
+.address-grid {
+  margin-top: var(--ap-space-4);
+  padding-top: var(--ap-space-4);
+  border-top: 1px solid var(--ap-rule);
 }
-
-@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 1.6s; } }
