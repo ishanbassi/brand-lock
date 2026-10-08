@@ -205,7 +205,9 @@
             }
           </section>
       }
-    <div class="table-card" tabindex="0" role="region" aria-label="Trademark portfolio table; scroll to see more columns">
+    <div #portfolioTable class="table-card" tabindex="0" role="region" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+         aria-label="Trademark portfolio table; use a two-finger trackpad gesture to pan in any direction, or arrow keys after focusing the table"
+         (keydown)="panTable($event, portfolioTable)">
       <table class="tm-table" [style.width.px]="tableWidth">
         <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
         <colgroup>
@@ -232,7 +234,7 @@
                     <ap-icon [name]="sortField !== col.field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" />
                   </span>
                 </button>
-                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + col.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, col.field)" (keydown)="resizeWithKeyboard($event, col.field)"></span>
+                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + col.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, col.field)" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, col.field)"></span>
               </th>
             }
             @for (field of shownCustomFields(); track field.id) {
@@ -242,10 +244,10 @@
                   {{ field.label }}
                   <span class="sort-indicator" aria-hidden="true"><ap-icon [name]="sortField !== customSortColumn(field).field ? 'sort' : (sortDir === 'asc' ? 'sort-asc' : 'sort-desc')" [size]="14" /></span>
                 </button>
-                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + field.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, 'custom:' + field.fieldKey)" (keydown)="resizeWithKeyboard($event, 'custom:' + field.fieldKey)"></span>
+                <span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + field.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, 'custom:' + field.fieldKey)" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'custom:' + field.fieldKey)"></span>
               </th>
             }
-            <th scope="col" class="type-col">Type<span class="column-resize" role="separator" tabindex="0" aria-label="Resize type column" aria-orientation="vertical" (pointerdown)="startResize($event, 'type')" (keydown)="resizeWithKeyboard($event, 'type')"></span></th>
+            <th scope="col" class="type-col">Type<span class="column-resize" role="separator" tabindex="0" aria-label="Resize type column" aria-orientation="vertical" (pointerdown)="startResize($event, 'type')" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'type')"></span></th>
             <th scope="col" class="actions-col">Actions</th>
           </tr>
         </thead>

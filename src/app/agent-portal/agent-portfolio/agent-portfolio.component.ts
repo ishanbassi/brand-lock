@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
@@ -130,7 +130,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     { value: 'SLOGAN', label: 'Slogan' },
   ];
   columnWidths: Record<string, number> = {};
-  private resizeState: { key: string; startX: number; startWidth: number } | null = null;
+  private resizeState: { key: string; pointerId: number; startX: number; startWidth: number } | null = null;
   private readonly customValueTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly pendingCustomValues = new Map<string, { trademarkId: number; fieldKey: string; value: string }>();
   private readonly savingCustomValueKeys = signal<Set<string>>(new Set());
@@ -296,7 +296,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   startResize(event: PointerEvent, key: string): void {
     event.preventDefault();
     event.stopPropagation();
-    this.resizeState = { key, startX: event.clientX, startWidth: this.columnWidth(key) };
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    this.resizeState = { key, pointerId: event.pointerId, startX: event.clientX, startWidth: this.columnWidth(key) };
   }
 
   resizeWithKeyboard(event: KeyboardEvent, key: string): void {
@@ -307,19 +308,40 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     try { localStorage.setItem('agent-portfolio-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Browsers can disable storage. */ }
   }
 
-  @HostListener('window:pointermove', ['$event'])
-  onResizeMove(event: PointerEvent): void {
-    if (!this.resizeState) return;
+  /**
+   * Pointer capture keeps this listener active only while a column handle is being dragged.
+   * A permanent window pointer listener made every touchpad movement enter Angular change
+   * detection, including native two-finger scrolling over a portfolio row.
+   */
+  resizeColumn(event: PointerEvent): void {
+    if (!this.resizeState || event.pointerId !== this.resizeState.pointerId) return;
     const { key, startX, startWidth } = this.resizeState;
     this.columnWidths = { ...this.columnWidths, [key]: Math.max(90, Math.min(600, startWidth + event.clientX - startX)) };
   }
 
-  @HostListener('window:pointerup')
-  @HostListener('window:pointercancel')
   endResize(): void {
     if (!this.resizeState) return;
     this.resizeState = null;
     try { localStorage.setItem('agent-portfolio-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Browsers can disable storage. */ }
+  }
+
+  /** Keyboard parity for the table's native two-axis touchpad scroll. */
+  panTable(event: KeyboardEvent, table: HTMLElement): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('input, select, textarea, button, a, [contenteditable="true"]')) return;
+
+    const distance = event.shiftKey ? 220 : 56;
+    const direction: Record<string, [number, number]> = {
+      ArrowLeft: [-distance, 0],
+      ArrowRight: [distance, 0],
+      ArrowUp: [0, -distance],
+      ArrowDown: [0, distance],
+    };
+    const movement = direction[event.key];
+    if (!movement) return;
+
+    event.preventDefault();
+    table.scrollBy({ left: movement[0], top: movement[1], behavior: 'auto' });
   }
 
   /**

@@ -531,6 +531,11 @@ $white: #ffffff;
   // reach while sticky identity/action cells preserve the two common routes through every row.
   max-height: min(62vh, 680px);
   overflow: auto;
+  // Let the browser's compositor own two-axis trackpad panning. A row hover must not animate
+  // while it passes beneath the stationary pointer during a scroll.
+  scroll-behavior: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
 
@@ -568,7 +573,6 @@ $white: #ffffff;
 
   tbody tr {
     border-bottom: 1px solid $gray-100;
-    transition: background 0.1s;
 
     &:last-child { border-bottom: none; }
     &:hover, &.selected { background: var(--ap-accent-soft); }
