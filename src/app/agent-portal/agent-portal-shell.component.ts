@@ -99,12 +99,7 @@ export class AgentPortalShellComponent {
       // are buttons at the top of Add Trademark rather than three nav peers for one job.
       items: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
-        {
-          label: 'Add trademark',
-          icon: 'plus',
-          route: '/agent-portal/portfolio/add',
-          alsoMatches: ['/agent-portal/portfolio/claim', '/agent-portal/portfolio/upload'],
-        },
+        
       ],
     },
     {

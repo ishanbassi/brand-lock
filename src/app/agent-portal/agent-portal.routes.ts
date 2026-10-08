@@ -12,14 +12,6 @@ export const agentPortalRoutes: Routes = [
     title: 'My Portfolio | Agent Portal',
   },
   {
-    // The full form, shared with /portfolio/:id/edit. Was application-number only, but agents add
-    // marks before filing them, and those have no number to give. Marks with a number we don't
-    // hold are fetched from the register later by AgentMarkReconcileJob.
-    path: 'portfolio/add',
-    loadComponent: () => import('./agent-portfolio-form/agent-portfolio-form.component').then(m => m.AgentPortfolioFormComponent),
-    title: 'Add Trademark | Agent Portal',
-  },
-  {
     // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
     path: 'watch/conflicts',
     loadComponent: () => import('./agent-conflicts/agent-conflicts.component').then(m => m.AgentConflictsComponent),
