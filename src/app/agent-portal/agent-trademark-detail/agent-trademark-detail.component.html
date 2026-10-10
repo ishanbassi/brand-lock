@@ -26,7 +26,7 @@
         @if (mark()!.applicationNo) {
           <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
             @if (refreshing()) {
-              Requesting…
+              <span class="refresh-spinner" aria-hidden="true"></span> Searching register…
             } @else {
               <ap-icon name="refresh" [size]="15" /> Refresh from register
             }
@@ -38,6 +38,17 @@
         <button class="btn-danger-ghost" (click)="confirmRemove.set(true)">Remove</button>
       </div>
     </header>
+
+    @if (refreshMessage()) {
+      <div class="refresh-status" role="status" aria-live="polite"
+        [class.success]="refreshState() === 'updated'"
+        [class.warning]="refreshState() === 'busy' || refreshState() === 'failed'">
+        @if (refreshing()) { <span class="refresh-spinner" aria-hidden="true"></span> }
+        @else if (refreshState() === 'updated') { <ap-icon name="check" [size]="16" /> }
+        @else { <ap-icon name="alert" [size]="16" /> }
+        <span>{{ refreshMessage() }}</span>
+      </div>
+    }
 
     @if (notice()) {
       <div class="alert-info">{{ notice() }}<button class="alert-dismiss" (click)="notice.set('')">&times;</button></div>
@@ -203,8 +214,7 @@
 
       @if (customFields().length === 0) {
         <p class="empty-hint">
-          You have no custom fields yet. Import a portfolio spreadsheet and we will keep its extra columns here, or add
-          one below.
+          You have no custom fields yet. Import a portfolio spreadsheet or create a field from the portfolio listing.
         </p>
       } @else {
         <div class="spreadsheet-fields" role="table" aria-label="Imported spreadsheet details">
@@ -216,13 +226,11 @@
             <label class="spreadsheet-field-row" role="row">
               <span class="spreadsheet-field-name" role="cell">
                 {{ field.label }}
-                <button type="button" class="field-remove" (click)="removeCustomValue(field)"
-                        [attr.aria-label]="'Clear ' + field.label + ' for this trademark'" title="Clear this value for this trademark">×</button>
               </span>
               @if (field.dataType === 'DATE') {
                 <input type="date" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey" />
               } @else {
-                <input type="text" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey"
+                <input [type]="field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey"
                        [placeholder]="field.sourceHeader || field.label" />
               }
             </label>
@@ -236,13 +244,6 @@
         </div>
       }
 
-      <div class="add-field">
-        <input type="text" [(ngModel)]="newFieldLabel" name="newFieldLabel" placeholder="Add a field, e.g. GST number"
-               (keyup.enter)="addCustomField()" />
-        <button class="btn-ghost" (click)="addCustomField()" [disabled]="addingField() || !newFieldLabel.trim()">
-          {{ addingField() ? 'Adding…' : 'Add field' }}
-        </button>
-      </div>
     </section>
   }
 </div>

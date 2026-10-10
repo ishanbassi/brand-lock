@@ -16,7 +16,6 @@ $white: #ffffff;
 .detail-page {
   padding: var(--ap-space-6);
   max-width: 980px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
   color: $gray-800;
 
   @media (max-width: 768px) { padding: var(--ap-space-4); }
@@ -174,6 +173,34 @@ $white: #ffffff;
 }
 
 .btn-danger-xs:hover { border-color: $danger; color: $danger; }
+
+.refresh-status {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
+  border-radius: 10px;
+  background: var(--ap-accent-soft);
+  color: $accent;
+  font-size: .875rem;
+
+  &.success { background: var(--ap-done-soft); color: var(--ap-done); }
+  &.warning { background: var(--ap-due-soft); color: var(--ap-due); }
+}
+
+.refresh-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid $gray-200;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: refresh-spin .8s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes refresh-spin { to { transform: rotate(360deg); } }
 
 // ── ALERTS ──────────────────────────────────────────────
 .alert-info, .alert-error, .source-banner {
@@ -356,24 +383,6 @@ $white: #ffffff;
   overflow-wrap: anywhere;
 }
 
-// Clearing a value is available per row, but stays quiet until that row is being inspected.
-.field-remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 var(--ap-space-1);
-  line-height: 1;
-  font-size: 1rem;
-  color: $gray-400;
-  opacity: 0;
-  transition: opacity 0.12s ease, color 0.12s ease;
-
-  &:hover, &:focus-visible { color: $danger; }
-}
-
-.spreadsheet-field-row:hover .field-remove,
-.spreadsheet-field-row:focus-within .field-remove { opacity: 1; }
-
 @media (max-width: 560px) {
   .spreadsheet-heading { display: none; }
 
@@ -399,24 +408,6 @@ $white: #ffffff;
   line-height: 1.5;
   margin: 0 0 var(--ap-space-4);
   max-width: 70ch;
-}
-
-.add-field {
-  display: flex;
-  gap: var(--ap-space-2);
-  margin-top: var(--ap-space-4);
-  padding-top: var(--ap-space-4);
-  border-top: 1px solid $gray-100;
-
-  input {
-    flex: 1;
-    min-width: 0;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border: 1px solid $gray-200;
-    border-radius: 9px;
-    font-family: inherit;
-    font-size: 0.9375rem;
-  }
 }
 
 // Files staged for upload, before the request goes out.
@@ -466,9 +457,9 @@ $white: #ffffff;
   list-style: none;
   margin: var(--ap-space-2) 0 0;
   padding: var(--ap-space-2) var(--ap-space-3);
-  border-left: 3px solid var(--ap-due);
+  border: 1px solid color-mix(in srgb, var(--ap-due) 35%, transparent);
   background: var(--ap-due-soft);
-  border-radius: 0 6px 6px 0;
+  border-radius: 8px;
   font-size: 0.78rem;
   color: var(--ap-due);
 

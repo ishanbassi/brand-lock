@@ -165,6 +165,7 @@ export type PortfolioSearchField = 'NAME' | 'APPLICATION_NO' | 'PROPRIETOR';
 
 /** Portfolio columns the server can sort by — the DTO property names, whitelisted server-side. */
 export type PortfolioSortField =
+  | `custom:${string}`
   | 'name'
   | 'applicationNo'
   | 'tmClass'
@@ -247,6 +248,7 @@ export interface AgentDirectoryEntry {
   primaryAddress?: string;
   /** Distinct addresses on file under this name; > 1 means two firms may share the name. */
   addressCount?: number;
+  addressKey?: string;
 }
 
 /** A proprietor spelling found in the trademark register. */
@@ -255,6 +257,8 @@ export interface ProprietorDirectoryEntry {
   displayName: string;
   markCount: number;
   latestFilingDate?: string;
+  primaryAddress?: string;
+  addressKey?: string;
 }
 
 export interface AgentClaimRequest {
@@ -262,6 +266,8 @@ export interface AgentClaimRequest {
   trademarkIds?: number[];
   /** Claim every mark under the name instead of listing ids, for large firms. */
   claimAllUnderName?: boolean;
+  proprietorAddress?: string;
+  agentAddress?: string;
 }
 
 export interface AgentClaimResult {

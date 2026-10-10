@@ -1,15 +1,15 @@
-$brand-dark: #0f172a;
-$brand-mid: #1e293b;
-$brand-accent: #6366f1;
-$brand-accent-light: #818cf8;
-$brand-gold: #f59e0b;
+$brand-dark: #111e31;
+$brand-mid: #143250;
+$brand-accent: #0869c6;
+$brand-accent-light: #40a8ff;
+$brand-gold: #40a8ff;
 $white: #ffffff;
-$gray-50: #f8fafc;
+$gray-50: #f5f8fc;
 $gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-400: #94a3b8;
-$gray-600: #475569;
-$gray-800: #1e293b;
+$gray-200: #dce5f0;
+$gray-400: #708197;
+$gray-600: #52647b;
+$gray-800: #142238;
 $red: #ef4444;
 
 * { box-sizing: border-box; }
@@ -23,7 +23,7 @@ $red: #ef4444;
 // ── LEFT PANEL ──────────────────────────────────────
 .left-panel {
   width: 42%;
-  background: linear-gradient(135deg, $brand-dark 0%, #1a1f3c 50%, #0d1b2a 100%);
+  background: linear-gradient(125deg, #075eb2 0%, $brand-mid 45%, $brand-dark 100%);
   display: flex;
   align-items: center;
   padding: 3rem;
@@ -73,6 +73,8 @@ $red: #ef4444;
   font-weight: 800;
   letter-spacing: -0.5px;
 
+  img { display: block; width: min(220px, 100%); height: auto; }
+
   .logo-tm {
     color: $brand-accent-light;
   }
@@ -93,10 +95,7 @@ $red: #ef4444;
   }
 
   .accent {
-    background: linear-gradient(90deg, $brand-accent-light, $brand-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $brand-accent-light;
   }
 
   .hero-sub {
@@ -157,6 +156,8 @@ $red: #ef4444;
   max-width: 480px;
 }
 
+.mobile-brand { display: none; }
+
 // ── STEP PROGRESS ──────────────────────────────────────
 .step-header {
   margin-bottom: 2rem;
@@ -181,9 +182,11 @@ $red: #ef4444;
 
 .progress-fill {
   height: 100%;
+  width: 100%;
   background: linear-gradient(90deg, $brand-accent, $brand-accent-light);
   border-radius: 2px;
-  transition: width 0.4s ease;
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
 
 // ── STEP BLOCK ──────────────────────────────────────
@@ -426,16 +429,18 @@ $red: #ef4444;
   .right-panel { padding: 1.25rem; }
   .step-block { padding: 1.75rem 1.25rem; }
   .form-row { grid-template-columns: 1fr; }
+  .mobile-brand { display: inline-block; margin-bottom: 1.5rem; }
+  .mobile-brand img { display: block; width: 175px; max-width: 100%; height: auto; }
 }
 
 // ── Onboarding next steps ────────────────────────────────
 // Claiming from our own data is the primary path: most agents' marks are already in the
 // register data we hold, so searching for their firm beats hunting for a spreadsheet.
 .next-step-card.next-step-primary {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.05);
+  border-color: $brand-accent;
+  background: rgba($brand-accent, 0.05);
 
-  strong { color: #4f46e5; }
+  strong { color: $brand-accent; }
 }
 
 // Dashboard is still reachable, just no longer the headline action.
@@ -452,7 +457,7 @@ $red: #ef4444;
   font-weight: 500;
   cursor: pointer;
 
-  &:hover { color: #6366f1; text-decoration: underline; }
+  &:hover { color: $brand-accent; text-decoration: underline; }
 }
 
 .account-type { border: 0; padding: 0; margin: 0 0 1.25rem; }
@@ -477,4 +482,5 @@ $red: #ef4444;
 .directory-row strong, .directory-row small { display: block; }
 .directory-row strong { color: $gray-800; font-size: .9rem; }
 .directory-row small, .selection-count { color: $gray-600; font-size: .78rem; }
+.directory-row .directory-address { margin-top: .35rem; color: $gray-600; line-height: 1.35; overflow-wrap: anywhere; }
 .selection-count { font-weight: 600; margin: 1rem 0 0; }

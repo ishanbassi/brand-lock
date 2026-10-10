@@ -16,7 +16,7 @@ $danger: var(--ap-overdue);
 .brand-pane {
   width: 42%;
   max-width: 520px;
-  background: $sidebar-bg;
+  background: linear-gradient(125deg, #075eb2 0%, #143250 45%, #111e31 100%);
   color: rgba(255, 255, 255, 0.85);
   padding: var(--ap-space-6) var(--ap-space-7);
   display: flex;
@@ -38,6 +38,8 @@ $danger: var(--ap-overdue);
     color: $accent;
   }
 }
+
+.brand-image { display: block; width: min(220px, 100%); height: auto; }
 
 .brand-copy {
   h1 {
@@ -123,7 +125,7 @@ $danger: var(--ap-overdue);
 .form-error {
   margin-bottom: var(--ap-space-4);
   padding: var(--ap-space-3) var(--ap-space-3);
-  border-left: 3px solid $danger;
+  border: 1px solid rgba(163, 44, 44, 0.18);
   background: var(--ap-overdue-soft);
   color: var(--ap-overdue);
   font-size: 0.83rem;
@@ -155,7 +157,7 @@ $danger: var(--ap-overdue);
     &:focus {
       outline: none;
       border-color: $accent;
-      box-shadow: 0 0 0 3px rgba(36, 64, 92, 0.15);
+      box-shadow: 0 0 0 3px rgba(8, 105, 198, 0.18);
     }
   }
 }

@@ -1,0 +1,12 @@
+// The portfolio detail stylesheet is shared by this component so both agent-side mark views use
+// the same hierarchy and spacing. Only journal-specific additions live here.
+.source-banner {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.address-grid {
+  margin-top: var(--ap-space-4);
+  padding-top: var(--ap-space-4);
+  border-top: 1px solid var(--ap-rule);
+}

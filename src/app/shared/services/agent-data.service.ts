@@ -30,6 +30,7 @@ import {
   ProprietorDirectoryEntry,
   WatchConflictHistory,
 } from '../../../models/agent.model';
+import { ITrademark } from '../../../models/trademark.model';
 
 /**
  * How far back an unrenewed mark still counts as overdue rather than lost.
@@ -510,6 +511,32 @@ export class AgentDataService {
     return this.http.get<number[]>(`${this.base}/agent-portal/watch/journals?limit=${limit}`);
   }
 
+  /** Published rows in this issue whose application numbers are linked to the caller's portfolio. */
+  getPortfolioPublications(
+    journalNo: number,
+    page = 0,
+    size = 20,
+  ): Observable<HttpResponse<ITrademark[]>> {
+    return this.http.get<ITrademark[]>(
+      `${this.base}/agent-portal/watch/journals/${journalNo}/portfolio-publications`,
+      { params: { page, size }, observe: 'response' },
+    );
+  }
+
+  getPortfolioLinks(applicationNos: number[]): Observable<Record<string, number>> {
+    let params = new HttpParams();
+    for (const applicationNo of applicationNos) params = params.append('applicationNos', applicationNo);
+    return this.http.get<Record<string, number>>(`${this.base}/agent-portal/watch/portfolio-links`, { params });
+  }
+
+  exportJournalTrademarkExcel(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/watch/journal/marks/${id}/export/excel`, { responseType: 'blob' });
+  }
+
+  exportJournalTrademarkPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/watch/journal/marks/${id}/export/pdf`, { responseType: 'blob' });
+  }
+
   /**
    * Scores the portfolio against one journal issue. `tmClasses` confines the check to those NICE
    * classes; empty or omitted checks every class.
@@ -538,6 +565,12 @@ export class AgentDataService {
     return this.http.get<AgentDirectoryEntry[]>(
       `${this.base}/agent-portal/discover/agents?q=${encodeURIComponent(q)}&limit=${limit}`,
     );
+  }
+
+  searchAgentAddresses(q: string, limit = 20): Observable<AgentDirectoryEntry[]> {
+    return this.http.get<AgentDirectoryEntry[]>(`${this.base}/agent-portal/discover/agent-addresses`, {
+      params: { q, limit },
+    });
   }
 
   searchProprietors(q: string, limit = 20): Observable<ProprietorDirectoryEntry[]> {

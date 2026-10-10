@@ -99,12 +99,7 @@ export class AgentPortalShellComponent {
       // are buttons at the top of Add Trademark rather than three nav peers for one job.
       items: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
-        {
-          label: 'Add trademark',
-          icon: 'plus',
-          route: '/agent-portal/portfolio/add',
-          alsoMatches: ['/agent-portal/portfolio/claim', '/agent-portal/portfolio/upload'],
-        },
+        
       ],
     },
     {
@@ -115,7 +110,7 @@ export class AgentPortalShellComponent {
         { label: 'Journal watch', icon: 'journal', route: '/agent-portal/watch/journal' },
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
-        { label: 'Portfolio conflicts', icon: 'alert', route: '/agent-portal/watch/conflicts' },
+        { label: 'New filing conflicts', icon: 'alert', route: '/agent-portal/watch/conflicts' },
         // Follows rival firms, not marks against the agent's portfolio. The route stays under
         // watch/ so existing links keep working.
         { label: 'Competitors', icon: 'building', route: '/agent-portal/watch/competitors' },
