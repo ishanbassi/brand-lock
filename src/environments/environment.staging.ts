@@ -6,5 +6,6 @@ export const environment = {
   AppHeaders: new HttpHeaders({
     'Content-Type': 'application/json',
     Accept: 'application/json'
-  })
+  }),
+  googleClientId: ''
 };

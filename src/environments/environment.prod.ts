@@ -9,6 +9,7 @@ export const environment = {
     'Content-Type': 'application/json',
     Accept: 'application/json'
   }),
-  recaptchaSiteKey: '6LcTLeYrAAAAACoTM9NIteBSX7ucj0ZRqDmQJF82'
+  recaptchaSiteKey: '6LcTLeYrAAAAACoTM9NIteBSX7ucj0ZRqDmQJF82',
+  googleClientId: ''
 
 };

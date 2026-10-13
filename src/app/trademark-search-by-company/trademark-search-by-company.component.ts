@@ -280,8 +280,8 @@ export class TrademarkSearchByCompanyComponent implements OnInit, OnDestroy {
    * recorded name, so a result's applicant is often not the name that was typed — the link
    * is how a visitor gets from a partial-match hit to that specific company's full portfolio.
    */
-  portfolioUrl(proprietorName?: string | null): string {
-    return proprietorUrl(proprietorName) ?? '/trademark-search-by-company';
+  portfolioUrl(trademark: ITrademark): string {
+    return proprietorUrl(trademark.proprietorName, trademark.proprietorAddress, trademark.applicationNo) ?? '/trademark-search-by-company';
   }
 
   getStatusClass(status?: string): string {

@@ -226,7 +226,7 @@ const COMPANY_SITEMAP_SHARD_SIZE = 45000;
 const ADMIN_API = 'https://admin.trademarx.in/api/trademarks';
 
 interface ProprietorSitemapShard {
-  slugs: string[];
+  entries: Array<{ slug: string; applicationNo: number }>;
   total: number;
   page: number;
   size: number;
@@ -275,17 +275,17 @@ app.get('/sitemap-companies-:shard.xml', async (req, res) => {
   }
 
   try {
-    const { slugs } = await fetchProprietorShard(shard);
-    if (!slugs.length) {
+    const { entries } = await fetchProprietorShard(shard);
+    if (!entries.length) {
       res.status(404).send('Not found');
       return;
     }
 
     const lastmod = new Date().toISOString().slice(0, 10);
-    const urls = slugs.map(
-      slug => `
+    const urls = entries.map(
+      entry => `
   <url>
-    <loc>${SITE_URL}/trademarks-by/${encodeURIComponent(slug)}</loc>
+    <loc>${SITE_URL}/trademarks-by/${encodeURIComponent(entry.slug)}/${entry.applicationNo}</loc>
     <lastmod>${lastmod}</lastmod>
   </url>`,
     );

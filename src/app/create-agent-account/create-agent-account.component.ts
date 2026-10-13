@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -12,20 +12,27 @@ import { LocalStorageService } from '../shared/services/local-storage.service';
 import { LoadingService } from '../common/loading.service';
 import { Login } from '../../models/login';
 import { AuthService } from '../../models/auth.services';
+import { GoogleSignInService } from '../shared/services/google-sign-in.service';
 
 type AccountType = 'ATTORNEY_AGENT' | 'BUSINESS';
 type DirectoryEntry = AgentDirectoryEntry | ProprietorDirectoryEntry;
 
 @Component({ selector: 'app-create-agent-account', standalone: true, imports: [CommonModule, FormsModule, RouterModule], templateUrl: './create-agent-account.component.html', styleUrl: './create-agent-account.component.scss' })
-export class CreateAgentAccountComponent {
+export class CreateAgentAccountComponent implements AfterViewInit {
   step = signal(1); readonly totalSteps = 2; accountType: AccountType = 'ATTORNEY_AGENT';
   formData: AgentRegistration = { firstName: '', lastName: '', email: '', password: '', captchaResponse: '' };
   passwordVisible = false; confirmPassword = ''; confirmPasswordVisible = false; onClickValidation = false; submitting = false;
   searching = signal(false); searched = signal(false); query = ''; entries = signal<DirectoryEntry[]>([]); selected = signal<DirectoryEntry[]>([]);
   private readonly search$ = new Subject<string>();
+  @ViewChild('googleButton') private googleButton?: ElementRef<HTMLElement>;
 
-  constructor(private readonly agentData: AgentDataService, private readonly dataService: DataService, private readonly storage: LocalStorageService, private readonly loading: LoadingService, private readonly toastr: ToastrService, private readonly router: Router, private readonly recaptcha: ReCaptchaV3Service, private readonly auth: AuthService) {
+  constructor(private readonly agentData: AgentDataService, private readonly dataService: DataService, private readonly storage: LocalStorageService, private readonly loading: LoadingService, private readonly toastr: ToastrService, private readonly router: Router, private readonly recaptcha: ReCaptchaV3Service, private readonly auth: AuthService, private readonly googleSignIn: GoogleSignInService) {
     this.search$.pipe(debounceTime(300), distinctUntilChanged(), switchMap(q => { this.searching.set(true); return this.accountType === 'ATTORNEY_AGENT' ? this.agentData.searchAgentAddresses(q) : this.agentData.searchProprietors(q); })).subscribe({ next: entries => { this.entries.set(entries); this.searched.set(true); this.searching.set(false); }, error: () => { this.searching.set(false); this.toastr.error('Could not search the trademark register.'); } });
+  }
+  get googleSignInConfigured(): boolean { return this.googleSignIn.configured; }
+  ngAfterViewInit(): void {
+    if (!this.googleButton) return;
+    void this.googleSignIn.renderButton(this.googleButton.nativeElement, credential => this.registerWithGoogle(credential)).catch(() => this.toastr.error('Google sign-in could not be loaded. Please use email registration.'));
   }
   get progressPercent(): number { return ((this.step() - 1) / (this.totalSteps - 1)) * 100; }
   get searchLabel(): string { return this.accountType === 'ATTORNEY_AGENT' ? 'agent or attorney name' : 'proprietor name'; }
@@ -52,6 +59,17 @@ export class CreateAgentAccountComponent {
     this.formData.firstName = this.formData.firstName.trim();
     this.formData.lastName = this.formData.lastName?.trim();
     this.submitting = true; this.loading.show(); this.recaptcha.execute('agent_register').subscribe({ next: token => { this.formData.captchaResponse = token; this.agentData.registerAgent(this.formData).pipe(finalize(() => this.loading.hide())).subscribe({ next: () => this.doLogin(), error: err => { this.submitting = false; this.toastr.error(err?.error?.detail || 'Registration failed. Please try again.'); } }); }, error: () => { this.submitting = false; this.loading.hide(); this.toastr.error('CAPTCHA verification failed. Please try again.'); } });
+  }
+  private registerWithGoogle(credential: string): void {
+    if (this.submitting) return;
+    this.submitting = true; this.loading.show();
+    this.dataService.loginAgentWithGoogle(credential).subscribe({ next: response => {
+      const token = response.body?.id_token;
+      if (!token) { this.loading.hide(); this.submitting = false; this.toastr.error('Google sign-in could not be completed.'); return; }
+      this.storage.storeAuthenticationToken(token); const { id, authorities } = this.auth.decodeToken(token); this.storage.setObject('user', { id, authorities });
+      this.loading.hide(); this.submitting = false;
+      if (this.auth.hasRole(['ROLE_AGENT'])) this.step.set(2); else this.toastr.error('This Google account is not linked to an agent portal account.');
+    }, error: err => { this.loading.hide(); this.submitting = false; this.toastr.error(err?.error?.detail || 'Google sign-in could not be completed.'); } });
   }
   private doLogin(): void {
     const input = new Login(); input.username = this.formData.email; input.password = this.formData.password;

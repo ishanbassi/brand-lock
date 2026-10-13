@@ -8,7 +8,8 @@ import { INamedBreakdown } from './trademark-trends.service';
 import { ITrademark } from '../../../models/trademark.model';
 
 /**
- * Summary for one /trademarks-by/:slug page. The marks themselves come from a separate
+ * Summary for one /trademarks-by/:slug/:applicationNo page. The application number identifies
+ * the recorded proprietor address used to scope the portfolio.
  * paginated call — a large filer's portfolio runs to hundreds of rows.
  */
 export interface IProprietorProfile {
@@ -36,13 +37,13 @@ export class TrademarkProprietorService {
 
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/trademarks/proprietor');
 
-  getProfile(slug: string): Observable<IProprietorProfile> {
-    return this.http.get<IProprietorProfile>(`${this.resourceUrl}/${encodeURIComponent(slug)}`);
+  getProfile(slug: string, applicationNo: number): Observable<IProprietorProfile> {
+    return this.http.get<IProprietorProfile>(`${this.resourceUrl}/${encodeURIComponent(slug)}/${applicationNo}`);
   }
 
-  getMarks(slug: string, page: number, size: number): Observable<HttpResponse<ITrademark[]>> {
+  getMarks(slug: string, applicationNo: number, page: number, size: number): Observable<HttpResponse<ITrademark[]>> {
     return this.http
-      .get<ITrademark[]>(`${this.resourceUrl}/${encodeURIComponent(slug)}/marks`, {
+      .get<ITrademark[]>(`${this.resourceUrl}/${encodeURIComponent(slug)}/${applicationNo}/marks`, {
         params: { page, size },
         observe: 'response',
       })

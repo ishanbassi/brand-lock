@@ -112,7 +112,7 @@
             <div class="meta-item" *ngIf="trademark.tmClass">Class: <b>{{ trademark.tmClass }}</b></div>
             <div class="meta-item" *ngIf="trademark.proprietorName">
               Applicant:
-              <b><a [routerLink]="portfolioUrl(trademark.proprietorName)" title="See this applicant's full trademark portfolio">{{ trademark.proprietorName }}</a></b>
+              <b><a [routerLink]="portfolioUrl(trademark)" title="See trademarks for this applicant and recorded address">{{ trademark.proprietorName }}</a></b>
             </div>
           </div>
         </div>

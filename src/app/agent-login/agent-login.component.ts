@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../models/auth.services';
 import { Login } from '../../models/login';
 import { LoadingService } from '../common/loading.service';
 import { DataService } from '../shared/services/data.service';
 import { HostContextService } from '../shared/services/host-context.service';
 import { LocalStorageService } from '../shared/services/local-storage.service';
+import { GoogleSignInService } from '../shared/services/google-sign-in.service';
 
 /**
  * Sign-in for the agent portal, on its own subdomain.
@@ -30,11 +31,11 @@ import { LocalStorageService } from '../shared/services/local-storage.service';
 @Component({
   selector: 'app-agent-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './agent-login.component.html',
   styleUrl: './agent-login.component.scss',
 })
-export class AgentLoginComponent implements OnInit {
+export class AgentLoginComponent implements OnInit, AfterViewInit {
   private readonly dataService = inject(DataService);
   private readonly authService = inject(AuthService);
   private readonly localStorageService = inject(LocalStorageService);
@@ -44,6 +45,9 @@ export class AgentLoginComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  readonly googleSignIn = inject(GoogleSignInService);
+
+  @ViewChild('googleButton') private googleButton?: ElementRef<HTMLElement>;
 
   data: Login = new Login();
   showValidation = false;
@@ -70,6 +74,13 @@ export class AgentLoginComponent implements OnInit {
     this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
   }
 
+  ngAfterViewInit(): void {
+    if (!this.googleButton) return;
+    void this.googleSignIn.renderButton(this.googleButton.nativeElement, credential => this.loginWithGoogle(credential)).catch(() => {
+      this.error.set('Google sign-in could not be loaded. Please use email and password.');
+    });
+  }
+
   togglePassword(): void {
     this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
   }
@@ -85,25 +96,7 @@ export class AgentLoginComponent implements OnInit {
     this.loadingService.show();
 
     this.dataService.login(this.data.forRequest()).subscribe({
-      next: response => {
-        const idToken = response.body!.id_token;
-        this.localStorageService.storeAuthenticationToken(idToken);
-        const { id, authorities } = this.authService.decodeToken(idToken);
-        this.localStorageService.setObject('user', { id, authorities });
-
-        this.loadingService.hide();
-        this.submitting.set(false);
-
-        if (this.authService.hasRole(['ROLE_AGENT'])) {
-          void this.router.navigateByUrl(this.returnUrl);
-          return;
-        }
-
-        // A valid account, but not an agent one. Say so rather than bouncing them somewhere
-        // confusing - a client or an admin who lands here has simply used the wrong address, and
-        // silently redirecting looks like the login failed.
-        this.error.set('This is the agent portal. Your account signs in on the main Trademarx site.');
-      },
+      next: response => this.completeSignIn(response),
       error: (err: any) => {
         this.loadingService.hide();
         this.submitting.set(false);
@@ -114,6 +107,43 @@ export class AgentLoginComponent implements OnInit {
         );
       },
     });
+  }
+
+  private loginWithGoogle(credential: string): void {
+    if (this.submitting()) return;
+    this.error.set('');
+    this.submitting.set(true);
+    this.loadingService.show();
+    this.dataService.loginAgentWithGoogle(credential).subscribe({
+      next: response => this.completeSignIn(response),
+      error: (err: any) => {
+        this.loadingService.hide();
+        this.submitting.set(false);
+        this.error.set(err?.error?.detail || 'Google sign-in could not be completed.');
+      },
+    });
+  }
+
+  private completeSignIn(response: any): void {
+    const idToken = response.body?.id_token;
+    if (!idToken) {
+      this.loadingService.hide();
+      this.submitting.set(false);
+      this.error.set('Could not sign you in. Please try again.');
+      return;
+    }
+    this.localStorageService.storeAuthenticationToken(idToken);
+    const { id, authorities } = this.authService.decodeToken(idToken);
+    this.localStorageService.setObject('user', { id, authorities });
+
+    this.loadingService.hide();
+    this.submitting.set(false);
+
+    if (this.authService.hasRole(['ROLE_AGENT'])) {
+      void this.router.navigateByUrl(this.returnUrl);
+      return;
+    }
+    this.error.set('This is the agent portal. Your account signs in on the main Trademarx site.');
   }
 
   /** Absolute link across to the main site, since a router link cannot cross an origin. */

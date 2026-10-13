@@ -534,11 +534,17 @@ export const routes: Routes = [
         title: "Trademark Search by Company Name | Trademarx",
     },
     {
-        // One page per proprietor: every mark the public register holds under that applicant
-        // name. The slug is a slugified proprietor name (proprietor-slug.util.ts), so all the
-        // spellings the registry stores for one entity land on the same page.
-        path: "trademarks-by/:slug",
+        // An application number anchors the recorded address, so equal proprietor names from
+        // different people do not land on one portfolio page.
+        path: "trademarks-by/:slug/:applicationNo",
         loadComponent: () => import('./pages/proprietor-portfolio-page/proprietor-portfolio-page.component').then(m => m.ProprietorPortfolioPageComponent),
+    },
+    {
+        // Old name-only portfolio URLs are intentionally not rendered as a portfolio: a name
+        // alone can refer to different people. Preserve shared/indexed links by sending visitors
+        // to the applicant search instead of a 404 or a misleading merged result set.
+        path: "trademarks-by/:slug",
+        loadComponent: () => import('./pages/proprietor-portfolio-page/legacy-proprietor-portfolio-redirect.component').then(m => m.LegacyProprietorPortfolioRedirectComponent),
     },
     {
         path: "trademark-journal",

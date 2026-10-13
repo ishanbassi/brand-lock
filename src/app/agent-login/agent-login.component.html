@@ -71,6 +71,11 @@
         </button>
       </form>
 
+      @if (googleSignIn.configured) {
+        <div class="social-divider" aria-hidden="true"><span>or</span></div>
+        <div #googleButton class="google-button" aria-label="Continue with Google"></div>
+      }
+
       <div class="form-links">
         <!-- Password reset and registration live on the main site; a router link cannot cross an
              origin, so these are absolute. -->
