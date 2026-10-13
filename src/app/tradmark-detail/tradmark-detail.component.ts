@@ -37,7 +37,7 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
    * something on instead of pointing at a query string.
    */
   get applicantPortfolioUrl(): string {
-    return proprietorUrl(this.trademark?.proprietorName) ?? '/trademark-search-by-company';
+    return proprietorUrl(this.trademark?.proprietorName, this.trademark?.proprietorAddress, this.trademark?.applicationNo) ?? '/trademark-search-by-company';
   }
 
   baseUrl = environment.BaseApiUrl;

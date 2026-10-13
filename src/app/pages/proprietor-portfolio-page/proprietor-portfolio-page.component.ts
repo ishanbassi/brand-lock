@@ -12,8 +12,8 @@ import { proprietorSlug } from '../../shared/utils/proprietor-slug.util';
 import { FaqItem, faqSchema, hl, longDate, num, share, stripHl, SOURCE_NOTE } from '../../shared/utils/trends-copy.util';
 
 /**
- * One programmatic page per proprietor (/trademarks-by/:slug): everything the public registry
- * records under one company / LLP / firm / individual applicant name.
+ * One programmatic page per address-scoped proprietor (/trademarks-by/:slug/:applicationNo).
+ * A name can belong to different people; the application number selects an address anchor.
  *
  * The slug is a slugified proprietor name, so every stored spelling of an entity ("ABC PVT
  * LTD", "Abc Pvt. Ltd.") resolves to this one page rather than scattering the portfolio.
@@ -53,6 +53,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   faqs: FaqItem[] = [];
 
   private slug = '';
+  private applicationNo = 0;
   private routeSub?: Subscription;
 
   ngOnInit(): void {
@@ -61,6 +62,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
     // ?page change and a slug change, so neither would re-run ngOnInit on its own.
     this.routeSub = combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, query]) => {
       this.slug = params.get('slug') ?? '';
+      this.applicationNo = Number(params.get('applicationNo') ?? '0');
 
       const requested = Number(query.get('page') ?? '1');
       this.page = Number.isFinite(requested) && requested > 1 ? Math.floor(requested) - 1 : 0;
@@ -78,8 +80,8 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   private load(): void {
     this.loading = true;
     forkJoin({
-      profile: this.proprietorService.getProfile(this.slug),
-      marks: this.proprietorService.getMarks(this.slug, this.page, this.pageSize),
+      profile: this.proprietorService.getProfile(this.slug, this.applicationNo),
+      marks: this.proprietorService.getMarks(this.slug, this.applicationNo, this.page, this.pageSize),
     }).subscribe({
       next: ({ profile, marks }) => {
         const rows = marks.body ?? [];
@@ -221,7 +223,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
 
   /** A fresh array each read, so a slug change is actually picked up by routerLink. */
   get pageLink(): string[] {
-    return ['/trademarks-by', this.slug];
+    return ['/trademarks-by', this.slug, String(this.applicationNo)];
   }
 
   /** Page 1 drops the param entirely, so the canonical URL has no ?page=1 duplicate. */
@@ -252,7 +254,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   private setSeoTags(p: IProprietorProfile): void {
-    const base = `https://trademarx.in/trademarks-by/${p.slug}`;
+    const base = `https://trademarx.in/trademarks-by/${p.slug}/${this.applicationNo}`;
     const url = this.page > 0 ? `${base}?page=${this.humanPage}` : base;
     const pageSuffix = this.page > 0 ? ` — Page ${this.humanPage}` : '';
 

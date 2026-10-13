@@ -217,6 +217,20 @@ $danger: var(--ap-overdue);
   }
 }
 
+.social-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  margin: var(--ap-space-4) 0;
+  color: $muted;
+  font-size: .75rem;
+
+  &::before,
+  &::after { content: ''; flex: 1; height: 1px; background: $border; }
+}
+
+.google-button { min-height: 44px; }
+
 .form-links {
   margin-top: var(--ap-space-4);
   text-align: center;

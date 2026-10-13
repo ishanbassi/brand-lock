@@ -133,8 +133,8 @@ export class LatestTrademarkApplicationsComponent implements OnInit, OnDestroy {
   }
 
   /** That applicant's own portfolio page; falls back to the search hub for unusable names. */
-  portfolioUrl(proprietorName?: string | null): string {
-    return proprietorUrl(proprietorName) ?? '/trademark-search-by-company';
+  portfolioUrl(trademark: ITrademark): string {
+    return proprietorUrl(trademark.proprietorName, trademark.proprietorAddress, trademark.applicationNo) ?? '/trademark-search-by-company';
   }
 
   private setSeoTags(): void {

@@ -102,6 +102,10 @@ import { TrademarkStats } from "../../../models/trademark-stats.dto";
       return this.saveRecord('api/authenticate', data);
     }
 
+    loginAgentWithGoogle(credential: string): Observable<HttpResponse<JwtToken>> {
+      return this.saveRecord('api/agent-portal/auth/google', { credential });
+    }
+
     getCurrentUser():Observable<HttpResponse<IUserProfile>>{
       return this.getRecords("api/current-user");
     }

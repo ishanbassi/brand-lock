@@ -84,7 +84,7 @@
             <td>{{ tm.applicationNo }}</td>
             <td>{{ tm.tmClass }}</td>
             <td>
-              <a *ngIf="tm.proprietorName" [routerLink]="portfolioUrl(tm.proprietorName)" title="See all trademarks by this applicant">{{ tm.proprietorName }}</a>
+              <a *ngIf="tm.proprietorName" [routerLink]="portfolioUrl(tm)" title="See trademarks for this applicant and recorded address">{{ tm.proprietorName }}</a>
             </td>
             <td>{{ tm.trademarkStatus || 'Unknown' }}</td>
           </tr>
