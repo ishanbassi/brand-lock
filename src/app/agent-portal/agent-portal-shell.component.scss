@@ -1,13 +1,12 @@
-// Every value here resolves to a portal token; see src/styles/agent-portal.scss. The sidebar
-// previously carried its own indigo (#6366f1) and slate, which is the palette every generated
-// interface ships with and which nothing else in the product used.
+// The rail borrows the supplied dashboard reference directly: clean white surface, soft lavender
+// hover surfaces, and the deep indigo selected state.
 $sidebar-width: 244px;
 $sidebar-collapsed-width: 68px;
-$sidebar-bg: var(--ap-shell);
-$sidebar-hover: var(--ap-shell-hover);
-$sidebar-active-bg: var(--ap-shell-active);
-$text-muted: var(--ap-shell-muted);
-$text-main: var(--ap-shell-text);
+$sidebar-bg: #ffffff;
+$sidebar-hover: #eaedff;
+$sidebar-active-bg: #4f46e5;
+$text-muted: #5f5d70;
+$text-main: #171629;
 $content-bg: var(--ap-paper);
 
 * { box-sizing: border-box; }
@@ -28,6 +27,7 @@ $content-bg: var(--ap-paper);
   flex-shrink: 0;
   overflow: hidden;
   z-index: 100;
+  box-shadow: 1px 0 12px rgba(39, 35, 84, 0.05);
 }
 
 .portal-layout.collapsed .sidebar {
@@ -50,7 +50,7 @@ $content-bg: var(--ap-paper);
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1rem;
-  border-bottom: 1px solid var(--ap-rule);
+  border-bottom: 0;
   min-height: 64px;
 }
 
@@ -60,8 +60,8 @@ $content-bg: var(--ap-paper);
   font-weight: 800;
   white-space: nowrap;
 
-  .brand-tm { color: var(--ap-accent); }
-  .brand-arx { color: var(--ap-ink); }
+  .brand-tm { color: #3525cd; }
+  .brand-arx { color: $text-main; }
 }
 
 .collapse-btn {
@@ -71,7 +71,7 @@ $content-bg: var(--ap-paper);
   cursor: pointer;
   font-size: 0.9rem;
   padding: 4px 6px;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: background 0.15s, color 0.15s;
 
   &:hover {
@@ -112,11 +112,11 @@ $content-bg: var(--ap-paper);
 
   &:hover::-webkit-scrollbar-thumb,
   &:focus-within::-webkit-scrollbar-thumb {
-    background-color: rgba(8, 105, 198, 0.2);
+    background-color: rgba(53, 37, 205, 0.2);
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(8, 105, 198, 0.34);
+    background-color: rgba(53, 37, 205, 0.34);
   }
 
   &::-webkit-scrollbar-button {
@@ -130,7 +130,7 @@ $content-bg: var(--ap-paper);
 
     &:hover,
     &:focus-within {
-      scrollbar-color: rgba(8, 105, 198, 0.28) transparent;
+      scrollbar-color: rgba(53, 37, 205, 0.28) transparent;
     }
   }
 }
@@ -148,7 +148,7 @@ $content-bg: var(--ap-paper);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.6;
-  color: $text-muted;
+  color: #777587;
   white-space: nowrap;
 }
 
@@ -170,7 +170,7 @@ $content-bg: var(--ap-paper);
   text-decoration: none;
   color: $text-muted;
   font-size: var(--ap-text-base);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   transition: color 0.12s, background 0.12s;
   margin: 1px var(--ap-space-2);
@@ -195,25 +195,15 @@ $content-bg: var(--ap-paper);
     outline-offset: -2px;
   }
 
-  // Tint plus a bar, not tint alone: the bar is what the eye finds when scanning a long rail, and
-  // it survives on screens where a 14% tint washes out.
   &.active {
     background: $sidebar-active-bg;
-    color: var(--ap-accent);
+    color: #fff;
     font-weight: 600;
-
-    &::before {
-      content: '';
-      position: absolute;
-      // Pinned to the sidebar's own edge, outside the item's margin.
-      left: calc(-1 * var(--ap-space-2));
-      top: 8px;
-      bottom: 8px;
-      width: 3px;
-      border-radius: 0 2px 2px 0;
-      background: var(--ap-shell-accent);
-    }
   }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
 }
 
 // ── BADGES ───────────────────────────────────────────────
@@ -227,17 +217,16 @@ $content-bg: var(--ap-paper);
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--ap-paper);
-  color: var(--ap-shell-text);
+  background: #e2e7ff;
+  color: #353348;
   font-size: 0.6875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 
-  // Solid rather than a soft tint: on the ink rail a pale red reads as pink, not as late.
   &--alert {
-    background: var(--ap-overdue);
-    color: #fff;
+    background: #ffdad6;
+    color: #93000a;
   }
 }
 
@@ -249,7 +238,7 @@ $content-bg: var(--ap-paper);
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--ap-overdue);
+  background: #ba1a1a;
   box-shadow: 0 0 0 2px $sidebar-bg;
 }
 
@@ -310,20 +299,13 @@ $content-bg: var(--ap-paper);
 
   .nav-icon { width: 22px; opacity: 0.85; }
 
-  // A child's bar sits on the tree line rather than the sidebar edge, lighting the stretch of the
-  // line that belongs to it.
-  &.active::before {
-    left: calc(-0.6rem - 1px);
-    top: 6px;
-    bottom: 6px;
-    width: 2px;
-    border-radius: 1px;
-  }
 }
 
 .sidebar-footer {
   padding: 0.75rem;
-  border-top: 1px solid var(--ap-rule);
+  border-top: 0;
+  border-radius: 12px 12px 0 0;
+  background: #f2f3ff;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -341,14 +323,14 @@ $content-bg: var(--ap-paper);
 .agent-avatar {
   width: 36px;
   height: 36px;
-  background: var(--ap-accent-soft);
+  background: #e2dfff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--ap-accent);
+  color: #3525cd;
   flex-shrink: 0;
 }
 
@@ -369,7 +351,7 @@ $content-bg: var(--ap-paper);
 
 .agent-badge {
   font-size: 0.7rem;
-  color: var(--ap-done);
+  color: #2d6a4f;
   font-weight: 500;
 }
 
@@ -391,8 +373,8 @@ $content-bg: var(--ap-paper);
   .nav-icon { width: 22px; display: inline-flex; justify-content: center; flex-shrink: 0; }
 
   &:hover {
-    background: var(--ap-overdue-soft);
-    color: var(--ap-overdue);
+    background: #ffdad6;
+    color: #93000a;
   }
 }
 
@@ -493,11 +475,13 @@ $content-bg: var(--ap-paper);
 }
 
 
-// ── Icon behaviour ─────────────────────────────────────────────────────────
-// The collapse control shows one chevron and mirrors it, so the affordance is a
-// single consistent shape rather than two different arrow characters.
-.collapse-btn ap-icon.flip {
-  transform: scaleX(-1);
+.collapse-symbol {
+  font-size: 20px;
+  transition: transform 0.18s ease;
+}
+
+.collapse-symbol.flip {
+  transform: rotate(180deg);
 }
 
 .collapse-btn {
