@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -25,6 +25,9 @@ type ClaimPhase = 'search' | 'browse' | 'claiming' | 'done';
   styleUrl: './agent-portfolio-claim.component.scss',
 })
 export class AgentPortfolioClaimComponent {
+  /** Lets the portfolio add dialog reuse the complete onboarding search flow. */
+  @Input() embedded = false;
+  @Output() completed = new EventEmitter<void>();
   readonly pageSize = 100;
 
   phase = signal<ClaimPhase>('search');
@@ -199,6 +202,10 @@ export class AgentPortfolioClaimComponent {
   }
 
   goToPortfolio(): void {
+    if (this.embedded) {
+      this.completed.emit();
+      return;
+    }
     this.router.navigate(['/agent-portal/portfolio']);
   }
 

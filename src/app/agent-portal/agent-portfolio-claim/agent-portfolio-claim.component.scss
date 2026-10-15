@@ -15,10 +15,17 @@ $white: #ffffff;
 .claim-page {
   padding: var(--ap-space-6);
   max-width: 1100px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: inherit;
   color: $gray-800;
 
   @media (max-width: 768px) { padding: var(--ap-space-4); }
+}
+
+:host-context(.add-flow-dialog) .claim-page {
+  max-width: none;
+  padding: 0;
+
+  .card { box-shadow: none; }
 }
 
 // ── HEADER ──────────────────────────────────────────────

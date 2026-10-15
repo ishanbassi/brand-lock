@@ -1,4 +1,5 @@
 <div class="claim-page">
+  @if (!embedded) {
   <header class="claim-header">
     <div>
       <h1>Find your trademarks</h1>
@@ -9,6 +10,7 @@
     </div>
     <a routerLink="/agent-portal/portfolio/upload" class="btn-link-subtle">Import a spreadsheet instead</a>
   </header>
+  }
 
   <div class="alert-error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
 
@@ -54,8 +56,11 @@
       <p>No agent found matching “{{ query }}”.</p>
       <p class="hint">
         Firms often appear on the register under a slightly different spelling — try a shorter part
-        of the name. If your marks genuinely aren’t in our data yet, you can
-        <a routerLink="/agent-portal/portfolio/upload">import a spreadsheet</a> instead.
+        of the name.
+        @if (!embedded) {
+          If your marks genuinely aren’t in our data yet, you can
+          <a routerLink="/agent-portal/portfolio/upload">import a spreadsheet</a> instead.
+        }
       </p>
     </div>
   </section>

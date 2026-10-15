@@ -85,7 +85,7 @@ export class LoginV2Component implements OnInit{
             this.loadingService.hide();
             // The agent portal lives on its own subdomain and is a separate product from trademark
             // registration. On the main site an agent signing in is at the wrong address.
-            if (this.hostContext.isAgentHost) {
+            if (!this.hostContext.requiresAgentSubdomain || this.hostContext.isAgentHost) {
               this.navigateTo('/agent-portal/dashboard');
               return;
             }

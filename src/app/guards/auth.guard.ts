@@ -30,7 +30,9 @@ export class PermissionsService {
       // On the agent subdomain, sending an unauthenticated visitor to '/login' would bounce them
       // off to the main marketing site (that route is behind mainHostGuard) — so someone whose
       // session expired mid-portal would be thrown out of the product entirely. Keep them here.
-      const loginRoute = this.hostContext.isAgentHost ? 'agent-login' : 'login';
+      // Locally, the portal shares localhost with the public site, so its route (rather than the
+      // host) identifies which sign-in screen belongs to an expired agent session.
+      const loginRoute = this.hostContext.isAgentHost || state.url.startsWith('/agent-portal') ? 'agent-login' : 'login';
       this.router.navigate([loginRoute], { queryParams: { returnUrl: state.url } });
       return false;
     }

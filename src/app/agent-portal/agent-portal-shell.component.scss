@@ -16,7 +16,7 @@ $content-bg: var(--ap-paper);
   display: flex;
   height: 100vh;
   overflow: hidden;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: var(--ap-font-ui);
 }
 
 // ── SIDEBAR ──────────────────────────────────────────────
@@ -26,7 +26,6 @@ $content-bg: var(--ap-paper);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: width 0.25s ease;
   overflow: hidden;
   z-index: 100;
 }
@@ -51,7 +50,7 @@ $content-bg: var(--ap-paper);
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--ap-rule);
   min-height: 64px;
 }
 
@@ -61,8 +60,8 @@ $content-bg: var(--ap-paper);
   font-weight: 800;
   white-space: nowrap;
 
-  .brand-tm { color: #40a8ff; }
-  .brand-arx { color: #ffffff; }
+  .brand-tm { color: var(--ap-accent); }
+  .brand-arx { color: var(--ap-ink); }
 }
 
 .collapse-btn {
@@ -113,11 +112,11 @@ $content-bg: var(--ap-paper);
 
   &:hover::-webkit-scrollbar-thumb,
   &:focus-within::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: rgba(8, 105, 198, 0.2);
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(8, 105, 198, 0.34);
   }
 
   &::-webkit-scrollbar-button {
@@ -131,7 +130,7 @@ $content-bg: var(--ap-paper);
 
     &:hover,
     &:focus-within {
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      scrollbar-color: rgba(8, 105, 198, 0.28) transparent;
     }
   }
 }
@@ -157,7 +156,7 @@ $content-bg: var(--ap-paper);
   display: block;
   height: 1px;
   margin: 0 var(--ap-space-4) var(--ap-space-3);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--ap-rule);
 }
 
 .nav-item {
@@ -200,7 +199,7 @@ $content-bg: var(--ap-paper);
   // it survives on screens where a 14% tint washes out.
   &.active {
     background: $sidebar-active-bg;
-    color: #fff;
+    color: var(--ap-accent);
     font-weight: 600;
 
     &::before {
@@ -228,7 +227,7 @@ $content-bg: var(--ap-paper);
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--ap-paper);
   color: var(--ap-shell-text);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -298,7 +297,7 @@ $content-bg: var(--ap-paper);
   // the group above it once the list is long enough that the header has scrolled out of view.
   margin: 0.15rem 0 0.35rem 1.7rem;
   padding-left: 0.6rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid var(--ap-rule);
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
@@ -324,7 +323,7 @@ $content-bg: var(--ap-paper);
 
 .sidebar-footer {
   padding: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--ap-rule);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -342,14 +341,14 @@ $content-bg: var(--ap-paper);
 .agent-avatar {
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--ap-accent-soft);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: white;
+  color: var(--ap-accent);
   flex-shrink: 0;
 }
 
@@ -370,7 +369,7 @@ $content-bg: var(--ap-paper);
 
 .agent-badge {
   font-size: 0.7rem;
-  color: #34d399;
+  color: var(--ap-done);
   font-weight: 500;
 }
 
@@ -392,8 +391,8 @@ $content-bg: var(--ap-paper);
   .nav-icon { width: 22px; display: inline-flex; justify-content: center; flex-shrink: 0; }
 
   &:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #f87171;
+    background: var(--ap-overdue-soft);
+    color: var(--ap-overdue);
   }
 }
 
@@ -418,7 +417,7 @@ $content-bg: var(--ap-paper);
   height: 52px;
   padding: 0 1.25rem;
   background: #fff;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--ap-rule);
 }
 
 .mobile-nav-toggle {

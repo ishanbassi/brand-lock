@@ -21,14 +21,40 @@
         [disabled]="loading() || totalCount === 0"
         (selected)="export($event)"
       />
-      <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
-        <span><ap-icon name="upload" [size]="16" /></span> Import Excel
-      </a>
-      <button type="button" class="btn-primary" (click)="openDraft()">
+      <button type="button" class="btn-primary" (click)="openAddFlow()">
         <span><ap-icon name="plus" [size]="16" /></span> Add Trademark
       </button>
     </div>
   </div>
+
+  @if (dashboardStats(); as stats) {
+    <section class="portfolio-summary" aria-label="Portfolio overview">
+      <article class="summary-card">
+        <span class="summary-icon summary-icon--portfolio"><ap-icon name="portfolio" [size]="17" /></span>
+        <span class="summary-label">Portfolio marks</span>
+        <strong class="summary-value">{{ stats.totalTrademarks }}</strong>
+        <span class="summary-note">All linked trademarks</span>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon summary-icon--registered"><ap-icon name="check" [size]="17" /></span>
+        <span class="summary-label">Active registrations</span>
+        <strong class="summary-value">{{ stats.activeTrademarks }}</strong>
+        <span class="summary-note">Registered and active</span>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon summary-icon--renewal"><ap-icon name="clock" [size]="17" /></span>
+        <span class="summary-label">Renewals due</span>
+        <strong class="summary-value">{{ stats.expiringIn90Days }}</strong>
+        <span class="summary-note">Within the next 90 days</span>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon summary-icon--watch"><ap-icon name="eye" [size]="17" /></span>
+        <span class="summary-label">Watch alerts</span>
+        <strong class="summary-value">{{ stats.watchlistCount }}</strong>
+        <span class="summary-note">Items under watch</span>
+      </article>
+    </section>
+  }
 
   <!-- FILTERS BAR -->
   <div class="filters-bar" role="search" aria-label="Filter trademark portfolio">
@@ -147,7 +173,7 @@
     <div class="table-workspace">
     <div class="table-toolbar">
       <div class="table-toolbar-copy" aria-live="polite">
-        <button type="button" class="table-add-btn" (click)="openDraft()" aria-label="Add trademark in the first row" title="Add trademark">
+        <button type="button" class="table-add-btn" (click)="openAddFlow()" aria-label="Choose how to add a trademark" title="Add trademark">
           <ap-icon name="plus" [size]="17" />
         </button>
         @if (selectedIds.size > 0) {
@@ -155,7 +181,7 @@
         } @else {
           <strong>{{ totalCount === 0 ? '0' : (page * pageSize + 1) + '–' + visibleRangeEnd + ' of ' + totalCount }}</strong><span>trademarks</span>
         }
-        <span class="scroll-hint">Scroll table to see all columns</span>
+        <span class="scroll-hint">Scroll sideways to see all columns</span>
       </div>
       <button type="button" class="field-picker-trigger" (click)="showColumnPicker.set(!showColumnPicker())"
               [attr.aria-expanded]="showColumnPicker()" aria-controls="portfolio-field-picker">
@@ -205,8 +231,8 @@
             }
           </section>
       }
-    <div #portfolioTable class="table-card" tabindex="0" role="region" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
-         aria-label="Trademark portfolio table; use a two-finger trackpad gesture to pan in any direction, or arrow keys after focusing the table"
+    <div #portfolioTable class="table-card" tabindex="0" role="region" aria-keyshortcuts="ArrowLeft ArrowRight"
+         aria-label="Trademark portfolio table; scroll sideways to see all columns, or use left and right arrow keys after focusing the table"
          (keydown)="panTable($event, portfolioTable)">
       <table class="tm-table" [style.width.px]="tableWidth">
         <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
@@ -275,41 +301,79 @@
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
 
               <!-- TRADEMARK NAME -->
-              <td class="tm-name-cell">
+              <td class="tm-name-cell" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <div class="registry-input-wrap">
+                    <input class="registry-input registry-input--name" type="text" [value]="tm.name ?? ''" placeholder="Trademark name"
+                           [attr.aria-label]="'Trademark name for row ' + (i + 1)" (input)="onTrademarkFieldInput(tm, 'name', $any($event.target).value)" />
+                    @if (isTrademarkSaving(tm)) { <span class="autosave-state">Saving</span> }
+                  </div>
+                } @else {
                 <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-name">{{ tm.name || '—' }}</a>
+                }
               </td>
 
               <!-- APP NO -->
-              <td class="app-no">{{ tm.applicationNo || '—' }}</td>
+              <td class="app-no" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <input class="registry-input" type="number" min="1" [value]="tm.applicationNo ?? ''" placeholder="Application no."
+                         [attr.aria-label]="'Application number for ' + (tm.name || 'trademark')" (input)="onTrademarkFieldInput(tm, 'applicationNo', numberOrUndefined($any($event.target).value))" />
+                } @else { {{ tm.applicationNo || '—' }} }
+              </td>
 
               <!-- CLASS -->
-              <td class="class-cell">
+              <td class="class-cell" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <select class="registry-input" [value]="tm.tmClass ?? ''" [attr.aria-label]="'Trademark class for ' + (tm.name || 'trademark')" (change)="onTrademarkFieldInput(tm, 'tmClass', numberOrUndefined($any($event.target).value))">
+                    <option value="">Class</option>@for (tmClass of classOptions; track tmClass) { <option [value]="tmClass">{{ tmClass }}</option> }
+                  </select>
+                } @else {
                 @if (tm.tmClass) {
                   <span class="class-badge">{{ tm.tmClass }}</span>
                 }
                 @else { — }
+                }
               </td>
 
               <!-- PROPRIETOR -->
-              <td class="proprietor">{{ tm.proprietorName || '—' }}</td>
+              <td class="proprietor" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <input class="registry-input" type="text" [value]="tm.proprietorName ?? ''" placeholder="Proprietor"
+                         [attr.aria-label]="'Proprietor for ' + (tm.name || 'trademark')" (input)="onTrademarkFieldInput(tm, 'proprietorName', $any($event.target).value)" />
+                } @else { {{ tm.proprietorName || '—' }} }
+              </td>
 
               <!-- STATUS -->
-              <td>
+              <td [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <select class="registry-input" [value]="tm.trademarkStatus ?? ''" [attr.aria-label]="'Status for ' + (tm.name || 'trademark')" (change)="onTrademarkFieldInput(tm, 'trademarkStatus', $any($event.target).value)">
+                    @for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }
+                  </select>
+                } @else {
                 <span class="status-badge" [class]="'status--' + getStatusClass(tm.trademarkStatus)">
                   {{ tm.trademarkStatus || 'Unknown' }}
                 </span>
+                }
               </td>
 
               <!-- FILING DATE -->
-              <td class="date-cell">{{ tm.applicationDate ? (tm.applicationDate | date:'dd MMM yyyy') : '—' }}</td>
+              <td class="date-cell" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <input class="registry-input" type="date" [value]="tm.applicationDate ?? ''" [attr.aria-label]="'Filing date for ' + (tm.name || 'trademark')" (change)="onTrademarkFieldInput(tm, 'applicationDate', $any($event.target).value)" />
+                } @else { {{ tm.applicationDate ? (tm.applicationDate | date:'dd MMM yyyy') : '—' }} }
+              </td>
 
               <!-- RENEWAL DATE -->
-              <td class="date-cell">
+              <td class="date-cell" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <input class="registry-input" type="date" [value]="tm.renewalDate ?? ''" [attr.aria-label]="'Renewal date for ' + (tm.name || 'trademark')" (change)="onTrademarkFieldInput(tm, 'renewalDate', $any($event.target).value)" />
+                } @else {
                 @if (tm.renewalDate) {
                   <span [class.warn-date]="isExpiringSoon(tm.renewalDate.toString())">
                     {{ tm.renewalDate | date:'dd MMM yyyy' }}
                   </span>
                 } @else { — }
+                }
               </td>
 
               <!-- THE FIRM'S OWN COLUMNS -->
@@ -328,7 +392,13 @@
                 </td>
               }
 
-              <td class="type-cell">{{ tm.type || '—' }}</td>
+              <td class="type-cell" [class.is-inline-editing]="tm.editable">
+                @if (tm.editable) {
+                  <select class="registry-input" [value]="tm.type ?? ''" [attr.aria-label]="'Trademark type for ' + (tm.name || 'trademark')" (change)="onTrademarkFieldInput(tm, 'type', $any($event.target).value)">
+                    <option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }
+                  </select>
+                } @else { {{ tm.type || '—' }} }
+              </td>
 
               <!--
                 ACTIONS
@@ -347,6 +417,20 @@
       </table>
     </div>
     </div>
+
+    @if (selectedIds.size > 0) {
+      <section class="bulk-actions" aria-label="Selected trademark actions">
+        <strong>{{ selectedIds.size }} selected</strong>
+        <span class="bulk-actions__rule" aria-hidden="true"></span>
+        <button type="button" class="bulk-actions__button" (click)="export('pdf')" [disabled]="printing()">
+          <ap-icon name="download" [size]="16" /> {{ printing() ? 'Preparing…' : 'Download' }}
+        </button>
+        <button type="button" class="bulk-actions__button bulk-actions__button--danger" (click)="openBulkRemoveConfirmation()" [disabled]="bulkRemoving()">
+          <ap-icon name="close" [size]="15" /> Remove
+        </button>
+        <button type="button" class="bulk-actions__dismiss" (click)="clearSelection()" aria-label="Clear selection"><ap-icon name="close" [size]="16" /></button>
+      </section>
+    }
 
     <!-- PAGINATION -->
     @if (totalPages > 1) {
@@ -383,14 +467,117 @@
       } @else {
         <div class="empty-icon"><ap-icon name="portfolio" [size]="16" /></div>
         <h3>Your portfolio is empty</h3>
-        <p>Import an Excel file or add trademarks one by one to get started.</p>
+        <p>Bring over existing registrations, import a spreadsheet, or add one mark at a time.</p>
         <div class="empty-actions">
-          <a routerLink="/agent-portal/portfolio/upload" class="btn-primary"><ap-icon name="upload" [size]="16" /> Import from Excel</a>
-          <button type="button" class="btn-outline" (click)="openDraft()"><ap-icon name="plus" [size]="16" /> Add Manually</button>
+          <button type="button" class="btn-primary" (click)="openAddFlow()"><ap-icon name="plus" [size]="16" /> Add a trademark</button>
         </div>
       }
     </div>
   }
 
 </div>
+
+@if (confirmBulkRemove()) {
+  <div class="bulk-confirm-backdrop" (click)="cancelBulkRemove()">
+    <section class="bulk-confirm" role="dialog" aria-modal="true" aria-labelledby="bulk-remove-title" (click)="$event.stopPropagation()">
+      <h2 id="bulk-remove-title">Remove {{ selectedIds.size }} selected trademark{{ selectedIds.size === 1 ? '' : 's' }}?</h2>
+      <p>
+        @if (selectedRegistryCount > 0) {
+          {{ selectedRegistryCount }} registry trademark{{ selectedRegistryCount === 1 ? '' : 's' }} will be unlinked from this portfolio. The public register records will remain unchanged.
+        }
+        @if (selectedAgentAddedCount > 0) {
+          {{ selectedAgentAddedCount }} trademark{{ selectedAgentAddedCount === 1 ? '' : 's' }} added by your firm will be deleted permanently.
+        }
+      </p>
+      <div class="bulk-confirm__actions">
+        <button type="button" class="bulk-actions__button bulk-actions__button--danger" (click)="removeSelected()" [disabled]="bulkRemoving()">
+          {{ bulkRemoving() ? 'Removing…' : 'Remove selected' }}
+        </button>
+        <button type="button" class="btn-ghost" (click)="cancelBulkRemove()" [disabled]="bulkRemoving()">Cancel</button>
+      </div>
+    </section>
+  </div>
+}
+
+@if (addFlow() !== 'closed') {
+  <div class="add-flow-backdrop" (click)="closeAddFlow()">
+    <section class="add-flow-dialog" role="dialog" aria-modal="true" aria-labelledby="add-flow-title" (click)="$event.stopPropagation()">
+      <button type="button" class="add-flow-close" (click)="closeAddFlow()" aria-label="Close add trademark dialog"><ap-icon name="close" [size]="18" /></button>
+
+      @if (addFlow() === 'choose') {
+        <div class="add-flow-intro">
+          <img src="/assets/images/agent-portfolio-add-options.png" alt="Spreadsheet, manual entry and trademark search" />
+          <div>
+            <h2 id="add-flow-title">How would you like to add trademarks?</h2>
+            <p>Start with the source that best matches the records you already have.</p>
+          </div>
+        </div>
+
+        <div class="add-paths">
+          <button type="button" class="add-path add-path--import" (click)="chooseImport()">
+            <span class="add-path-icon"><ap-icon name="upload" [size]="22" /></span>
+            <span><strong>Import from Excel</strong><small>Bring in a spreadsheet and review it before importing.</small></span>
+            <ap-icon name="chevron" [size]="18" />
+          </button>
+          <button type="button" class="add-path add-path--claim" (click)="chooseAgentClaim()">
+            <span class="add-path-icon"><ap-icon name="search" [size]="22" /></span>
+            <span><strong>Find by agent name</strong><small>Search the register and link trademarks already filed by your firm.</small></span>
+            <ap-icon name="chevron" [size]="18" />
+          </button>
+          <button type="button" class="add-path add-path--manual" (click)="chooseManualEntry()">
+            <span class="add-path-icon"><ap-icon name="plus" [size]="22" /></span>
+            <span><strong>Add manually</strong><small>Open a blank row and enter one trademark yourself.</small></span>
+            <ap-icon name="chevron" [size]="18" />
+          </button>
+        </div>
+      } @else if (addFlow() === 'import') {
+        <div class="add-flow-heading">
+          <button type="button" class="add-flow-back" (click)="addFlow.set('choose')">‹ All options</button>
+          <h2 id="add-flow-title">Import from Excel</h2>
+          <p>Drop a spreadsheet here. We’ll read it first, then you choose whether to import.</p>
+        </div>
+
+        @if (!uploadPreview() && !uploadResult()) {
+          <label class="modal-dropzone" [class.is-dragging]="uploadDragOver()" [class.is-busy]="uploadBusy()"
+                 (dragover)="onUploadDragOver($event)" (dragleave)="uploadDragOver.set(false)" (drop)="onUploadDrop($event)">
+            <input type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" (change)="onUploadFileSelected($event)" [disabled]="uploadBusy()" />
+            <span class="modal-dropzone-icon"><ap-icon name="upload" [size]="26" /></span>
+            <strong>{{ uploadBusy() ? 'Reading your spreadsheet…' : 'Drop your Excel file here' }}</strong>
+            <small>{{ uploadBusy() ? 'This may take a moment.' : 'or choose a file · .xlsx and .xls supported' }}</small>
+          </label>
+        }
+
+        @if (uploadError()) { <p class="modal-flow-error" role="alert">{{ uploadError() }}</p> }
+
+        @if (uploadPreview(); as preview) {
+          <div class="import-preview-card">
+            <div><span class="import-file-name">{{ uploadFile()?.name }}</span><span>{{ preview.importable }} ready to import from {{ preview.totalRows }} row{{ preview.totalRows === 1 ? '' : 's' }}</span></div>
+            @if ((preview.errors ?? 0) > 0) { <p>{{ preview.errors }} row{{ preview.errors === 1 ? '' : 's' }} need attention and won’t be imported.</p> }
+            <div class="import-preview-actions">
+              <button type="button" class="btn-outline" (click)="chooseImport()" [disabled]="uploadBusy()">Choose another file</button>
+              <button type="button" class="btn-primary" (click)="confirmModalImport()" [disabled]="uploadBusy() || preview.importable === 0">
+                {{ uploadBusy() ? 'Importing…' : 'Import ' + preview.importable + ' trademarks' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (uploadResult(); as result) {
+          <div class="import-complete">
+            <span><ap-icon name="check" [size]="22" /></span>
+            <div><strong>{{ result.imported }} trademark{{ result.imported === 1 ? '' : 's' }} added</strong><p>Your portfolio has been updated. Registry details will fill in as they are confirmed.</p></div>
+            <button type="button" class="btn-primary" (click)="closeAddFlow()">View portfolio</button>
+          </div>
+        }
+      } @else {
+        <div class="add-flow-heading">
+          <button type="button" class="add-flow-back" (click)="addFlow.set('choose')">‹ All options</button>
+          <h2 id="add-flow-title">Find your trademarks</h2>
+          <p>Search the register exactly as you did during onboarding, then link the marks you manage.</p>
+        </div>
+        <app-agent-portfolio-claim [embedded]="true" (completed)="onClaimComplete()" />
+      }
+    </section>
+  </div>
+}
 

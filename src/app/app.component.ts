@@ -35,7 +35,7 @@ export class AppComponent {
     // Done here rather than as a guard on every public route because that list grows, and a route
     // added later would silently be served on both hosts. One check covers all of them.
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      if (!this.hostContext.isAgentHost) {
+      if (!this.hostContext.requiresAgentSubdomain || !this.hostContext.isAgentHost) {
         return;
       }
       const url = this.router.url.split('?')[0];

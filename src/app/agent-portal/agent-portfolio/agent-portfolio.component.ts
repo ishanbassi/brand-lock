@@ -5,12 +5,15 @@ import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { debounceTime, forkJoin, Subject } from 'rxjs';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { AgentPortfolioClaimComponent } from '../agent-portfolio-claim/agent-portfolio-claim.component';
 import {
   AgentCustomField,
+  AgentDashboardStats,
   AgentImportSummary,
+  AgentImportResult,
   AgentPortfolioFilterOptions,
   AgentPortfolioQuery,
   AgentPortfolioTrademark,
@@ -36,7 +39,7 @@ interface SortableColumn {
 @Component({
   selector: 'app-agent-portfolio',
   standalone: true,
-  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, AgentPortfolioClaimComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })
@@ -44,6 +47,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   loading = signal(true);
   error = signal('');
+  dashboardStats = signal<AgentDashboardStats | null>(null);
 
   // Pagination
   page = 0;
@@ -120,6 +124,15 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   savingDraft = signal(false);
   draftError = signal('');
   private draftAutosaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** One focused entry point for every way an agent can build a portfolio. */
+  addFlow = signal<'closed' | 'choose' | 'import' | 'claim'>('closed');
+  uploadDragOver = signal(false);
+  uploadFile = signal<File | null>(null);
+  uploadPreview = signal<AgentImportResult | null>(null);
+  uploadResult = signal<AgentImportResult | null>(null);
+  uploadBusy = signal(false);
+  uploadError = signal('');
   readonly classOptions = Array.from({ length: 45 }, (_, i) => i + 1);
   readonly statusOptions = ['Not yet filed', 'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'];
   readonly typeOptions = [
@@ -134,10 +147,16 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   private readonly customValueTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly pendingCustomValues = new Map<string, { trademarkId: number; fieldKey: string; value: string }>();
   private readonly savingCustomValueKeys = signal<Set<string>>(new Set());
+  /** Registry-facing fields share one debounced update per editable trademark row. */
+  private readonly trademarkUpdateTimers = new Map<number, ReturnType<typeof setTimeout>>();
+  private readonly pendingTrademarkUpdates = new Map<number, Partial<AgentPortfolioTrademark>>();
+  private readonly savingTrademarkIds = signal<Set<number>>(new Set());
 
   // Delete
   deletingId = signal<number | null>(null);
   confirmDeleteId = signal<number | null>(null);
+  confirmBulkRemove = signal(false);
+  bulkRemoving = signal(false);
 
   // Registry refresh
   refreshingId = signal<number | null>(null);
@@ -157,11 +176,15 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   private accentColor = '#1f4e79';
   private logoUrl: string | null = null;
 
-  constructor(private readonly agentDataService: AgentDataService) {}
+  constructor(
+    private readonly agentDataService: AgentDataService,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   ngOnDestroy(): void {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
+    for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
     if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
   }
 
@@ -178,14 +201,28 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       },
     });
     this.load();
+    this.loadDashboardStats();
     this.loadPendingImports();
     this.loadFilterOptions();
     this.loadCustomFields();
+    // Dashboard's empty-state action comes here rather than the separate full-page form: the
+    // agent lands directly in the portfolio grid with one blank row ready to fill.
+    if (this.route.snapshot.queryParamMap.get('new') === '1') {
+      this.openDraft();
+    }
     this.searchSubject.pipe(debounceTime(350)).subscribe((q) => {
       if (q.trim() === this.lastSearched) return;
       this.lastSearched = q.trim();
       this.page = 0;
       this.load();
+    });
+  }
+
+  private loadDashboardStats(): void {
+    this.agentDataService.getDashboardStats().subscribe({
+      next: stats => this.dashboardStats.set(stats),
+      // The portfolio itself remains usable if the supplementary summary cannot be loaded.
+      error: () => this.dashboardStats.set(null),
     });
   }
 
@@ -207,6 +244,103 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.draftError.set('');
     // The first editable cell is added to the DOM by Angular after this event.
     setTimeout(() => document.getElementById('new-trademark-name')?.focus());
+  }
+
+  openAddFlow(): void {
+    if (this.savingDraft()) return;
+    this.addFlow.set('choose');
+  }
+
+  closeAddFlow(): void {
+    if (this.uploadBusy()) return;
+    this.addFlow.set('closed');
+    this.uploadDragOver.set(false);
+    this.uploadError.set('');
+  }
+
+  chooseManualEntry(): void {
+    this.closeAddFlow();
+    this.openDraft();
+  }
+
+  chooseImport(): void {
+    this.uploadError.set('');
+    this.uploadFile.set(null);
+    this.uploadPreview.set(null);
+    this.uploadResult.set(null);
+    this.addFlow.set('import');
+  }
+
+  chooseAgentClaim(): void {
+    this.addFlow.set('claim');
+  }
+
+  onUploadDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.uploadDragOver.set(true);
+  }
+
+  onUploadDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.uploadDragOver.set(false);
+    const file = event.dataTransfer?.files[0];
+    if (file) this.previewUpload(file);
+  }
+
+  onUploadFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) this.previewUpload(file);
+  }
+
+  previewUpload(file: File): void {
+    const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+    if (!isExcel) {
+      this.uploadError.set('Choose an Excel file in .xlsx or .xls format.');
+      return;
+    }
+    this.uploadError.set('');
+    this.uploadFile.set(file);
+    this.uploadPreview.set(null);
+    this.uploadResult.set(null);
+    this.uploadBusy.set(true);
+    this.agentDataService.previewImport(file).subscribe({
+      next: result => {
+        this.uploadPreview.set(result);
+        this.uploadBusy.set(false);
+      },
+      error: err => {
+        this.uploadError.set(err?.error?.message || 'We could not read that spreadsheet. Try another Excel file.');
+        this.uploadBusy.set(false);
+      },
+    });
+  }
+
+  confirmModalImport(): void {
+    const file = this.uploadFile();
+    if (!file || this.uploadBusy()) return;
+    this.uploadBusy.set(true);
+    this.uploadError.set('');
+    this.agentDataService.confirmImport(file, this.uploadPreview()?.batchId).subscribe({
+      next: result => {
+        this.uploadResult.set(result);
+        this.uploadBusy.set(false);
+        this.load();
+        this.loadDashboardStats();
+        this.loadFilterOptions();
+        this.loadPendingImports();
+      },
+      error: err => {
+        this.uploadError.set(err?.error?.message || 'Import failed. Please try again.');
+        this.uploadBusy.set(false);
+      },
+    });
+  }
+
+  onClaimComplete(): void {
+    this.closeAddFlow();
+    this.load();
+    this.loadDashboardStats();
+    this.loadFilterOptions();
   }
 
   cancelDraft(): void {
@@ -253,6 +387,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.sortField = null;
         this.page = 0;
         this.load();
+        this.loadDashboardStats();
         this.loadFilterOptions();
       },
       error: err => {
@@ -325,7 +460,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     try { localStorage.setItem('agent-portfolio-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Browsers can disable storage. */ }
   }
 
-  /** Keyboard parity for the table's native two-axis touchpad scroll. */
+  /** Keyboard parity for the table's horizontal overflow. */
   panTable(event: KeyboardEvent, table: HTMLElement): void {
     const target = event.target as HTMLElement;
     if (target.closest('input, select, textarea, button, a, [contenteditable="true"]')) return;
@@ -334,8 +469,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     const direction: Record<string, [number, number]> = {
       ArrowLeft: [-distance, 0],
       ArrowRight: [distance, 0],
-      ArrowUp: [0, -distance],
-      ArrowDown: [0, distance],
     };
     const movement = direction[event.key];
     if (!movement) return;
@@ -407,6 +540,64 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   isCustomValueSaving(tm: AgentPortfolioTrademark, field: AgentCustomField): boolean {
     return tm.id != null && this.savingCustomValueKeys().has(this.customValueKey(tm.id, field.fieldKey));
+  }
+
+  /**
+   * Registry fields are editable only until a successful registry sync. Keep edits optimistic in
+   * the grid, then send one partial update after the agent pauses instead of a request per key.
+   */
+  onTrademarkFieldInput(
+    tm: AgentPortfolioTrademark,
+    field: keyof AgentPortfolioTrademark,
+    value: string | number | undefined,
+  ): void {
+    if (tm.id == null || tm.editable !== true) return;
+    this.trademarks.update(rows => rows.map(mark => mark.id === tm.id ? { ...mark, [field]: value } : mark));
+    this.pendingTrademarkUpdates.set(tm.id, { ...(this.pendingTrademarkUpdates.get(tm.id) ?? {}), [field]: value });
+
+    const timer = this.trademarkUpdateTimers.get(tm.id);
+    if (timer) clearTimeout(timer);
+    this.trademarkUpdateTimers.set(tm.id, setTimeout(() => this.saveTrademarkFields(tm.id!), 700));
+  }
+
+  numberOrUndefined(value: string): number | undefined {
+    const parsed = Number(value);
+    return value.trim() && Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+  }
+
+  isTrademarkSaving(tm: AgentPortfolioTrademark): boolean {
+    return tm.id != null && this.savingTrademarkIds().has(tm.id);
+  }
+
+  private saveTrademarkFields(id: number): void {
+    this.trademarkUpdateTimers.delete(id);
+    if (this.savingTrademarkIds().has(id)) {
+      this.trademarkUpdateTimers.set(id, setTimeout(() => this.saveTrademarkFields(id), 150));
+      return;
+    }
+    const update = this.pendingTrademarkUpdates.get(id);
+    if (!update) return;
+    this.pendingTrademarkUpdates.delete(id);
+    this.savingTrademarkIds.update(ids => new Set(ids).add(id));
+
+    this.agentDataService.updatePortfolioItem(id, update).subscribe({
+      next: saved => {
+        this.trademarks.update(rows => rows.map(mark => mark.id === id ? { ...mark, ...saved } : mark));
+        this.savingTrademarkIds.update(ids => {
+          const next = new Set(ids);
+          next.delete(id);
+          return next;
+        });
+      },
+      error: err => {
+        this.savingTrademarkIds.update(ids => {
+          const next = new Set(ids);
+          next.delete(id);
+          return next;
+        });
+        this.error.set(err?.error?.message || 'Could not save this trademark. Edit a field again to retry.');
+      },
+    });
   }
 
   private saveCustomValue(key: string): void {
@@ -625,8 +816,63 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.deletingId.set(null);
         this.trademarks.update(list => list.filter(t => t.id !== id));
         this.totalCount--;
+        this.loadDashboardStats();
       },
       error: () => this.deletingId.set(null),
+    });
+  }
+
+  get selectedAgentAddedCount(): number {
+    return [...this.selectedMarks.values()].filter(mark => mark.editable === true).length;
+  }
+
+  get selectedRegistryCount(): number {
+    return this.selectedMarks.size - this.selectedAgentAddedCount;
+  }
+
+  openBulkRemoveConfirmation(): void {
+    if (this.selectedIds.size > 0 && !this.bulkRemoving()) this.confirmBulkRemove.set(true);
+  }
+
+  cancelBulkRemove(): void {
+    if (!this.bulkRemoving()) this.confirmBulkRemove.set(false);
+  }
+
+  /**
+   * The endpoint deliberately owns the distinction between an agent-created mark and a registry
+   * record. Calling it once per selected entry keeps bulk removal exactly consistent with the
+   * detail page: registry rows lose only this firm's link; agent-created rows may be deleted.
+   */
+  removeSelected(): void {
+    const selected = [...this.selectedMarks.values()].filter((mark): mark is AgentPortfolioTrademark & { id: number } => mark.id != null);
+    if (!selected.length || this.bulkRemoving()) return;
+
+    this.bulkRemoving.set(true);
+    this.error.set('');
+    forkJoin(selected.map(mark => this.agentDataService.deletePortfolioItem(mark.id).pipe(
+      map(() => mark.id),
+      catchError(() => of(null)),
+    ))).subscribe({
+      next: results => {
+        const removed = results.filter((id): id is number => id != null);
+        const removedIds = new Set(removed);
+        const failed = selected.length - removed.length;
+        this.trademarks.update(rows => rows.filter(mark => !removedIds.has(mark.id ?? -1)));
+        this.totalCount = Math.max(0, this.totalCount - removed.length);
+        for (const id of removedIds) {
+          this.selectedIds.delete(id);
+          this.selectedMarks.delete(id);
+        }
+        this.confirmBulkRemove.set(false);
+        this.bulkRemoving.set(false);
+        if (failed) this.error.set(`${failed} selected trademark${failed === 1 ? '' : 's'} could not be removed. Please try again.`);
+        this.loadFilterOptions();
+        this.loadDashboardStats();
+      },
+      error: () => {
+        this.bulkRemoving.set(false);
+        this.error.set('Could not remove the selected trademarks. Please try again.');
+      },
     });
   }
 
@@ -736,7 +982,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     }
   }
 
-  private clearSelection(): void {
+  clearSelection(): void {
     this.selectedIds.clear();
     this.selectedMarks.clear();
   }

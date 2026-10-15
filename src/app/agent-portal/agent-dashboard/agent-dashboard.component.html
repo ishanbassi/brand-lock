@@ -1,236 +1,129 @@
 <div class="dashboard">
-
-  <!-- PAGE HEADER -->
-  <div class="page-header">
-    <div>
-      <h1 class="page-title">{{ agentName }}</h1>
-      <p class="page-sub">Here's your portfolio at a glance</p>
+  <header class="dashboard-welcome">
+    <div class="welcome-copy">
+      <div class="welcome-title-row">
+        <h1>Welcome back, {{ agentName }}</h1>
+        <span class="registry-sync"><span aria-hidden="true"></span> IP India registry sync</span>
+      </div>
+      <p>Review your Indian trademark portfolio, recent filings and renewal dates in one place.</p>
     </div>
-    <div class="header-actions">
-      <a routerLink="/agent-portal/portfolio/upload" class="btn-outline">
-        <ap-icon name="upload" [size]="16" /> Import Excel
-      </a>
+    <div class="welcome-actions">
+      <a routerLink="/agent-portal/portfolio" class="dashboard-btn dashboard-btn--primary"><span class="material-symbols-outlined">folder_open</span> Open portfolio</a>
+      <a routerLink="/agent-portal/portfolio/upload" class="dashboard-btn dashboard-btn--quiet"><span class="material-symbols-outlined">file_upload</span> Import Excel</a>
     </div>
-  </div>
+  </header>
 
-  <!-- LOADING -->
   @if (loading()) {
-    <div class="loading-grid">
-      @for (i of [1,2,3,4]; track i) {
-        <div class="stat-card skeleton"></div>
-      }
+    <div class="loading-grid" aria-label="Loading dashboard">
+      @for (i of [1,2,3,4]; track i) { <div class="metric-card metric-card--loading"></div> }
     </div>
   }
 
-  <!-- ERROR -->
-  @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
-  }
+  @if (error()) { <div class="alert-error" role="alert">{{ error() }}</div> }
 
-  <!-- STATS CARDS -->
   @if (stats(); as s) {
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon stat-icon--total"><ap-icon name="documents" [size]="16" /></div>
-        <div class="stat-body">
-          <div class="stat-value">{{ s.totalTrademarks }}</div>
-          <div class="stat-label">Total Trademarks</div>
+    <section class="metrics-grid" aria-label="Portfolio overview">
+      <a routerLink="/agent-portal/portfolio" class="metric-card">
+        <span class="metric-icon metric-icon--indigo"><span class="material-symbols-outlined">folder_copy</span></span>
+        <span class="metric-label">Portfolio marks</span>
+        <strong>{{ s.totalTrademarks }}</strong>
+        <small>All trademarks in your portfolio</small>
+      </a>
+      <article class="metric-card">
+        <span class="metric-icon metric-icon--green"><span class="material-symbols-outlined">verified</span></span>
+        <span class="metric-label">Active registrations</span>
+        <strong>{{ s.activeTrademarks }}</strong>
+        <small>Registered and active marks</small>
+      </article>
+      <a routerLink="/agent-portal/deadlines" class="metric-card">
+        <span class="metric-icon metric-icon--amber"><span class="material-symbols-outlined">schedule</span></span>
+        <span class="metric-label">Renewals due</span>
+        <strong>{{ s.expiringIn90Days }}</strong>
+        <small>Due within the next 90 days</small>
+      </a>
+      <a routerLink="/agent-portal/watch/journal" class="metric-card">
+        <span class="metric-icon metric-icon--violet"><span class="material-symbols-outlined">visibility</span></span>
+        <span class="metric-label">Watch alerts</span>
+        <strong>{{ s.watchlistCount }}</strong>
+        <small>Journal watch activity</small>
+      </a>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel portfolio-health">
+        <div class="panel-head">
+          <div><h2>Portfolio health</h2><p>Current trademark status across your Indian portfolio.</p></div>
+          <a routerLink="/agent-portal/portfolio" class="text-link">View portfolio <span class="material-symbols-outlined">arrow_forward</span></a>
         </div>
-        <a routerLink="/agent-portal/portfolio" class="stat-link">View all →</a>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon stat-icon--active"><ap-icon name="check" [size]="16" /></div>
-        <div class="stat-body">
-          <div class="stat-value">{{ s.activeTrademarks }}</div>
-          <div class="stat-label">Active / Registered</div>
-        </div>
-      </div>
-
-      <div class="stat-card stat-card--warning">
-        <div class="stat-icon stat-icon--expiring"><ap-icon name="clock" [size]="16" /></div>
-        <div class="stat-body">
-          <div class="stat-value">{{ s.expiringIn90Days }}</div>
-          <div class="stat-label">Expiring in 90 days</div>
-        </div>
-        @if (s.expiringIn90Days > 0) {
-          <span class="stat-badge badge-warn">Action needed</span>
-        }
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon stat-icon--watch"><ap-icon name="eye" [size]="16" /></div>
-        <div class="stat-body">
-          <div class="stat-value">{{ s.watchlistCount }}</div>
-          <div class="stat-label">Watch Alerts</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PORTFOLIO BY STATUS -->
-    <!--
-      Total / Active / Expiring answer "how big" and "what is urgent", but not "what shape is the
-      portfolio in" — a firm with 400 marks stuck under objection reads identically to one with 400
-      registered. The chart and the cards are the same numbers twice: the chart for the proportion
-      at a glance, the cards for the exact figure including the buckets that are empty.
-    -->
-    <div class="content-card status-card">
-      <div class="card-header">
-        <h2 class="card-title">Portfolio by Status</h2>
-        <span class="card-sub">{{ s.totalTrademarks }} marks</span>
-      </div>
-
-      @if (s.totalTrademarks === 0) {
-        <div class="empty-state">
-          <p>Nothing to chart yet — add or import marks and their statuses will appear here.</p>
-        </div>
-      } @else {
-        <div class="status-layout">
-          <div class="status-chart">
-            @if (isBrowser) {
-              <canvas baseChart [data]="doughnutData()" [options]="doughnutOptions" type="doughnut"></canvas>
-              <div class="chart-centre">
-                <span class="chart-centre-value">{{ s.totalTrademarks }}</span>
-                <span class="chart-centre-label">Total</span>
-              </div>
-            } @else {
-              <div class="chart-placeholder"></div>
-            }
-          </div>
-
-          <div class="status-legend">
-            @for (row of statusRows(); track row.key) {
-              <div class="status-row" [class.is-zero]="row.count === 0">
-                <span class="status-swatch" [style.background]="row.color"></span>
-                <span class="status-name"><ap-icon [name]="row.icon" [size]="14" /> {{ row.label }}</span>
-                <span class="status-count">{{ row.count }}</span>
-                <span class="status-share">{{ row.share }}%</span>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- TWO COLUMN LAYOUT -->
-    <div class="content-grid">
-
-      <!-- RECENT FILINGS: newest application date first -->
-      <div class="content-card">
-        <div class="card-header">
-          <h2 class="card-title">Recent Filings</h2>
-          <a routerLink="/agent-portal/portfolio" class="card-link">See all</a>
-        </div>
-        @if (s.recentFilings.length === 0) {
-          <div class="empty-state">
-            <p>No filed trademarks yet.</p>
-            <a routerLink="/agent-portal/portfolio/add" class="btn-primary btn-sm">Add a trademark →</a>
+        @if (s.totalTrademarks === 0) {
+          <div class="portfolio-empty">
+            <img src="/assets/images/agent-dashboard-portfolio-records.png" alt="Trademark portfolio records illustration" />
+            <div><strong>Your portfolio is ready for its first mark.</strong><p>Add a trademark, claim records from the register, or import a spreadsheet.</p></div>
           </div>
         } @else {
-          <div class="trademark-list">
-            @for (tm of s.recentFilings; track tm.id; let i = $index) {
-              <!--
-                The whole row opens the mark's detail screen, where its actions live. Per-row
-                action icons were removed: they put consequential operations one mis-click apart in
-                a dense list, without the context needed to choose between them.
-              -->
-              <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-row">
-                <div class="tm-index">{{ i + 1 }}</div>
-                <div class="tm-main">
-                  <div class="tm-name">{{ tm.name || '—' }}</div>
-                  <div class="tm-meta">
-                    @if (tm.applicationDate) { <span>Filed {{ tm.applicationDate | date:'dd MMM yyyy' }}</span> }
-                    @if (tm.applicationNo) { <span>No. {{ tm.applicationNo }}</span> }
-                    @if (tm.tmClass) { <span>Class {{ tm.tmClass }}</span> }
-                    @if (tm.proprietorName) { <span>{{ tm.proprietorName }}</span> }
-                  </div>
+          <div class="health-content">
+            <div class="status-chart">
+              @if (isBrowser) {
+                <canvas baseChart [data]="doughnutData()" [options]="doughnutOptions" type="doughnut"></canvas>
+                <div class="chart-centre"><strong>{{ s.totalTrademarks }}</strong><span>Total marks</span></div>
+              } @else { <div class="chart-placeholder"></div> }
+            </div>
+            <div class="status-legend">
+              @for (row of statusRows(); track row.key) {
+                <div class="status-row" [class.is-zero]="row.count === 0">
+                  <span class="status-swatch" [style.background]="row.color"></span>
+                  <span class="status-name"><span class="material-symbols-outlined">{{ row.icon }}</span> {{ row.label }}</span>
+                  <strong>{{ row.count }}</strong><span>{{ row.share }}%</span>
                 </div>
-                <span class="status-badge" [class]="'status--' + getStatusBadge(tm.trademarkStatus)">
-                  {{ tm.trademarkStatus || 'Unknown' }}
-                </span>
-              </a>
-            }
+              }
+            </div>
+            <img class="health-art" src="/assets/images/agent-dashboard-portfolio-records.png" alt="" />
           </div>
         }
-      </div>
+      </section>
 
-      <!-- EXPIRING SOON -->
-      <div class="content-card">
-        <div class="card-header">
-          <h2 class="card-title">Expiring Soon</h2>
-          <span class="card-sub">Within 90 days</span>
+      <aside class="panel renewal-docket">
+        <div class="panel-head">
+          <div><h2>Renewal docket</h2><p>Upcoming renewal dates from your portfolio.</p></div>
+          <a routerLink="/agent-portal/deadlines" class="text-link" aria-label="View deadlines"><span class="material-symbols-outlined">calendar_month</span></a>
         </div>
         @if (s.expiringSoon.length === 0) {
-          <div class="empty-state">
-            <span class="empty-icon"></span>
-            <p>No renewals due in the next 90 days.</p>
-          </div>
+          <div class="docket-empty"><span class="material-symbols-outlined">task_alt</span><p>No renewals are due in the next 90 days.</p></div>
         } @else {
-          <div class="trademark-list">
+          <div class="docket-list">
             @for (tm of s.expiringSoon; track tm.id) {
-              <!-- Whole row opens the mark, as in Recent Filings; no per-row Edit action. -->
-              <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="tm-row">
-                <div class="tm-main">
-                  <div class="tm-name">{{ tm.name || '—' }}</div>
-                  <div class="tm-meta">
-                    @if (tm.applicationNo) { <span>No. {{ tm.applicationNo }}</span> }
-                    @if (tm.proprietorName) { <span>{{ tm.proprietorName }}</span> }
-                  </div>
-                </div>
-                <div class="renewal-info">
-                  <span class="renewal-label">Renewal</span>
-                  <span class="renewal-date warn">{{ tm.renewalDate | date:'dd MMM yyyy' }}</span>
-                </div>
+              <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="docket-item">
+                <span class="docket-dot"></span>
+                <div><strong>{{ tm.name || 'Untitled trademark' }}</strong><span>Class {{ tm.tmClass || '—' }} @if (tm.applicationNo) { · App. {{ tm.applicationNo }} }</span></div>
+                <time>{{ tm.renewalDate | date:'dd MMM yyyy' }}</time>
               </a>
             }
           </div>
         }
-      </div>
-
+      </aside>
     </div>
 
-    <!-- QUICK ACTIONS BANNER -->
-    <div class="quick-actions">
-      <!--
-        Journal watch leads: it is the time-critical action here. Marks advertised in a journal are
-        open to opposition for four months, and that window closes whether or not anyone looked.
-      -->
-      <div class="qa-item qa-primary" routerLink="/agent-portal/watch/journal">
-        <span class="qa-icon"><ap-icon name="watch" [size]="16" /></span>
-        <div class="qa-text">
-          <strong>Trademark Watch</strong>
-          <p>Check a journal issue against your portfolio</p>
-        </div>
+    <section class="panel recent-filings">
+      <div class="panel-head">
+        <div><h2>Recent filings</h2><p>The newest trademark applications in your portfolio.</p></div>
+        <a routerLink="/agent-portal/portfolio" class="text-link">See all <span class="material-symbols-outlined">arrow_forward</span></a>
       </div>
-      <div class="qa-item" routerLink="/agent-portal/portfolio/claim">
-        <span class="qa-icon"><ap-icon name="search" [size]="16" /></span>
-        <div class="qa-text">
-          <strong>Find your marks</strong>
-          <p>Search the register by your firm name</p>
+      @if (s.recentFilings.length === 0) {
+        <div class="filings-empty"><p>No filed trademarks yet.</p><a [routerLink]="['/agent-portal/portfolio']" [queryParams]="{ new: 1 }" class="dashboard-btn dashboard-btn--primary">Add a trademark</a></div>
+      } @else {
+        <div class="filings-list">
+          @for (tm of s.recentFilings; track tm.id) {
+            <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="filing-row">
+              <span class="filing-mark"><span class="material-symbols-outlined">description</span></span>
+              <span class="filing-name"><strong>{{ tm.name || 'Untitled trademark' }}</strong><small>Class {{ tm.tmClass || '—' }} @if (tm.applicationNo) { · Application {{ tm.applicationNo }} }</small></span>
+              <time>@if (tm.applicationDate) { Filed {{ tm.applicationDate | date:'dd MMM yyyy' }} }</time>
+              <span class="status-badge" [class]="'status--' + getStatusBadge(tm.trademarkStatus)">{{ tm.trademarkStatus || 'Unknown' }}</span>
+            </a>
+          }
         </div>
-      </div>
-      <div class="qa-item" routerLink="/agent-portal/portfolio/upload">
-        <span class="qa-icon"><ap-icon name="upload" [size]="16" /></span>
-        <div class="qa-text">
-          <strong>Import from Excel</strong>
-          <p>Upload .xlsx or .xls in seconds</p>
-        </div>
-      </div>
-      <div class="qa-item" routerLink="/agent-portal/portfolio">
-        <span class="qa-icon"><ap-icon name="search" [size]="16" /></span>
-        <div class="qa-text">
-          <strong>Search Portfolio</strong>
-          <p>Filter by class, status or name</p>
-        </div>
-      </div>
-      <div class="qa-item" routerLink="/agent-portal/profile">
-        <span class="qa-icon"><ap-icon name="user" [size]="16" /></span>
-        <div class="qa-text">
-          <strong>Update Profile</strong>
-          <p>Add your firm details & credentials</p>
-        </div>
-      </div>
-    </div>
+      }
+    </section>
+
+  
   }
-
 </div>
