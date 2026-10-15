@@ -1,5 +1,4 @@
 import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
-import { IconComponent } from '../ui/icon.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -16,25 +15,25 @@ import { AuthService } from '../../../models/auth.services';
  * moment a bucket is added or reordered.
  */
 const BUCKET_COLORS: Record<AgentStatusCount['key'], string> = {
-  REGISTERED: '#10b981',
-  UNDER_EXAMINATION_OR_ADVERTISED: '#24405C',
-  OBJECTED_OR_OPPOSED: '#f59e0b',
-  ABANDONED_WITHDRAWN_REJECTED: '#ef4444',
-  OTHER_UNKNOWN: '#94a3b8',
+  REGISTERED: '#006c4a',
+  UNDER_EXAMINATION_OR_ADVERTISED: '#4f46e5',
+  OBJECTED_OR_OPPOSED: '#b56100',
+  ABANDONED_WITHDRAWN_REJECTED: '#ba1a1a',
+  OTHER_UNKNOWN: '#777587',
 };
 
-const BUCKET_ICONS: Record<AgentStatusCount['key'], 'check' | 'search' | 'alert' | 'close' | 'dot'> = {
-  REGISTERED: 'check',
-  UNDER_EXAMINATION_OR_ADVERTISED: 'search',
-  OBJECTED_OR_OPPOSED: 'alert',
-  ABANDONED_WITHDRAWN_REJECTED: 'close',
-  OTHER_UNKNOWN: 'dot',
+const BUCKET_ICONS: Record<AgentStatusCount['key'], string> = {
+  REGISTERED: 'verified',
+  UNDER_EXAMINATION_OR_ADVERTISED: 'pending_actions',
+  OBJECTED_OR_OPPOSED: 'crisis_alert',
+  ABANDONED_WITHDRAWN_REJECTED: 'block',
+  OTHER_UNKNOWN: 'help',
 };
 
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [IconComponent, CommonModule, RouterModule, BaseChartDirective],
+  imports: [CommonModule, RouterModule, BaseChartDirective],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './agent-dashboard.component.html',
   styleUrl: './agent-dashboard.component.scss',

@@ -13,7 +13,7 @@
               (click)="toggleSidebar()"
               [attr.aria-label]="sidebarCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
               [title]="sidebarCollapsed() ? 'Expand' : 'Collapse'">
-        <ap-icon name="chevron" [size]="16" [class.flip]="!sidebarCollapsed()" />
+        <span class="material-symbols-outlined collapse-symbol" [class.flip]="!sidebarCollapsed()">menu_open</span>
       </button>
     </div>
 
@@ -40,7 +40,7 @@
                       [attr.aria-controls]="'nav-group-' + item.id"
                       (click)="toggleGroup(item)"
                       [title]="sidebarCollapsed() ? item.label : ''">
-                <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
+                <span class="material-symbols-outlined nav-icon">{{ materialIcon(item.icon) }}</span>
                 @if (!sidebarCollapsed()) {
                   <span class="nav-label">{{ item.label }}</span>
                   @if (itemBadge(item); as badge) {
@@ -48,7 +48,7 @@
                       {{ badge.count }}<span class="visually-hidden"> {{ badge.srLabel }}</span>
                     </span>
                   }
-                  <ap-icon class="nav-caret" [class.open]="isExpanded(item)" name="chevron" [size]="14" />
+                  <span class="material-symbols-outlined nav-caret" [class.open]="isExpanded(item)">chevron_right</span>
                 } @else {
                   @if (collapsedDot(item); as badge) {
                     <span class="nav-dot"><span class="visually-hidden">{{ badge.count }} {{ badge.srLabel }}</span></span>
@@ -62,7 +62,7 @@
                        class="nav-item nav-child"
                        [class.active]="isActive(child.route)"
                        [attr.aria-current]="isActive(child.route) ? 'page' : null">
-                      <ap-icon class="nav-icon" [name]="child.icon" [size]="16" />
+                      <span class="material-symbols-outlined nav-icon">{{ materialIcon(child.icon) }}</span>
                       <span class="nav-label">{{ child.label }}</span>
                       @if (badgeFor(child.badge); as badge) {
                         <span class="nav-badge" [class.nav-badge--alert]="badge.tone === 'alert'">
@@ -79,7 +79,7 @@
                  [class.active]="isActive(item.route!)"
                  [attr.aria-current]="isActive(item.route!) ? 'page' : null"
                  [title]="sidebarCollapsed() ? item.label : ''">
-                <ap-icon class="nav-icon" [name]="item.icon" [size]="18" />
+                <span class="material-symbols-outlined nav-icon">{{ materialIcon(item.icon) }}</span>
                 @if (!sidebarCollapsed()) {
                   <span class="nav-label">{{ item.label }}</span>
                   @if (itemBadge(item); as badge) {
@@ -110,7 +110,7 @@
         }
       </div>
       <button class="logout-btn" (click)="logout()" [title]="sidebarCollapsed() ? 'Sign out' : ''">
-        <ap-icon class="nav-icon" name="signout" [size]="16" />
+        <span class="material-symbols-outlined nav-icon">logout</span>
         @if (!sidebarCollapsed()) {
           <span>Sign out</span>
         }

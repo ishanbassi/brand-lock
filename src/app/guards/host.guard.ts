@@ -22,7 +22,9 @@ export const agentHostGuard: CanActivateFn = () => {
   const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
 
-  if (hostContext.isAgentHost) {
+  // The split is a production deployment concern. Locally both applications deliberately share
+  // localhost so `ng serve` needs no agent.localhost DNS/hosts-file setup.
+  if (!hostContext.requiresAgentSubdomain || hostContext.isAgentHost) {
     return true;
   }
 
@@ -50,7 +52,7 @@ export const mainHostGuard: CanActivateFn = () => {
   const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
 
-  if (!hostContext.isAgentHost) {
+  if (!hostContext.requiresAgentSubdomain || !hostContext.isAgentHost) {
     return true;
   }
 

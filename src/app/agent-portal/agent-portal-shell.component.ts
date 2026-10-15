@@ -71,6 +71,22 @@ interface NavSection {
   styleUrl: './agent-portal-shell.component.scss',
 })
 export class AgentPortalShellComponent {
+  /** Material Symbols used in the rail, matched to the visual language of the supplied design. */
+  readonly navMaterialIcons: Partial<Record<IconName, string>> = {
+    dashboard: 'dashboard',
+    portfolio: 'verified',
+    journal: 'visibility',
+    alert: 'crisis_alert',
+    building: 'troubleshoot',
+    calendar: 'event',
+    refresh: 'update',
+    clock: 'schedule',
+    scales: 'gavel',
+    search: 'manage_search',
+    documents: 'lock',
+    signout: 'logout',
+  };
+
   sidebarCollapsed = signal(false);
   // The desktop rail may collapse to icons. A phone needs a true off-canvas drawer instead, so it
   // starts closed and has a persistent trigger in the top bar.
@@ -199,6 +215,10 @@ export class AgentPortalShellComponent {
 
   isActive(route: string): boolean {
     return this.bestMatch() === route;
+  }
+
+  materialIcon(icon: IconName): string {
+    return this.navMaterialIcons[icon] ?? 'circle';
   }
 
   /**

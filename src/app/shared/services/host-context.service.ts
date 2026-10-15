@@ -1,15 +1,16 @@
 import { Injectable, REQUEST_CONTEXT, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 /**
  * Which site this request is for — the public trademark site, or the agent portal subdomain.
  *
- * The agent portal lives at agent.trademarx.in and is deliberately not part of the trademark
+ * In production, the agent portal lives at agent.trademarx.in and is deliberately not part of the trademark
  * registration product: an agent represents other people's marks and is not a customer filing
  * their own. One Angular build serves both, so something has to tell them apart.
  *
  * Reads the host from the SSR request context on the server and from the URL in the browser. Both
- * halves matter: a browser-only check would still let the server render agent pages under the main
+ * halves matter in production: a browser-only check would still let the server render agent pages under the main
  * domain and hand them to a crawler before the client ever corrected it.
  *
  * Note this is a routing and presentation concern, not a security boundary. The API is shared and a
@@ -37,11 +38,19 @@ export class HostContextService {
     return (this.context?.host ?? '').toLowerCase().split(':')[0];
   }
 
-  /** True when this request is for the agent portal subdomain. */
+  /** Whether this build keeps the portal on a distinct origin. Local development uses one origin. */
+  get requiresAgentSubdomain(): boolean {
+    return environment.production;
+  }
+
+  /** True when this request is for the agent portal production subdomain. */
   get isAgentHost(): boolean {
+    if (!this.requiresAgentSubdomain) {
+      return false;
+    }
     const h = this.host;
-    // Prefix match rather than equality so staging and local hosts work too
-    // (agent.localhost, agent.staging.trademarx.in).
+    // Prefix match keeps production-like staging hosts working too
+    // (for example, agent.staging.trademarx.in), while local development stays single-origin.
     return h.startsWith(AGENT_HOST_PREFIX);
   }
 
@@ -51,13 +60,27 @@ export class HostContextService {
    * Router navigation cannot cross an origin, so moving between the two is a full page load.
    */
   urlOnMainHost(path: string): string {
+    if (!this.requiresAgentSubdomain) {
+      return `${this.protocol}//${this.authority}${path}`;
+    }
     const h = this.host.startsWith(AGENT_HOST_PREFIX) ? this.host.slice(AGENT_HOST_PREFIX.length) : this.host;
     return `${this.protocol}//${h}${path}`;
   }
 
   urlOnAgentHost(path: string): string {
+    if (!this.requiresAgentSubdomain) {
+      return `${this.protocol}//${this.authority}${path}`;
+    }
     const h = this.host.startsWith(AGENT_HOST_PREFIX) ? this.host : `${AGENT_HOST_PREFIX}${this.host}`;
     return `${this.protocol}//${h}${path}`;
+  }
+
+  /** Browser origin includes a dev-server port; SSR request hosts already include it when present. */
+  private get authority(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      return window.location.host.toLowerCase();
+    }
+    return (this.context?.host ?? '').toLowerCase();
   }
 
   private get protocol(): string {

@@ -22,15 +22,13 @@
   --ap-rule: #dce5f0;
   --ap-rule-strong: #b9c9dc;
 
-  /* Sidebar keeps the ink ground so the portal reads as one surface. */
-  --ap-shell: #111e31;
-  --ap-shell-text: rgba(255, 255, 255, 0.82);
-  --ap-shell-muted: rgba(255, 255, 255, 0.68);
-  --ap-shell-hover: rgba(255, 255, 255, 0.07);
-  /* The accent, lifted for the dark rail: --ap-accent itself is ink blue and vanishes on ink. Used
-     only for the active item's marker bar. */
-  --ap-shell-accent: #40a8ff;
-  --ap-shell-active: rgba(27, 126, 220, 0.24);
+  /* A quiet, light rail keeps the portfolio data as the visual focus. */
+  --ap-shell: #f8fafc;
+  --ap-shell-text: #142238;
+  --ap-shell-muted: #52647b;
+  --ap-shell-hover: #eef4fa;
+  --ap-shell-accent: #0869c6;
+  --ap-shell-active: #e5f1fd;
 
   /* ── Accent ──────────────────────────────────────────────────────────────
      One accent, used for primary actions and the active nav item only. Ink blue
@@ -60,7 +58,7 @@
                    The portal's consistent signal for "this is a registered
                    thing you can look up". */
   --ap-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --ap-font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --ap-font-ui: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   --ap-font-data: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
 
   /* A real scale rather than ad-hoc sizes, which is how spacing and type drift
