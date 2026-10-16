@@ -6,7 +6,7 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 import { FormsModule } from '@angular/forms';
 import { AgentImportResult, AgentPortfolioTrademark, ExcelExtraColumn } from '../../../models/agent.model';
 
-type UploadPhase = 'select' | 'preview' | 'importing' | 'done' | 'error' | 'handoff';
+type UploadPhase = 'select' | 'preview' | 'importing' | 'queued' | 'done' | 'error' | 'handoff';
 
 @Component({
   selector: 'app-agent-portfolio-upload',
@@ -88,13 +88,13 @@ export class AgentPortfolioUploadComponent {
   }
 
   confirmImport(): void {
-    const file = this.selectedFile();
-    if (!file) return;
+    const batchId = this.previewResult()?.batchId;
+    if (batchId == null) return;
     this.phase.set('importing');
-    this.agentDataService.confirmImport(file, this.previewResult()?.batchId).subscribe({
+    this.agentDataService.confirmImport(batchId).subscribe({
       next: (result) => {
         this.importResult.set(result);
-        this.phase.set('done');
+        this.phase.set('queued');
       },
       error: (err) => {
         this.errorMessage.set(err?.error?.message || 'Import failed. Please try again.');

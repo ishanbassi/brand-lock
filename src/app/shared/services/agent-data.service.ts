@@ -165,12 +165,10 @@ export class AgentDataService {
    * All usable spreadsheet columns are retained automatically, so the import request has no
    * per-column selection state to lose or accidentally omit.
    */
-  confirmImport(file: File, batchId?: number): Observable<AgentImportResult> {
-    const form = new FormData();
-    form.append('file', file);
-    let params = new HttpParams();
-    if (batchId != null) params = params.set('batchId', batchId);
-    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, form, { params });
+  confirmImport(batchId: number): Observable<AgentImportResult> {
+    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, {}, {
+      params: new HttpParams().set('batchId', batchId),
+    });
   }
 
   /** Every conflict recorded across the whole portfolio — what the digest email links to. */

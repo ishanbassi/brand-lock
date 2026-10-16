@@ -53,13 +53,9 @@
 
           <div class="section-title">Personal Information</div>
           <div class="form-grid">
-            <div class="field">
-              <label class="field-label">First Name</label>
-              <input type="text" class="field-input" [(ngModel)]="form.firstName" name="firstName" />
-            </div>
-            <div class="field">
-              <label class="field-label">Last Name</label>
-              <input type="text" class="field-input" [(ngModel)]="form.lastName" name="lastName" />
+            <div class="field full-span">
+              <label class="field-label">Full Name</label>
+              <input type="text" class="field-input" [(ngModel)]="form.fullName" name="fullName" autocomplete="name" />
             </div>
             <div class="field">
               <label class="field-label">Phone Number</label>

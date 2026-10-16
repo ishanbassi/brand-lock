@@ -141,6 +141,10 @@ export class AgentDashboardComponent implements OnInit {
     return 'pending';
   }
 
+  scorePercent(score: number | undefined): number {
+    return Math.round((score ?? 0) * 100);
+  }
+
   trackById(_: number, item: AgentPortfolioTrademark): any {
     return item.id;
   }
