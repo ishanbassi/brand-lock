@@ -191,6 +191,8 @@ export interface AgentDashboardStats {
   activeTrademarks: number;
   expiringIn90Days: number;
   watchlistCount: number;
+  /** Latest published-journal conflicts persisted by the watch run that sends the email alert. */
+  recentJournalConflicts: WatchConflictHistory[];
   /** Every bucket, zeroes included, summing to totalTrademarks. */
   statusBreakdown: AgentStatusCount[];
   /** Newest application date first; marks not yet filed are excluded. */

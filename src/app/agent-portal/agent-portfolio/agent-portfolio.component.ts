@@ -316,17 +316,14 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   }
 
   confirmModalImport(): void {
-    const file = this.uploadFile();
-    if (!file || this.uploadBusy()) return;
+    const batchId = this.uploadPreview()?.batchId;
+    if (batchId == null || this.uploadBusy()) return;
     this.uploadBusy.set(true);
     this.uploadError.set('');
-    this.agentDataService.confirmImport(file, this.uploadPreview()?.batchId).subscribe({
+    this.agentDataService.confirmImport(batchId).subscribe({
       next: result => {
         this.uploadResult.set(result);
         this.uploadBusy.set(false);
-        this.load();
-        this.loadDashboardStats();
-        this.loadFilterOptions();
         this.loadPendingImports();
       },
       error: err => {
@@ -376,17 +373,17 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       .filter(([, value]) => String(value ?? '').trim())
       .map(([key, value]) => [key, String(value)]));
     this.agentDataService.addPortfolioItem({ ...draft, name: draft.name?.trim(), customFields }).subscribe({
-      next: () => {
+      next: (saved) => {
         this.savingDraft.set(false);
         this.draft.set(null);
         this.draftCustomValues = {};
-        this.searchQuery = '';
-        this.lastSearched = '';
-        this.filterStatus = '';
-        this.filterClass = '';
-        this.sortField = null;
-        this.page = 0;
-        this.load();
+        // Do not reload a large table on every inline auto-save. A new record belongs at the top
+        // only in the default listing; a filtered or sorted view remains undisturbed.
+        if (this.isDefaultListing()) {
+          this.trademarks.update(rows => [saved, ...rows].slice(0, this.pageSize));
+          this.totalCount += 1;
+          this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
+        }
         this.loadDashboardStats();
         this.loadFilterOptions();
       },
@@ -395,6 +392,14 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.draftError.set(err?.error?.message || err?.error?.detail || 'Could not save this trademark. Try again.');
       },
     });
+  }
+
+  private isDefaultListing(): boolean {
+    return this.page === 0
+      && !this.searchQuery.trim()
+      && !this.filterStatus
+      && !this.filterClass
+      && this.sortField == null;
   }
 
   createField(): void {

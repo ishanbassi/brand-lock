@@ -256,6 +256,19 @@
     </div>
   }
 
+  @if (phase() === 'queued') {
+    <div class="handoff-card">
+      <div class="done-icon"><ap-icon name="check" [size]="16" /></div>
+      <h2>Your import is underway</h2>
+      <p class="handoff-lead"><strong>{{ previewResult()?.importable || 0 }} trademark{{ (previewResult()?.importable || 0) === 1 ? '' : 's' }}</strong> will be added in the background.</p>
+      <p class="handoff-detail">You can continue working now. New rows will appear in your portfolio as the import progresses.</p>
+      <div class="handoff-actions">
+        <button type="button" class="btn-primary" (click)="continueToPortfolio()">Go to my portfolio</button>
+        <button type="button" class="btn-secondary" (click)="reset()">Import another file</button>
+      </div>
+    </div>
+  }
+
   <!-- PHASE: DONE -->
   @if (phase() === 'done') {
     <div class="done-card">

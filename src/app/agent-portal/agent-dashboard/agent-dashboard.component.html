@@ -124,6 +124,26 @@
       }
     </section>
 
+    <section class="panel journal-conflicts">
+      <div class="panel-head">
+        <div><h2>Recent journal conflicts</h2><p>Published journal matches detected against your portfolio.</p></div>
+        <a routerLink="/agent-portal/watch/conflicts" class="text-link">Review all <span class="material-symbols-outlined">arrow_forward</span></a>
+      </div>
+      @if (s.recentJournalConflicts.length === 0) {
+        <div class="journal-conflicts-empty"><span class="material-symbols-outlined">task_alt</span><p>No journal conflicts have been recorded recently.</p></div>
+      } @else {
+        <div class="journal-conflicts-list">
+          @for (conflict of s.recentJournalConflicts; track conflict.id) {
+            <a routerLink="/agent-portal/watch/conflicts" class="journal-conflict-row">
+              <span class="conflict-risk" [class]="'risk--' + (conflict.riskLevel || 'LOW').toLowerCase()"></span>
+              <span class="conflict-name"><strong>{{ conflict.conflictingTrademarkName || 'Unnamed trademark' }}</strong><small>Journal {{ conflict.journalNo }} @if (conflict.conflictingApplicationNo) { · App. {{ conflict.conflictingApplicationNo }} }</small></span>
+              <span class="conflict-score">{{ scorePercent(conflict.similarityScore) }}% match</span>
+            </a>
+          }
+        </div>
+      }
+    </section>
+
   
   }
 </div>
