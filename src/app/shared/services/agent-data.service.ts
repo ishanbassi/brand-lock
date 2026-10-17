@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpEvent, HttpEventType, HttpParams, HttpResponse } from '@angular/common/http';
+import { filter, map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AgentClaimRequest,
@@ -154,9 +154,20 @@ export class AgentDataService {
 
   // Excel import
   previewImport(file: File): Observable<AgentImportResult> {
+    return this.previewImportWithProgress(file).pipe(
+      filter((event): event is HttpResponse<AgentImportResult> => event.type === HttpEventType.Response),
+      map(event => event.body as AgentImportResult),
+    );
+  }
+
+  /** Upload events let the inline portfolio importer show both file-transfer and parsing states. */
+  previewImportWithProgress(file: File): Observable<HttpEvent<AgentImportResult>> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form);
+    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form, {
+      observe: 'events',
+      reportProgress: true,
+    });
   }
 
   /**

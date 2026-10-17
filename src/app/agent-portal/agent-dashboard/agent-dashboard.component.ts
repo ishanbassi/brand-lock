@@ -6,6 +6,7 @@ import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentDashboardStats, AgentPortfolioTrademark, AgentStatusCount } from '../../../models/agent.model';
 import { AuthService } from '../../../models/auth.services';
+import { AgentTrialWelcomeComponent } from '../agent-trial-welcome/agent-trial-welcome.component';
 
 /**
  * Bucket key to the colour it is drawn in, everywhere it appears.
@@ -33,7 +34,7 @@ const BUCKET_ICONS: Record<AgentStatusCount['key'], string> = {
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, BaseChartDirective],
+  imports: [CommonModule, RouterModule, BaseChartDirective, AgentTrialWelcomeComponent],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './agent-dashboard.component.html',
   styleUrl: './agent-dashboard.component.scss',

@@ -1,0 +1,46 @@
+@if (visible()) {
+  <div class="trial-backdrop" (click)="dismiss()">
+    <section
+      #dialog
+      class="trial-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="trial-welcome-title"
+      aria-describedby="trial-welcome-intro"
+      (click)="$event.stopPropagation()"
+    >
+      <button #closeButton type="button" class="trial-dialog__close" aria-label="Dismiss trial welcome" (click)="dismiss()">
+        <ap-icon name="close" [size]="18" />
+      </button>
+
+      <div class="trial-dialog__art" aria-hidden="true">
+        <img src="/assets/images/agent-pro-trial-unlocked.png" width="672" height="720" alt="" />
+      </div>
+
+      <div class="trial-dialog__content">
+        <h2 id="trial-welcome-title">Your Pro trial starts now</h2>
+        <p id="trial-welcome-intro" class="trial-dialog__intro">
+          For the next <strong>{{ daysRemaining() }} day{{ daysRemaining() === 1 ? '' : 's' }}</strong>, every Pro tool is ready for your practice.
+        </p>
+
+        <div class="trial-dialog__end">
+          <ap-icon name="calendar" [size]="18" />
+          <span><strong>Trial ends</strong>{{ trialEndLabel() }}</span>
+        </div>
+
+        @if (features().length > 0) {
+          <section class="trial-dialog__features" aria-labelledby="trial-features-title">
+            <h3 id="trial-features-title">Included in your trial</h3>
+            <ul>
+              @for (feature of features(); track feature) {
+                <li><ap-icon name="check" [size]="16" /> <span>{{ feature }}</span></li>
+              }
+            </ul>
+          </section>
+        }
+
+        <button type="button" class="trial-dialog__cta" (click)="dismiss()">Start exploring</button>
+      </div>
+    </section>
+  </div>
+}

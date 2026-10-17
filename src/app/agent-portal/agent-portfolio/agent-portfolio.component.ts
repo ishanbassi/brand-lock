@@ -5,6 +5,7 @@ import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpEventType } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -123,7 +124,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   draftCustomValues: Record<string, string> = {};
   savingDraft = signal(false);
   draftError = signal('');
-  private draftAutosaveTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** One focused entry point for every way an agent can build a portfolio. */
   addFlow = signal<'closed' | 'choose' | 'import' | 'claim'>('closed');
@@ -132,7 +132,10 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   uploadPreview = signal<AgentImportResult | null>(null);
   uploadResult = signal<AgentImportResult | null>(null);
   uploadBusy = signal(false);
+  uploadProgress = signal(0);
+  uploadStage = signal<'idle' | 'uploading' | 'processing'>('idle');
   uploadError = signal('');
+  private importPollTimer: ReturnType<typeof setInterval> | null = null;
   readonly classOptions = Array.from({ length: 45 }, (_, i) => i + 1);
   readonly statusOptions = ['Not yet filed', 'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'];
   readonly typeOptions = [
@@ -185,7 +188,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
+    if (this.importPollTimer) clearInterval(this.importPollTimer);
   }
 
   ngOnInit(): void {
@@ -268,6 +271,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.uploadFile.set(null);
     this.uploadPreview.set(null);
     this.uploadResult.set(null);
+    this.uploadProgress.set(0);
+    this.uploadStage.set('idle');
     this.addFlow.set('import');
   }
 
@@ -303,14 +308,25 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.uploadPreview.set(null);
     this.uploadResult.set(null);
     this.uploadBusy.set(true);
-    this.agentDataService.previewImport(file).subscribe({
-      next: result => {
-        this.uploadPreview.set(result);
-        this.uploadBusy.set(false);
+    this.uploadProgress.set(0);
+    this.uploadStage.set('uploading');
+    this.agentDataService.previewImportWithProgress(file).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.UploadProgress) {
+          const finishedUploading = event.total != null && event.loaded >= event.total;
+          this.uploadProgress.set(event.total ? Math.min(90, Math.round((event.loaded / event.total) * 90)) : 0);
+          if (finishedUploading) this.uploadStage.set('processing');
+        } else if (event.type === HttpEventType.Response) {
+          this.uploadProgress.set(100);
+          this.uploadStage.set('idle');
+          this.uploadPreview.set(event.body ?? null);
+          this.uploadBusy.set(false);
+        }
       },
       error: err => {
         this.uploadError.set(err?.error?.message || 'We could not read that spreadsheet. Try another Excel file.');
         this.uploadBusy.set(false);
+        this.uploadStage.set('idle');
       },
     });
   }
@@ -325,6 +341,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.uploadResult.set(result);
         this.uploadBusy.set(false);
         this.loadPendingImports();
+        this.startImportPolling();
       },
       error: err => {
         this.uploadError.set(err?.error?.message || 'Import failed. Please try again.');
@@ -342,25 +359,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   cancelDraft(): void {
     if (this.savingDraft()) return;
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
-    this.draftAutosaveTimer = null;
     this.draft.set(null);
     this.draftError.set('');
   }
 
-  /**
-   * A new row behaves like the editable custom-value cells: wait until typing pauses, then save.
-   * An empty row remains a draft so opening it never creates a blank trademark.
-   */
-  queueDraftSave(delay = 900): void {
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
-    this.draftError.set('');
-    this.draftAutosaveTimer = setTimeout(() => {
-      this.draftAutosaveTimer = null;
-      this.saveDraft();
-    }, delay);
-  }
-
+  /** New records are drafts until the operator explicitly saves them. Existing rows still autosave. */
   saveDraft(): void {
     const draft = this.draft();
     if (!draft || this.savingDraft()) return;
@@ -693,9 +696,36 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   loadPendingImports(): void {
     this.agentDataService.getOwnImports().subscribe({
       // A failure here must not disturb the portfolio itself; the banner is supplementary.
-      next: (imports) => this.pendingImports.set(imports.filter((i) => i.pending)),
+      next: (imports) => {
+        this.pendingImports.set(imports.filter((i) => i.pending));
+        if (imports.some((i) => i.status === 'QUEUED' || i.status === 'PROCESSING')) this.startImportPolling();
+        else this.stopImportPolling();
+      },
       error: () => this.pendingImports.set([]),
     });
+  }
+
+  importProgress(importBatch: AgentImportSummary): number | null {
+    const total = importBatch.importable ?? 0;
+    if (total <= 0 || importBatch.status === 'NEEDS_ADMIN_REVIEW' || importBatch.status === 'PARSED') return null;
+    return Math.min(100, Math.round(((importBatch.imported ?? 0) / total) * 100));
+  }
+
+  private startImportPolling(): void {
+    if (this.importPollTimer) return;
+    this.importPollTimer = setInterval(() => {
+      this.loadPendingImports();
+      this.load(true);
+    }, 1500);
+  }
+
+  private stopImportPolling(): void {
+    if (!this.importPollTimer) return;
+    clearInterval(this.importPollTimer);
+    this.importPollTimer = null;
+    this.load(true);
+    this.loadDashboardStats();
+    this.loadFilterOptions();
   }
 
   /** The filter and sort the table reflects — sent with the listing and with both exports. */
@@ -709,10 +739,12 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     };
   }
 
-  load(): void {
+  load(silent = false): void {
     const requestId = ++this.latestLoad;
-    this.loading.set(true);
-    this.error.set('');
+    if (!silent) {
+      this.loading.set(true);
+      this.error.set('');
+    }
     this.agentDataService
       .getPortfolio(this.page, this.pageSize, this.currentQuery())
       .subscribe({
@@ -724,13 +756,16 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
           // pages that render empty.
           this.totalCount = total ? parseInt(total, 10) : (res.body?.length || 0);
           this.totalPages = Math.ceil(this.totalCount / this.pageSize);
-          this.loading.set(false);
+          if (!silent) this.loading.set(false);
         },
         error: () => {
           if (requestId !== this.latestLoad) return;
-          this.trademarks.set([]);
-          this.error.set('Could not load your portfolio. Check your connection and try again.');
-          this.loading.set(false);
+          // Polling must never wipe a usable grid because of one transient background request.
+          if (!silent) {
+            this.trademarks.set([]);
+            this.error.set('Could not load your portfolio. Check your connection and try again.');
+          }
+          if (!silent) this.loading.set(false);
         },
       });
   }
@@ -803,6 +838,19 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     if (p < 0 || p >= this.totalPages) return;
     this.page = p;
     this.load();
+  }
+
+  onPageSizeChange(size: number): void {
+    if (![100, 500, 1000].includes(size)) return;
+    this.clearSelection();
+    this.pageSize = size;
+    this.page = 0;
+    this.load();
+  }
+
+  get canSaveDraft(): boolean {
+    const draft = this.draft();
+    return Boolean(draft?.name?.trim() || draft?.applicationNo);
   }
 
   startDelete(id: number): void {

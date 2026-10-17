@@ -136,6 +136,11 @@
               — waiting for you to confirm the import
             }
           </p>
+          @if (importProgress(imp); as progress) {
+            <span class="import-progress" role="progressbar" [attr.aria-label]="'Import progress for ' + (imp.originalFileName || 'spreadsheet')" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100">
+              <span [style.width.%]="progress"></span><span>{{ imp.imported ?? 0 }} of {{ imp.importable ?? 0 }} saved</span>
+            </span>
+          }
         }
         <p class="pending-note">
           Your trademarks will appear here once it's processed. There's no need to upload it again.
@@ -285,18 +290,18 @@
           @if (draft(); as newMark) {
             <tr class="draft-row">
               <td class="select-col"></td>
-              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" (ngModelChange)="queueDraftSave()" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="queueDraftSave(0)" /></td>
-              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" (ngModelChange)="queueDraftSave()" placeholder="Application no." aria-label="New application number" /></td>
-              <td><select [(ngModel)]="newMark.tmClass" (ngModelChange)="queueDraftSave()" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
-              <td><input type="text" [(ngModel)]="newMark.proprietorName" (ngModelChange)="queueDraftSave()" placeholder="Proprietor" aria-label="New proprietor" /></td>
-              <td><select [(ngModel)]="newMark.trademarkStatus" (ngModelChange)="queueDraftSave()" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
-              <td><input type="date" [(ngModel)]="newMark.applicationDate" (ngModelChange)="queueDraftSave()" aria-label="New filing date" /></td>
-              <td><input type="date" [(ngModel)]="newMark.renewalDate" (ngModelChange)="queueDraftSave()" aria-label="New renewal date" /></td>
+              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="saveDraft()" /></td>
+              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" placeholder="Application no." aria-label="New application number" (keyup.enter)="saveDraft()" /></td>
+              <td><select [(ngModel)]="newMark.tmClass" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
+              <td><input type="text" [(ngModel)]="newMark.proprietorName" placeholder="Proprietor" aria-label="New proprietor" (keyup.enter)="saveDraft()" /></td>
+              <td><select [(ngModel)]="newMark.trademarkStatus" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
+              <td><input type="date" [(ngModel)]="newMark.applicationDate" aria-label="New filing date" /></td>
+              <td><input type="date" [(ngModel)]="newMark.renewalDate" aria-label="New renewal date" /></td>
               @for (field of shownCustomFields(); track field.id) {
-                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" (ngModelChange)="queueDraftSave()" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" /></td>
+                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" (keyup.enter)="saveDraft()" /></td>
               }
-              <td><select [(ngModel)]="newMark.type" (ngModelChange)="queueDraftSave()" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
-              <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Auto-save' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
+              <td><select [(ngModel)]="newMark.type" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
+              <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Not saved' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
             </tr>
             @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 3" role="alert">{{ draftError() }}</td></tr> }
           }
@@ -436,7 +441,24 @@
       </section>
     }
 
+    @if (draft()) {
+      <section class="bulk-actions draft-save-actions" aria-label="New trademark actions">
+        <strong>New trademark</strong>
+        <span class="bulk-actions__rule" aria-hidden="true"></span>
+        <button type="button" class="bulk-actions__button" (click)="saveDraft()" [disabled]="savingDraft() || !canSaveDraft">
+          <ap-icon name="check" [size]="16" /> {{ savingDraft() ? 'Saving…' : 'Save trademark' }}
+        </button>
+        <button type="button" class="bulk-actions__dismiss" (click)="cancelDraft()" [disabled]="savingDraft()" aria-label="Discard new trademark"><ap-icon name="close" [size]="16" /></button>
+      </section>
+    }
+
     <!-- PAGINATION -->
+    <div class="table-footer">
+      <label class="page-size-control">Rows per page
+        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" aria-label="Rows per page">
+          <option [ngValue]="100">100</option><option [ngValue]="500">500</option><option [ngValue]="1000">1,000</option>
+        </select>
+      </label>
     @if (totalPages > 1) {
       <nav class="pagination" aria-label="Portfolio pages">
         <button type="button" class="page-btn" [disabled]="page === 0" (click)="goToPage(0)" aria-label="First page"><ap-icon name="chevron" [size]="16" class="flip" /><ap-icon name="chevron" [size]="16" class="double-chevron flip" /></button>
@@ -456,6 +478,7 @@
         <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
       </nav>
     }
+    </div>
   }
 
   <!-- EMPTY STATE -->
@@ -546,8 +569,9 @@
                  (dragover)="onUploadDragOver($event)" (dragleave)="uploadDragOver.set(false)" (drop)="onUploadDrop($event)">
             <input type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" (change)="onUploadFileSelected($event)" [disabled]="uploadBusy()" />
             <span class="modal-dropzone-icon"><ap-icon name="upload" [size]="26" /></span>
-            <strong>{{ uploadBusy() ? 'Reading your spreadsheet…' : 'Drop your Excel file here' }}</strong>
-            <small>{{ uploadBusy() ? 'This may take a moment.' : 'or choose a file · .xlsx and .xls supported' }}</small>
+            <strong>{{ uploadBusy() ? (uploadStage() === 'uploading' ? 'Uploading your spreadsheet…' : 'Reading your spreadsheet…') : 'Drop your Excel file here' }}</strong>
+            <small>{{ uploadBusy() ? (uploadStage() === 'uploading' ? uploadProgress() + '% uploaded' : 'Reading rows and preparing your preview…') : 'or choose a file · .xlsx and .xls supported' }}</small>
+            @if (uploadBusy()) { <span class="upload-progress" role="progressbar" [attr.aria-valuenow]="uploadProgress()" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="uploadProgress()"></span></span> }
           </label>
         }
 
@@ -569,7 +593,7 @@
         @if (uploadResult(); as result) {
           <div class="import-complete">
             <span><ap-icon name="check" [size]="22" /></span>
-            <div><strong>{{ result.importable }} trademark{{ result.importable === 1 ? '' : 's' }} queued for import</strong><p>We’re adding your records in the background. You can keep working while they appear in your portfolio.</p></div>
+            <div><strong>{{ result.importable }} trademark{{ result.importable === 1 ? '' : 's' }} queued for import</strong><p>We’re adding your records now. The portfolio updates as each batch is saved.</p></div>
             <button type="button" class="btn-primary" (click)="closeAddFlow()">View portfolio</button>
           </div>
         }
