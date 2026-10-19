@@ -34,7 +34,15 @@
         <div class="field-row"><span class="field-label">Package</span><span class="field-value">{{ l.selectedPackage || '—' }}</span></div>
         <div class="field-row"><span class="field-label">TM class</span><span class="field-value">{{ l.tmClass || '—' }}</span></div>
         <div class="field-row"><span class="field-label">Contact via</span><span class="field-value">{{ l.contactMethod || '—' }}</span></div>
-        <div class="field-row"><span class="field-label">Source</span><span class="field-value">{{ l.leadSource || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Form source</span><span class="field-value">{{ l.leadSource || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Acquisition</span><span class="field-value">{{ l.acquisitionSource || '—' }}</span></div>
+        <div class="field-row"><span class="field-label">Referrer</span><span class="field-value">{{ l.referrerDomain || '—' }}</span></div>
+        @if (l.utmSource) { <div class="field-row"><span class="field-label">UTM source</span><span class="field-value">{{ l.utmSource }}</span></div> }
+        @if (l.utmMedium) { <div class="field-row"><span class="field-label">UTM medium</span><span class="field-value">{{ l.utmMedium }}</span></div> }
+        @if (l.utmCampaign) { <div class="field-row"><span class="field-label">UTM campaign</span><span class="field-value">{{ l.utmCampaign }}</span></div> }
+        @if (l.utmContent) { <div class="field-row"><span class="field-label">UTM content</span><span class="field-value">{{ l.utmContent }}</span></div> }
+        @if (l.utmTerm) { <div class="field-row"><span class="field-label">UTM term</span><span class="field-value">{{ l.utmTerm }}</span></div> }
+        <div class="field-row"><span class="field-label">Partner referral</span><span class="field-value">{{ l.referralCode || '—' }}</span></div>
         <div class="field-row"><span class="field-label">Created</span><span class="field-value">{{ $any(l.createdDate) | date:'dd MMM yyyy, HH:mm' }}</span></div>
       </div>
 

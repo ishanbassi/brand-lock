@@ -7,6 +7,7 @@ import { ILead, NewLead } from '../../../models/lead.model';
 import { ApplicationConfigService } from '../../core/config/application-config.service';
 import { createRequestOption } from '../../core/request/request-util';
 import { ReferralAttributionService } from './referral-attribution.service';
+import { LeadAcquisitionService } from './lead-acquisition.service';
 
 
 export type PartialUpdateLead = Partial<ILead> & Pick<ILead, 'id'>;
@@ -30,14 +31,23 @@ export class LeadService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
   protected readonly referralAttributionService = inject(ReferralAttributionService);
+  protected readonly leadAcquisitionService = inject(LeadAcquisitionService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/leads');
   protected resourceUrlExtended = this.applicationConfigService.getEndpointFor('api/extended/leads');
 
   create(lead: NewLead): Observable<EntityResponseType> {
+    const acquisition = this.leadAcquisitionService.getActive();
     const withReferral: NewLead = {
       ...lead,
       referralCode: lead.referralCode ?? this.referralAttributionService.getActiveCode() ?? undefined,
+      acquisitionSource: lead.acquisitionSource ?? acquisition?.source,
+      referrerDomain: lead.referrerDomain ?? acquisition?.referrerDomain,
+      utmSource: lead.utmSource ?? acquisition?.utmSource,
+      utmMedium: lead.utmMedium ?? acquisition?.utmMedium,
+      utmCampaign: lead.utmCampaign ?? acquisition?.utmCampaign,
+      utmContent: lead.utmContent ?? acquisition?.utmContent,
+      utmTerm: lead.utmTerm ?? acquisition?.utmTerm,
     };
     const copy = this.convertDateFromClient(withReferral);
     return this.http.post<RestLead>(this.resourceUrlExtended, copy, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));

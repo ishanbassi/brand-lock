@@ -33,6 +33,13 @@ export class Lead {
     status?: LeadStatus;
     leadSource?: string;
     referralCode?: string;
+    acquisitionSource?: string;
+    referrerDomain?: string;
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+    utmContent?: string;
+    utmTerm?: string;
     assignedTo?: Employee;
 
     constructor(data?: Partial<Lead>) {
@@ -64,6 +71,13 @@ export interface ILead {
     status?: keyof typeof LeadStatus | null;
     leadSource?: string | null;
     referralCode?: string | null;
+    acquisitionSource?: string | null;
+    referrerDomain?: string | null;
+    utmSource?: string | null;
+    utmMedium?: string | null;
+    utmCampaign?: string | null;
+    utmContent?: string | null;
+    utmTerm?: string | null;
     assignedTo?: IEmployee | null;
   }
   

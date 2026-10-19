@@ -109,6 +109,10 @@ export class AdminApiConsumersComponent implements OnInit {
     this.saveConsumer({ id: consumer.id, tier: tier as any });
   }
 
+  onAttributionAuditChange(consumer: IApiConsumer, enabled: boolean): void {
+    this.saveConsumer({ id: consumer.id, attributionAuditEnabled: enabled });
+  }
+
   revoke(consumer: IApiConsumer): void {
     if (!confirm(`Revoke API access for ${consumer.name || consumer.email}? This immediately blocks their key.`)) return;
     this.saveConsumer({ id: consumer.id, status: 'REVOKED' as any });
