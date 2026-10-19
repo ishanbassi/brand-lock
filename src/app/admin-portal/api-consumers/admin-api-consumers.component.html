@@ -85,6 +85,21 @@
                       <div class="field-row"><span class="field-label">Attribution fail streak</span><span class="field-value">{{ c.verificationFailCount ?? 0 }}</span></div>
                       <div class="field-row"><span class="field-label">Last verified</span><span class="field-value">{{ c.lastVerifiedDate ? ($any(c.lastVerifiedDate) | date: 'MMM d, y') : 'Never' }}</span></div>
                       <div class="field-row"><span class="field-label">Signed up</span><span class="field-value">{{ c.createdDate ? ($any(c.createdDate) | date: 'MMM d, y') : '—' }}</span></div>
+                      <div class="attribution-audit-control">
+                        <label class="toggle-field">
+                          <input
+                            type="checkbox"
+                            [ngModel]="c.attributionAuditEnabled !== false"
+                            (ngModelChange)="onAttributionAuditChange(c, $event)"
+                          />
+                          <span>Weekly attribution checks</span>
+                        </label>
+                        <p class="toggle-help">
+                          {{ c.attributionAuditEnabled === false
+                            ? 'Manually approved — checks and attribution emails are off.'
+                            : 'Enabled — missing attribution can trigger a weekly email.' }}
+                        </p>
+                      </div>
                       <button class="btn-primary" style="background:#dc2626;border-color:#dc2626;" (click)="revoke(c)">Revoke access</button>
                     </div>
                   </div>

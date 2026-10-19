@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 import { ApplicationConfigService } from './core/config/application-config.service';
 import { environment } from '../environments/environment';
 import { ReferralAttributionService } from './shared/services/referral-attribution.service';
+import { LeadAcquisitionService } from './shared/services/lead-acquisition.service';
 import { LoadingService } from './common/loading.service';
 import { SeoService } from './shared/services/seo.service';
 import { HostContextService } from './shared/services/host-context.service';
@@ -20,11 +21,13 @@ export class AppComponent {
     private readonly applicationConfigService:ApplicationConfigService,
     private readonly router: Router,
     private readonly referralAttributionService: ReferralAttributionService,
+    private readonly leadAcquisitionService: LeadAcquisitionService,
     private readonly loadingService: LoadingService,
     private readonly seo: SeoService,
     private readonly hostContext: HostContextService
   ){
     this.applicationConfigService.setEndpointPrefix(environment.BaseApiUrl)
+    this.leadAcquisitionService.capture();
 
     // The agent portal has its own subdomain and the two products are deliberately separate: the
     // main site sells registration to mark owners, the portal serves practitioners managing other
@@ -67,6 +70,7 @@ export class AppComponent {
     // route matched, so a partner link can land on any page (homepage, a
     // service landing page, a blog post) and still be attributed.
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      this.leadAcquisitionService.capture();
       const refCode = this.router.routerState.snapshot.root.queryParamMap.get('ref');
       if (refCode) {
         this.referralAttributionService.captureFromUrl(refCode, this.router.url);

@@ -23,6 +23,8 @@ export interface IApiConsumer {
   status?: keyof typeof ApiConsumerStatus | null;
   tier?: keyof typeof ApiTier | null;
   verificationFailCount?: number | null;
+  /** False when an administrator has manually approved the site and stopped automated attribution auditing. */
+  attributionAuditEnabled?: boolean | null;
   lastVerifiedDate?: dayjs.Dayjs | null;
   lastUsedDate?: dayjs.Dayjs | null;
   createdDate?: dayjs.Dayjs | null;
