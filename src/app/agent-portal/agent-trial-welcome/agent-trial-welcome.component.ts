@@ -48,7 +48,8 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
     return endsAt ? dayjs(endsAt).format('D MMMM YYYY') : '';
   });
 
-  private showTimer?: ReturnType<typeof setTimeout>;
+  // Browser timers return numeric handles. Avoid the NodeJS.Timeout overload supplied by @types/node.
+  private showTimer?: number;
   private focusedBeforeOpen: HTMLElement | null = null;
 
   ngOnInit(): void {
@@ -62,7 +63,7 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.showTimer) clearTimeout(this.showTimer);
+    if (this.showTimer !== undefined) window.clearTimeout(this.showTimer);
   }
 
   dismiss(): void {
