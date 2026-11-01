@@ -4,6 +4,9 @@
       <h1 class="ap-title">{{ scope.title }}</h1>
       <p class="ap-subtitle">{{ scope.subtitle }}</p>
     </div>
+    @if (isUpcomingRenewals) {
+      <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" [disabled]="loading()" (selected)="export($event)" />
+    }
   </header>
 
   <!-- Counts first, because they answer the question the agent arrived with. Only rendered once

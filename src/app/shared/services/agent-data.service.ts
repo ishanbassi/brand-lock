@@ -225,6 +225,13 @@ export class AgentDataService {
     return this.http.get<Deadline[]>(`${this.base}/agent-portal/deadlines`, { params });
   }
 
+  downloadUpcomingRenewalsExcel(from: string, to: string, includeDone: boolean): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/reports/renewals.xlsx`, {
+      params: { from, to, includeDone },
+      responseType: 'blob',
+    });
+  }
+
   /**
    * The counts the sidenav badges show, as last fetched.
    *
