@@ -29,6 +29,11 @@ export const agentPortalRoutes: Routes = [
     title: 'Journal Trademark | Agent Portal',
   },
   {
+    path: 'watch/journal/:journalNo',
+    loadComponent: () => import('./agent-journal-watch/agent-journal-watch.component').then(m => m.AgentJournalWatchComponent),
+    title: 'Trademark Journal Watch | Agent Portal',
+  },
+  {
     // Rival firms an agent follows. Sits under watch/ with the other two: all three answer "what
     // is the register doing that affects me".
     path: 'watch/competitors',

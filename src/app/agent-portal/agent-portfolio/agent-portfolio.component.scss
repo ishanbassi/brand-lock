@@ -671,11 +671,28 @@ $white: #ffffff;
 .name-col,
 .tm-name-cell {
   position: sticky !important;
-  left: 48px;
+  left: 92px;
   z-index: 4 !important;
   overflow: hidden;
   background: $white;
 }
+
+.row-number-col {
+  position: sticky !important;
+  left: 48px;
+  z-index: 4 !important;
+  width: 44px;
+  min-width: 44px;
+  padding: var(--ap-space-3) var(--ap-space-2) !important;
+  background: $white;
+  color: $gray-600;
+  font-family: var(--ap-font-data);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right !important;
+}
+
+.tm-table thead .row-number-col { background: $gray-50; z-index: 6 !important; }
 
 .bulk-actions {
   position: fixed;
@@ -752,8 +769,10 @@ $white: #ffffff;
 
 .tm-table thead .name-col { background: $gray-50; z-index: 6 !important; }
 .tm-table tbody tr:hover .select-col,
+.tm-table tbody tr:hover .row-number-col,
 .tm-table tbody tr:hover .tm-name-cell,
 .tm-table tbody tr.selected .select-col,
+.tm-table tbody tr.selected .row-number-col,
 .tm-table tbody tr.selected .tm-name-cell { background: var(--ap-accent-soft); }
 
 .tm-name {
@@ -772,7 +791,7 @@ $white: #ffffff;
 .draft-row {
   background: var(--ap-accent-soft);
   td { padding: var(--ap-space-2) !important; }
-  .select-col, .tm-name-cell { background: var(--ap-accent-soft); }
+  .select-col, .row-number-col, .tm-name-cell { background: var(--ap-accent-soft); }
   input, select {
     width: 100%;
     min-width: 0;

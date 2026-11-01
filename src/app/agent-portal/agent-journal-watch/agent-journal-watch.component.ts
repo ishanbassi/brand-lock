@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/agent.model';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
@@ -87,6 +87,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly trademarkService: TrademarkService,
   ) {}
 
@@ -108,8 +109,8 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
     // The watch alert email links straight to the issue it is about, so arriving with a journalNo
     // means the agent has already chosen — select it and run without a second click.
-    const requested = Number(this.route.snapshot.queryParamMap.get('journalNo'));
-    const deepLinked = Number.isFinite(requested) && requested > 0 ? requested : null;
+    const journalFromPath = this.parseJournalNo(this.route.snapshot.paramMap.get('journalNo'));
+    const legacyJournal = this.parseJournalNo(this.route.snapshot.queryParamMap.get('journalNo'));
 
     this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => this.handleSearchInput());
 
@@ -117,11 +118,16 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       next: list => {
         this.journals.set(list);
         // Newest issue is the one with an opposition window still open, so it is the default.
-        if (deepLinked != null && list.includes(deepLinked)) {
-          this.selectedJournal.set(deepLinked);
+        if (journalFromPath != null && list.includes(journalFromPath)) {
           this.loadingJournals.set(false);
-          this.loadJournalEntries();
-          this.run();
+          this.openJournalWorkspace(journalFromPath, this.route.snapshot.queryParamMap.get('run') === '1');
+          return;
+        }
+        if (legacyJournal != null && list.includes(legacyJournal)) {
+          void this.router.navigate(['/agent-portal/watch/journal', legacyJournal], {
+            queryParams: { run: '1' },
+            replaceUrl: true,
+          });
           return;
         }
         this.loadingJournals.set(false);
@@ -150,28 +156,25 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   selectJournal(journalNo: number): void {
     if (this.running()) return;
+    void this.router.navigate(['/agent-portal/watch/journal', journalNo]);
+  }
+
+  private openJournalWorkspace(journalNo: number, runWatch = false): void {
     this.selectedJournal.set(journalNo);
     this.result.set(null);
     this.riskFilter.set('');
     this.browsePage.set(1);
     this.loadJournalEntries();
+    if (runWatch) this.run();
   }
 
   backToJournals(): void {
-    this.selectedJournal.set(null);
-    this.result.set(null);
-    this.journalMarks.set([]);
-    this.browseTotal.set(0);
-    this.browsePage.set(1);
-    this.searchTerm = '';
-    this.searchField.set('name');
-    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
-    this.suggestions.set([]);
-    this.suggestionsOpen.set(false);
-    this.portfolioOnly.set(false);
-    this.browseError.set('');
-    this.error.set('');
-    this.classPickerOpen.set(false);
+    void this.router.navigate(['/agent-portal/watch/journal']);
+  }
+
+  private parseJournalNo(value: string | null): number | null {
+    const journalNo = Number(value);
+    return Number.isInteger(journalNo) && journalNo > 0 ? journalNo : null;
   }
 
   setSearchField(field: JournalSearchField): void {

@@ -140,12 +140,15 @@ const SCOPES: Record<DeadlineScope, ScopeConfig> = {
 export class AgentDeadlinesComponent implements OnInit {
   private readonly agentData = inject(AgentDataService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   /**
    * The calendar in full, or one worklist cut from it. Read once: navigating between scopes goes
    * through different route configs, so Angular builds a fresh component rather than reusing this one.
    */
-  readonly scope: ScopeConfig = SCOPES[(inject(ActivatedRoute).snapshot.data['scope'] as DeadlineScope) ?? 'all'] ?? SCOPES.all;
+  readonly scopeKey = (this.route.snapshot.data['scope'] as DeadlineScope) ?? 'all';
+  readonly scope: ScopeConfig = SCOPES[this.scopeKey] ?? SCOPES.all;
+  readonly isUpcomingRenewals = this.scopeKey === 'renewals-upcoming';
 
   readonly deadlines = signal<Deadline[]>([]);
   readonly loading = signal(true);
@@ -159,6 +162,12 @@ export class AgentDeadlinesComponent implements OnInit {
    */
   readonly ranges = this.scope.ranges;
   readonly activeRange = signal(this.ranges[0]);
+  /** Explicit date filters are available only where renewal due dates are the worklist's subject. */
+  readonly customRenewalRange = signal<{ from: string; to: string } | null>(null);
+  customRenewalFrom = '';
+  customRenewalTo = '';
+  readonly renewalRangeError = signal('');
+  readonly today = dayjs().format('YYYY-MM-DD');
 
   readonly showDone = signal(false);
 
@@ -320,9 +329,10 @@ export class AgentDeadlinesComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
+    const customRange = this.customRenewalRange();
     const range = this.activeRange();
-    const from = this.iso(-range.back);
-    const to = this.iso(range.forward);
+    const from = customRange?.from ?? this.iso(-range.back);
+    const to = customRange?.to ?? this.iso(range.forward);
 
     this.agentData.getDeadlines(from, to).subscribe({
       next: rows => {
@@ -338,12 +348,50 @@ export class AgentDeadlinesComponent implements OnInit {
 
   selectRange(key: string): void {
     const range = this.ranges.find(r => r.key === key);
-    if (range && range !== this.activeRange()) {
-      this.activeRange.set(range);
-      // A narrower range can leave the month on screen outside the new bounds.
-      this.clampMonthCursor();
-      this.load();
+    if (!range) return;
+    const restoringPreset = this.customRenewalRange() !== null;
+    this.customRenewalRange.set(null);
+    this.customRenewalFrom = '';
+    this.customRenewalTo = '';
+    this.renewalRangeError.set('');
+    if (range === this.activeRange() && !restoringPreset) return;
+    this.activeRange.set(range);
+    // A narrower range can leave the month on screen outside the new bounds.
+    this.clampMonthCursor();
+    this.load();
+  }
+
+  setRenewalDate(boundary: 'from' | 'to', value: string): void {
+    if (boundary === 'from') this.customRenewalFrom = value;
+    else this.customRenewalTo = value;
+    this.renewalRangeError.set('');
+  }
+
+  applyRenewalDateRange(): void {
+    const from = this.customRenewalFrom;
+    const to = this.customRenewalTo;
+    if (!from || !to) {
+      this.renewalRangeError.set('Choose both a start and end date.');
+      return;
     }
+    if (from > to) {
+      this.renewalRangeError.set('The end date must be on or after the start date.');
+      return;
+    }
+    if (from < this.today) {
+      this.renewalRangeError.set('Upcoming renewals begin today. Choose a later start date.');
+      return;
+    }
+    this.customRenewalRange.set({ from, to });
+    this.load();
+  }
+
+  clearRenewalDateRange(): void {
+    this.customRenewalFrom = '';
+    this.customRenewalTo = '';
+    this.customRenewalRange.set(null);
+    this.renewalRangeError.set('');
+    this.load();
   }
 
   toggleDone(): void {

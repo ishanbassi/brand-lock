@@ -5,7 +5,7 @@ import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentPortfolioClaimComponent } from '../agent-portfolio-claim/agent-portfolio-claim.component';
@@ -88,9 +88,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   /**
    * Sorting is done by the server across the whole filtered set — sorting the twenty rows on screen
    * would put page one's "A" marks first and leave every other "A" on later pages. Null keeps the
-   * default order, most recently added first.
+   * default order, alphabetically by trademark name.
    */
-  sortField: PortfolioSortField | null = null;
+  sortField: PortfolioSortField = 'name';
   sortDir: 'asc' | 'desc' = 'asc';
   readonly columns: SortableColumn[] = [
     { field: 'name', label: 'Trademark', firstDir: 'asc' },
@@ -179,6 +179,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) {}
 
   ngOnDestroy(): void {
@@ -190,6 +191,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     try { this.columnWidths = JSON.parse(localStorage.getItem('agent-portfolio-column-widths') || '{}'); } catch { this.columnWidths = {}; }
+    this.restoreSortFromUrl();
     this.agentDataService.getProfile().subscribe({
       next: profile => {
         const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
@@ -705,7 +707,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       searchBy: this.searchBy,
       status: this.filterStatus,
       tmClass: this.filterClass === '' ? null : Number(this.filterClass),
-      sort: this.sortField ? { field: this.sortField, dir: this.sortDir } : null,
+      sort: { field: this.sortField, dir: this.sortDir },
     };
   }
 
@@ -782,7 +784,32 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       this.sortDir = column.firstDir;
     }
     this.page = 0;
+    this.persistSortToUrl();
     this.load();
+  }
+
+  /** Restore a shared or refreshed portfolio view without accepting an arbitrary API sort field. */
+  private restoreSortFromUrl(): void {
+    const field = this.route.snapshot.queryParamMap.get('sort');
+    const direction = this.route.snapshot.queryParamMap.get('direction');
+    if (field && (this.columns.some(column => column.field === field) || /^custom:[a-z0-9_-]+$/i.test(field))) {
+      this.sortField = field as PortfolioSortField;
+    }
+    if (direction === 'asc' || direction === 'desc') this.sortDir = direction;
+  }
+
+  /** Sorting changes are navigation state: copying or refreshing the URL keeps the same order. */
+  private persistSortToUrl(): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { sort: this.sortField, direction: this.sortDir },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  rowNumber(index: number): number {
+    return this.page * this.pageSize + index + 1;
   }
 
   ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {

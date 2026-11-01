@@ -242,6 +242,7 @@
         <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
         <colgroup>
           <col style="width: 48px" />
+          <col style="width: 44px" />
           @for (col of columns; track col.field) { <col [style.width.px]="columnWidth(col.field)" /> }
           @for (field of shownCustomFields(); track field.id) { <col [style.width.px]="columnWidth('custom:' + field.fieldKey)" /> }
           <col [style.width.px]="columnWidth('type')" /><col [style.width.px]="columnWidth('actions')" />
@@ -249,6 +250,7 @@
         <thead>
           <tr>
             <th class="select-col" scope="col"><input type="checkbox" [checked]="isPageSelected()" [indeterminate]="isPagePartlySelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page for printing" /></th>
+            <th class="row-number-col" scope="col" aria-label="Row number">#</th>
             <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
             @for (col of columns; track col.field) {
               <th scope="col" [class.name-col]="col.field === 'name'" [attr.aria-sort]="ariaSort(col.field)">
@@ -285,6 +287,7 @@
           @if (draft(); as newMark) {
             <tr class="draft-row">
               <td class="select-col"></td>
+              <td class="row-number-col">New</td>
               <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" (ngModelChange)="queueDraftSave()" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="queueDraftSave(0)" /></td>
               <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" (ngModelChange)="queueDraftSave()" placeholder="Application no." aria-label="New application number" /></td>
               <td><select [(ngModel)]="newMark.tmClass" (ngModelChange)="queueDraftSave()" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
@@ -298,11 +301,12 @@
               <td><select [(ngModel)]="newMark.type" (ngModelChange)="queueDraftSave()" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
               <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Auto-save' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
             </tr>
-            @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 3" role="alert">{{ draftError() }}</td></tr> }
+            @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 4" role="alert">{{ draftError() }}</td></tr> }
           }
           @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id" [class.selected]="isSelected(tm)">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
+              <th class="row-number-col" scope="row">{{ rowNumber(i) }}</th>
 
               <!-- TRADEMARK NAME -->
               <td class="tm-name-cell" [class.is-inline-editing]="tm.editable">
