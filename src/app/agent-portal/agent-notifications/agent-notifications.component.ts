@@ -10,6 +10,7 @@ import {
   NotificationPreferenceRow,
 } from '../../../models/notification.model';
 import { NotificationService } from '../../shared/services/notification.service';
+import { BrowserPushService } from '../../shared/services/browser-push.service';
 
 interface CategoryTab {
   key: NotificationCategory | null;
@@ -26,6 +27,7 @@ interface CategoryTab {
 export class AgentNotificationsComponent implements OnInit {
   private readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
+  readonly browserPush = inject(BrowserPushService);
 
   readonly tabs: CategoryTab[] = [
     { key: null, label: 'All' },
@@ -53,6 +55,11 @@ export class AgentNotificationsComponent implements OnInit {
     { value: 'OFF', label: 'Off' },
   ];
 
+  readonly browserModes: { value: NotificationMode; label: string }[] = [
+    { value: 'INSTANT', label: 'On' },
+    { value: 'OFF', label: 'Off' },
+  ];
+
   readonly view = signal<'feed' | 'settings'>('feed');
   readonly activeTab = signal<NotificationCategory | null>(null);
   readonly unreadOnly = signal(false);
@@ -68,6 +75,7 @@ export class AgentNotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    void this.browserPush.refreshStatus();
   }
 
   // ── Feed ─────────────────────────────────────────────────────────────────
@@ -162,7 +170,7 @@ export class AgentNotificationsComponent implements OnInit {
 
   modeFor(category: NotificationCategory, channel: NotificationChannel): NotificationMode {
     const row = this.preferences().find(r => r.category === category);
-    return row ? row[channel] : 'OFF';
+    return row?.[channel] ?? 'OFF';
   }
 
   setMode(category: NotificationCategory, channel: NotificationChannel, mode: NotificationMode): void {
@@ -177,6 +185,20 @@ export class AgentNotificationsComponent implements OnInit {
       next: () => this.savingPreference.set(null),
       error: () => this.savingPreference.set(null),
     });
+  }
+
+  async setBrowserMode(category: NotificationCategory, mode: NotificationMode): Promise<void> {
+    if (mode === 'INSTANT' && !this.browserPush.subscribed()) {
+      const enabled = await this.browserPush.enable();
+      if (!enabled) {
+        return;
+      }
+    }
+    this.setMode(category, 'BROWSER_PUSH', mode);
+  }
+
+  async disconnectBrowser(): Promise<void> {
+    await this.browserPush.disable();
   }
 
   /**

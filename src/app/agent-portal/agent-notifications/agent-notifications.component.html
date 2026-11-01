@@ -94,8 +94,31 @@
     <section class="settings">
       <p class="settings-intro">
         Everything is always recorded here in your notifications. These settings control what also
-        reaches you by email.
+        reaches you by email or browser alert.
       </p>
+
+      <section class="browser-alerts" [class.blocked]="browserPush.permission() === 'denied'">
+        <div>
+          <h2>Browser alerts</h2>
+          @if (!browserPush.supported()) {
+            <p>This browser does not support alerts outside the portal.</p>
+          } @else if (browserPush.permission() === 'denied') {
+            <p>Alerts are blocked in this browser. Allow them in your browser settings, then return here.</p>
+          } @else if (browserPush.subscribed()) {
+            <p>This browser is connected. Choose the alert types you want below.</p>
+          } @else {
+            <p>Turn on an alert type below to receive it even when the portal is closed.</p>
+          }
+          @if (browserPush.error()) {
+            <p class="browser-error" role="status">{{ browserPush.error() }}</p>
+          }
+        </div>
+        @if (browserPush.subscribed()) {
+          <button type="button" class="ghost-btn" [disabled]="browserPush.busy()" (click)="disconnectBrowser()">
+            Disconnect this browser
+          </button>
+        }
+      </section>
 
       <div class="pref-grid">
         @for (category of preferenceCategories; track category.key) {
@@ -110,18 +133,40 @@
               }
             </div>
 
-            <div class="pref-modes" role="group" [attr.aria-label]="category.label + ' email frequency'">
-              @for (mode of modes; track mode.value) {
-                <button
-                  type="button"
-                  class="mode-btn"
-                  [class.selected]="modeFor(category.key, 'EMAIL') === mode.value"
-                  [disabled]="savingPreference() === category.key + ':EMAIL'"
-                  (click)="setMode(category.key, 'EMAIL', mode.value)"
-                >
-                  {{ mode.label }}
-                </button>
-              }
+            <div class="pref-delivery">
+              <div class="pref-channel">
+                <span class="channel-name">Email</span>
+                <div class="pref-modes" role="group" [attr.aria-label]="category.label + ' email frequency'">
+                  @for (mode of modes; track mode.value) {
+                    <button
+                      type="button"
+                      class="mode-btn"
+                      [class.selected]="modeFor(category.key, 'EMAIL') === mode.value"
+                      [disabled]="savingPreference() === category.key + ':EMAIL'"
+                      (click)="setMode(category.key, 'EMAIL', mode.value)"
+                    >
+                      {{ mode.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div class="pref-channel">
+                <span class="channel-name">Browser</span>
+                <div class="pref-modes" role="group" [attr.aria-label]="category.label + ' browser alerts'">
+                  @for (mode of browserModes; track mode.value) {
+                    <button
+                      type="button"
+                      class="mode-btn"
+                      [class.selected]="modeFor(category.key, 'BROWSER_PUSH') === mode.value"
+                      [disabled]="!browserPush.supported() || browserPush.permission() === 'denied' || browserPush.busy() || savingPreference() === category.key + ':BROWSER_PUSH'"
+                      (click)="setBrowserMode(category.key, mode.value)"
+                    >
+                      {{ mode.label }}
+                    </button>
+                  }
+                </div>
+              </div>
             </div>
           </div>
         }
