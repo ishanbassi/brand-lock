@@ -158,8 +158,13 @@ export class AgentPortalShellComponent {
         { label: 'Documents', icon: 'documents', route: '/agent-portal/documents' },
       ],
     },
+    {
+      heading: 'Account',
+      items: [{ label: 'Billing', icon: 'card', route: '/agent-portal/billing' }],
+    },
     // Notifications and My profile are deliberately absent: both are reached from the topbar
-    // icons, and listing them here gave each screen two entry points that had to agree.
+    // icons. Billing remains in the rail because it is an infrequent but important destination
+    // that must stay findable after an upgrade prompt or a payment reminder has gone away.
   ];
 
   private readonly navItems: NavItem[] = this.navSections.flatMap(s => s.items);

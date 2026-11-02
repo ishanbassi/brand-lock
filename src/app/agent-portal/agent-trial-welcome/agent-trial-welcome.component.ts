@@ -48,7 +48,8 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
     return endsAt ? dayjs(endsAt).format('D MMMM YYYY') : '';
   });
 
-  // Browser timers return numeric handles. Avoid the NodeJS.Timeout overload supplied by @types/node.
+  // Browser timers use numeric handles. Avoid ReturnType here because Node's global overload
+  // takes precedence in this SSR-enabled project, even when calling window.setTimeout.
   private showTimer?: number;
   private focusedBeforeOpen: HTMLElement | null = null;
 

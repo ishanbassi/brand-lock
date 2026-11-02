@@ -1,206 +1,116 @@
 <div class="ap billing">
-
-  <header class="page-head">
-    <div class="page-head__text">
-      <p class="ap-eyebrow">Account</p>
-      <h1 class="ap-title">Billing</h1>
-      <p class="ap-subtitle">Your plan, what it includes, and every payment you've made.</p>
+  <header class="billing-head">
+    <div class="billing-head__copy">
+      <h1 class="billing-head__title">Billing &amp; subscription</h1>
+      <p class="billing-head__subtitle">Manage your plan, track your included usage, and review every payment in one place.</p>
     </div>
+    <img class="billing-head__art" src="/assets/images/agent-billing-dossier.png" width="560" height="560" alt="" aria-hidden="true" />
   </header>
 
-  <!-- Why the agent is here, when an upgrade prompt sent them. Reassurance first: nothing they
-       already have is at risk, which is the question behind every paywall. -->
   @if (blockedFeature(); as feature) {
-    <div class="callout" role="status">
-      <ap-icon class="callout__icon" name="lock" [size]="18" />
-      <div>
-        <strong>{{ blockedMessage(feature) }}</strong>
-        <p>Nothing you've added is affected. Choosing a plan switches it back on straight away.</p>
-      </div>
+    <div class="notice notice--attention" role="status">
+      <ap-icon class="notice__icon" name="lock" [size]="18" />
+      <div><strong>{{ blockedMessage(feature) }}</strong><p>Nothing you've added is affected. Choose a plan to switch this feature back on.</p></div>
     </div>
   }
-
-  @if (error()) {
-    <p class="notice notice--error" role="alert">{{ error() }}</p>
-  }
-  @if (notice()) {
-    <p class="notice notice--info" role="status">{{ notice() }}</p>
-  }
+  @if (error()) { <p class="notice notice--error" role="alert">{{ error() }}</p> }
+  @if (notice()) { <p class="notice notice--info" role="status">{{ notice() }}</p> }
 
   @if (loading()) {
-    <div class="ap-panel ap-empty">Loading your plan…</div>
+    <div class="ap-panel ap-empty">Loading your billing details…</div>
   } @else {
-
-    <!-- ── Current plan ─────────────────────────────────────────────────── -->
     @if (state(); as s) {
-      <section class="current ap-panel" aria-label="Your plan">
-        <div class="current__head">
-          <div>
-            <p class="current__label">Current plan</p>
-            <h2 class="current__plan">{{ planTitle(s) }}</h2>
-          </div>
-          @if (s.status) {
-            <span class="status" [ngClass]="'status--' + statusTone(s.status)">{{ statusLabel(s.status) }}</span>
-          }
-        </div>
-
-        <p class="current__detail">{{ currentDetail(s) }}</p>
-
-        <!-- Cancelling is findable but quiet, and asked before it is done. The prompt says exactly
-             what happens, because "are you sure?" alone makes people guess. -->
-        @if (hasLiveMandate() && !s.cancelAtPeriodEnd) {
-          @if (!confirmingCancel()) {
-            <button type="button" class="link-btn" (click)="confirmingCancel.set(true)">Cancel subscription</button>
-          } @else {
-            <div class="confirm" role="alert">
-              <strong>Cancel your subscription?</strong>
-              <p>
-                You keep everything until {{ date(s.currentPeriodEnd ?? s.entitledUntil) }} and won't be charged
-                again. Nothing you've added is deleted, and you can subscribe again at any time.
-              </p>
-              <div class="confirm__actions">
-                <button type="button" class="ap-btn ap-btn--danger" [disabled]="busy()" (click)="cancel()">
-                  {{ busy() ? 'Cancelling…' : 'Yes, cancel' }}
-                </button>
-                <button type="button" class="ap-btn ap-btn--quiet" [disabled]="busy()" (click)="confirmingCancel.set(false)">
-                  Keep my plan
-                </button>
-              </div>
-            </div>
-          }
-        }
-      </section>
-    }
-
-    <!-- ── Usage ──────────────────────────────────────────────────────────
-         Only counted ceilings. "40 of 10" is the case this exists for: data kept from a trial is
-         never deleted, so an agent can be over a limit and needs to see it stated plainly. -->
-    @if (meters().length > 0) {
-      <section class="usage ap-panel" aria-label="Usage">
-        <h2 class="section-title">Usage</h2>
-        @for (m of meters(); track m.key) {
-          <div class="meter" [class.meter--over]="m.over">
-            <div class="meter__row">
-              <span>{{ m.label }}</span>
-              <span class="ap-num">{{ m.used }} of {{ m.limit }}</span>
-            </div>
-            <div class="meter__bar" aria-hidden="true"><span [style.width.%]="m.pct"></span></div>
-            @if (m.over) {
-              <p class="meter__note">Over the plan's limit. You can still view and delete; adding more needs a paid plan.</p>
-            }
-          </div>
-        }
-      </section>
-    }
-
-    <!-- ── Plans ──────────────────────────────────────────────────────────
-         Hidden once a mandate is live: an agent already paying should not be offered the thing
-         they already have, and the server would refuse a second subscription anyway. -->
-    @if (!hasLiveMandate()) {
-      <section class="plans" aria-label="Choose a plan">
-        <div class="plans__head">
-          <h2 class="section-title">Choose a plan</h2>
-          <div class="interval" role="radiogroup" aria-label="Billing period">
-            <button type="button"
-                    role="radio"
-                    class="interval__opt"
-                    [class.interval__opt--on]="interval() === 'ANNUAL'"
-                    [attr.aria-checked]="interval() === 'ANNUAL'"
-                    (click)="interval.set('ANNUAL')">
-              Yearly
-              @if (annualSavingPct() > 0) {
-                <span class="interval__save">Save {{ annualSavingPct() }}%</span>
+      <section class="subscription ap-panel" aria-label="Current subscription">
+        <div class="subscription__glow subscription__glow--primary" aria-hidden="true"></div>
+        <div class="subscription__glow subscription__glow--green" aria-hidden="true"></div>
+        <div class="subscription__content">
+          <div class="subscription__main">
+            <div class="subscription__meta">
+              @if (s.status) {
+                <span class="status" [ngClass]="'status--' + statusTone(s.status)"><span class="status__dot" aria-hidden="true"></span>{{ statusLabel(s.status) }} subscription</span>
               }
-            </button>
-            <button type="button"
-                    role="radio"
-                    class="interval__opt"
-                    [class.interval__opt--on]="interval() === 'MONTHLY'"
-                    [attr.aria-checked]="interval() === 'MONTHLY'"
-                    (click)="interval.set('MONTHLY')">
-              Monthly
-            </button>
-          </div>
-        </div>
-
-        @if (selected(); as plan) {
-          <article class="plan-card ap-panel">
-            <div class="plan-card__top">
-              <h3 class="plan-card__name">Pro</h3>
-              <div class="plan-card__price">
-                <span class="plan-card__amount ap-num">{{ rupees(plan.monthlyEquivalentPaise) }}</span>
-                <span class="plan-card__per">/ month</span>
-              </div>
-              <p class="plan-card__billed">
-                @if (plan.billingInterval === 'ANNUAL') {
-                  Billed {{ rupees(plan.amountPaise) }} once a year
-                } @else {
-                  Billed monthly
-                }
-              </p>
+              @if (s.currentPeriodEnd || s.entitledUntil) { <span class="subscription__renewal"><ap-icon name="refresh" [size]="14" /> Renews automatically</span> }
             </div>
-
-            @if (selectedFeatures().length > 0) {
-              <ul class="plan-card__features">
-                @for (line of selectedFeatures(); track line) {
-                  <li><ap-icon class="plan-card__tick" name="check" [size]="14" /> {{ line }}</li>
-                }
-              </ul>
+            <h2 class="subscription__plan">{{ planTitle(s) }}</h2>
+            <p class="subscription__detail">{{ currentDetail(s) }}</p>
+            @if (s.currentPeriodEnd || s.entitledUntil) {
+              <p class="subscription__date"><ap-icon name="calendar" [size]="16" /> Your access is available through <strong>{{ date(s.currentPeriodEnd ?? s.entitledUntil) }}</strong>.</p>
             }
+          </div>
 
-            <button type="button" class="ap-btn ap-btn--primary plan-card__cta" [disabled]="busy()" (click)="choose(plan)">
-              @if (busy()) {
-                Opening checkout…
+          <aside class="subscription__action">
+            <span class="subscription__action-icon"><ap-icon name="card" [size]="22" /></span>
+            <div><strong>{{ hasLiveMandate() ? 'Autopay is configured' : 'Choose a billing period' }}</strong><p>{{ hasLiveMandate() ? 'Your next charge is managed securely by Razorpay.' : 'Annual billing offers the best monthly value.' }}</p></div>
+            @if (hasLiveMandate() && !s.cancelAtPeriodEnd) {
+              @if (!confirmingCancel()) {
+                <button type="button" class="link-btn" (click)="confirmingCancel.set(true)">Manage subscription</button>
               } @else {
-                Subscribe for {{ rupees(plan.amountPaise) }} {{ plan.billingInterval === 'ANNUAL' ? 'a year' : 'a month' }}
+                <div class="confirm" role="alert">
+                  <strong>Cancel your subscription?</strong>
+                  <p>You keep everything until {{ date(s.currentPeriodEnd ?? s.entitledUntil) }} and won't be charged again.</p>
+                  <div class="confirm__actions">
+                    <button type="button" class="ap-btn ap-btn--danger" [disabled]="busy()" (click)="cancel()">{{ busy() ? 'Cancelling…' : 'Yes, cancel' }}</button>
+                    <button type="button" class="ap-btn ap-btn--quiet" [disabled]="busy()" (click)="confirmingCancel.set(false)">Keep my plan</button>
+                  </div>
+                </div>
               }
-            </button>
-
-            <!-- The two things people want to know before they authorise a mandate. -->
-            <p class="plan-card__fine">
-              Subscribing ends your free trial and starts the paid period today. You authorise autopay once -
-              UPI, card or netbanking - and can cancel any time from this page.
-            </p>
-          </article>
-        } @else {
-          <div class="ap-panel ap-empty">Plans aren't available right now. Please try again later.</div>
-        }
+            }
+          </aside>
+        </div>
       </section>
     }
 
-    <!-- ── Payments ───────────────────────────────────────────────────────
-         The receipt for each charge is also emailed; this is the complete list in one place. -->
-    <section class="history" aria-label="Payment history">
-      <h2 class="section-title">Payments</h2>
+    <div class="billing-layout" [class.billing-layout--single]="!meters().length || hasLiveMandate()">
+      @if (meters().length > 0) {
+        <section class="usage ap-panel" aria-labelledby="usage-title">
+          <div class="section-heading"><div><h2 id="usage-title">Plan usage</h2><p>See what is included in your current billing period.</p></div><span class="section-heading__icon"><ap-icon name="eye" [size]="19" /></span></div>
+          <div class="usage__meters">
+            @for (m of meters(); track m.key) {
+              <div class="meter" [class.meter--over]="m.over">
+                <div class="meter__row"><span>{{ m.label }}</span><strong class="ap-num">{{ m.used }} <span>of {{ m.limit }}</span></strong></div>
+                <div class="meter__bar" aria-hidden="true"><span [style.width.%]="m.pct"></span></div>
+                @if (m.over) { <p class="meter__note">Over your plan’s limit. You can still view and delete existing items.</p> }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @if (!hasLiveMandate()) {
+        <section class="plans ap-panel" aria-labelledby="plans-title">
+          <div class="plans__head">
+            <div><h2 id="plans-title">Choose your plan</h2><p>Start with the cadence that works for your firm.</p></div>
+            <div class="interval" role="radiogroup" aria-label="Billing period">
+              <button type="button" role="radio" class="interval__opt" [class.interval__opt--on]="interval() === 'ANNUAL'" [attr.aria-checked]="interval() === 'ANNUAL'" (click)="interval.set('ANNUAL')">Yearly @if (annualSavingPct() > 0) { <span class="interval__save">Save {{ annualSavingPct() }}%</span> }</button>
+              <button type="button" role="radio" class="interval__opt" [class.interval__opt--on]="interval() === 'MONTHLY'" [attr.aria-checked]="interval() === 'MONTHLY'" (click)="interval.set('MONTHLY')">Monthly</button>
+            </div>
+          </div>
+          @if (selected(); as plan) {
+            <article class="plan-card">
+              <div class="plan-card__price"><span class="plan-card__amount ap-num">{{ rupees(plan.monthlyEquivalentPaise) }}</span><span class="plan-card__per">/ month</span></div>
+              <p class="plan-card__billed">@if (plan.billingInterval === 'ANNUAL') { Billed {{ rupees(plan.amountPaise) }} once a year } @else { Billed monthly }</p>
+              @if (selectedFeatures().length > 0) {
+                <ul class="plan-card__features">@for (line of selectedFeatures(); track line) { <li><ap-icon class="plan-card__tick" name="check" [size]="15" /> {{ line }}</li> }</ul>
+              }
+              <button type="button" class="ap-btn ap-btn--primary plan-card__cta" [disabled]="busy()" (click)="choose(plan)">@if (busy()) { Opening checkout… } @else { Subscribe for {{ rupees(plan.amountPaise) }} {{ plan.billingInterval === 'ANNUAL' ? 'a year' : 'a month' }} }</button>
+              <p class="plan-card__fine">Secure checkout via Razorpay. Authorise autopay once by UPI, card, or netbanking; cancel any time from this page.</p>
+            </article>
+          } @else { <div class="ap-empty">Plans aren't available right now. Please try again later.</div> }
+        </section>
+      }
+    </div>
+
+    <section class="history ap-panel" aria-labelledby="payments-title">
+      <div class="section-heading section-heading--history"><div><h2 id="payments-title">Payment history</h2><p>Review completed subscription charges and payment references.</p></div><span class="history__secure"><ap-icon name="lock" [size]="14" /> Secure billing records</span></div>
       @if (payments().length === 0) {
-        <div class="ap-panel ap-empty">No payments yet.</div>
+        <div class="ap-empty history__empty">No payments yet. Your completed charges will appear here.</div>
       } @else {
-        <div class="ap-panel history__wrap">
+        <div class="history__wrap">
           <table class="history__table">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Covers</th>
-                <th scope="col" class="num">Amount</th>
-                <th scope="col">Method</th>
-                <th scope="col">Payment ID</th>
-              </tr>
-            </thead>
+            <thead><tr><th scope="col">Date</th><th scope="col">Coverage</th><th scope="col" class="num">Amount</th><th scope="col">Method</th><th scope="col">Payment reference</th></tr></thead>
             <tbody>
               @for (p of payments(); track p.id) {
-                <tr>
-                  <td>{{ date(p.paidAt) }}</td>
-                  <td>
-                    @if (p.periodStart && p.periodEnd) {
-                      {{ date(p.periodStart) }} – {{ date(p.periodEnd) }}
-                    } @else {
-                      —
-                    }
-                  </td>
-                  <td class="num ap-num">{{ rupees(p.amountPaise) }}</td>
-                  <td>{{ methodLabel(p.paymentMethod) }}</td>
-                  <td class="history__id ap-num">{{ p.razorpayPaymentId || '—' }}</td>
-                </tr>
+                <tr><td>{{ date(p.paidAt) }}</td><td>@if (p.periodStart && p.periodEnd) { {{ date(p.periodStart) }} – {{ date(p.periodEnd) }} } @else { — }</td><td class="num ap-num">{{ rupees(p.amountPaise) }}</td><td>{{ methodLabel(p.paymentMethod) }}</td><td class="history__id ap-num">{{ p.razorpayPaymentId || '—' }}</td></tr>
               }
             </tbody>
           </table>

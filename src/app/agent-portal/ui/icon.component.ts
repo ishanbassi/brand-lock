@@ -75,6 +75,7 @@ export type IconName =
   | 'refresh'
   | 'eye'
   | 'clock'
+  | 'card'
   | 'building'
   | 'globe'
   | 'scales'
@@ -110,6 +111,8 @@ const ICONS: Record<string, string> = {
   refresh: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4.5h-4.5"/>',
   eye: '<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.75"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/>',
+  // A payment card, used only for the account's billing destination.
+  card: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/>',
   building: '<path d="M4 20V5.5A1.5 1.5 0 0 1 5.5 4h7A1.5 1.5 0 0 1 14 5.5V20"/><path d="M14 10h4.5A1.5 1.5 0 0 1 20 11.5V20"/><path d="M7 8h4"/><path d="M7 12h4"/><path d="M2.5 20h19"/>',
   globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5z"/>',
   scales: '<path d="M12 4v16"/><path d="M6 8h12"/><path d="M3 15l3-7 3 7a3 3 0 0 1-6 0z"/><path d="M15 15l3-7 3 7a3 3 0 0 1-6 0z"/>',
