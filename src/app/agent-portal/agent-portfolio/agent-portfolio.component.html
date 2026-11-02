@@ -173,14 +173,14 @@
   }
 
   <!-- TABLE -->
-  @if (!loading() && (trademarks().length > 0 || draft() || showColumnPicker())) {
+  @if (!loading() && (trademarks().length > 0 || showColumnPicker())) {
     <div class="table-workspace">
     <div class="table-toolbar">
       <div class="table-toolbar-copy" aria-live="polite">
         <button type="button" class="table-add-btn" (click)="openDraft()" aria-label="Add a trademark row" title="Add trademark row">
           <ap-icon name="plus" [size]="17" />
         </button>
-        @if (selectedIds.size > 0) {
+        @if (selectedIds.size > 0 && !draft()) {
           <strong>{{ selectedIds.size }} selected</strong><span>Choose Download → PDF to print these marks.</span>
         } @else {
           <strong>{{ totalCount === 0 ? '0' : (page * pageSize + 1) + '–' + visibleRangeEnd + ' of ' + totalCount }}</strong><span>trademarks</span>
@@ -216,9 +216,21 @@
               </div>
             } @else {
               <input type="search" [(ngModel)]="fieldSearch" placeholder="Search fields" aria-label="Search fields" />
+              <p class="field-picker-section-label">Always shown</p>
+              <ul>
+                @for (field of filteredMandatoryColumns; track field.field) {
+                  <li class="locked-field">
+                    <span>{{ field.label }}</span>
+                    <button type="button" class="field-toggle field-toggle--locked on" disabled aria-pressed="true" [attr.aria-label]="field.label + ' is always shown'">
+                      <span></span>
+                    </button>
+                  </li>
+                }
+              </ul>
+              <p class="field-picker-section-label">Custom fields</p>
               <label class="show-all-fields">
                 <input type="checkbox" [checked]="allCustomFieldsShown" (change)="toggleAllColumns($any($event.target).checked)" />
-                <span>Show all fields</span>
+                <span>Show all custom fields</span>
               </label>
               <p class="field-picker-count">{{ shownCustomFields().length }} of {{ customFields().length }} shown</p>
               <ul>
@@ -230,7 +242,7 @@
                       <span></span>
                     </button>
                   </li>
-                } @empty { <li>No fields yet. Create one to add a column.</li> }
+                } @empty { <li>No matching custom fields.</li> }
               </ul>
             }
           </section>
@@ -242,7 +254,6 @@
         <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
         <colgroup>
           <col style="width: 48px" />
-          <col style="width: 44px" />
           @for (col of columns; track col.field) { <col [style.width.px]="columnWidth(col.field)" /> }
           @for (field of shownCustomFields(); track field.id) { <col [style.width.px]="columnWidth('custom:' + field.fieldKey)" /> }
           <col [style.width.px]="columnWidth('type')" /><col [style.width.px]="columnWidth('actions')" />
@@ -250,7 +261,6 @@
         <thead>
           <tr>
             <th class="select-col" scope="col"><input type="checkbox" [checked]="isPageSelected()" [indeterminate]="isPagePartlySelected()" (change)="togglePageSelection()" aria-label="Select all trademarks on this page for printing" /></th>
-            <th class="row-number-col" scope="col" aria-label="Row number">#</th>
             <!-- Sorted by the server across every page of the filtered set, not just these rows. -->
             @for (col of columns; track col.field) {
               <th scope="col" [class.name-col]="col.field === 'name'" [attr.aria-sort]="ariaSort(col.field)">
@@ -284,30 +294,9 @@
           </tr>
         </thead>
         <tbody>
-          @if (draft(); as newMark) {
-            <tr class="draft-row">
-              <td class="select-col"></td>
-              <td class="row-number-col">New</td>
-              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" (ngModelChange)="queueDraftSave()" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="queueDraftSave(0)" /></td>
-              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" (ngModelChange)="queueDraftSave()" placeholder="Application no." aria-label="New application number" /></td>
-              <td><select [(ngModel)]="newMark.tmClass" (ngModelChange)="queueDraftSave()" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
-              <td><input type="text" [(ngModel)]="newMark.proprietorName" (ngModelChange)="queueDraftSave()" placeholder="Proprietor" aria-label="New proprietor" /></td>
-              <td><select [(ngModel)]="newMark.trademarkStatus" (ngModelChange)="queueDraftSave()" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
-              <td><input type="date" [(ngModel)]="newMark.applicationDate" (ngModelChange)="queueDraftSave()" aria-label="New filing date" /></td>
-              <td><input type="date" [(ngModel)]="newMark.renewalDate" (ngModelChange)="queueDraftSave()" aria-label="New renewal date" /></td>
-              @for (field of shownCustomFields(); track field.id) {
-                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" (ngModelChange)="queueDraftSave()" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" /></td>
-              }
-              <td><select [(ngModel)]="newMark.type" (ngModelChange)="queueDraftSave()" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
-              <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Auto-save' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
-            </tr>
-            @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 4" role="alert">{{ draftError() }}</td></tr> }
-          }
           @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id" [class.selected]="isSelected(tm)">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
-              <th class="row-number-col" scope="row">{{ rowNumber(i) }}</th>
-
               <!-- TRADEMARK NAME -->
               <td class="tm-name-cell" [class.is-inline-editing]="tm.editable">
                 @if (tm.editable) {
@@ -463,7 +452,7 @@
   }
 
   <!-- EMPTY STATE -->
-  @if (!loading() && trademarks().length === 0 && !draft() && !showColumnPicker() && !error()) {
+  @if (!loading() && trademarks().length === 0 && !showColumnPicker() && !error()) {
     <div class="empty-state">
       @if (hasFilters) {
         <div class="empty-icon"><ap-icon name="search" [size]="16" /></div>
@@ -504,6 +493,36 @@
         <button type="button" class="btn-ghost" (click)="cancelBulkRemove()" [disabled]="bulkRemoving()">Cancel</button>
       </div>
     </section>
+  </div>
+}
+
+@if (draft(); as newMark) {
+  <div class="portfolio-editor-backdrop" (click)="cancelDraft()">
+    <form class="portfolio-editor" role="dialog" aria-modal="true" aria-labelledby="portfolio-editor-title" (ngSubmit)="saveDraft()" (click)="$event.stopPropagation()">
+      <header>
+        <div><p class="eyebrow">Trademark portfolio</p><h2 id="portfolio-editor-title">Add trademark</h2></div>
+        <button type="button" class="portfolio-editor__close" (click)="cancelDraft()" [disabled]="savingDraft()" aria-label="Close add trademark dialog"><ap-icon name="close" [size]="18" /></button>
+      </header>
+      <p class="portfolio-editor__note">Add the information you have now. You can update the portfolio record later as the application progresses.</p>
+      @if (draftError()) { <p class="portfolio-editor__error" role="alert">{{ draftError() }}</p> }
+      <div class="portfolio-editor__fields">
+        <label>Trademark name<input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" name="name" placeholder="e.g. Trademarx" /></label>
+        <label>Application number<input type="number" min="1" [(ngModel)]="newMark.applicationNo" name="applicationNo" placeholder="e.g. 1234567" /></label>
+        <label>Trademark class<select [(ngModel)]="newMark.tmClass" name="tmClass"><option [ngValue]="undefined">Select class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">Class {{ tmClass }}</option> }</select></label>
+        <label>Proprietor<input type="text" [(ngModel)]="newMark.proprietorName" name="proprietorName" placeholder="Proprietor name" /></label>
+        <label>Status<select [(ngModel)]="newMark.trademarkStatus" name="trademarkStatus">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></label>
+        <label>Trademark type<select [(ngModel)]="newMark.type" name="type"><option value="">Select type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></label>
+        <label>Filing date<input type="date" [(ngModel)]="newMark.applicationDate" name="applicationDate" /></label>
+        <label>Renewal date<input type="date" [(ngModel)]="newMark.renewalDate" name="renewalDate" /></label>
+        @for (field of customFields(); track field.id) {
+          <label [class.portfolio-editor__wide]="field.dataType === 'TEXT'">{{ field.label }}<input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" [name]="'custom-' + field.fieldKey" /></label>
+        }
+      </div>
+      <footer>
+        <button type="button" class="btn-ghost" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="savingDraft()"><ap-icon name="check" [size]="16" /> {{ savingDraft() ? 'Saving…' : 'Save trademark' }}</button>
+      </footer>
+    </form>
   </div>
 }
 

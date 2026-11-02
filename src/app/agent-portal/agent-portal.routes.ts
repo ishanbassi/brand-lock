@@ -11,6 +11,11 @@ export const agentPortalRoutes: Routes = [
     loadComponent: () => import('./agent-portfolio/agent-portfolio.component').then(m => m.AgentPortfolioComponent),
     title: 'My Portfolio | Agent Portal',
   },
+{
+path: 'iso-certificates',
+loadComponent: () => import('./agent-iso-certificates/agent-iso-certificates.component').then(m => m.AgentIsoCertificatesComponent),
+title: 'ISO Certificates | Agent Portal',
+},
   {
     // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
     path: 'watch/conflicts',

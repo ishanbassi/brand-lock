@@ -101,6 +101,17 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     { field: 'applicationDate', label: 'Filing Date', firstDir: 'desc' },
     { field: 'renewalDate', label: 'Renewal', firstDir: 'asc' },
   ];
+  /** Core portfolio data is part of every view and cannot be hidden from the grid. */
+  readonly mandatoryColumns = [
+    { field: 'name', label: 'Trademark' },
+    { field: 'applicationNo', label: 'App No.' },
+    { field: 'tmClass', label: 'Class' },
+    { field: 'proprietorName', label: 'Proprietor' },
+    { field: 'trademarkStatus', label: 'Status' },
+    { field: 'applicationDate', label: 'Filing date' },
+    { field: 'renewalDate', label: 'Renewal' },
+    { field: 'type', label: 'Type' },
+  ];
 
   /**
    * The firm's own spreadsheet columns, and which of them are shown in this table.
@@ -123,7 +134,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   draftCustomValues: Record<string, string> = {};
   savingDraft = signal(false);
   draftError = signal('');
-  private draftAutosaveTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** One focused entry point for every way an agent can build a portfolio. */
   addFlow = signal<'closed' | 'choose' | 'import' | 'claim'>('closed');
@@ -186,7 +196,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
   }
 
   ngOnInit(): void {
@@ -207,8 +216,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.loadPendingImports();
     this.loadFilterOptions();
     this.loadCustomFields();
-    // Dashboard's empty-state action comes here rather than the separate full-page form: the
-    // agent lands directly in the portfolio grid with one blank row ready to fill.
+    // Dashboard's empty-state action opens the same complete manual-entry dialog as the portfolio.
     if (this.route.snapshot.queryParamMap.get('new') === '1') {
       this.openDraft();
     }
@@ -244,7 +252,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.draft.set({ name: '', trademarkStatus: 'Not yet filed' });
     this.draftCustomValues = {};
     this.draftError.set('');
-    // The first editable cell is added to the DOM by Angular after this event.
+    // The dialog's first field is added to the DOM by Angular after this event.
     setTimeout(() => document.getElementById('new-trademark-name')?.focus());
   }
 
@@ -344,29 +352,15 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   cancelDraft(): void {
     if (this.savingDraft()) return;
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
-    this.draftAutosaveTimer = null;
     this.draft.set(null);
     this.draftError.set('');
-  }
-
-  /**
-   * A new row behaves like the editable custom-value cells: wait until typing pauses, then save.
-   * An empty row remains a draft so opening it never creates a blank trademark.
-   */
-  queueDraftSave(delay = 900): void {
-    if (this.draftAutosaveTimer) clearTimeout(this.draftAutosaveTimer);
-    this.draftError.set('');
-    this.draftAutosaveTimer = setTimeout(() => {
-      this.draftAutosaveTimer = null;
-      this.saveDraft();
-    }, delay);
   }
 
   saveDraft(): void {
     const draft = this.draft();
     if (!draft || this.savingDraft()) return;
     if (!draft.name?.trim() && !draft.applicationNo) {
+      this.draftError.set('Enter a trademark name or application number before saving.');
       return;
     }
     this.draftError.set('');
@@ -379,7 +373,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.savingDraft.set(false);
         this.draft.set(null);
         this.draftCustomValues = {};
-        // Do not reload a large table on every inline auto-save. A new record belongs at the top
+        // Do not reload a large table after a new entry. A new record belongs at the top
         // only in the default listing; a filtered or sorted view remains undisturbed.
         if (this.isDefaultListing()) {
           this.trademarks.update(rows => [saved, ...rows].slice(0, this.pageSize));
@@ -648,6 +642,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     return query ? this.customFields().filter(field => field.label.toLowerCase().includes(query)) : this.customFields();
   }
 
+  get filteredMandatoryColumns(): { field: string; label: string }[] {
+    const query = this.fieldSearch.trim().toLowerCase();
+    return query ? this.mandatoryColumns.filter(column => column.label.toLowerCase().includes(query)) : this.mandatoryColumns;
+  }
+
   private loadFilterOptions(): void {
     this.agentDataService.getPortfolioFilterOptions().subscribe({
       // Losing the options only costs the dropdowns; the table itself must still render.
@@ -806,10 +805,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
-  }
-
-  rowNumber(index: number): number {
-    return this.page * this.pageSize + index + 1;
   }
 
   ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {

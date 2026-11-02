@@ -55,10 +55,13 @@ export class IconComponent {
 export type IconName =
   | 'dashboard'
   | 'portfolio'
+  | 'certificate'
   | 'watch'
   | 'journal'
   | 'search'
   | 'documents'
+  | 'file-pdf'
+  | 'file-excel'
   | 'calendar'
   | 'bell'
   | 'user'
@@ -89,10 +92,13 @@ const ICONS: Record<string, string> = {
   dashboard: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
   // A stack of records, which is what a portfolio is here.
   portfolio: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>',
+  certificate: '<path d="M7 3.5h10v17H7z"/><path d="M9.5 7.5h5"/><path d="M9.5 10.5h5"/><path d="M12 14l1.4 2.8 3.1.5-2.2 2.1.5 3.1-2.8-1.5-2.8 1.5.5-3.1-2.2-2.1 3.1-.5z"/>',
   watch: '<path d="M12 3l7.5 3v5.5c0 4.3-3 8.2-7.5 9.5-4.5-1.3-7.5-5.2-7.5-9.5V6L12 3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/>',
   journal: '<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M5 17a3 3 0 0 1 3-3h11"/><path d="M9 8h6"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-3.6-3.6"/>',
   documents: '<path d="M4 4h8l2.5 2.5H20v13H4V4z"/><path d="M8 12h8"/><path d="M8 15.5h5"/>',
+  'file-pdf': '<path d="M5 3.5h9l5 5V20.5H5z"/><path d="M14 3.5v5h5"/><path d="M7.5 16.5v-4h1.4a1.2 1.2 0 0 1 0 2.4H7.5"/><path d="M11 12.5h1.1a1.45 1.45 0 0 1 0 2.9H11z"/><path d="M15 16.5v-4h2.2"/><path d="M15 14.5h1.7"/>',
+  'file-excel': '<path d="M5 3.5h9l5 5V20.5H5z"/><path d="M14 3.5v5h5"/><path d="M8 12.5l3 4"/><path d="M11 12.5l-3 4"/><path d="M13.5 13h3"/><path d="M13.5 16h3"/>',
   // A leaf torn from a docket book: a date block above ruled lines.
   calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 10h17"/><path d="M8 3.5v3"/><path d="M16 3.5v3"/><path d="M7.5 14h4"/>',
   bell: '<path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M10.3 19a2 2 0 0 0 3.4 0"/>',

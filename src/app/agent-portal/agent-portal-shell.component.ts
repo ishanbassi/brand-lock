@@ -75,6 +75,7 @@ export class AgentPortalShellComponent {
   readonly navMaterialIcons: Partial<Record<IconName, string>> = {
     dashboard: 'dashboard',
     portfolio: 'verified',
+    certificate: 'workspace_premium',
     journal: 'visibility',
     alert: 'crisis_alert',
     building: 'troubleshoot',
@@ -115,7 +116,7 @@ export class AgentPortalShellComponent {
       // are buttons at the top of Add Trademark rather than three nav peers for one job.
       items: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
-        
+        { label: 'ISO certificates', icon: 'certificate', route: '/agent-portal/iso-certificates' },
       ],
     },
     {

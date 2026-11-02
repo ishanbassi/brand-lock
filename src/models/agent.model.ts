@@ -14,6 +14,46 @@ export interface AgentProfile {
   userId?: number;
 }
 
+/** An agent-owned ISO certificate docket entry. Its surveillance and expiry dates are inferred server-side. */
+export interface IsoCertificate {
+  id?: number;
+  isoType?: string;
+  partyName?: string;
+  address?: string;
+  reference?: string;
+  goodsServices?: string;
+  certifyingBody?: string;
+  certificateNumber?: string;
+  paymentReceived?: string;
+  remarks?: string;
+  initialRegistrationDate?: string;
+  expiryDate?: string;
+  firstSurveillanceDue?: string;
+  secondSurveillanceDue?: string;
+  customFields?: Record<string, string>;
+}
+
+export interface IsoCustomField {
+  id: number;
+  fieldKey: string;
+  label: string;
+  dataType: 'TEXT' | 'NUMBER' | 'DATE';
+  showInList: boolean;
+}
+
+export interface IsoPartySuggestion {
+  name: string;
+  address?: string;
+}
+
+export interface IsoCertificateDocument {
+  id: number;
+  originalFileName: string;
+  contentType?: string;
+  fileSizeBytes: number;
+  uploadedDate?: string;
+}
+
 export interface AgentRegistration {
   firstName: string;
   lastName?: string;

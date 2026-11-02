@@ -18,6 +18,10 @@ import {
   Deadline,
   SearchReport,
   AgentImportSummary,
+  IsoCertificate,
+  IsoCertificateDocument,
+  IsoCustomField,
+  IsoPartySuggestion,
   AgentJournalWatchResult,
   AgentImportResult,
   AgentPortfolioFilterOptions,
@@ -55,6 +59,62 @@ export class AgentDataService {
   private readonly base = `${environment.BaseApiUrl}api`;
 
   constructor(private readonly http: HttpClient) {}
+
+  // ── ISO certificate docket ─────────────────────────────────────────────
+
+  getIsoCertificates(options: { q?: string; isoType?: string; sort?: string; dir?: 'asc' | 'desc' } = {}): Observable<IsoCertificate[]> {
+    let params = new HttpParams();
+    if (options.q?.trim()) params = params.set('q', options.q.trim());
+    if (options.isoType) params = params.set('isoType', options.isoType);
+    if (options.sort) params = params.set('sort', options.sort);
+    if (options.dir) params = params.set('dir', options.dir);
+    return this.http.get<IsoCertificate[]>(`${this.base}/agent-portal/iso-certificates`, { params });
+  }
+
+  addIsoCertificate(data: Partial<IsoCertificate>): Observable<IsoCertificate> {
+    return this.http.post<IsoCertificate>(`${this.base}/agent-portal/iso-certificates`, data);
+  }
+
+  updateIsoCertificate(id: number, data: Partial<IsoCertificate>): Observable<IsoCertificate> {
+    return this.http.put<IsoCertificate>(`${this.base}/agent-portal/iso-certificates/${id}`, data);
+  }
+
+  deleteIsoCertificate(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/iso-certificates/${id}`);
+  }
+
+  getIsoCustomFields(): Observable<IsoCustomField[]> {
+    return this.http.get<IsoCustomField[]>(`${this.base}/agent-portal/iso-certificates/custom-fields`);
+  }
+
+  createIsoCustomField(label: string, dataType: IsoCustomField['dataType']): Observable<IsoCustomField> {
+    return this.http.post<IsoCustomField>(`${this.base}/agent-portal/iso-certificates/custom-fields`, { label, dataType });
+  }
+
+  updateIsoCustomField(id: number, changes: Partial<Pick<IsoCustomField, 'label' | 'showInList'>>): Observable<IsoCustomField> {
+    return this.http.patch<IsoCustomField>(`${this.base}/agent-portal/iso-certificates/custom-fields/${id}`, changes);
+  }
+
+  getIsoPartySuggestions(q: string): Observable<IsoPartySuggestion[]> {
+    return this.http.get<IsoPartySuggestion[]>(`${this.base}/agent-portal/iso-certificates/party-suggestions`, { params: { q } });
+  }
+
+  listIsoDocuments(certificateId: number): Observable<IsoCertificateDocument[]> {
+    return this.http.get<IsoCertificateDocument[]>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents`);
+  }
+
+  uploadIsoDocument(certificateId: number, file: File): Observable<IsoCertificateDocument> {
+    const form = new FormData(); form.append('file', file);
+    return this.http.post<IsoCertificateDocument>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents`, form);
+  }
+
+  downloadIsoDocument(certificateId: number, documentId: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}/download`, { responseType: 'blob' });
+  }
+
+  deleteIsoDocument(certificateId: number, documentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}`);
+  }
 
   // Registration (public)
   registerAgent(data: AgentRegistration): Observable<HttpResponse<AgentProfile>> {
