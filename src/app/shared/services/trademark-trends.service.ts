@@ -79,6 +79,26 @@ export interface ITrendsPage {
   topWords: INamedBreakdown[];
 }
 
+/** The small, SSR-critical subset required for the first useful trends viewport. */
+export interface ITrendsCore {
+  summary: ITrendsSummary;
+  filingVolume: IFilingVolumeTrend;
+  classBreakdown: IClassBreakdown[];
+  statusBreakdown: IStatusBreakdown[];
+}
+
+/** Exploratory sections fetched after the primary trends content has rendered. */
+export interface ITrendsInsights {
+  journalActivity: IJournalActivity[];
+  classTrends: IClassTrendSeries[];
+  stateBreakdown: INamedBreakdown[];
+  typeBreakdown: INamedBreakdown[];
+  orgTypeBreakdown: INamedBreakdown[];
+  filingModeBreakdown: INamedBreakdown[];
+  usageBreakdown: INamedBreakdown[];
+  topWords: INamedBreakdown[];
+}
+
 export interface IDimensionTrends {
   dimension: 'state' | 'class';
   value: string;
@@ -131,6 +151,14 @@ export class TrademarkTrendsService {
 
   getTrendsPage(range = '90d', granularity = 'day', topN = 10, journalLimit = 12): Observable<ITrendsPage> {
     return this.http.get<ITrendsPage>(this.resourceUrl, { params: { range, granularity, topN, journalLimit } });
+  }
+
+  getTrendsCore(range = '90d', granularity = 'day', topN = 10): Observable<ITrendsCore> {
+    return this.http.get<ITrendsCore>(`${this.resourceUrl}/core`, { params: { range, granularity, topN } });
+  }
+
+  getTrendsInsights(range = '90d', topN = 10, journalLimit = 12): Observable<ITrendsInsights> {
+    return this.http.get<ITrendsInsights>(`${this.resourceUrl}/insights`, { params: { range, topN, journalLimit } });
   }
 
   getStateTrends(slug: string): Observable<IDimensionTrends> {

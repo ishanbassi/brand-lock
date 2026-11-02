@@ -5,12 +5,16 @@ import { RouterLink } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
+import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { SeoService } from '../shared/services/seo.service';
+import { GoogleConversionTrackingService } from '../shared/services/google-conversion-tracking.service';
 import {
   IClassBreakdown,
   IJournalActivity,
   INamedBreakdown,
   IStatusBreakdown,
+  ITrendsCore,
+  ITrendsInsights,
   ITrendsPage,
   ITrendsSummary,
   TrademarkTrendsService,
@@ -37,7 +41,7 @@ type RangeOption = '30d' | '90d' | '180d' | '365d';
 @Component({
   selector: 'app-trademark-filing-trends',
   standalone: true,
-  imports: [CommonModule, RouterLink, BaseChartDirective],
+  imports: [CommonModule, RouterLink, BaseChartDirective, LeadFormComponent],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './trademark-filing-trends.component.html',
   styleUrl: './trademark-filing-trends.component.scss',
@@ -47,6 +51,7 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly seo = inject(SeoService);
+  private readonly conversionTracking = inject(GoogleConversionTrackingService);
   private readonly trendsService = inject(TrademarkTrendsService);
 
   /** Chart canvases only ever render in the browser — SSR shows the loading skeleton instead. */
@@ -96,6 +101,12 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
   journalLoading = true;
   journalError = false;
   journalActivity: IJournalActivity[] = [];
+
+  /** Below-the-fold data deliberately stays out of the SSR-critical request. */
+  insightsLoading = true;
+  insightsError = false;
+  private core: ITrendsCore | null = null;
+  private insightsLoadTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Last 12 complete calendar months, newest first, for the "Monthly Reports" index links. */
   readonly recentMonths: RecentMonth[] = buildRecentMonths(12);
@@ -150,6 +161,9 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.insightsLoadTimer !== null) {
+      clearTimeout(this.insightsLoadTimer);
+    }
     this.seo.removeJsonLd('trademark-filing-trends');
   }
 
@@ -167,6 +181,8 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
     this.volumeError = false;
     this.classLoading = true;
     this.classError = false;
+    this.insightsLoading = true;
+    this.insightsError = false;
     if (!rangeChangeOnly) {
       this.summaryLoading = true;
       this.statusLoading = true;
@@ -175,8 +191,9 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
       this.journalError = false;
     }
 
-    this.trendsService.getTrendsPage(this.selectedRange, 'day', 10, 12).subscribe({
-      next: (res: ITrendsPage) => {
+    this.trendsService.getTrendsCore(this.selectedRange, 'day', 10).subscribe({
+      next: (res: ITrendsCore) => {
+        this.core = res;
         this.summary = res.summary;
         this.summaryLoading = false;
 
@@ -221,10 +238,42 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
         };
         this.statusLoading = false;
 
-        this.journalActivity = res.journalActivity;
-        this.journalLoading = false;
+        // SSR stops here. Browsers fetch the exploratory tables after the useful content has
+        // painted, so a slow word-frequency or state aggregate cannot hold up navigation.
+        this.buildCoreCopy(res);
+        this.setSeoTags();
+        if (this.isBrowser) {
+          this.queueInsightsLoad();
+        }
+      },
+      error: () => {
+        this.volumeError = true;
+        this.volumeLoading = false;
+        this.classError = true;
+        this.classLoading = false;
+        if (!rangeChangeOnly) {
+          this.summaryLoading = false;
+          this.statusLoading = false;
+          this.statusError = true;
+          this.journalLoading = false;
+          this.journalError = true;
+        }
+      },
+    });
+  }
 
-        // Extra dimensions (all part of the same single response).
+  private queueInsightsLoad(): void {
+    if (this.insightsLoadTimer !== null) {
+      clearTimeout(this.insightsLoadTimer);
+    }
+    this.insightsLoadTimer = setTimeout(() => this.loadInsights(), 0);
+  }
+
+  private loadInsights(): void {
+    this.trendsService.getTrendsInsights(this.selectedRange, 10, 12).subscribe({
+      next: (res: ITrendsInsights) => {
+        this.journalActivity = res.journalActivity ?? [];
+        this.journalLoading = false;
         this.stateBreakdown = res.stateBreakdown ?? [];
         this.typeBreakdown = res.typeBreakdown ?? [];
         this.orgTypeBreakdown = res.orgTypeBreakdown ?? [];
@@ -245,24 +294,17 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
             borderWidth: 2,
           })),
         };
-
-        this.buildCopy(res);
-        // Re-inject the schema so the FAQ answers stay consistent with the figures now
-        // on screen (the range toggle re-fetches and the numbers change).
-        this.setSeoTags();
+        this.insightsLoading = false;
+        if (this.core) {
+          this.buildCopy({ ...this.core, ...res });
+          this.setSeoTags();
+        }
       },
       error: () => {
-        this.volumeError = true;
-        this.volumeLoading = false;
-        this.classError = true;
-        this.classLoading = false;
-        if (!rangeChangeOnly) {
-          this.summaryLoading = false;
-          this.statusLoading = false;
-          this.statusError = true;
-          this.journalLoading = false;
-          this.journalError = true;
-        }
+        this.insightsLoading = false;
+        this.insightsError = true;
+        this.journalLoading = false;
+        this.journalError = true;
       },
     });
   }
@@ -280,6 +322,10 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
   /** "IMAGEMARK" -> "Logo / device". The registry enum name is not visitor-facing copy. */
   markType(label: string): string {
     return markTypeLabel(label);
+  }
+
+  trackLeadIntent(action: 'search' | 'callback' | 'form_view'): void {
+    this.conversionTracking.trackLeadIntent('TRENDS_OVERVIEW', action);
   }
 
   /** Turns the response into the sentences and Q&As the page renders. */
@@ -373,6 +419,25 @@ export class TrademarkFilingTrendsComponent implements OnInit, OnDestroy {
           'The registry does not publish a status for every application in the bulk data we index — only a minority carry one. ' +
           `The status chart on this page is computed from the ${num(s.statusCapturedCount)} records that do, so its percentages describe ` +
           'that subset rather than the whole register.',
+      },
+    ];
+  }
+
+  /** Useful first-view prose while the deferred state and word-level data is still loading. */
+  private buildCoreCopy(res: ITrendsCore): void {
+    const s = res.summary;
+    this.windowLabel = dateRange(s.windowFrom, s.windowTo);
+    const topClass = res.classBreakdown.find(c => c.tmClass !== null) ?? null;
+    this.intro =
+      `${hl(num(s.totalFilingsInRange))} trademark applications were filed in India between ${hl(this.windowLabel)}` +
+      (s.momChangePercent !== null ? `, ${hlTrend(s.momChangePercent)} on the preceding 30 days.` : '.');
+    if (topClass) {
+      this.intro += ` ${hl(topClass.className || 'Class ' + topClass.tmClass)} is the most active NICE class over the ${this.rangeLabel} shown.`;
+    }
+    this.faqs = [
+      {
+        question: 'Where does this trademark data come from?',
+        answer: `${SOURCE_NOTE} ${COLLECTION_LAG_NOTE}`,
       },
     ];
   }

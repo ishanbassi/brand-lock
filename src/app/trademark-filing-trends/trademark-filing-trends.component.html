@@ -20,6 +20,17 @@
     </div>
   }
 
+  <section class="trends-action" aria-labelledby="trends-action-title">
+    <div>
+      <h2 id="trends-action-title">Before you file, check the mark.</h2>
+      <p>A filing trend shows the market. A clearance search shows whether your brand is available to protect.</p>
+    </div>
+    <div class="trends-action__links">
+      <a routerLink="/search" class="trends-action__primary" (click)="trackLeadIntent('search')">Free trademark search</a>
+      <a href="#trends-lead" class="trends-action__secondary" (click)="trackLeadIntent('callback')">Get a filing callback</a>
+    </div>
+  </section>
+
   <!-- Headline stat cards -->
   <section class="stats-grid">
     @if (summaryLoading) {
@@ -182,7 +193,7 @@
     <div class="card-header">
       <h2 class="card-title">Top NICE Classes Over Time</h2>
     </div>
-    @if (classLoading || !isBrowser) {
+    @if (insightsLoading || classLoading || !isBrowser) {
       <div class="chart-container skeleton"></div>
     } @else if (classTrendData.datasets.length) {
       <div class="chart-container">
@@ -426,6 +437,24 @@
     </div>
   </section>
 
+  <section id="trends-lead" class="trends-lead" aria-labelledby="trends-lead-title">
+    <div class="trends-lead__copy">
+      <h2 id="trends-lead-title">Get a practical filing plan for your brand.</h2>
+      <p>Tell us how you would like to be contacted. A trademark specialist will help you choose the right classes and next step.</p>
+    </div>
+    @defer (on viewport) {
+      <app-lead-form
+        [compact]="true"
+        [heading]="'Speak to a trademark expert'"
+        [cta]="'Request a callback'"
+        [leadSource]="'TRENDS_OVERVIEW'"
+        [comments]="'Trademark filing trends page — ' + rangeLabel">
+      </app-lead-form>
+    } @placeholder {
+      <div class="trends-lead__loading" aria-live="polite">Loading callback form…</div>
+    }
+  </section>
+
   <!-- Methodology: source, cadence, what is counted, and the limits of the figures above.
        E-E-A-T signal and the honest framing for a lagging series. -->
   <section class="methodology">
@@ -459,3 +488,4 @@
     </section>
   }
 </div>
+<a href="#trends-lead" class="trends-mobile-cta" (click)="trackLeadIntent('callback')">Get trademark filing help</a>

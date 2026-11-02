@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit {
   discoverServices: DiscoverService[] = [
     { title: 'Trademark Watch', blurb: 'We alert you if anyone files a mark like yours.', price: '₹1,499/yr', route: '/trademark-watch' },
     { title: 'MSME / Udyam Registration', blurb: 'Get your Udyam certificate and unlock govt. benefits.', price: '₹499', route: '/msme-registration' },
-    { title: 'ISO 9001:2015', blurb: 'Quality-management certification for your business.', price: '₹1,499', route: '/iso/iso-9001-2015' },
+    { title: 'ISO 9001:2015', blurb: 'Quality-management certification for your business.', price: '₹5,999', route: '/iso/iso-9001-2015' },
     { title: 'IEC (Import Export Code)', blurb: 'Required to import or export from India.', price: '₹1,499', route: '/iec-registration' },
   ];
 

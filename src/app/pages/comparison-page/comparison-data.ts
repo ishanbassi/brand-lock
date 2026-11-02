@@ -687,7 +687,7 @@ export const COMPARISON_DATA: Record<string, ComparisonPage> = {
       { question: 'How much does ISO certification cost in India for an SME?', answer: "ISO 9001 certification for a small business in India typically ranges from ₹15,000 to ₹60,000 total, covering gap analysis, documentation, internal audits, and certification body fees. Trademarx's assistance starts from ₹1,499 for the consulting and documentation phase. The certification body fee (TÜV, DNV, Bureau Veritas, etc.) is additional." },
     ],
     relatedLinks: [
-      { title: 'ISO Certification', route: '/iso', icon: 'fas fa-award', desc: 'ISO 9001 certification from ₹1,499' },
+      { title: 'ISO Certification', route: '/iso', icon: 'fas fa-award', desc: 'ISO 9001 certification from ₹5,999' },
       { title: 'ISO 9001:2015', route: '/iso/iso-9001-2015', icon: 'fas fa-star', desc: 'Quality management certification' },
       { title: 'MSME Registration', route: '/msme-registration', icon: 'fas fa-certificate', desc: 'Udyam certificate from ₹499' },
       { title: 'IEC Registration', route: '/iec-registration', icon: 'fas fa-ship', desc: 'Import Export Code for exporters' },

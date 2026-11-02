@@ -51,7 +51,7 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
     ],
     relatedServices: [
       { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹4,999 + ₹4,500 Govt. Fee (with MSME discount)' },
-      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹1,499 — valid in government tenders' },
+      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹5,999 — valid in government tenders' },
       { route: '/iec-registration', icon: 'fas fa-plane-departure', title: 'IEC (Import Export Code)', price: '₹1,499 — required for import/export' },
     ],
   },
@@ -88,7 +88,7 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
     relatedServices: [
       { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹4,999 — protect your brand before exporting' },
       { route: '/msme-registration', icon: 'fas fa-building', title: 'MSME Registration', price: '₹499 — unlock export incentives and subsidies' },
-      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹1,499 — required by many international buyers' },
+      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹5,999 — required by many international buyers' },
     ],
   },
 
@@ -96,7 +96,7 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
     slug: 'iso-9001',
     name: 'ISO 9001:2015 Certification',
     shortName: 'ISO 9001 Certification',
-    price: '₹1,499',
+    price: '₹5,999',
     priceNote: 'Valid for 3 years · Government tenders accepted',
     tagline: 'ISO 9001:2015 Quality Management System certification — required for most government tenders and international buyers.',
     leadComment: 'ISO 9001:2015',

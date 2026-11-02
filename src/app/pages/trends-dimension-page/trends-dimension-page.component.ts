@@ -5,6 +5,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
+import { LeadFormComponent } from '../../lead-form/lead-form.component';
 import { SeoService } from '../../shared/services/seo.service';
 import { IDimensionTrends, TrademarkTrendsService } from '../../shared/services/trademark-trends.service';
 import { buildRecentMonths, RecentMonth } from '../../shared/utils/recent-months.util';
@@ -28,7 +29,7 @@ import {
 @Component({
   selector: 'app-trends-dimension-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, BaseChartDirective],
+  imports: [CommonModule, RouterLink, BaseChartDirective, LeadFormComponent],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './trends-dimension-page.component.html',
   styleUrl: './trends-dimension-page.component.scss',
@@ -213,6 +214,10 @@ export class TrendsDimensionPageComponent implements OnInit, OnDestroy {
   /** "Tamil Nadu" -> "tamil-nadu", matching the backend's slugify so the link round-trips. */
   stateSlug(label: string): string {
     return slugifyState(label);
+  }
+
+  get leadSource(): string {
+    return this.dimension === 'state' ? `TRENDS_STATE_${this.data?.value ?? 'UNKNOWN'}` : `TRENDS_CLASS_${this.data?.value ?? 'UNKNOWN'}`;
   }
 
   private setSeoTags(res: IDimensionTrends): void {

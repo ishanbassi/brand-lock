@@ -199,6 +199,13 @@
             }
         }
 
+        .form-consent {
+            color: var(--light-text);
+            font-size: 0.75rem;
+            line-height: 1.45;
+            margin: 0.875rem 0 0;
+        }
+
         label {
             text-align: left;
             color: var(--Black, #202020);

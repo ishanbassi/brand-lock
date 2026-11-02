@@ -419,7 +419,7 @@ export const routes: Routes = [
     {
         path: "iso/iso-9001-2015",
         loadComponent: () => import('./iso-9001/iso-9001.component').then(m => m.Iso9001Component),
-        title: "ISO 9001:2015 at Just ₹1,499",
+        title: "ISO 9001:2015 at Just ₹5,999",
     },
     {
         path: "iso/iso-14001",
@@ -439,7 +439,7 @@ export const routes: Routes = [
     {
         path: "iso/iso-22000",
         loadComponent: () => import('./iso-22000/iso-22000.component').then(m => m.Iso22000Component),
-        title: "ISO 22000:2018 Food Safety Certification — ₹1,999 | Trademarx",
+        title: "ISO 22000:2018 Food Safety Certification — ₹7,999 | Trademarx",
     },
     {
         path: "msme-registration",

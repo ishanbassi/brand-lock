@@ -30,7 +30,11 @@ export class LeadFormComponent implements OnInit {
   @Input() feeNote = '';
   @Input() cta: string = 'Apply Now';
   @Input() comments = '';
+  /** Persist the originating surface so the sales pipeline can qualify this lead correctly. */
+  @Input() leadSource = '';
   @Input() showTextArea = false;
+  /** A low-friction variant for research pages; email can be collected during follow-up. */
+  @Input() compact = false;
   @Input() planTypeSubject?: Subject<any>;
   /** When set, successful submission redirects to /service-checkout?service=<serviceType> */
   @Input() serviceType?: ServiceType;
@@ -103,9 +107,7 @@ export class LeadFormComponent implements OnInit {
     }
 
     const lead = this.leadFormService.getLead(form) as NewLead;
-    if (this.knownContact) {
-      lead.leadSource = 'LOGGED_IN_QUICK_FILE';
-    }
+    lead.leadSource = this.leadSource || (this.knownContact ? 'LOGGED_IN_QUICK_FILE' : undefined);
     this.loadingService.show();
     this.leadService.create(lead)
       .pipe(finalize(() => {
@@ -144,7 +146,9 @@ export class LeadFormComponent implements OnInit {
 
   addValidationsToFormAndValidate(form: FormGroup<any>) {
     form.get('fullName')?.setValidators([Validators.required]);
-    form.get('email')?.setValidators([Validators.required, Validators.pattern('[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,4}$')]);
+    form
+      .get('email')
+      ?.setValidators(this.compact ? [] : [Validators.required, Validators.pattern('[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,4}$')]);
     form.get('phoneNumber')?.setValidators([Validators.required]);
     form.get('fullName')?.updateValueAndValidity();
     form.get('email')?.updateValueAndValidity();
