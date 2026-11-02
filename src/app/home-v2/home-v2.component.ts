@@ -38,7 +38,7 @@ export class HomeV2Component implements AfterViewInit, OnDestroy, OnInit {
   homeFaqs = [
     {
       question: 'How much does trademark registration cost in India?',
-      answer: 'Our professional fee is ₹1,999. Government filing fees are additional — ₹4,500 per class for individuals, startups and MSMEs, and ₹9,000 per class for other entities.'
+      answer: 'Our professional fee is ₹4,999. Government filing fees are additional — ₹4,500 per class for individuals, startups and MSMEs, and ₹9,000 per class for other entities.'
     },
     {
       question: 'Can I use the ™ symbol before registration is complete?',

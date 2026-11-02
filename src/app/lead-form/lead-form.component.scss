@@ -50,6 +50,14 @@
             .form-heading {
                 font-size: 1.75rem;
                 font-weight: 700;
+
+                .fee-note {
+                    display: inline-block;
+                    margin-left: 0.35rem;
+                    font-size: 0.62em;
+                    font-weight: 600;
+                    white-space: nowrap;
+                }
             }
         }
 
@@ -98,6 +106,63 @@
                 resize: vertical;
                 padding-left: 0.875rem;
                 display: block;
+            }
+        }
+
+        .contact-preference {
+            border: 0;
+            margin: 0 0 1.25rem;
+            padding: 0;
+            text-align: left;
+
+            legend {
+                color: var(--text-color);
+                font-size: 0.85rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                padding: 0;
+            }
+
+            .contact-options {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.625rem;
+            }
+
+            .contact-choice {
+                align-items: center;
+                border: 1.5px solid #d1d5db;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                font-size: 0.9rem;
+                font-weight: 600;
+                gap: 0.5rem;
+                justify-content: center;
+                min-height: 2.75rem;
+                padding: 0.5rem 0.75rem;
+                position: relative;
+
+                input {
+                    height: 1px;
+                    opacity: 0;
+                    position: absolute;
+                    width: 1px;
+                }
+
+                &:focus-within {
+                    outline: 3px solid rgba(37, 99, 235, 0.18);
+                }
+
+                &.whatsapp { --contact-color: #25d366; --contact-bg: #f0fdf4; }
+                &.call { --contact-color: var(--primary-color); --contact-bg: #eff6ff; }
+
+                i { color: var(--contact-color); }
+
+                &.selected {
+                    background: var(--contact-bg);
+                    border-color: var(--contact-color);
+                }
             }
         }
 

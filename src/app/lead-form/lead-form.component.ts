@@ -27,6 +27,7 @@ export class LeadFormComponent implements OnInit {
   isSubmitting: boolean = false;
   isNavSubmitting: boolean = false;
   @Input() heading: string = 'Apply Now';
+  @Input() feeNote = '';
   @Input() cta: string = 'Apply Now';
   @Input() comments = '';
   @Input() showTextArea = false;
@@ -78,6 +79,7 @@ export class LeadFormComponent implements OnInit {
     city: new FormControl(''),
     email: new FormControl(''),
     phoneNumber: new FormControl(''),
+    contactMethod: new FormControl<'CALL' | 'MESSAGE'>('MESSAGE', { nonNullable: true }),
     selectedPackage: new FormControl(),
     comments: new FormControl()
   });

@@ -12,8 +12,8 @@
       <div class="plan-name">Trademark Filing Only</div>
       <div class="plan-desc">Best for individuals who want to secure an application number quickly.</div>
       <div class="price">
-        <span class="price-main">₹1,999</span>
-        <span class="price-sub" (click)="openGovtFeesPopup(1999)">+ Govt. Fees</span>
+        <span class="price-main">₹4,999</span>
+        <span class="price-sub" (click)="openGovtFeesPopup(4999)">+ Govt. Fees</span>
       </div>
       <div class="govt">One-time professional fee</div>
       <ul class="features">
@@ -41,7 +41,7 @@
               <line x1="9" y1="3" x2="3" y2="9" />
             </svg></span> Handling of Hearings</li>
              </ul>
-      <button (click)="navigate(1999)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
+      <button (click)="navigate(4999)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
       <div class="text-center mt-2">
         <a *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
       </div>
@@ -55,8 +55,8 @@
       <div class="plan-name">Trademark Filing + Hearings</div>
       <div class="plan-desc">Ideal for businesses who want end-to-end support all the way until publication.</div>
       <div class="price">
-        <span class="price-main">₹3,999</span>
-        <a class="price-sub" (click)="openGovtFeesPopup(3999)">+ Govt. Fees</a>
+        <span class="price-main">₹6,999</span>
+        <a class="price-sub" (click)="openGovtFeesPopup(6999)">+ Govt. Fees</a>
       </div>
       <div class="govt">One-time professional fee</div>
       <ul class="features">
@@ -83,7 +83,7 @@
             </svg></span> <strong>Handling of Hearings</strong></li>
         
       </ul>
-      <button (click)="navigate(3999)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
+      <button (click)="navigate(6999)" class="btn btn-outline">{{anonymousUser ? 'Get Started' : 'Pay To Proceed'}}</button>
       <div class="text-center mt-2">
         <a *ngIf="showPayLater" class="pay-later-link" routerLink="/portal/dashboard">Pay Later</a>
       </div>
