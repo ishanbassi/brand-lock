@@ -595,14 +595,28 @@ $white: #ffffff;
   // Keep dense portfolios in a spreadsheet-like viewport: horizontal scrolling exposes every
   // column and vertical scrolling keeps the record list contained on screen.
   max-height: min(680px, calc(100dvh - 260px));
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   scrollbar-gutter: stable;
   scroll-behavior: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior-x: none;
   touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
 
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
+}
+
+.table-horizontal-scroll {
+  width: min(46%, 720px);
+  max-width: 100%;
+  height: 18px;
+  margin: 6px 0 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-gutter: stable;
+
+  > div { height: 1px; }
   &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
 }
 
@@ -1321,4 +1335,95 @@ $white: #ffffff;
 @media (prefers-reduced-motion: reduce) {
   .skeleton-row { animation: none; }
   .portfolio-page *, .portfolio-page *::before, .portfolio-page *::after { transition-duration: 0.01ms !important; }
+}
+
+// ── SPREADSHEET WORKSPACE ─────────────────────────────────────
+// The page itself is bounded by the portal shell. Its command area keeps a stable place while
+// this record viewport receives all remaining height and owns the one vertical scrollbar.
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.portfolio-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.portfolio-command-area { flex: 0 0 auto; min-width: 0; }
+
+.portfolio-command-area .page-header { margin-bottom: var(--ap-space-4); }
+
+.portfolio-command-area .portfolio-summary {
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-3);
+}
+
+.portfolio-command-area .summary-card {
+  padding: var(--ap-space-2) var(--ap-space-3);
+
+  .summary-icon { grid-row: span 2; width: 30px; height: 30px; border-radius: 8px; }
+  .summary-value { font-size: 1.25rem; letter-spacing: -0.03em; }
+  .summary-note { display: none; }
+}
+
+.portfolio-command-area .filters-bar {
+  margin-bottom: var(--ap-space-3);
+  padding: var(--ap-space-2);
+}
+
+.table-workspace {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-card {
+  flex: 1 1 auto;
+  min-height: 180px;
+  max-height: none;
+  margin-bottom: 0;
+}
+
+.table-horizontal-scroll { flex: 0 0 auto; }
+
+.table-bottom-rail {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: 1px solid $gray-200;
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: $gray-50;
+}
+
+.table-workspace:has(.table-bottom-rail) .table-card { border-radius: 10px 10px 0 0; }
+
+.table-bottom-rail .pagination {
+  flex: 0 0 max-content;
+  margin: 6px 0 0;
+}
+
+.table-bottom-rail .table-horizontal-scroll {
+  flex: 0 1 26%;
+  width: clamp(180px, 26vw, 420px);
+  min-width: 180px;
+  margin-left: auto;
+  scroll-behavior: auto;
+}
+
+@media (max-width: 768px) {
+  :host { height: auto; min-height: 100%; }
+  .portfolio-page { height: auto; min-height: 100%; overflow: visible; }
+  .table-workspace { min-height: auto; }
+  .table-card { flex: 0 0 auto; max-height: none; overflow-y: visible; }
 }

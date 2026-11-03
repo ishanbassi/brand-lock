@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -32,6 +32,26 @@ const ISO_TYPES = [
   styleUrl: './agent-iso-certificates.component.scss',
 })
 export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
+  private isoTableElement?: HTMLElement;
+  private isoHorizontalScrollElement?: HTMLElement;
+  private isoHorizontalContentElement?: HTMLElement;
+  private horizontalTrackResizeObserver?: ResizeObserver;
+
+  @ViewChild('isoTable') set isoTableRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.isoTableElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('isoHorizontalScroll') set isoHorizontalScrollRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.isoHorizontalScrollElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('isoHorizontalContent') set isoHorizontalContentRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.isoHorizontalContentElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
   readonly certificates = signal<IsoCertificate[]>([]);
   readonly knownIsoTypes = signal<string[]>([]);
   readonly customFields = signal<IsoCustomField[]>([]);
@@ -82,9 +102,8 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     { field: 'partyName', label: 'Party name' }, { field: 'isoType', label: 'ISO type' },
     { field: 'reference', label: 'Reference' }, { field: 'certificateNumber', label: 'Certificate no.' },
     { field: 'initialRegistrationDate', label: 'Initial registration' }, { field: 'expiryDate', label: 'Expiry' },
-    { field: 'address', label: 'Address' }, { field: 'goodsServices', label: 'Goods & services' },
-    { field: 'certifyingBody', label: 'Certifying body' }, { field: 'paymentReceived', label: 'Payment received' },
-    { field: 'remarks', label: 'Remarks' }, { field: 'firstSurveillanceDue', label: '1st surveillance due' },
+    { field: 'address', label: 'Address' }, { field: 'certifyingBody', label: 'Certifying body' },
+    { field: 'firstSurveillanceDue', label: '1st surveillance due' },
     { field: 'secondSurveillanceDue', label: '2nd surveillance due' },
   ];
 
@@ -94,7 +113,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     try { this.columnWidths = JSON.parse(localStorage.getItem('agent-iso-certificate-column-widths') || '{}'); } catch { this.columnWidths = {}; }
     this.load(); this.loadColumns();
   }
-  ngOnDestroy(): void { this.clearDocumentPreviews(); }
+  ngOnDestroy(): void { this.horizontalTrackResizeObserver?.disconnect(); this.clearDocumentPreviews(); }
   get shownCustomFields(): IsoCustomField[] { return this.customFields().filter(f => f.showInList); }
   get filteredCustomFields(): IsoCustomField[] {
     const query = this.fieldSearch.trim().toLowerCase();
@@ -128,7 +147,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     return this.columnWidths[key] || defaults[key] || 190;
   }
   get tableWidth(): number {
-    const fixed = ['isoType', 'partyName', 'reference', 'certificateNumber', 'initialRegistrationDate', 'expiryDate', 'address', 'goodsServices', 'certifyingBody', 'paymentReceived', 'remarks', 'firstSurveillanceDue', 'secondSurveillanceDue', 'actions'];
+    const fixed = ['isoType', 'partyName', 'reference', 'certificateNumber', 'initialRegistrationDate', 'expiryDate', 'address', 'certifyingBody', 'firstSurveillanceDue', 'secondSurveillanceDue', 'actions'];
     return fixed.reduce((total, key) => total + this.columnWidth(key), 0) + this.shownCustomFields.reduce((total, field) => total + this.columnWidth(`custom:${field.fieldKey}`), 0);
   }
   startResize(event: PointerEvent, key: string): void {
@@ -152,6 +171,49 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     const delta = event.key === 'ArrowRight' ? 16 : -16;
     this.columnWidths = { ...this.columnWidths, [key]: Math.max(100, Math.min(620, this.columnWidth(key) + delta)) };
     try { localStorage.setItem('agent-iso-certificate-column-widths', JSON.stringify(this.columnWidths)); } catch { /* Storage can be unavailable. */ }
+  }
+  /** Sizes the compact track to exactly the table's usable horizontal range. */
+  private connectHorizontalTrackObserver(): void {
+    this.horizontalTrackResizeObserver?.disconnect();
+    const table = this.isoTableElement;
+    const track = this.isoHorizontalScrollElement;
+    const content = this.isoHorizontalContentElement;
+    if (!table || !track || !content) return;
+
+    const update = () => {
+      const tableRange = Math.max(0, table.scrollWidth - table.clientWidth);
+      content.style.width = `${track.clientWidth + tableRange}px`;
+      if (tableRange > 0) track.scrollLeft = table.scrollLeft;
+    };
+
+    if (typeof ResizeObserver === 'undefined') { update(); return; }
+    this.horizontalTrackResizeObserver = new ResizeObserver(update);
+    this.horizontalTrackResizeObserver.observe(table);
+    this.horizontalTrackResizeObserver.observe(track);
+    update();
+  }
+  /**
+   * Keeps the compact horizontal track proportionate to the table viewport. The track is shorter
+   * than the table, so copying raw scrollLeft would leave a dead section after the table ended.
+   */
+  syncHorizontalScroll(source: HTMLElement, target: HTMLElement): void {
+    const sourceRange = source.scrollWidth - source.clientWidth;
+    const targetRange = target.scrollWidth - target.clientWidth;
+    if (sourceRange <= 0 || targetRange <= 0) return;
+
+    const next = (source.scrollLeft / sourceRange) * targetRange;
+    if (Math.abs(target.scrollLeft - next) > 0.5) target.scrollLeft = next;
+  }
+  /** The compact track is visual only; retain native touchpad and Shift+wheel horizontal panning. */
+  panHorizontalWheel(event: WheelEvent, table: HTMLElement): void {
+    const delta = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+    if (!delta || table.scrollWidth <= table.clientWidth) return;
+    // Keep horizontal touchpad swipes inside the data grid instead of letting Chromium navigate.
+    if (event.cancelable) event.preventDefault();
+    event.stopPropagation();
+    const next = Math.max(0, Math.min(table.scrollWidth - table.clientWidth, table.scrollLeft + delta));
+    if (next === table.scrollLeft) return;
+    table.scrollLeft = next;
   }
 
   openAdd(): void { this.clearDocumentPreviews(); this.editor.set({ isoType: '', partyName: '', customFields: {} }); this.customIsoType = ''; this.documents.set([]); this.queuedDocuments.set([]); this.partySuggestions.set([]); this.error.set(''); }

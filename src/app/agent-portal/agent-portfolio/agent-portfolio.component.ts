@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
@@ -44,6 +44,26 @@ interface SortableColumn {
   styleUrl: './agent-portfolio.component.scss',
 })
 export class AgentPortfolioComponent implements OnInit, OnDestroy {
+  private portfolioTableElement?: HTMLElement;
+  private portfolioHorizontalScrollElement?: HTMLElement;
+  private portfolioHorizontalContentElement?: HTMLElement;
+  private horizontalTrackResizeObserver?: ResizeObserver;
+
+  @ViewChild('portfolioTable') set portfolioTableRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioTableElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('portfolioHorizontalScroll') set portfolioHorizontalScrollRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioHorizontalScrollElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('portfolioHorizontalContent') set portfolioHorizontalContentRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioHorizontalContentElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   loading = signal(true);
   error = signal('');
@@ -193,6 +213,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
+    this.horizontalTrackResizeObserver?.disconnect();
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
@@ -476,6 +497,53 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
     table.scrollBy({ left: movement[0], top: movement[1], behavior: 'auto' });
+  }
+
+  /** Sizes the compact track to exactly the table's usable horizontal range. */
+  private connectHorizontalTrackObserver(): void {
+    this.horizontalTrackResizeObserver?.disconnect();
+    const table = this.portfolioTableElement;
+    const track = this.portfolioHorizontalScrollElement;
+    const content = this.portfolioHorizontalContentElement;
+    if (!table || !track || !content) return;
+
+    const update = () => {
+      const tableRange = Math.max(0, table.scrollWidth - table.clientWidth);
+      content.style.width = `${track.clientWidth + tableRange}px`;
+      if (tableRange > 0) track.scrollLeft = table.scrollLeft;
+    };
+
+    if (typeof ResizeObserver === 'undefined') { update(); return; }
+    this.horizontalTrackResizeObserver = new ResizeObserver(update);
+    this.horizontalTrackResizeObserver.observe(table);
+    this.horizontalTrackResizeObserver.observe(track);
+    update();
+  }
+
+  /**
+   * Keeps the compact horizontal track proportionate to the table viewport. The track is shorter
+   * than the table, so copying raw scrollLeft would leave a dead section after the table ended.
+   */
+  syncHorizontalScroll(source: HTMLElement, target: HTMLElement): void {
+    const sourceRange = source.scrollWidth - source.clientWidth;
+    const targetRange = target.scrollWidth - target.clientWidth;
+    if (sourceRange <= 0 || targetRange <= 0) return;
+
+    const next = (source.scrollLeft / sourceRange) * targetRange;
+    if (Math.abs(target.scrollLeft - next) > 0.5) target.scrollLeft = next;
+  }
+
+  /** The compact track is visual only; retain native touchpad and Shift+wheel horizontal panning. */
+  panHorizontalWheel(event: WheelEvent, table: HTMLElement): void {
+    const delta = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+    if (!delta || table.scrollWidth <= table.clientWidth) return;
+    // Consume the gesture even at either edge. Otherwise Chromium can treat a two-finger swipe
+    // that cannot move the table as a browser Back/Forward navigation gesture.
+    if (event.cancelable) event.preventDefault();
+    event.stopPropagation();
+    const next = Math.max(0, Math.min(table.scrollWidth - table.clientWidth, table.scrollLeft + delta));
+    if (next === table.scrollLeft) return;
+    table.scrollLeft = next;
   }
 
   /**
@@ -924,13 +992,13 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     const pages: number[] = [];
     const total = this.totalPages;
     const cur = this.page;
-    if (total <= 7) {
+    if (total <= 11) {
       return Array.from({ length: total }, (_, i) => i);
     }
     pages.push(0);
-    if (cur > 2) pages.push(-1);
-    for (let p = Math.max(1, cur - 1); p <= Math.min(total - 2, cur + 1); p++) pages.push(p);
-    if (cur < total - 3) pages.push(-1);
+    if (cur > 4) pages.push(-1);
+    for (let p = Math.max(1, cur - 3); p <= Math.min(total - 2, cur + 3); p++) pages.push(p);
+    if (cur < total - 5) pages.push(-1);
     pages.push(total - 1);
     return pages;
   }
