@@ -1,7 +1,7 @@
 <main class="iso-page">
   <header class="page-header">
     <div><p class="eyebrow">Compliance portfolio</p><h1>ISO Certificates</h1><p>Manage certificates, annual surveillance milestones, and renewal dates in one place.</p></div>
-    <button type="button" class="primary-button" (click)="openAdd()"><ap-icon name="plus" [size]="17" /> Add certificate</button>
+    <div class="page-header-actions"><ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" [disabled]="loading() || !certificates().length" (selected)="exportAll($event)" /><button type="button" class="primary-button" (click)="openAdd()"><ap-icon name="plus" [size]="17" /> Add certificate</button></div>
   </header>
 
   <section class="docket-note"><ap-icon name="certificate" [size]="20" /><div><strong>Three-year certificate cycle</strong><span>Surveillance dates and expiry are calculated automatically from the initial registration date.</span></div></section>
@@ -53,7 +53,7 @@
 
 <section class="bulk-actions" *ngIf="selectedIds.size" aria-label="Selected ISO certificate actions">
   <strong>{{ selectedIds.size }} selected</strong><span class="bulk-actions__rule" aria-hidden="true"></span>
-  <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="exportSelected($event)" />
+  <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" [openUp]="true" (selected)="exportSelected($event)" />
   <button type="button" class="bulk-actions__button bulk-actions__button--danger" (click)="openBulkDeleteConfirmation()" [disabled]="bulkDeleting()"><ap-icon name="close" [size]="15" /> Delete</button>
   <button type="button" class="bulk-actions__dismiss" (click)="clearSelection()" aria-label="Clear selection"><ap-icon name="close" [size]="16" /></button>
 </section>

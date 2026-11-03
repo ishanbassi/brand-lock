@@ -592,15 +592,13 @@ $white: #ffffff;
   background: $white;
   border: 1px solid $gray-200;
   border-radius: 10px;
-  // The page owns vertical reading. The table itself only scrolls sideways when its statutory
-  // columns exceed the viewport, so no records are hidden behind a nested vertical scrollbar.
-  overflow-x: auto;
-  // `overflow-x: auto` creates a scroll container in both axes in browser layout. Keep the
-  // vertical axis non-scrollable and let wheel/trackpad movement continue to the page.
-  overflow-y: hidden;
+  // Keep dense portfolios in a spreadsheet-like viewport: horizontal scrolling exposes every
+  // column and vertical scrolling keeps the record list contained on screen.
+  max-height: min(680px, calc(100dvh - 260px));
+  overflow: auto;
+  scrollbar-gutter: stable;
   scroll-behavior: auto;
-  overscroll-behavior-x: contain;
-  overscroll-behavior-y: auto;
+  overscroll-behavior: contain;
   touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
   margin-bottom: var(--ap-space-4);
@@ -620,7 +618,9 @@ $white: #ffffff;
   }
 
   th {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 3;
     padding: 0 var(--ap-space-4);
     height: 46px;
     text-align: left;

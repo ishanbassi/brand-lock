@@ -317,6 +317,12 @@ $content-bg: var(--ap-paper);
   &.compact { justify-content: center; }
 }
 
+// The 68px rail cannot hold the avatar and sign-out affordance side by side.
+// Keep them in the same footer section, but stack the two touch targets without clipping either.
+.portal-layout.collapsed .sidebar-footer { padding: 0.5rem; }
+.portal-layout.collapsed .agent-pill.compact { flex-direction: column; gap: 0.4rem; padding: 0.35rem 0; }
+.portal-layout.collapsed .logout-btn { margin-left: 0; }
+
 .agent-avatar {
   width: 36px;
   height: 36px;

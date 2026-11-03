@@ -216,17 +216,21 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   }
   exportSelected(format: ExportFormat): void {
     const selected = [...this.selectedCertificates.values()];
-    if (!selected.length || this.printing() || this.exporting()) return;
+    this.exportCertificates(format, selected);
+  }
+  exportAll(format: ExportFormat): void { this.exportCertificates(format, this.certificates()); }
+  private exportCertificates(format: ExportFormat, certificates: IsoCertificate[]): void {
+    if (!certificates.length || this.printing() || this.exporting()) return;
     if (format === 'excel') {
       this.exporting.set('excel');
       const headings = ['Party name', 'ISO type', 'Reference', 'Certificate number', 'Initial registration date', 'Expiry date', 'Address', 'Goods & services', 'Certifying body', 'Payment received', 'Remarks', '1st surveillance due', '2nd surveillance due', ...this.customFields().map(field => field.label)];
-      const rows = selected.map(certificate => [certificate.partyName, certificate.isoType, certificate.reference, certificate.certificateNumber, certificate.initialRegistrationDate, certificate.expiryDate, certificate.address, certificate.goodsServices, certificate.certifyingBody, certificate.paymentReceived, certificate.remarks, certificate.firstSurveillanceDue, certificate.secondSurveillanceDue, ...this.customFields().map(field => certificate.customFields?.[field.fieldKey] ?? '')]);
+      const rows = certificates.map(certificate => [certificate.partyName, certificate.isoType, certificate.reference, certificate.certificateNumber, certificate.initialRegistrationDate, certificate.expiryDate, certificate.address, certificate.goodsServices, certificate.certifyingBody, certificate.paymentReceived, certificate.remarks, certificate.firstSurveillanceDue, certificate.secondSurveillanceDue, ...this.customFields().map(field => certificate.customFields?.[field.fieldKey] ?? '')]);
       saveBlob(createXlsx([headings, ...rows]), 'iso-certificate-portfolio.xlsx');
       this.exporting.set(null);
       return;
     }
     this.printing.set(true); this.error.set('');
-    printReport(this.printHtml(selected)).catch(() => this.error.set('Could not prepare the download. Please try again.')).finally(() => this.printing.set(false));
+    printReport(this.printHtml(certificates)).catch(() => this.error.set('Could not prepare the download. Please try again.')).finally(() => this.printing.set(false));
   }
   private printHtml(certificates: IsoCertificate[]): string {
     const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);

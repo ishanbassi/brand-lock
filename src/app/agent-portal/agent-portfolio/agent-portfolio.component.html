@@ -251,7 +251,6 @@
          aria-label="Trademark portfolio table; scroll sideways to see all columns, or use left and right arrow keys after focusing the table"
          (keydown)="panTable($event, portfolioTable)">
       <table class="tm-table" [style.width.px]="tableWidth">
-        <caption class="visually-hidden">Your trademark portfolio, sorted and filtered using the controls above.</caption>
         <colgroup>
           <col style="width: 48px" />
           @for (col of columns; track col.field) { <col [style.width.px]="columnWidth(col.field)" /> }
@@ -421,6 +420,7 @@
         <span class="bulk-actions__rule" aria-hidden="true"></span>
         <ap-export-menu
           [busy]="exporting() || (printing() ? 'pdf' : null)"
+          [openUp]="true"
           (selected)="export($event)"
         />
         <button type="button" class="bulk-actions__button bulk-actions__button--danger" (click)="openBulkRemoveConfirmation()" [disabled]="bulkRemoving()">
