@@ -302,24 +302,6 @@
           </tr>
         </thead>
         <tbody>
-          @if (draft(); as newMark) {
-            <tr class="draft-row">
-              <td class="select-col"></td>
-              <td class="tm-name-cell"><input id="new-trademark-name" type="text" [(ngModel)]="newMark.name" placeholder="Trademark name" aria-label="New trademark name" (keyup.enter)="saveDraft()" /></td>
-              <td><input type="number" min="1" [(ngModel)]="newMark.applicationNo" placeholder="Application no." aria-label="New application number" (keyup.enter)="saveDraft()" /></td>
-              <td><select [(ngModel)]="newMark.tmClass" aria-label="New trademark class"><option [ngValue]="undefined">Class</option>@for (tmClass of classOptions; track tmClass) { <option [ngValue]="tmClass">{{ tmClass }}</option> }</select></td>
-              <td><input type="text" [(ngModel)]="newMark.proprietorName" placeholder="Proprietor" aria-label="New proprietor" (keyup.enter)="saveDraft()" /></td>
-              <td><select [(ngModel)]="newMark.trademarkStatus" aria-label="New trademark status">@for (status of statusOptions; track status) { <option [value]="status">{{ status }}</option> }</select></td>
-              <td><input type="date" [(ngModel)]="newMark.applicationDate" aria-label="New filing date" /></td>
-              <td><input type="date" [(ngModel)]="newMark.renewalDate" aria-label="New renewal date" /></td>
-              @for (field of shownCustomFields(); track field.id) {
-                <td><input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="draftCustomValues[field.fieldKey]" [attr.aria-label]="field.label + ' for new trademark'" [placeholder]="field.label" (keyup.enter)="saveDraft()" /></td>
-              }
-              <td><select [(ngModel)]="newMark.type" aria-label="New trademark type"><option value="">Type</option>@for (type of typeOptions; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></td>
-              <td class="draft-actions"><span class="draft-autosave" aria-live="polite">{{ savingDraft() ? 'Saving…' : 'Not saved' }}</span><button type="button" class="draft-cancel" (click)="cancelDraft()" [disabled]="savingDraft()">Cancel</button></td>
-            </tr>
-            @if (draftError()) { <tr class="draft-error"><td [attr.colspan]="columns.length + shownCustomFields().length + 3" role="alert">{{ draftError() }}</td></tr> }
-          }
           @for (tm of trademarks(); track tm.id; let i = $index) {
             <tr [class.deleting]="deletingId() === tm.id" [class.selected]="isSelected(tm)">
               <td class="select-col"><input type="checkbox" [checked]="isSelected(tm)" (change)="toggleSelection(tm)" [attr.aria-label]="'Select ' + (tm.name || 'trademark') + ' for printing'" /></td>
@@ -471,17 +453,6 @@
           <ap-icon name="close" [size]="15" /> Remove
         </button>
         <button type="button" class="bulk-actions__dismiss" (click)="clearSelection()" aria-label="Clear selection"><ap-icon name="close" [size]="16" /></button>
-      </section>
-    }
-
-    @if (draft()) {
-      <section class="bulk-actions draft-save-actions" aria-label="New trademark actions">
-        <strong>New trademark</strong>
-        <span class="bulk-actions__rule" aria-hidden="true"></span>
-        <button type="button" class="bulk-actions__button" (click)="saveDraft()" [disabled]="savingDraft() || !canSaveDraft">
-          <ap-icon name="check" [size]="16" /> {{ savingDraft() ? 'Saving…' : 'Save trademark' }}
-        </button>
-        <button type="button" class="bulk-actions__dismiss" (click)="cancelDraft()" [disabled]="savingDraft()" aria-label="Discard new trademark"><ap-icon name="close" [size]="16" /></button>
       </section>
     }
 
