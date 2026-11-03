@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, map, of } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { IsoCertificate, IsoCertificateDocument, IsoCustomField } from '../../../models/agent.model';
 import { IconComponent, IconName } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { createXlsx } from '../ui/create-xlsx';
+import { printReport } from '../ui/print-report';
+import { saveBlob } from '../ui/save-blob';
 
 type SortField = 'isoType' | 'partyName' | 'reference' | 'certificateNumber' | 'initialRegistrationDate' | 'expiryDate';
 interface PartySuggestion { name: string; address?: string; source: 'Portfolio proprietor' | 'ISO certificate'; }
@@ -23,7 +27,7 @@ const ISO_TYPES = [
 @Component({
   selector: 'app-agent-iso-certificates',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, ExportMenuComponent],
   templateUrl: './agent-iso-certificates.component.html',
   styleUrl: './agent-iso-certificates.component.scss',
 })
@@ -39,6 +43,12 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   readonly creatingColumn = signal(false);
   readonly columnPickerError = signal('');
   readonly deletingId = signal<number | null>(null);
+  readonly selectedIds = new Set<number>();
+  private readonly selectedCertificates = new Map<number, IsoCertificate>();
+  readonly confirmBulkDelete = signal(false);
+  readonly bulkDeleting = signal(false);
+  readonly printing = signal(false);
+  readonly exporting = signal<ExportFormat | null>(null);
   readonly partySuggestions = signal<PartySuggestion[]>([]);
   readonly partySearching = signal(false);
   readonly documents = signal<IsoCertificateDocument[]>([]);
@@ -109,8 +119,8 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     });
   }
   private loadColumns(): void { this.data.getIsoCustomFields().subscribe({ next: f => this.customFields.set(f), error: () => this.customFields.set([]) }); }
-  onSearch(): void { if (this.searchTimer) clearTimeout(this.searchTimer); this.searchTimer = setTimeout(() => this.load(), 300); }
-  changeFilter(): void { this.load(); }
+  onSearch(): void { this.clearSelection(); if (this.searchTimer) clearTimeout(this.searchTimer); this.searchTimer = setTimeout(() => this.load(), 300); }
+  changeFilter(): void { this.clearSelection(); this.load(); }
   sortBy(field: string): void { this.direction = this.sort === field ? (this.direction === 'asc' ? 'desc' : 'asc') : 'asc'; this.sort = field; this.load(); }
   sortIcon(field: string): 'sort' | 'sort-asc' | 'sort-desc' { return this.sort !== field ? 'sort' : this.direction === 'asc' ? 'sort-asc' : 'sort-desc'; }
   columnWidth(key: string): number {
@@ -162,6 +172,67 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   }
   confirmDelete(id: number): void { this.deletingId.set(id); }
   delete(): void { const id = this.deletingId(); if (!id) return; this.data.deleteIsoCertificate(id).subscribe({ next: () => { this.deletingId.set(null); this.load(); }, error: () => { this.deletingId.set(null); this.error.set('Could not remove this certificate.'); } }); }
+  isSelected(certificate: IsoCertificate): boolean { return certificate.id != null && this.selectedIds.has(certificate.id); }
+  isPageSelected(): boolean {
+    const rows = this.certificates().filter((certificate): certificate is IsoCertificate & { id: number } => certificate.id != null);
+    return rows.length > 0 && rows.every(certificate => this.selectedIds.has(certificate.id));
+  }
+  isPagePartlySelected(): boolean {
+    const rows = this.certificates().filter((certificate): certificate is IsoCertificate & { id: number } => certificate.id != null);
+    return rows.some(certificate => this.selectedIds.has(certificate.id)) && !this.isPageSelected();
+  }
+  togglePageSelection(): void {
+    const rows = this.certificates().filter((certificate): certificate is IsoCertificate & { id: number } => certificate.id != null);
+    const remove = this.isPageSelected();
+    for (const certificate of rows) this.setSelected(certificate, !remove);
+  }
+  toggleSelection(certificate: IsoCertificate): void {
+    if (certificate.id == null) return;
+    this.setSelected(certificate, !this.selectedIds.has(certificate.id));
+  }
+  private setSelected(certificate: IsoCertificate, selected: boolean): void {
+    if (certificate.id == null) return;
+    if (selected) { this.selectedIds.add(certificate.id); this.selectedCertificates.set(certificate.id, certificate); }
+    else { this.selectedIds.delete(certificate.id); this.selectedCertificates.delete(certificate.id); }
+  }
+  clearSelection(): void { this.selectedIds.clear(); this.selectedCertificates.clear(); }
+  openBulkDeleteConfirmation(): void { if (this.selectedIds.size && !this.bulkDeleting()) this.confirmBulkDelete.set(true); }
+  cancelBulkDelete(): void { if (!this.bulkDeleting()) this.confirmBulkDelete.set(false); }
+  deleteSelected(): void {
+    const selected = [...this.selectedCertificates.values()].filter((certificate): certificate is IsoCertificate & { id: number } => certificate.id != null);
+    if (!selected.length || this.bulkDeleting()) return;
+    this.bulkDeleting.set(true); this.error.set('');
+    forkJoin(selected.map(certificate => this.data.deleteIsoCertificate(certificate.id).pipe(map(() => certificate.id), catchError(() => of(null))))).subscribe({
+      next: results => {
+        const deleted = new Set(results.filter((id): id is number => id != null));
+        const failed = selected.length - deleted.size;
+        this.certificates.update(rows => rows.filter(certificate => !deleted.has(certificate.id ?? -1)));
+        for (const id of deleted) { this.selectedIds.delete(id); this.selectedCertificates.delete(id); }
+        this.confirmBulkDelete.set(false); this.bulkDeleting.set(false);
+        if (failed) this.error.set(`${failed} selected certificate${failed === 1 ? '' : 's'} could not be deleted. Please try again.`);
+      },
+      error: () => { this.bulkDeleting.set(false); this.error.set('Could not delete the selected certificates. Please try again.'); },
+    });
+  }
+  exportSelected(format: ExportFormat): void {
+    const selected = [...this.selectedCertificates.values()];
+    if (!selected.length || this.printing() || this.exporting()) return;
+    if (format === 'excel') {
+      this.exporting.set('excel');
+      const headings = ['Party name', 'ISO type', 'Reference', 'Certificate number', 'Initial registration date', 'Expiry date', 'Address', 'Goods & services', 'Certifying body', 'Payment received', 'Remarks', '1st surveillance due', '2nd surveillance due', ...this.customFields().map(field => field.label)];
+      const rows = selected.map(certificate => [certificate.partyName, certificate.isoType, certificate.reference, certificate.certificateNumber, certificate.initialRegistrationDate, certificate.expiryDate, certificate.address, certificate.goodsServices, certificate.certifyingBody, certificate.paymentReceived, certificate.remarks, certificate.firstSurveillanceDue, certificate.secondSurveillanceDue, ...this.customFields().map(field => certificate.customFields?.[field.fieldKey] ?? '')]);
+      saveBlob(createXlsx([headings, ...rows]), 'iso-certificate-portfolio.xlsx');
+      this.exporting.set(null);
+      return;
+    }
+    this.printing.set(true); this.error.set('');
+    printReport(this.printHtml(selected)).catch(() => this.error.set('Could not prepare the download. Please try again.')).finally(() => this.printing.set(false));
+  }
+  private printHtml(certificates: IsoCertificate[]): string {
+    const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
+    const rows = certificates.map(certificate => `<tr><td><strong>${esc(certificate.partyName)}</strong></td><td>${esc(certificate.isoType)}</td><td>${esc(certificate.certificateNumber)}</td><td>${esc(certificate.reference)}</td><td>${esc(certificate.certifyingBody)}</td><td>${esc(this.date(certificate.initialRegistrationDate))}</td><td>${esc(this.date(certificate.expiryDate))}</td></tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>ISO certificate portfolio</title><style>@page{size:A4 landscape;margin:14mm 12mm}*{box-sizing:border-box}body{font:10pt Arial,sans-serif;color:#202a36;margin:0}header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1f4e79;padding-bottom:10px;margin-bottom:18px}h1{font-size:20pt;margin:0 0 4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:#1f4e79;color:white;text-align:left;padding:7px;font-size:8pt}td{padding:7px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere}tr{break-inside:avoid;page-break-inside:avoid}footer{margin-top:12px;border-top:1px solid #d8dde4;padding-top:7px;color:#596575;font-size:8pt}</style></head><body><header><div><h1>ISO Certificate Portfolio</h1><div>${certificates.length} selected certificate${certificates.length === 1 ? '' : 's'}</div></div></header><table><thead><tr><th>Party</th><th>ISO standard</th><th>Certificate no.</th><th>Reference</th><th>Certifying body</th><th>Registered</th><th>Expires</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}.</footer></body></html>`;
+  }
   createColumn(): void {
     const label = this.newColumn.trim(); if (!label || this.creatingColumn()) return;
     this.columnPickerError.set('');

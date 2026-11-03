@@ -419,9 +419,10 @@
       <section class="bulk-actions" aria-label="Selected trademark actions">
         <strong>{{ selectedIds.size }} selected</strong>
         <span class="bulk-actions__rule" aria-hidden="true"></span>
-        <button type="button" class="bulk-actions__button" (click)="export('pdf')" [disabled]="printing()">
-          <ap-icon name="download" [size]="16" /> {{ printing() ? 'Preparing…' : 'Download' }}
-        </button>
+        <ap-export-menu
+          [busy]="exporting() || (printing() ? 'pdf' : null)"
+          (selected)="export($event)"
+        />
         <button type="button" class="bulk-actions__button bulk-actions__button--danger" (click)="openBulkRemoveConfirmation()" [disabled]="bulkRemoving()">
           <ap-icon name="close" [size]="15" /> Remove
         </button>
