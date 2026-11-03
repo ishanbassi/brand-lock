@@ -2,7 +2,7 @@ export type NotificationSeverity = 'INFO' | 'ACTION_REQUIRED' | 'URGENT';
 
 export type NotificationCategory = 'WATCH' | 'DOCKET' | 'AI' | 'PORTFOLIO' | 'DOCUMENT' | 'ACCOUNT' | 'SYSTEM';
 
-export type NotificationChannel = 'IN_APP' | 'EMAIL';
+export type NotificationChannel = 'IN_APP' | 'EMAIL' | 'BROWSER_PUSH';
 
 export type NotificationMode = 'INSTANT' | 'DAILY_DIGEST' | 'OFF';
 
@@ -39,4 +39,5 @@ export interface NotificationPreferenceRow {
   category: NotificationCategory;
   IN_APP: NotificationMode;
   EMAIL: NotificationMode;
+  BROWSER_PUSH: NotificationMode;
 }

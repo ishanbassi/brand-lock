@@ -447,18 +447,22 @@ const pageRefreshes = new Map<string, Promise<{ html: string; renderedAt: number
 const pageRefreshRetryAt = new Map<string, number>();
 
 function cacheablePage(req: express.Request): string | null {
-  // Only the homepage is safe for this in-process HTML cache. This middleware is mounted at
-  // `/**`, which strips the matched path from req.path before this function runs; using req.path
-  // here therefore makes every route look like `/` and serves one page's SSR HTML to every URL.
-  // originalUrl remains the actual requested URL.
-  // Authentication on these pages is read from browser storage, never request cookies.
-  // Requests carrying an Authorization header continue through the normal SSR path.
+  // Public, anonymous pages only. This middleware is mounted at `/**`, which strips the matched
+  // path from req.path; originalUrl is therefore the source of truth for the route cache key.
+  // These pages never render account data: authentication is browser-storage based, and requests
+  // carrying Authorization continue through the uncached SSR path.
   const host = (req.headers['x-forwarded-host'] as string | undefined) || req.headers.host || '';
   if (req.method !== 'GET' || host !== 'trademarx.in' || req.headers.authorization || req.originalUrl.includes('?')) {
     return null;
   }
   const requestedPath = new URL(req.originalUrl, 'http://localhost').pathname;
-  return requestedPath === '/' ? requestedPath : null;
+  const isPublicTrendsPage =
+    requestedPath === '/trademark-filing-trends' ||
+    /^\/trademark-filings\/[a-z0-9-]+$/.test(requestedPath) ||
+    /^\/trademark-trends\/class\/(?:[1-9]|[1-3][0-9]|4[0-5])$/.test(requestedPath) ||
+    /^\/trademark-trends\/\d{4}-(?:0[1-9]|1[0-2])$/.test(requestedPath) ||
+    /^\/trademark-journal\/\d+$/.test(requestedPath);
+  return requestedPath === '/' || isPublicTrendsPage ? requestedPath : null;
 }
 
 function renderPublicPage(req: express.Request, key: string): Promise<{ html: string; renderedAt: number }> {
@@ -496,10 +500,11 @@ app.use('/**', (req, res, next) => {
   if (cacheKey) {
     const cached = pageHtmlCache.get(cacheKey);
     const age = cached ? Date.now() - cached.renderedAt : Infinity;
-    // Browser caches may keep a private copy briefly; the process cache is refreshed every five
-    // minutes. No shared proxy cache can accidentally serve this HTML to a signed-in visitor.
+    // The cache only admits anonymous public pages, so an edge cache may keep a short fresh copy
+    // and serve the last good render during an upstream refresh. This is essential for trends:
+    // a cache miss can otherwise make every visitor wait on a large aggregation.
     const sendPage = (page: { html: string }) => {
-      res.setHeader('Cache-Control', 'private, max-age=60');
+      res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600');
       res.type('html').send(page.html);
     };
     if (cached && age < PAGE_FRESH_MS) {

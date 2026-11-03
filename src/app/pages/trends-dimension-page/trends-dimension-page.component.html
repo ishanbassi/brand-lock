@@ -133,11 +133,30 @@
   <!-- CTA -->
   <section class="dim-cta">
     <h2>Protect your brand{{ dimension === 'state' ? ' in ' + (data?.displayName || 'India') : '' }}</h2>
-    <p>Free trademark search, IP India authorised agents, filing from ₹1,999 + govt. fees.</p>
+    <p>Free trademark search, IP India authorised agents, filing from ₹4,999 + govt. fees.</p>
     <div class="dim-cta-btns">
       <a routerLink="/trademark" class="btn-primary">Register a Trademark</a>
       <a routerLink="/search" class="btn-ghost">Free Trademark Search</a>
+      <a href="#dim-lead" class="btn-ghost">Get a filing callback</a>
     </div>
+  </section>
+
+  <section id="dim-lead" class="dim-lead" aria-labelledby="dim-lead-title">
+    <div>
+      <h2 id="dim-lead-title">Not sure which class to file in?</h2>
+      <p>Get a practical recommendation from a trademark specialist before you apply.</p>
+    </div>
+    @defer (on viewport) {
+      <app-lead-form
+        [compact]="true"
+        [heading]="'Request a callback'"
+        [cta]="'Talk to an expert'"
+        [leadSource]="leadSource"
+        [comments]="'Trend detail page — ' + (data?.displayName || '')">
+      </app-lead-form>
+    } @placeholder {
+      <div class="dim-lead__loading" aria-live="polite">Loading callback form…</div>
+    }
   </section>
 
   <p class="dim-source muted">

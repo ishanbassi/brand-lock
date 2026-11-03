@@ -108,13 +108,10 @@
             <span class="agent-badge">Active</span>
           </div>
         }
+        <button type="button" class="logout-btn" (click)="logout()" aria-label="Sign out" title="Sign out">
+          <span class="material-symbols-outlined nav-icon">logout</span>
+        </button>
       </div>
-      <button class="logout-btn" (click)="logout()" [title]="sidebarCollapsed() ? 'Sign out' : ''">
-        <span class="material-symbols-outlined nav-icon">logout</span>
-        @if (!sidebarCollapsed()) {
-          <span>Sign out</span>
-        }
-      </button>
     </div>
   </aside>
 

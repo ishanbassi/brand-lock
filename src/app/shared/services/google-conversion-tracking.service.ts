@@ -79,4 +79,15 @@ export class GoogleConversionTrackingService {
     setTimeout(callback, 2000);
   }
 
+  /** Non-conversion funnel signal: lets GA4 distinguish interest from a completed lead. */
+  trackLeadIntent(source: string, action: 'search' | 'callback' | 'form_view'): void {
+    if (typeof gtag !== 'function') {
+      return;
+    }
+    gtag('event', 'lead_intent', {
+      lead_source: source,
+      lead_action: action,
+    });
+  }
+
 }

@@ -218,7 +218,7 @@ export const routes: Routes = [
     {
         path: 'trademark-renewal',
         loadComponent: () => import('./trademark-renewal/trademark-renewal.component').then(m => m.TrademarkRenewalComponent),
-        title: "Trademark Renewal — ₹4,999 | Trademarx",
+        title: "Trademark Renewal — ₹11,000 (incl. govt. fees) | Trademarx",
     },
     {
         path: 'trademark-objection-reply',
@@ -248,122 +248,122 @@ export const routes: Routes = [
     {
         path: 'trademark-registration-for-auto-parts',
         loadComponent: () => import('./trademark-auto-parts/trademark-auto-parts.component').then(m => m.TrademarkAutoPartsComponent),
-        title: "Trademark Registration for Auto Parts Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Auto Parts Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-machine-tools',
         loadComponent: () => import('./trademark-machine-tools/trademark-machine-tools.component').then(m => m.TrademarkMachineToolsComponent),
-        title: "Trademark Registration for Machine Tools Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Machine Tools Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-bicycle-parts',
         loadComponent: () => import('./trademark-bicycle-parts/trademark-bicycle-parts.component').then(m => m.TrademarkBicyclePartsComponent),
-        title: "Trademark Registration for Bicycle Parts Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Bicycle Parts Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-fasteners',
         loadComponent: () => import('./trademark-fasteners/trademark-fasteners.component').then(m => m.TrademarkFastenersComponent),
-        title: "Trademark Registration for Fasteners, Nuts & Bolts Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Fasteners, Nuts & Bolts Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-hand-tools',
         loadComponent: () => import('./trademark-hand-tools/trademark-hand-tools.component').then(m => m.TrademarkHandToolsComponent),
-        title: "Trademark Registration for Hand Tools Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Hand Tools Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-agricultural-equipment',
         loadComponent: () => import('./trademark-agricultural-equipment/trademark-agricultural-equipment.component').then(m => m.TrademarkAgriculturalEquipmentComponent),
-        title: "Trademark Registration for Agricultural Equipment Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Agricultural Equipment Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-hosiery-knitwear',
         loadComponent: () => import('./trademark-hosiery-knitwear/trademark-hosiery-knitwear.component').then(m => m.TrademarkHosieryKnitwearComponent),
-        title: "Trademark Registration for Hosiery & Knitwear Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Hosiery & Knitwear Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-sports-goods',
         loadComponent: () => import('./trademark-sports-goods/trademark-sports-goods.component').then(m => m.TrademarkSportsGoodsComponent),
-        title: "Trademark Registration for Sports Goods Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Sports Goods Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-steel-manufacturers',
         loadComponent: () => import('./trademark-steel-manufacturers/trademark-steel-manufacturers.component').then(m => m.TrademarkSteelManufacturersComponent),
-        title: "Trademark Registration for Steel Manufacturers & Re-rolling Mills — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Steel Manufacturers & Re-rolling Mills — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-pump-manufacturers',
         loadComponent: () => import('./trademark-pump-manufacturers/trademark-pump-manufacturers.component').then(m => m.TrademarkPumpManufacturersComponent),
-        title: "Trademark Registration for Pump Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Pump Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-forging-units',
         loadComponent: () => import('./trademark-forging-units/trademark-forging-units.component').then(m => m.TrademarkForgingUnitsComponent),
-        title: "Trademark Registration for Forging Units — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Forging Units — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-casting-foundry',
         loadComponent: () => import('./trademark-casting-foundry/trademark-casting-foundry.component').then(m => m.TrademarkCastingFoundryComponent),
-        title: "Trademark Registration for Casting & Foundry Units — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Casting & Foundry Units — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-rubber-products',
         loadComponent: () => import('./trademark-rubber-products/trademark-rubber-products.component').then(m => m.TrademarkRubberProductsComponent),
-        title: "Trademark Registration for Rubber Products Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Rubber Products Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-plastic-pvc-manufacturers',
         loadComponent: () => import('./trademark-plastic-pvc-manufacturers/trademark-plastic-pvc-manufacturers.component').then(m => m.TrademarkPlasticPvcManufacturersComponent),
-        title: "Trademark Registration for Plastic & PVC Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Plastic & PVC Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-power-tools',
         loadComponent: () => import('./trademark-power-tools/trademark-power-tools.component').then(m => m.TrademarkPowerToolsComponent),
-        title: "Trademark Registration for Power Tools Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Power Tools Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-sewing-machine-manufacturers',
         loadComponent: () => import('./trademark-sewing-machine-manufacturers/trademark-sewing-machine-manufacturers.component').then(m => m.TrademarkSewingMachineManufacturersComponent),
-        title: "Trademark Registration for Sewing Machine Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Sewing Machine Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-diesel-engine-manufacturers',
         loadComponent: () => import('./trademark-diesel-engine-manufacturers/trademark-diesel-engine-manufacturers.component').then(m => m.TrademarkDieselEngineManufacturersComponent),
-        title: "Trademark Registration for Diesel Engine & Genset Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Diesel Engine & Genset Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-surgical-instruments',
         loadComponent: () => import('./trademark-surgical-instruments/trademark-surgical-instruments.component').then(m => m.TrademarkSurgicalInstrumentsComponent),
-        title: "Trademark Registration for Surgical Instruments Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Surgical Instruments Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-textile-machinery',
         loadComponent: () => import('./trademark-textile-machinery/trademark-textile-machinery.component').then(m => m.TrademarkTextileMachineryComponent),
-        title: "Trademark Registration for Textile & Hosiery Machinery Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Textile & Hosiery Machinery Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-wire-products',
         loadComponent: () => import('./trademark-wire-products/trademark-wire-products.component').then(m => m.TrademarkWireProductsComponent),
-        title: "Trademark Registration for Wire Drawing & Wire Mesh Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Wire Drawing & Wire Mesh Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-lock-manufacturers',
         loadComponent: () => import('./trademark-lock-manufacturers/trademark-lock-manufacturers.component').then(m => m.TrademarkLockManufacturersComponent),
-        title: "Trademark Registration for Lock & Padlock Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Lock & Padlock Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-brassware-manufacturers',
         loadComponent: () => import('./trademark-brassware-manufacturers/trademark-brassware-manufacturers.component').then(m => m.TrademarkBrasswareManufacturersComponent),
-        title: "Trademark Registration for Brassware & Brass Handicrafts Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Brassware & Brass Handicrafts Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-footwear-manufacturers',
         loadComponent: () => import('./trademark-footwear-manufacturers/trademark-footwear-manufacturers.component').then(m => m.TrademarkFootwearManufacturersComponent),
-        title: "Trademark Registration for Footwear Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Footwear Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'trademark-registration-for-scientific-instruments',
         loadComponent: () => import('./trademark-scientific-instruments/trademark-scientific-instruments.component').then(m => m.TrademarkScientificInstrumentsComponent),
-        title: "Trademark Registration for Scientific & Laboratory Instruments Manufacturers — ₹1,999 | Trademarx",
+        title: "Trademark Registration for Scientific & Laboratory Instruments Manufacturers — ₹4,999 | Trademarx",
     },
     {
         path: 'service-checkout',
@@ -419,7 +419,7 @@ export const routes: Routes = [
     {
         path: "iso/iso-9001-2015",
         loadComponent: () => import('./iso-9001/iso-9001.component').then(m => m.Iso9001Component),
-        title: "ISO 9001:2015 at Just ₹1,499",
+        title: "ISO 9001:2015 at Just ₹5,999",
     },
     {
         path: "iso/iso-14001",
@@ -439,7 +439,7 @@ export const routes: Routes = [
     {
         path: "iso/iso-22000",
         loadComponent: () => import('./iso-22000/iso-22000.component').then(m => m.Iso22000Component),
-        title: "ISO 22000:2018 Food Safety Certification — ₹1,999 | Trademarx",
+        title: "ISO 22000:2018 Food Safety Certification — ₹7,999 | Trademarx",
     },
     {
         path: "msme-registration",

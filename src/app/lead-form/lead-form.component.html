@@ -4,13 +4,30 @@
       <a type="button" class="call-now" href="tel:+916239771006">6239771006</a></p>
 
     @if (showQuickFileCard) {
-      <div class="cta-form quick-file-card" id="ctaForm" #ctaFormElement>
+      <div class="cta-form quick-file-card" [formGroup]="ctaForm" id="ctaForm" #ctaFormElement>
         <div class="form-heading-section">
-          <h2 class="form-heading">{{heading}}</h2>
+          <h2 class="form-heading">{{heading}}<span *ngIf="feeNote" class="fee-note">{{feeNote}}</span></h2>
         </div>
         <p class="quick-file-note">
           Continue as <strong>{{ knownContact?.fullName }}</strong> — we already have your contact details on file.
         </p>
+        <fieldset class="contact-preference">
+          <legend>Preferred contact method</legend>
+          <div class="contact-options">
+            <label class="contact-choice whatsapp"
+              [class.selected]="ctaForm.controls.contactMethod.value === 'MESSAGE'">
+              <input type="radio" formControlName="contactMethod" value="MESSAGE">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i>
+              <span>WhatsApp</span>
+            </label>
+            <label class="contact-choice call"
+              [class.selected]="ctaForm.controls.contactMethod.value === 'CALL'">
+              <input type="radio" formControlName="contactMethod" value="CALL">
+              <i class="fas fa-phone-alt" aria-hidden="true"></i>
+              <span>Call</span>
+            </label>
+          </div>
+        </fieldset>
         <button type="button" class="cta-submit-btn" [disabled]="isSubmitting" (click)="submit()">
           <span>{{isSubmitting ? 'Please wait…' : cta}}</span>
         </button>
@@ -19,7 +36,7 @@
     <form (ngSubmit)="submit()" [formGroup]="ctaForm" class="cta-form"
       [ngClass]="{'submitted': onClickValidation}" id="ctaForm" #ctaFormElement>
       <div class="form-heading-section">
-        <h2 class="form-heading">{{heading}}</h2>
+        <h2 class="form-heading">{{heading}}<span *ngIf="feeNote" class="fee-note">{{feeNote}}</span></h2>
       </div>
 
       <div class="form-input-container">
@@ -32,6 +49,7 @@
           [onClickValidation]="onClickValidation"></app-validation-message>
       </div>
 
+      @if (!compact) {
       <div class="form-input-container">
         <div class="input-wrapper">
           <i class="fas fa-envelope input-icon"></i>
@@ -41,16 +59,35 @@
         <app-validation-message [field]="ctaForm.get('email')"
           [onClickValidation]="onClickValidation"></app-validation-message>
       </div>
+      }
 
       <div class="form-input-container">
         <div class="input-wrapper">
           <i class="fas fa-phone input-icon"></i>
-          <input type="phoneNumber" placeholder="Your Phone Number" name="phoneNumber" id="phoneNumber"
+          <input type="tel" inputmode="tel" autocomplete="tel" placeholder="Your WhatsApp Number" name="phoneNumber" id="phoneNumber"
             formControlName="phoneNumber" class="form-input">
         </div>
         <app-validation-message [field]="ctaForm.get('phoneNumber')"
           [onClickValidation]="onClickValidation"></app-validation-message>
       </div>
+
+      <fieldset class="contact-preference">
+        <legend>Preferred contact method</legend>
+        <div class="contact-options">
+          <label class="contact-choice whatsapp"
+            [class.selected]="ctaForm.controls.contactMethod.value === 'MESSAGE'">
+            <input type="radio" formControlName="contactMethod" value="MESSAGE">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            <span>WhatsApp</span>
+          </label>
+          <label class="contact-choice call"
+            [class.selected]="ctaForm.controls.contactMethod.value === 'CALL'">
+            <input type="radio" formControlName="contactMethod" value="CALL">
+            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+            <span>Call</span>
+          </label>
+        </div>
+      </fieldset>
 
       @if (showTextArea) {
         <div class="form-input-container">
@@ -64,6 +101,9 @@
       <button type="submit" class="cta-submit-btn" [disabled]="isSubmitting">
         <span>{{cta}}</span>
       </button>
+      @if (compact) {
+        <p class="form-consent">By continuing, you agree to receive a call or WhatsApp about your trademark query.</p>
+      }
     </form>
     }
   </div>

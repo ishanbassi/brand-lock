@@ -5,6 +5,9 @@ import dayjs from 'dayjs';
 import { Deadline } from '../../../models/agent.model';
 import { AgentDataService, OVERDUE_RENEWAL_LOOKBACK_DAYS } from '../../shared/services/agent-data.service';
 import { IconComponent } from '../ui/icon.component';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { saveBlob } from '../ui/save-blob';
+import { printReport } from '../ui/print-report';
 
 /** One cell of the month grid. */
 interface MonthCell {
@@ -133,19 +136,22 @@ const SCOPES: Record<DeadlineScope, ScopeConfig> = {
 @Component({
   selector: 'app-agent-deadlines',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconComponent, ExportMenuComponent],
   templateUrl: './agent-deadlines.component.html',
   styleUrl: './agent-deadlines.component.scss',
 })
 export class AgentDeadlinesComponent implements OnInit {
   private readonly agentData = inject(AgentDataService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   /**
    * The calendar in full, or one worklist cut from it. Read once: navigating between scopes goes
    * through different route configs, so Angular builds a fresh component rather than reusing this one.
    */
-  readonly scope: ScopeConfig = SCOPES[(inject(ActivatedRoute).snapshot.data['scope'] as DeadlineScope) ?? 'all'] ?? SCOPES.all;
+  readonly scopeKey = (this.route.snapshot.data['scope'] as DeadlineScope) ?? 'all';
+  readonly scope: ScopeConfig = SCOPES[this.scopeKey] ?? SCOPES.all;
+  readonly isUpcomingRenewals = this.scopeKey === 'renewals-upcoming';
 
   readonly deadlines = signal<Deadline[]>([]);
   readonly loading = signal(true);
@@ -159,6 +165,14 @@ export class AgentDeadlinesComponent implements OnInit {
    */
   readonly ranges = this.scope.ranges;
   readonly activeRange = signal(this.ranges[0]);
+  /** Explicit date filters are available only where renewal due dates are the worklist's subject. */
+  readonly customRenewalRange = signal<{ from: string; to: string } | null>(null);
+  customRenewalFrom = '';
+  customRenewalTo = '';
+  readonly renewalRangeError = signal('');
+  readonly today = dayjs().format('YYYY-MM-DD');
+  readonly exporting = signal<ExportFormat | null>(null);
+  readonly printing = signal(false);
 
   readonly showDone = signal(false);
 
@@ -320,9 +334,10 @@ export class AgentDeadlinesComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
+    const customRange = this.customRenewalRange();
     const range = this.activeRange();
-    const from = this.iso(-range.back);
-    const to = this.iso(range.forward);
+    const from = customRange?.from ?? this.iso(-range.back);
+    const to = customRange?.to ?? this.iso(range.forward);
 
     this.agentData.getDeadlines(from, to).subscribe({
       next: rows => {
@@ -336,14 +351,88 @@ export class AgentDeadlinesComponent implements OnInit {
     });
   }
 
+  export(format: ExportFormat): void {
+    if (!this.isUpcomingRenewals || this.exporting() || this.printing()) return;
+    const customRange = this.customRenewalRange();
+    const range = this.activeRange();
+    const from = customRange?.from ?? this.iso(-range.back);
+    const to = customRange?.to ?? this.iso(range.forward);
+    if (format === 'pdf') {
+      this.printing.set(true);
+      printReport(this.printHtml(from, to)).catch(() => this.error.set('Could not prepare the print view. Please try again.'))
+        .finally(() => this.printing.set(false));
+      return;
+    }
+    this.exporting.set(format);
+    this.agentData.downloadUpcomingRenewalsExcel(from, to, this.showDone()).subscribe({
+      next: blob => {
+        saveBlob(blob, `upcoming-renewals-${from}-to-${to}.xlsx`);
+        this.exporting.set(null);
+      },
+      error: () => {
+        this.error.set('Could not prepare the renewal download. Please try again.');
+        this.exporting.set(null);
+      },
+    });
+  }
+
+  private printHtml(from: string, to: string): string {
+    const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+    const rows = this.visible().map(item => `<tr><td><strong>${esc(item.trademarkName)}</strong></td><td>${esc(item.applicationNo)}</td><td>${esc(item.tmClass)}</td><td>${esc(item.dueDate)}</td><td>${esc(item.daysUntilDue)}</td><td>${esc(item.status?.replace('_', ' '))}</td></tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>Upcoming renewals</title><style>
+      @page{size:A4 landscape;margin:14mm 12mm}*{box-sizing:border-box}body{font:10pt Arial,sans-serif;color:#202a36;margin:0}
+      header{border-bottom:3px solid #1f4e79;padding-bottom:10px;margin-bottom:18px}h1{font-size:20pt;margin:0 0 4px}p{margin:0;color:#596575}
+      table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:#1f4e79;color:#fff;text-align:left;padding:7px;font-size:8pt}td{padding:7px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere}tr{break-inside:avoid;page-break-inside:avoid}
+      footer{margin-top:12px;border-top:1px solid #d8dde4;padding-top:7px;color:#596575;font-size:8pt}</style></head><body><header><h1>Upcoming Renewals</h1><p>Renewal due from ${esc(from)} to ${esc(to)} · ${this.visible().length} shown</p></header>
+      <table><thead><tr><th>Trademark</th><th>Application</th><th>Class</th><th>Renewal due</th><th>Days left</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}. Renewal dates should be verified against the Registry before relying on them.</footer></body></html>`;
+  }
+
   selectRange(key: string): void {
     const range = this.ranges.find(r => r.key === key);
-    if (range && range !== this.activeRange()) {
-      this.activeRange.set(range);
-      // A narrower range can leave the month on screen outside the new bounds.
-      this.clampMonthCursor();
-      this.load();
+    if (!range) return;
+    const restoringPreset = this.customRenewalRange() !== null;
+    this.customRenewalRange.set(null);
+    this.customRenewalFrom = '';
+    this.customRenewalTo = '';
+    this.renewalRangeError.set('');
+    if (range === this.activeRange() && !restoringPreset) return;
+    this.activeRange.set(range);
+    // A narrower range can leave the month on screen outside the new bounds.
+    this.clampMonthCursor();
+    this.load();
+  }
+
+  setRenewalDate(boundary: 'from' | 'to', value: string): void {
+    if (boundary === 'from') this.customRenewalFrom = value;
+    else this.customRenewalTo = value;
+    this.renewalRangeError.set('');
+  }
+
+  applyRenewalDateRange(): void {
+    const from = this.customRenewalFrom;
+    const to = this.customRenewalTo;
+    if (!from || !to) {
+      this.renewalRangeError.set('Choose both a start and end date.');
+      return;
     }
+    if (from > to) {
+      this.renewalRangeError.set('The end date must be on or after the start date.');
+      return;
+    }
+    if (from < this.today) {
+      this.renewalRangeError.set('Upcoming renewals begin today. Choose a later start date.');
+      return;
+    }
+    this.customRenewalRange.set({ from, to });
+    this.load();
+  }
+
+  clearRenewalDateRange(): void {
+    this.customRenewalFrom = '';
+    this.customRenewalTo = '';
+    this.customRenewalRange.set(null);
+    this.renewalRangeError.set('');
+    this.load();
   }
 
   toggleDone(): void {

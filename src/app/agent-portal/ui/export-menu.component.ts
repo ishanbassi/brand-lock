@@ -34,7 +34,7 @@ export type ExportFormat = 'excel' | 'pdf';
       </button>
 
       @if (open()) {
-        <div class="export-panel" role="menu">
+        <div class="export-panel" [class.export-panel--up]="openUp" role="menu">
           <button type="button" role="menuitem" class="export-option" (click)="choose('excel')">
             <span class="format-badge format-xlsx" aria-hidden="true">XLSX</span>
             <span class="option-text">
@@ -90,6 +90,7 @@ export type ExportFormat = 'excel' | 'pdf';
         border-radius: 10px;
         box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
       }
+      .export-panel--up { top: auto; bottom: calc(100% + 6px); }
 
       .export-option {
         display: flex;
@@ -131,6 +132,8 @@ export class ExportMenuComponent {
   /** Button text at rest. */
   @Input() label = 'Download';
   @Input() disabled = false;
+  /** Open above the trigger when it lives in a fixed bottom action bar. */
+  @Input() openUp = false;
   /** The format the host is currently fetching, or null when idle. */
   @Input() busy: ExportFormat | null = null;
   @Output() readonly selected = new EventEmitter<ExportFormat>();

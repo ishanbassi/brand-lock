@@ -316,9 +316,6 @@ $content-bg: var(--ap-paper);
   border-top: 0;
   border-radius: 12px 12px 0 0;
   background: #f2f3ff;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .agent-pill {
@@ -329,6 +326,12 @@ $content-bg: var(--ap-paper);
 
   &.compact { justify-content: center; }
 }
+
+// The 68px rail cannot hold the avatar and sign-out affordance side by side.
+// Keep them in the same footer section, but stack the two touch targets without clipping either.
+.portal-layout.collapsed .sidebar-footer { padding: 0.5rem; }
+.portal-layout.collapsed .agent-pill.compact { flex-direction: column; gap: 0.4rem; padding: 0.35rem 0; }
+.portal-layout.collapsed .logout-btn { margin-left: 0; }
 
 .agent-avatar {
   width: 36px;
@@ -366,21 +369,22 @@ $content-bg: var(--ap-paper);
 }
 
 .logout-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.6rem 0.75rem;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-left: auto;
+  padding: 0;
   background: none;
   border: none;
   color: $text-muted;
-  font-size: 0.875rem;
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
 
-  .nav-icon { width: 22px; display: inline-flex; justify-content: center; flex-shrink: 0; }
+  .nav-icon { display: inline-flex; justify-content: center; flex-shrink: 0; }
 
   &:hover {
     background: #ffdad6;

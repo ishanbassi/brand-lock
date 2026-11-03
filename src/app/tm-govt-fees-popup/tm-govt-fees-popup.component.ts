@@ -11,7 +11,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class TmGovtFeesPopupComponent {
 
-  fees = 1999;
+  fees = 4999;
   selectedTab = 'individuals';
   govtFees = 0;
   totalFees = 0;

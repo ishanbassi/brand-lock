@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
@@ -6,7 +6,7 @@ import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentPortfolioClaimComponent } from '../agent-portfolio-claim/agent-portfolio-claim.component';
@@ -45,6 +45,26 @@ interface SortableColumn {
   styleUrl: './agent-portfolio.component.scss',
 })
 export class AgentPortfolioComponent implements OnInit, OnDestroy {
+  private portfolioTableElement?: HTMLElement;
+  private portfolioHorizontalScrollElement?: HTMLElement;
+  private portfolioHorizontalContentElement?: HTMLElement;
+  private horizontalTrackResizeObserver?: ResizeObserver;
+
+  @ViewChild('portfolioTable') set portfolioTableRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioTableElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('portfolioHorizontalScroll') set portfolioHorizontalScrollRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioHorizontalScrollElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
+  @ViewChild('portfolioHorizontalContent') set portfolioHorizontalContentRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.portfolioHorizontalContentElement = ref?.nativeElement;
+    this.connectHorizontalTrackObserver();
+  }
+
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   loading = signal(true);
   error = signal('');
@@ -89,9 +109,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   /**
    * Sorting is done by the server across the whole filtered set — sorting the twenty rows on screen
    * would put page one's "A" marks first and leave every other "A" on later pages. Null keeps the
-   * default order, most recently added first.
+   * default order, alphabetically by trademark name.
    */
-  sortField: PortfolioSortField | null = null;
+  sortField: PortfolioSortField = 'name';
   sortDir: 'asc' | 'desc' = 'asc';
   readonly columns: SortableColumn[] = [
     { field: 'name', label: 'Trademark', firstDir: 'asc' },
@@ -101,6 +121,17 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     { field: 'trademarkStatus', label: 'Status', firstDir: 'asc' },
     { field: 'applicationDate', label: 'Filing Date', firstDir: 'desc' },
     { field: 'renewalDate', label: 'Renewal', firstDir: 'asc' },
+  ];
+  /** Core portfolio data is part of every view and cannot be hidden from the grid. */
+  readonly mandatoryColumns = [
+    { field: 'name', label: 'Trademark' },
+    { field: 'applicationNo', label: 'App No.' },
+    { field: 'tmClass', label: 'Class' },
+    { field: 'proprietorName', label: 'Proprietor' },
+    { field: 'trademarkStatus', label: 'Status' },
+    { field: 'applicationDate', label: 'Filing date' },
+    { field: 'renewalDate', label: 'Renewal' },
+    { field: 'type', label: 'Type' },
   ];
 
   /**
@@ -182,9 +213,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   constructor(
     private readonly agentDataService: AgentDataService,
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) {}
 
   ngOnDestroy(): void {
+    this.horizontalTrackResizeObserver?.disconnect();
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
@@ -193,6 +226,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     try { this.columnWidths = JSON.parse(localStorage.getItem('agent-portfolio-column-widths') || '{}'); } catch { this.columnWidths = {}; }
+    this.restoreSortFromUrl();
     this.agentDataService.getProfile().subscribe({
       next: profile => {
         const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
@@ -208,8 +242,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.loadPendingImports();
     this.loadFilterOptions();
     this.loadCustomFields();
-    // Dashboard's empty-state action comes here rather than the separate full-page form: the
-    // agent lands directly in the portfolio grid with one blank row ready to fill.
+    // Dashboard's empty-state action opens the same complete manual-entry dialog as the portfolio.
     if (this.route.snapshot.queryParamMap.get('new') === '1') {
       this.openDraft();
     }
@@ -245,7 +278,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.draft.set({ name: '', trademarkStatus: 'Not yet filed' });
     this.draftCustomValues = {};
     this.draftError.set('');
-    // The first editable cell is added to the DOM by Angular after this event.
+    // The dialog's first field is added to the DOM by Angular after this event.
     setTimeout(() => document.getElementById('new-trademark-name')?.focus());
   }
 
@@ -368,6 +401,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     const draft = this.draft();
     if (!draft || this.savingDraft()) return;
     if (!draft.name?.trim() && !draft.applicationNo) {
+      this.draftError.set('Enter a trademark name or application number before saving.');
       return;
     }
     this.draftError.set('');
@@ -380,7 +414,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.savingDraft.set(false);
         this.draft.set(null);
         this.draftCustomValues = {};
-        // Do not reload a large table on every inline auto-save. A new record belongs at the top
+        // Do not reload a large table after a new entry. A new record belongs at the top
         // only in the default listing; a filtered or sorted view remains undisturbed.
         if (this.isDefaultListing()) {
           this.trademarks.update(rows => [saved, ...rows].slice(0, this.pageSize));
@@ -483,6 +517,53 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
     table.scrollBy({ left: movement[0], top: movement[1], behavior: 'auto' });
+  }
+
+  /** Sizes the compact track to exactly the table's usable horizontal range. */
+  private connectHorizontalTrackObserver(): void {
+    this.horizontalTrackResizeObserver?.disconnect();
+    const table = this.portfolioTableElement;
+    const track = this.portfolioHorizontalScrollElement;
+    const content = this.portfolioHorizontalContentElement;
+    if (!table || !track || !content) return;
+
+    const update = () => {
+      const tableRange = Math.max(0, table.scrollWidth - table.clientWidth);
+      content.style.width = `${track.clientWidth + tableRange}px`;
+      if (tableRange > 0) track.scrollLeft = table.scrollLeft;
+    };
+
+    if (typeof ResizeObserver === 'undefined') { update(); return; }
+    this.horizontalTrackResizeObserver = new ResizeObserver(update);
+    this.horizontalTrackResizeObserver.observe(table);
+    this.horizontalTrackResizeObserver.observe(track);
+    update();
+  }
+
+  /**
+   * Keeps the compact horizontal track proportionate to the table viewport. The track is shorter
+   * than the table, so copying raw scrollLeft would leave a dead section after the table ended.
+   */
+  syncHorizontalScroll(source: HTMLElement, target: HTMLElement): void {
+    const sourceRange = source.scrollWidth - source.clientWidth;
+    const targetRange = target.scrollWidth - target.clientWidth;
+    if (sourceRange <= 0 || targetRange <= 0) return;
+
+    const next = (source.scrollLeft / sourceRange) * targetRange;
+    if (Math.abs(target.scrollLeft - next) > 0.5) target.scrollLeft = next;
+  }
+
+  /** The compact track is visual only; retain native touchpad and Shift+wheel horizontal panning. */
+  panHorizontalWheel(event: WheelEvent, table: HTMLElement): void {
+    const delta = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+    if (!delta || table.scrollWidth <= table.clientWidth) return;
+    // Consume the gesture even at either edge. Otherwise Chromium can treat a two-finger swipe
+    // that cannot move the table as a browser Back/Forward navigation gesture.
+    if (event.cancelable) event.preventDefault();
+    event.stopPropagation();
+    const next = Math.max(0, Math.min(table.scrollWidth - table.clientWidth, table.scrollLeft + delta));
+    if (next === table.scrollLeft) return;
+    table.scrollLeft = next;
   }
 
   /**
@@ -649,6 +730,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     return query ? this.customFields().filter(field => field.label.toLowerCase().includes(query)) : this.customFields();
   }
 
+  get filteredMandatoryColumns(): { field: string; label: string }[] {
+    const query = this.fieldSearch.trim().toLowerCase();
+    return query ? this.mandatoryColumns.filter(column => column.label.toLowerCase().includes(query)) : this.mandatoryColumns;
+  }
+
   private loadFilterOptions(): void {
     this.agentDataService.getPortfolioFilterOptions().subscribe({
       // Losing the options only costs the dropdowns; the table itself must still render.
@@ -735,7 +821,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       searchBy: this.searchBy,
       status: this.filterStatus,
       tmClass: this.filterClass === '' ? null : Number(this.filterClass),
-      sort: this.sortField ? { field: this.sortField, dir: this.sortDir } : null,
+      sort: { field: this.sortField, dir: this.sortDir },
     };
   }
 
@@ -817,7 +903,28 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       this.sortDir = column.firstDir;
     }
     this.page = 0;
+    this.persistSortToUrl();
     this.load();
+  }
+
+  /** Restore a shared or refreshed portfolio view without accepting an arbitrary API sort field. */
+  private restoreSortFromUrl(): void {
+    const field = this.route.snapshot.queryParamMap.get('sort');
+    const direction = this.route.snapshot.queryParamMap.get('direction');
+    if (field && (this.columns.some(column => column.field === field) || /^custom:[a-z0-9_-]+$/i.test(field))) {
+      this.sortField = field as PortfolioSortField;
+    }
+    if (direction === 'asc' || direction === 'desc') this.sortDir = direction;
+  }
+
+  /** Sorting changes are navigation state: copying or refreshing the URL keeps the same order. */
+  private persistSortToUrl(): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { sort: this.sortField, direction: this.sortDir },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   ariaSort(field: PortfolioSortField): 'ascending' | 'descending' | 'none' {
@@ -950,13 +1057,13 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     const pages: number[] = [];
     const total = this.totalPages;
     const cur = this.page;
-    if (total <= 7) {
+    if (total <= 11) {
       return Array.from({ length: total }, (_, i) => i);
     }
     pages.push(0);
-    if (cur > 2) pages.push(-1);
-    for (let p = Math.max(1, cur - 1); p <= Math.min(total - 2, cur + 1); p++) pages.push(p);
-    if (cur < total - 3) pages.push(-1);
+    if (cur > 4) pages.push(-1);
+    for (let p = Math.max(1, cur - 3); p <= Math.min(total - 2, cur + 3); p++) pages.push(p);
+    if (cur < total - 5) pages.push(-1);
     pages.push(total - 1);
     return pages;
   }

@@ -48,6 +48,125 @@ $white: #ffffff;
   margin: 0;
 }
 
+.trends-action,
+.trends-lead {
+  align-items: center;
+  background: $gray-50;
+  border-top: 1px solid $gray-200;
+  border-bottom: 1px solid $gray-200;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 0 0 1.5rem;
+  padding: 1.5rem;
+
+  h2 {
+    color: $gray-800;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    margin: 0 0 0.4rem;
+  }
+
+  p {
+    color: $gray-600;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 65ch;
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+}
+
+.trends-action__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.trends-action__primary,
+.trends-action__secondary {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  text-decoration: none;
+}
+
+.trends-action__primary {
+  background: $accent;
+  color: $white;
+
+  &:hover,
+  &:focus-visible {
+    background: darken($accent, 7%);
+  }
+}
+
+.trends-action__secondary {
+  color: $gray-800;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.trends-lead {
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  margin-bottom: 1.25rem;
+
+  app-lead-form,
+  .trends-lead__loading {
+    min-width: 0;
+  }
+}
+
+.trends-lead__loading {
+  color: $gray-600;
+  min-height: 120px;
+  padding: 1rem 0;
+}
+
+.trends-mobile-cta {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .trends-page {
+    padding-bottom: 5.5rem;
+  }
+
+  .trends-mobile-cta {
+    align-items: center;
+    background: $accent;
+    bottom: 0.75rem;
+    box-shadow: 0 8px 24px rgba(14, 165, 233, 0.28);
+    color: $white;
+    display: flex;
+    font-size: 0.9rem;
+    font-weight: 700;
+    justify-content: center;
+    left: 1rem;
+    min-height: 48px;
+    padding: 0.7rem 1rem;
+    position: fixed;
+    right: 1rem;
+    text-decoration: none;
+    z-index: 20;
+  }
+}
+
 // ── STATS GRID ──────────────────────────────────────
 .stats-grid {
   display: grid;

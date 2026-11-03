@@ -50,8 +50,8 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
       { question: 'Can I get MSME registration for a proprietorship?', answer: 'Yes. Proprietorships, partnerships, LLPs, private limited companies, and one-person companies can all register as MSMEs under Udyam.' },
     ],
     relatedServices: [
-      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹1,999 + ₹4,500 Govt. Fee (with MSME discount)' },
-      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹1,499 — valid in government tenders' },
+      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹4,999 + ₹4,500 Govt. Fee (with MSME discount)' },
+      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹5,999 — valid in government tenders' },
       { route: '/iec-registration', icon: 'fas fa-plane-departure', title: 'IEC (Import Export Code)', price: '₹1,499 — required for import/export' },
     ],
   },
@@ -86,9 +86,9 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
       { question: 'Can I have multiple IEC codes for different businesses?', answer: 'No. One PAN is linked to one IEC. If you have multiple businesses under different PANs, each gets a separate IEC.' },
     ],
     relatedServices: [
-      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹1,999 — protect your brand before exporting' },
+      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹4,999 — protect your brand before exporting' },
       { route: '/msme-registration', icon: 'fas fa-building', title: 'MSME Registration', price: '₹499 — unlock export incentives and subsidies' },
-      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹1,499 — required by many international buyers' },
+      { route: '/iso/iso-9001-2015', icon: 'fas fa-certificate', title: 'ISO 9001 Certification', price: '₹5,999 — required by many international buyers' },
     ],
   },
 
@@ -96,7 +96,7 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
     slug: 'iso-9001',
     name: 'ISO 9001:2015 Certification',
     shortName: 'ISO 9001 Certification',
-    price: '₹1,499',
+    price: '₹5,999',
     priceNote: 'Valid for 3 years · Government tenders accepted',
     tagline: 'ISO 9001:2015 Quality Management System certification — required for most government tenders and international buyers.',
     leadComment: 'ISO 9001:2015',
@@ -123,7 +123,7 @@ export const SERVICE_DATA: Record<ServiceSlug, ServiceConfig> = {
     ],
     relatedServices: [
       { route: '/iso', icon: 'fas fa-layer-group', title: 'All ISO Standards', price: 'ISO 14001, 45001, 22000, 27001 and more' },
-      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹1,999 — protect your brand alongside ISO' },
+      { route: '/trademark', icon: 'fas fa-trademark', title: 'Trademark Registration', price: '₹4,999 — protect your brand alongside ISO' },
       { route: '/msme-registration', icon: 'fas fa-building', title: 'MSME Registration', price: '₹499 — get ISO subsidy reimbursement' },
     ],
   },

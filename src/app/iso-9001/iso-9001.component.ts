@@ -65,11 +65,11 @@ export class Iso9001Component implements OnInit, OnDestroy {
   ngOnInit() {
     
 
-    this.title.setTitle('ISO 9001:2015 Certification in Ludhiana, Punjab — ₹1,499 | Trademarx');
-    this.meta.updateTag({ name: 'description', content: 'ISO 9001:2015 certification for Indian businesses from ₹1,499. Fast processing, government-recognised, valid in tenders. IP India authorised agents in Ludhiana, Punjab.' });
+    this.title.setTitle('ISO 9001:2015 Certification in Ludhiana, Punjab — ₹5,999 | Trademarx');
+    this.meta.updateTag({ name: 'description', content: 'ISO 9001:2015 certification for Indian businesses from ₹5,999. Fast processing, government-recognised, valid in tenders. IP India authorised agents in Ludhiana, Punjab.' });
     this.meta.updateTag({ name: 'keywords', content: 'iso 9001 certification, iso certification ludhiana, iso certification punjab, iso 9001:2015 india, quality management system' });
-    this.meta.updateTag({ property: 'og:title', content: 'ISO 9001:2015 Certification in Ludhiana, Punjab — ₹1,499 | Trademarx' });
-    this.meta.updateTag({ property: 'og:description', content: 'Get ISO 9001:2015 certified from ₹1,499. Valid in government tenders. Fast processing by authorised agents.' });
+    this.meta.updateTag({ property: 'og:title', content: 'ISO 9001:2015 Certification in Ludhiana, Punjab — ₹5,999 | Trademarx' });
+    this.meta.updateTag({ property: 'og:description', content: 'Get ISO 9001:2015 certified from ₹5,999. Valid in government tenders. Fast processing by authorised agents.' });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: 'https://trademarx.in/iso/iso-9001-2015' });
     this.meta.updateTag({ property: 'og:image', content: 'https://trademarx.in/assets/images/trademarx.png' });
@@ -95,7 +95,7 @@ export class Iso9001Component implements OnInit, OnDestroy {
         ],
         'offers': {
           '@type': 'Offer',
-          'price': '1499',
+          'price': '5999',
           'priceCurrency': 'INR',
           'description': 'Professional fee. All-inclusive, no hidden charges.',
           'url': 'https://trademarx.in/iso/iso-9001-2015'

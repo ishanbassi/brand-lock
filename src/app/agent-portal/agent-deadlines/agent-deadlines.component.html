@@ -4,6 +4,9 @@
       <h1 class="ap-title">{{ scope.title }}</h1>
       <p class="ap-subtitle">{{ scope.subtitle }}</p>
     </div>
+    @if (isUpcomingRenewals) {
+      <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" [disabled]="loading()" (selected)="export($event)" />
+    }
   </header>
 
   <!-- Counts first, because they answer the question the agent arrived with. Only rendered once
@@ -47,6 +50,27 @@
           </button>
         }
       </div>
+    }
+
+    @if (isUpcomingRenewals) {
+      <form class="renewal-date-filter" (submit)="$event.preventDefault(); applyRenewalDateRange()" aria-label="Filter renewals by due date">
+        <span class="renewal-date-filter__label">Renewal due</span>
+        <label>
+          <span>From</span>
+          <input type="date" [value]="customRenewalFrom" [min]="today" (change)="setRenewalDate('from', $any($event.target).value)" />
+        </label>
+        <label>
+          <span>To</span>
+          <input type="date" [value]="customRenewalTo" [min]="customRenewalFrom || today" (change)="setRenewalDate('to', $any($event.target).value)" />
+        </label>
+        <button type="submit" class="renewal-date-filter__apply">Apply</button>
+        @if (customRenewalRange()) {
+          <button type="button" class="renewal-date-filter__clear" (click)="clearRenewalDateRange()">Clear</button>
+        }
+        @if (renewalRangeError()) {
+          <p class="renewal-date-filter__error" role="alert">{{ renewalRangeError() }}</p>
+        }
+      </form>
     }
 
     @if (view() === 'month') {
@@ -102,7 +126,7 @@
     <p class="visually-hidden" role="status">Loading deadlines</p>
   } @else if (groups().length === 0) {
     <div class="ap-panel ap-empty">
-      <p>{{ scope.empty }}</p>
+      <p>{{ customRenewalRange() ? 'No renewals fall due in the selected period.' : scope.empty }}</p>
       @if (scope.emptyAction && activeRange().key !== scope.emptyAction.rangeKey) {
         <button type="button" class="ap-btn ap-btn--quiet" (click)="selectRange(scope.emptyAction.rangeKey)">
           {{ scope.emptyAction.label }}

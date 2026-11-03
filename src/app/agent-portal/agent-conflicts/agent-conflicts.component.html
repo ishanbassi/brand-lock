@@ -106,7 +106,7 @@
                   @if (isNewFiling(c)) {
                     <span class="src-badge src-new">New filing</span>
                   } @else {
-                    <a class="src-badge src-journal" [routerLink]="['/agent-portal/watch/journal']" [queryParams]="{ journalNo: c.journalNo }">
+                    <a class="src-badge src-journal" [routerLink]="['/agent-portal/watch/journal', c.journalNo]" [queryParams]="{ run: 1 }">
                       Journal {{ c.journalNo }}
                     </a>
                   }
