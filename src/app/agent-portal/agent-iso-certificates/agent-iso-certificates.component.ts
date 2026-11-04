@@ -10,7 +10,7 @@ import { createXlsx } from '../ui/create-xlsx';
 import { printReport } from '../ui/print-report';
 import { saveBlob } from '../ui/save-blob';
 
-type SortField = 'isoType' | 'partyName' | 'reference' | 'certificateNumber' | 'initialRegistrationDate' | 'expiryDate';
+type SortField = keyof IsoCertificate | string;
 interface PartySuggestion { name: string; address?: string; source: 'Portfolio proprietor' | 'ISO certificate'; }
 
 const ISO_TYPES = [
@@ -57,6 +57,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   readonly customFields = signal<IsoCustomField[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly editorErrors = signal<Record<string, string>>({});
   readonly editor = signal<Partial<IsoCertificate> | null>(null);
   readonly saving = signal(false);
   readonly showColumns = signal(false);
@@ -93,19 +94,16 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private partyTimer: ReturnType<typeof setTimeout> | null = null;
   readonly standardColumns: { field: SortField; label: string }[] = [
-    { field: 'partyName', label: 'Party name' }, { field: 'isoType', label: 'ISO type' },
-    { field: 'reference', label: 'Reference' }, { field: 'certificateNumber', label: 'Certificate no.' },
-    { field: 'initialRegistrationDate', label: 'Initial registration' }, { field: 'expiryDate', label: 'Expiry' },
+    { field: 'partyName', label: 'Firm name' }, { field: 'isoType', label: 'ISO type' }, { field: 'address', label: 'Address' }, { field: 'city', label: 'City' },
+    { field: 'initialRegistrationDate', label: 'Date of certification' }, { field: 'expiryDate', label: 'Date of expiry' },
+    { field: 'firstSurveillanceDue', label: '1st surveillance' }, { field: 'secondSurveillanceDue', label: '2nd surveillance' },
+    { field: 'certificateNumber', label: 'Certificate no.' }, { field: 'certifyingBody', label: 'Certification body' },
+    { field: 'consultant', label: 'Consultant' }, { field: 'phone', label: 'Phone' }, { field: 'email', label: 'Email' },
+    { field: 'gst', label: 'GST' }, { field: 'totalPayment', label: 'Total payment' }, { field: 'paymentReceived', label: 'Received' },
+    { field: 'balance', label: 'Balance' }, { field: 'remarks', label: 'Remarks' }, { field: 'onlineStatus', label: 'Online status' },
   ];
   /** These certificate details are structural to the portfolio and always remain visible. */
-  readonly mandatoryColumns = [
-    { field: 'partyName', label: 'Party name' }, { field: 'isoType', label: 'ISO type' },
-    { field: 'reference', label: 'Reference' }, { field: 'certificateNumber', label: 'Certificate no.' },
-    { field: 'initialRegistrationDate', label: 'Initial registration' }, { field: 'expiryDate', label: 'Expiry' },
-    { field: 'address', label: 'Address' }, { field: 'certifyingBody', label: 'Certifying body' },
-    { field: 'firstSurveillanceDue', label: '1st surveillance due' },
-    { field: 'secondSurveillanceDue', label: '2nd surveillance due' },
-  ];
+  readonly mandatoryColumns = this.standardColumns;
 
   constructor(private readonly data: AgentDataService) {}
 
@@ -143,11 +141,11 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   sortBy(field: string): void { this.direction = this.sort === field ? (this.direction === 'asc' ? 'desc' : 'asc') : 'asc'; this.sort = field; this.load(); }
   sortIcon(field: string): 'sort' | 'sort-asc' | 'sort-desc' { return this.sort !== field ? 'sort' : this.direction === 'asc' ? 'sort-asc' : 'sort-desc'; }
   columnWidth(key: string): number {
-    const defaults: Record<string, number> = { isoType: 210, partyName: 230, reference: 165, certificateNumber: 180, initialRegistrationDate: 160, expiryDate: 145, address: 230, goodsServices: 250, certifyingBody: 210, paymentReceived: 165, remarks: 220, firstSurveillanceDue: 165, secondSurveillanceDue: 165, actions: 82 };
+    const defaults: Record<string, number> = { partyName: 230, isoType: 210, address: 230, city: 150, initialRegistrationDate: 175, expiryDate: 155, firstSurveillanceDue: 165, secondSurveillanceDue: 165, certificateNumber: 180, certifyingBody: 210, consultant: 180, phone: 145, email: 220, gst: 160, totalPayment: 140, paymentReceived: 140, balance: 140, remarks: 220, onlineStatus: 140, actions: 76 };
     return this.columnWidths[key] || defaults[key] || 190;
   }
   get tableWidth(): number {
-    const fixed = ['isoType', 'partyName', 'reference', 'certificateNumber', 'initialRegistrationDate', 'expiryDate', 'address', 'certifyingBody', 'firstSurveillanceDue', 'secondSurveillanceDue', 'actions'];
+    const fixed = [...this.standardColumns.map(column => column.field), 'actions'];
     return fixed.reduce((total, key) => total + this.columnWidth(key), 0) + this.shownCustomFields.reduce((total, field) => total + this.columnWidth(`custom:${field.fieldKey}`), 0);
   }
   startResize(event: PointerEvent, key: string): void {
@@ -216,17 +214,17 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     table.scrollLeft = next;
   }
 
-  openAdd(): void { this.clearDocumentPreviews(); this.editor.set({ isoType: '', partyName: '', customFields: {} }); this.customIsoType = ''; this.documents.set([]); this.queuedDocuments.set([]); this.partySuggestions.set([]); this.error.set(''); }
+  openAdd(): void { this.clearDocumentPreviews(); this.editor.set({ isoType: '', partyName: '', onlineStatus: false, customFields: {} }); this.customIsoType = ''; this.documents.set([]); this.queuedDocuments.set([]); this.partySuggestions.set([]); this.editorErrors.set({}); this.error.set(''); }
   openEdit(row: IsoCertificate): void {
     this.editor.set({ ...row, customFields: { ...(row.customFields ?? {}) } }); this.customIsoType = ISO_TYPES.includes(row.isoType ?? '') ? '' : row.isoType ?? '';
     if (this.customIsoType) this.editor.update(value => value ? { ...value, isoType: 'OTHER' } : value);
-    this.queuedDocuments.set([]); this.partySuggestions.set([]); this.loadDocuments(row.id); this.error.set('');
+    this.queuedDocuments.set([]); this.partySuggestions.set([]); this.loadDocuments(row.id); this.editorErrors.set({}); this.error.set('');
   }
-  closeEditor(): void { if (!this.saving()) { this.clearDocumentPreviews(); this.editor.set(null); this.partySuggestions.set([]); this.queuedDocuments.set([]); } }
+  closeEditor(): void { if (!this.saving()) { this.clearDocumentPreviews(); this.editor.set(null); this.partySuggestions.set([]); this.queuedDocuments.set([]); this.editorErrors.set({}); } }
   save(): void {
     const value = this.editor();
     if (!value || this.saving()) return;
-    if (!value.partyName?.trim() && !value.certificateNumber?.trim()) { this.error.set('Enter a party name or certificate number to save this record.'); return; }
+    if (!this.validateEditor(value)) return;
     this.saving.set(true); this.error.set('');
     const payload = { ...value, isoType: value.isoType === 'OTHER' ? this.customIsoType.trim() : value.isoType };
     const request = value.id ? this.data.updateIsoCertificate(value.id, payload) : this.data.addIsoCertificate(payload);
@@ -285,8 +283,18 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     if (!certificates.length || this.printing() || this.exporting()) return;
     if (format === 'excel') {
       this.exporting.set('excel');
-      const headings = ['Party name', 'ISO type', 'Reference', 'Certificate number', 'Initial registration date', 'Expiry date', 'Address', 'Goods & services', 'Certifying body', 'Payment received', 'Remarks', '1st surveillance due', '2nd surveillance due', ...this.customFields().map(field => field.label)];
-      const rows = certificates.map(certificate => [certificate.partyName, certificate.isoType, certificate.reference, certificate.certificateNumber, certificate.initialRegistrationDate, certificate.expiryDate, certificate.address, certificate.goodsServices, certificate.certifyingBody, certificate.paymentReceived, certificate.remarks, certificate.firstSurveillanceDue, certificate.secondSurveillanceDue, ...this.customFields().map(field => certificate.customFields?.[field.fieldKey] ?? '')]);
+      const headings = [
+        'Firm name', 'Address', 'City', 'Date of certification', 'Date of expiry', '1st surveillance', '2nd surveillance',
+        'Certificate number', 'Certification body', 'Consultant', 'Phone', 'Email', 'GST', 'Total payment', 'Received',
+        'Balance', 'Remarks', 'Online status', 'ISO type', 'Reference', 'Goods & services', ...this.customFields().map(field => field.label),
+      ];
+      const rows = certificates.map(certificate => [
+        certificate.partyName, certificate.address, certificate.city, certificate.initialRegistrationDate, certificate.expiryDate,
+        certificate.firstSurveillanceDue, certificate.secondSurveillanceDue, certificate.certificateNumber, certificate.certifyingBody,
+        certificate.consultant, certificate.phone, certificate.email, certificate.gst, certificate.totalPayment,
+        certificate.paymentReceived, certificate.balance, certificate.remarks, certificate.onlineStatus ? 'Live' : 'Not live',
+        certificate.isoType, certificate.reference, certificate.goodsServices, ...this.customFields().map(field => certificate.customFields?.[field.fieldKey] ?? ''),
+      ]);
       saveBlob(createXlsx([headings, ...rows]), 'iso-certificate-portfolio.xlsx');
       this.exporting.set(null);
       return;
@@ -296,8 +304,17 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   }
   private printHtml(certificates: IsoCertificate[]): string {
     const esc = (value: unknown) => String(value ?? '—').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
-    const rows = certificates.map(certificate => `<tr><td><strong>${esc(certificate.partyName)}</strong></td><td>${esc(certificate.isoType)}</td><td>${esc(certificate.certificateNumber)}</td><td>${esc(certificate.reference)}</td><td>${esc(certificate.certifyingBody)}</td><td>${esc(this.date(certificate.initialRegistrationDate))}</td><td>${esc(this.date(certificate.expiryDate))}</td></tr>`).join('');
-    return `<!doctype html><html><head><meta charset="utf-8"><title>ISO certificate portfolio</title><style>@page{size:A4 landscape;margin:14mm 12mm}*{box-sizing:border-box}body{font:10pt Arial,sans-serif;color:#202a36;margin:0}header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1f4e79;padding-bottom:10px;margin-bottom:18px}h1{font-size:20pt;margin:0 0 4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:#1f4e79;color:white;text-align:left;padding:7px;font-size:8pt}td{padding:7px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere}tr{break-inside:avoid;page-break-inside:avoid}footer{margin-top:12px;border-top:1px solid #d8dde4;padding-top:7px;color:#596575;font-size:8pt}</style></head><body><header><div><h1>ISO Certificate Portfolio</h1><div>${certificates.length} selected certificate${certificates.length === 1 ? '' : 's'}</div></div></header><table><thead><tr><th>Party</th><th>ISO standard</th><th>Certificate no.</th><th>Reference</th><th>Certifying body</th><th>Registered</th><th>Expires</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}.</footer></body></html>`;
+    const rows = certificates.map(certificate => `<tr>
+      <td><strong>${esc(certificate.partyName)}</strong></td><td>${esc(certificate.address)}</td><td>${esc(certificate.city)}</td>
+      <td>${esc(this.date(certificate.initialRegistrationDate))}</td><td>${esc(this.date(certificate.expiryDate))}</td>
+      <td>${esc(this.date(certificate.firstSurveillanceDue))}</td><td>${esc(this.date(certificate.secondSurveillanceDue))}</td>
+      <td>${esc(certificate.certificateNumber)}</td><td>${esc(certificate.certifyingBody)}</td><td>${esc(certificate.consultant)}</td>
+      <td>${esc(certificate.phone)}</td><td>${esc(certificate.email)}</td><td>${esc(certificate.gst)}</td>
+      <td>${esc(certificate.totalPayment)}</td><td>${esc(certificate.paymentReceived)}</td><td>${esc(certificate.balance)}</td>
+      <td>${esc(certificate.remarks)}</td><td>${certificate.onlineStatus ? 'Live' : 'Not live'}</td>
+      <td>${esc(certificate.isoType)}</td><td>${esc(certificate.reference)}</td><td>${esc(certificate.goodsServices)}</td>
+    </tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>ISO certificate portfolio</title><style>@page{size:A3 landscape;margin:11mm 9mm}*{box-sizing:border-box}body{font:8pt Arial,sans-serif;color:#202a36;margin:0}header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1f4e79;padding-bottom:10px;margin-bottom:14px}h1{font-size:18pt;margin:0 0 4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}th{background:#1f4e79;color:white;text-align:left;padding:5px;font-size:6.5pt;line-height:1.2}td{padding:5px;border-bottom:1px solid #d8dde4;vertical-align:top;overflow-wrap:anywhere;font-size:7pt;line-height:1.3}tr{break-inside:avoid;page-break-inside:avoid}footer{margin-top:10px;border-top:1px solid #d8dde4;padding-top:6px;color:#596575;font-size:7pt}</style></head><body><header><div><h1>ISO Certificate Portfolio</h1><div>${certificates.length} selected certificate${certificates.length === 1 ? '' : 's'}</div></div></header><table><thead><tr><th>Firm name</th><th>Address</th><th>City</th><th>Certification</th><th>Expiry</th><th>1st surveillance</th><th>2nd surveillance</th><th>Certificate no.</th><th>Certification body</th><th>Consultant</th><th>Phone</th><th>Email</th><th>GST</th><th>Total payment</th><th>Received</th><th>Balance</th><th>Remarks</th><th>Online</th><th>ISO type</th><th>Reference</th><th>Goods &amp; services</th></tr></thead><tbody>${rows}</tbody></table><footer>Generated ${esc(new Date().toLocaleDateString('en-IN'))}.</footer></body></html>`;
   }
   createColumn(): void {
     const label = this.newColumn.trim(); if (!label || this.creatingColumn()) return;
@@ -324,7 +341,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
     record.customFields ??= {};
     record.customFields[key] = value;
   }
-  recalculateSurveillanceDates(initialRegistrationDate: string): void {
+  onCertificationDateChanged(initialRegistrationDate: string): void {
     const record = this.editor();
     if (!record) return;
     this.editor.update(current => current ? {
@@ -332,8 +349,25 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
       initialRegistrationDate,
       firstSurveillanceDue: this.addYears(initialRegistrationDate, 1),
       secondSurveillanceDue: this.addYears(initialRegistrationDate, 2),
-      expiryDate: this.addYears(initialRegistrationDate, 3),
+      expiryDate: current.expiryDate || this.addYears(initialRegistrationDate, 3),
     } : null);
+  }
+  editorError(field: string): string | undefined { return this.editorErrors()[field]; }
+  clearEditorFieldError(field: string): void {
+    if (!this.editorErrors()[field]) return;
+    this.editorErrors.update(errors => { const { [field]: removed, ...remaining } = errors; return remaining; });
+  }
+  private validateEditor(value: Partial<IsoCertificate>): boolean {
+    const errors: Record<string, string> = {};
+    if (!value.partyName?.trim() && !value.certificateNumber?.trim()) {
+      errors['partyName'] = 'Enter a firm name or certificate number.';
+      errors['certificateNumber'] = 'Enter a firm name or certificate number.';
+    }
+    if (value.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.email.trim())) errors['email'] = 'Enter a valid email address.';
+    if (value.phone?.trim() && !/^[0-9+()\s-]{7,20}$/.test(value.phone.trim())) errors['phone'] = 'Enter a valid phone number.';
+    if (value.gst?.trim() && !/^[0-9A-Z]{15}$/i.test(value.gst.trim())) errors['gst'] = 'GST must be a 15-character GSTIN.';
+    this.editorErrors.set(errors);
+    return Object.keys(errors).length === 0;
   }
   private addYears(date: string, years: number): string | undefined {
     const [year, month, day] = date.split('-').map(Number);
@@ -436,6 +470,15 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   }
   private clearDocumentPreviews(): void { this.previewBatch += 1; Object.values(this.documentPreviewUrls()).forEach(url => URL.revokeObjectURL(url)); this.documentPreviewUrls.set({}); }
   documentSize(bytes: number): string { return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`; }
+  tableValue(certificate: IsoCertificate, field: string): string {
+    if (field === 'initialRegistrationDate') return this.date(certificate.initialRegistrationDate);
+    if (field === 'expiryDate') return this.date(certificate.expiryDate);
+    if (field === 'firstSurveillanceDue') return this.date(certificate.firstSurveillanceDue);
+    if (field === 'secondSurveillanceDue') return this.date(certificate.secondSurveillanceDue);
+    if (field === 'onlineStatus') return certificate.onlineStatus ? 'Live' : 'Not live';
+    const value = (certificate as unknown as Record<string, unknown>)[field];
+    return value == null || value === '' ? '—' : String(value);
+  }
   date(value?: string): string { return value ? new Date(`${value}T00:00:00`).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'; }
   expiryTone(value?: string): string { if (!value) return ''; const days = (new Date(`${value}T00:00:00`).getTime() - Date.now()) / 86400000; return days < 0 ? 'overdue' : days <= 90 ? 'due' : ''; }
 }

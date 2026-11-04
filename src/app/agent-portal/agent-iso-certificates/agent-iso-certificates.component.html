@@ -24,7 +24,7 @@
     </section>
   </ng-container>
 
-  <p class="feedback error" *ngIf="error()">{{ error() }}</p>
+  <p class="feedback error" *ngIf="error() && !editor()">{{ error() }}</p>
   </section>
 
   <section class="iso-table-workspace" aria-label="ISO certificate records">
@@ -33,23 +33,20 @@
       <colgroup>
         <col style="width:48px" />
         <col *ngFor="let column of standardColumns" [style.width.px]="columnWidth(column.field)" />
-        <col [style.width.px]="columnWidth('address')" /><col [style.width.px]="columnWidth('certifyingBody')" /><col [style.width.px]="columnWidth('firstSurveillanceDue')" /><col [style.width.px]="columnWidth('secondSurveillanceDue')" />
         <col *ngFor="let field of shownCustomFields" [style.width.px]="columnWidth('custom:' + field.fieldKey)" /><col [style.width.px]="columnWidth('actions')" />
       </colgroup>
       <thead><tr>
         <th class="select-col"><input type="checkbox" [checked]="isPageSelected()" [indeterminate]="isPagePartlySelected()" (change)="togglePageSelection()" aria-label="Select all ISO certificates" /></th>
         <th *ngFor="let column of standardColumns"><button type="button" (click)="sortBy(column.field)">{{ column.label }} <ap-icon [name]="sortIcon(column.field)" [size]="14" /></button><span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + column.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, column.field)" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, column.field)"></span></th>
-        <th>Address<span class="column-resize" role="separator" tabindex="0" aria-label="Resize address column" aria-orientation="vertical" (pointerdown)="startResize($event, 'address')" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'address')"></span></th><th>Certifying body<span class="column-resize" role="separator" tabindex="0" aria-label="Resize certifying body column" aria-orientation="vertical" (pointerdown)="startResize($event, 'certifyingBody')" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'certifyingBody')"></span></th><th>1st surveillance due<span class="column-resize" role="separator" tabindex="0" aria-label="Resize first surveillance due column" aria-orientation="vertical" (pointerdown)="startResize($event, 'firstSurveillanceDue')" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'firstSurveillanceDue')"></span></th><th>2nd surveillance due<span class="column-resize" role="separator" tabindex="0" aria-label="Resize second surveillance due column" aria-orientation="vertical" (pointerdown)="startResize($event, 'secondSurveillanceDue')" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'secondSurveillanceDue')"></span></th>
         <th *ngFor="let field of shownCustomFields"><button type="button" (click)="sortBy('custom:' + field.fieldKey)">{{ field.label }} <ap-icon [name]="sortIcon('custom:' + field.fieldKey)" [size]="14" /></button><span class="column-resize" role="separator" tabindex="0" [attr.aria-label]="'Resize ' + field.label + ' column'" aria-orientation="vertical" (pointerdown)="startResize($event, 'custom:' + field.fieldKey)" (pointermove)="resizeColumn($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeWithKeyboard($event, 'custom:' + field.fieldKey)"></span></th><th class="actions">Actions</th>
       </tr></thead>
       <tbody *ngIf="!loading()">
         <tr *ngFor="let row of certificates()" [class.selected]="isSelected(row)">
           <td class="select-col"><input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelection(row)" [attr.aria-label]="'Select ' + (row.partyName || row.certificateNumber || 'certificate')" /></td>
-          <td><strong>{{ row.partyName || '—' }}</strong></td><td><span class="iso-badge">{{ row.isoType || '—' }}</span></td><td>{{ row.reference || '—' }}</td><td>{{ row.certificateNumber || '—' }}</td><td>{{ date(row.initialRegistrationDate) }}</td><td [class]="expiryTone(row.expiryDate)">{{ date(row.expiryDate) }}</td>
-          <td class="wrap">{{ row.address || '—' }}</td><td>{{ row.certifyingBody || '—' }}</td><td>{{ date(row.firstSurveillanceDue) }}</td><td>{{ date(row.secondSurveillanceDue) }}</td>
-          <td *ngFor="let field of shownCustomFields">{{ row.customFields?.[field.fieldKey] || '—' }}</td><td class="actions"><button type="button" class="icon-button" (click)="openEdit(row)" aria-label="Edit certificate"><ap-icon name="edit" [size]="16" /></button><button type="button" class="icon-button danger" (click)="confirmDelete(row.id!)" aria-label="Delete certificate"><ap-icon name="close" [size]="16" /></button></td>
+          <td *ngFor="let column of standardColumns" [class.wrap]="column.field === 'address' || column.field === 'remarks'" [class.overdue]="column.field === 'expiryDate' && expiryTone(row.expiryDate) === 'overdue'" [class.due]="column.field === 'expiryDate' && expiryTone(row.expiryDate) === 'due'"><strong *ngIf="column.field === 'partyName'; else plainValue">{{ tableValue(row, column.field) }}</strong><ng-template #plainValue>{{ tableValue(row, column.field) }}</ng-template></td>
+          <td *ngFor="let field of shownCustomFields">{{ row.customFields?.[field.fieldKey] || '—' }}</td><td class="actions"><button type="button" class="icon-button" (click)="openEdit(row)" aria-label="Edit certificate"><ap-icon name="edit" [size]="16" /></button><button type="button" class="icon-button danger" (click)="confirmDelete(row.id!)" aria-label="Delete certificate"><ap-icon name="trash" [size]="16" /></button></td>
         </tr>
-        <tr *ngIf="!certificates().length"><td [attr.colspan]="12 + shownCustomFields.length" class="empty"><ap-icon name="certificate" [size]="24" /><strong>No ISO certificates found</strong><span>Adjust your filters or add the first certificate to begin tracking its annual surveillance dates.</span></td></tr>
+        <tr *ngIf="!certificates().length"><td [attr.colspan]="standardColumns.length + shownCustomFields.length + 2" class="empty"><ap-icon name="certificate" [size]="24" /><strong>No ISO certificates found</strong><span>Adjust your filters or add the first certificate to begin tracking its annual surveillance dates.</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -66,17 +63,35 @@
 
 <div class="modal-backdrop" *ngIf="editor() as record" (click)="closeEditor()"><section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title" (click)="$event.stopPropagation()">
   <header><div><p class="eyebrow">ISO certificate</p><h2 id="editor-title">{{ record.id ? 'Edit certificate' : 'Add certificate' }}</h2></div><button type="button" class="icon-button" (click)="closeEditor()"><ap-icon name="close" [size]="18" /></button></header>
-  <p class="editor-note">Set the initial registration date and we’ll calculate the two annual surveillance dates and three-year expiry.</p>
-  <div class="form-grid">
-    <label class="party-field">Party name<input [(ngModel)]="record.partyName" (ngModelChange)="onPartyInput($event)" (blur)="partySuggestions.set([])" autocomplete="off" placeholder="Start typing a client or proprietor name" /><span class="input-status" *ngIf="partySearching()">Searching…</span>
-      <div class="party-suggestions" *ngIf="partySuggestions().length" role="listbox"><button type="button" *ngFor="let suggestion of partySuggestions()" (mousedown)="$event.preventDefault()" (click)="selectParty(suggestion)"><span>{{ suggestion.name }}</span><small>{{ suggestion.address || 'No address on record' }} · {{ suggestion.source }}</small></button></div>
-    </label>
-    <label>ISO type<select [(ngModel)]="record.isoType" (ngModelChange)="onIsoTypeChanged()"><option value="" disabled>Select an ISO standard</option><option *ngFor="let type of isoTypeOptions" [value]="type">{{ type === 'OTHER' ? 'Other ISO standard…' : type }}</option></select></label>
-    <label *ngIf="record.isoType === 'OTHER'">ISO standard name<input [(ngModel)]="customIsoType" placeholder="e.g. ISO 10015:2019" /></label>
-    <label>Reference<input [(ngModel)]="record.reference" /></label><label>Certificate number<input [(ngModel)]="record.certificateNumber" /></label>
-    <label>Certifying body<input [(ngModel)]="record.certifyingBody" /></label><label>Payment received<input [(ngModel)]="record.paymentReceived" placeholder="e.g. Yes / ₹25,000" /></label><label>Initial registration date<input type="date" [(ngModel)]="record.initialRegistrationDate" (ngModelChange)="recalculateSurveillanceDates($event)" /></label><label>1st surveillance due<input type="date" [(ngModel)]="record.firstSurveillanceDue" /></label><label>2nd surveillance due<input type="date" [(ngModel)]="record.secondSurveillanceDue" /></label>
-    <label class="wide">Address<textarea [(ngModel)]="record.address" rows="2"></textarea></label><label class="wide">Details of goods &amp; services<textarea [(ngModel)]="record.goodsServices" rows="2"></textarea></label><label class="wide">Remarks<textarea [(ngModel)]="record.remarks" rows="2"></textarea></label>
-    <label *ngFor="let field of customFields()" [class.wide]="field.dataType === 'TEXT'">{{ field.label }}<input [type]="field.dataType === 'DATE' ? 'date' : field.dataType === 'NUMBER' ? 'number' : 'text'" [ngModel]="record.customFields?.[field.fieldKey] || ''" (ngModelChange)="setCustomValue(field.fieldKey, $event)" /></label>
+  <p class="editor-note">Use the certification date to set the renewal schedule, then adjust the date of expiry whenever the certificate changes.</p>
+  <p class="editor-error" *ngIf="error()">{{ error() }}</p>
+  <div class="editor-groups">
+    <section class="form-group" aria-labelledby="certificate-details-heading"><h3 id="certificate-details-heading">Certificate details</h3><div class="form-grid">
+      <label class="party-field" [class.has-error]="editorError('partyName')">Firm name<input [(ngModel)]="record.partyName" (ngModelChange)="clearEditorFieldError('partyName'); onPartyInput($event)" (blur)="partySuggestions.set([])" autocomplete="off" placeholder="Start typing a client or proprietor name" /><span class="input-status" *ngIf="partySearching()">Searching…</span><small class="field-error" *ngIf="editorError('partyName')">{{ editorError('partyName') }}</small>
+        <div class="party-suggestions" *ngIf="partySuggestions().length" role="listbox"><button type="button" *ngFor="let suggestion of partySuggestions()" (mousedown)="$event.preventDefault()" (click)="selectParty(suggestion)"><span>{{ suggestion.name }}</span><small>{{ suggestion.address || 'No address on record' }} · {{ suggestion.source }}</small></button></div>
+      </label>
+      <label>ISO type<select [(ngModel)]="record.isoType" (ngModelChange)="onIsoTypeChanged()"><option value="" disabled>Select an ISO standard</option><option *ngFor="let type of isoTypeOptions" [value]="type">{{ type === 'OTHER' ? 'Other ISO standard…' : type }}</option></select></label>
+      <label *ngIf="record.isoType === 'OTHER'">ISO standard name<input [(ngModel)]="customIsoType" placeholder="e.g. ISO 10015:2019" /></label>
+      <label>Address<textarea [(ngModel)]="record.address" rows="2"></textarea></label>
+      <label>City<input [(ngModel)]="record.city" /></label>
+      <label>Date of certification<input type="date" [(ngModel)]="record.initialRegistrationDate" (ngModelChange)="onCertificationDateChanged($event)" /></label>
+      <label>Date of expiry<input type="date" [(ngModel)]="record.expiryDate" /></label>
+      <label>1st surveillance<input type="date" [(ngModel)]="record.firstSurveillanceDue" /></label>
+      <label>2nd surveillance<input type="date" [(ngModel)]="record.secondSurveillanceDue" /></label>
+      <label [class.has-error]="editorError('certificateNumber')">Certificate no.<input [(ngModel)]="record.certificateNumber" (ngModelChange)="clearEditorFieldError('certificateNumber')" /><small class="field-error" *ngIf="editorError('certificateNumber')">{{ editorError('certificateNumber') }}</small></label>
+      <label>Certification body<input [(ngModel)]="record.certifyingBody" /></label>
+    </div></section>
+    <section class="form-group" aria-labelledby="commercial-details-heading"><h3 id="commercial-details-heading">Commercial details</h3><div class="form-grid">
+      <label>Consultant<input [(ngModel)]="record.consultant" /></label>
+      <label [class.has-error]="editorError('phone')">Phone<input type="tel" [(ngModel)]="record.phone" (ngModelChange)="clearEditorFieldError('phone')" /><small class="field-error" *ngIf="editorError('phone')">{{ editorError('phone') }}</small></label>
+      <label [class.has-error]="editorError('email')">Email<input type="email" [(ngModel)]="record.email" (ngModelChange)="clearEditorFieldError('email')" /><small class="field-error" *ngIf="editorError('email')">{{ editorError('email') }}</small></label>
+      <label [class.has-error]="editorError('gst')">GST<input [(ngModel)]="record.gst" (ngModelChange)="clearEditorFieldError('gst')" /><small class="field-error" *ngIf="editorError('gst')">{{ editorError('gst') }}</small></label>
+      <label>Total payment<input type="number" min="0" step="0.01" inputmode="decimal" [(ngModel)]="record.totalPayment" /></label>
+      <label>Received<input type="number" min="0" step="0.01" inputmode="decimal" [(ngModel)]="record.paymentReceived" /></label>
+      <label>Balance<input type="number" min="0" step="0.01" inputmode="decimal" [(ngModel)]="record.balance" /></label>
+      <label class="wide">Remarks<textarea [(ngModel)]="record.remarks" rows="2"></textarea></label>
+      <label class="online-status wide"><span>Online status<small>Mark this certificate as live online.</small></span><input type="checkbox" [(ngModel)]="record.onlineStatus" /><i aria-hidden="true"></i></label>
+    </div></section>
   </div>
   <section class="document-section" aria-label="Certificate documents">
     <div class="document-heading"><div><h3>Supporting documents</h3><p>Attach the issued certificate, audit reports, invoices, or correspondence.</p></div><span>Up to 25 MB each</span></div>
@@ -86,7 +101,7 @@
       <div class="document-row is-queued" *ngFor="let file of queuedDocuments()"><span class="document-preview"><ap-icon [name]="fileIcon(file.name, file.type)" [size]="19" /></span><span>{{ file.name }}</span><small>Ready to upload · {{ documentSize(file.size) }}</small><button type="button" class="icon-button" (click)="removeQueuedDocument(file)" [attr.aria-label]="'Remove ' + file.name"><ap-icon name="close" [size]="15" /></button></div>
     </div>
   </section>
-  <footer><button type="button" class="quiet-button" (click)="closeEditor()">Cancel</button><button type="button" class="primary-button" (click)="save()" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save certificate' }}</button></footer>
+  <footer><button type="button" class="quiet-button" (click)="closeEditor()">Cancel</button><button type="button" class="primary-button" (click)="save()" [disabled]="saving()">{{ saving() ? 'Saving…' : record.id ? 'Update certificate' : 'Save certificate' }}</button></footer>
 </section></div>
 
 <div class="modal-backdrop" *ngIf="deletingId()" (click)="deletingId.set(null)"><section class="confirm" role="dialog" aria-modal="true" (click)="$event.stopPropagation()"><ap-icon name="alert" [size]="22" /><h2>Remove this certificate?</h2><p>This removes the certificate from your ISO portfolio. This cannot be undone.</p><footer><button type="button" class="quiet-button" (click)="deletingId.set(null)">Cancel</button><button type="button" class="danger-button" (click)="delete()">Remove certificate</button></footer></section></div>
