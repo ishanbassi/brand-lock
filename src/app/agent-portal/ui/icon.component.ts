@@ -75,6 +75,7 @@ export type IconName =
   | 'signout'
   | 'lock'
   | 'edit'
+  | 'trash'
   | 'refresh'
   | 'eye'
   | 'clock'
@@ -113,6 +114,7 @@ const ICONS: Record<string, string> = {
   signout: '<path d="M9 20H5V4h4"/><path d="M15.5 16l4-4-4-4"/><path d="M19.5 12H9"/>',
   lock: '<rect x="4.5" y="10.5" width="15" height="9.5" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
   edit: '<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 6.5l3 3"/>',
+  trash: '<path d="M4.5 7h15"/><path d="M9.5 3.5h5"/><path d="M6.5 7l.8 13.5h9.4L17.5 7"/><path d="M10 10.5v6.5"/><path d="M14 10.5v6.5"/>',
   refresh: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4.5h-4.5"/>',
   eye: '<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.75"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/>',
