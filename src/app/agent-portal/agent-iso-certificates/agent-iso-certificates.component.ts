@@ -94,7 +94,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private partyTimer: ReturnType<typeof setTimeout> | null = null;
   readonly standardColumns: { field: SortField; label: string }[] = [
-    { field: 'partyName', label: 'Firm name' }, { field: 'address', label: 'Address' }, { field: 'city', label: 'City' },
+    { field: 'partyName', label: 'Firm name' }, { field: 'isoType', label: 'ISO type' }, { field: 'address', label: 'Address' }, { field: 'city', label: 'City' },
     { field: 'initialRegistrationDate', label: 'Date of certification' }, { field: 'expiryDate', label: 'Date of expiry' },
     { field: 'firstSurveillanceDue', label: '1st surveillance' }, { field: 'secondSurveillanceDue', label: '2nd surveillance' },
     { field: 'certificateNumber', label: 'Certificate no.' }, { field: 'certifyingBody', label: 'Certification body' },
@@ -141,7 +141,7 @@ export class AgentIsoCertificatesComponent implements OnInit, OnDestroy {
   sortBy(field: string): void { this.direction = this.sort === field ? (this.direction === 'asc' ? 'desc' : 'asc') : 'asc'; this.sort = field; this.load(); }
   sortIcon(field: string): 'sort' | 'sort-asc' | 'sort-desc' { return this.sort !== field ? 'sort' : this.direction === 'asc' ? 'sort-asc' : 'sort-desc'; }
   columnWidth(key: string): number {
-    const defaults: Record<string, number> = { partyName: 230, address: 230, city: 150, initialRegistrationDate: 175, expiryDate: 155, firstSurveillanceDue: 165, secondSurveillanceDue: 165, certificateNumber: 180, certifyingBody: 210, consultant: 180, phone: 145, email: 220, gst: 160, totalPayment: 140, paymentReceived: 140, balance: 140, remarks: 220, onlineStatus: 140, actions: 76 };
+    const defaults: Record<string, number> = { partyName: 230, isoType: 210, address: 230, city: 150, initialRegistrationDate: 175, expiryDate: 155, firstSurveillanceDue: 165, secondSurveillanceDue: 165, certificateNumber: 180, certifyingBody: 210, consultant: 180, phone: 145, email: 220, gst: 160, totalPayment: 140, paymentReceived: 140, balance: 140, remarks: 220, onlineStatus: 140, actions: 76 };
     return this.columnWidths[key] || defaults[key] || 190;
   }
   get tableWidth(): number {

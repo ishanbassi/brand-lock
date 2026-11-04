@@ -70,6 +70,8 @@
       <label class="party-field" [class.has-error]="editorError('partyName')">Firm name<input [(ngModel)]="record.partyName" (ngModelChange)="clearEditorFieldError('partyName'); onPartyInput($event)" (blur)="partySuggestions.set([])" autocomplete="off" placeholder="Start typing a client or proprietor name" /><span class="input-status" *ngIf="partySearching()">Searching…</span><small class="field-error" *ngIf="editorError('partyName')">{{ editorError('partyName') }}</small>
         <div class="party-suggestions" *ngIf="partySuggestions().length" role="listbox"><button type="button" *ngFor="let suggestion of partySuggestions()" (mousedown)="$event.preventDefault()" (click)="selectParty(suggestion)"><span>{{ suggestion.name }}</span><small>{{ suggestion.address || 'No address on record' }} · {{ suggestion.source }}</small></button></div>
       </label>
+      <label>ISO type<select [(ngModel)]="record.isoType" (ngModelChange)="onIsoTypeChanged()"><option value="" disabled>Select an ISO standard</option><option *ngFor="let type of isoTypeOptions" [value]="type">{{ type === 'OTHER' ? 'Other ISO standard…' : type }}</option></select></label>
+      <label *ngIf="record.isoType === 'OTHER'">ISO standard name<input [(ngModel)]="customIsoType" placeholder="e.g. ISO 10015:2019" /></label>
       <label>Address<textarea [(ngModel)]="record.address" rows="2"></textarea></label>
       <label>City<input [(ngModel)]="record.city" /></label>
       <label>Date of certification<input type="date" [(ngModel)]="record.initialRegistrationDate" (ngModelChange)="onCertificationDateChanged($event)" /></label>
