@@ -50,6 +50,11 @@ export class DeveloperPortalComponent implements OnInit, OnDestroy {
       path: 'https://admin.trademarx.in/api/public/v1/trademarks/journal?journalNo=2145',
       description: 'A journal’s published filings, or the latest filings if journalNo is omitted.',
     },
+    {
+      method: 'GET',
+      path: 'https://admin.trademarx.in/api/public/v1/trademarks/6750835/status',
+      description: 'One public-register record by application number, including its registry status where available.',
+    },
   ];
 
   specUrl = 'https://admin.trademarx.in/v3/api-docs/public-api';
