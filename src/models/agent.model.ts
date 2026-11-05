@@ -301,6 +301,34 @@ export interface AgentDirectoryEntry {
   addressKey?: string;
 }
 
+/** Privacy-minimised public result used before an agent creates an account. */
+export interface AgentHomeDirectoryEntry {
+  agentName: string;
+  displayName: string;
+  markCount: number;
+  latestFilingDate?: string;
+}
+
+export interface AgentHomeMarkPreview {
+  name?: string;
+  applicationNo?: number;
+  tmClass?: number;
+  trademarkStatus?: string;
+}
+
+export interface AgentHomePortfolioPreview {
+  agentName: string;
+  displayName: string;
+  totalMarks: number;
+  marks: AgentHomeMarkPreview[];
+}
+
+/** A name plus record count; no trademark or client data is returned for the live hero card. */
+export interface AgentHomeLiveSnapshot {
+  displayName: string;
+  markCount: number;
+}
+
 /** A proprietor spelling found in the trademark register. */
 export interface ProprietorDirectoryEntry {
   nameNormalized: string;

@@ -1,0 +1,25 @@
+<header class="home-header fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  <div class="home-nav-inner">
+    <a class="home-brand" href="/agent-home" aria-label="Trademarx Agent Portal home">
+      <img src="/assets/images/trademarx.png" alt="Trademarx" />
+      <span>Agent Portal</span>
+    </a>
+
+    <nav class="home-nav-scroll" aria-label="Primary navigation">
+      <a class="home-nav-link" [class.is-active]="activeLink === 'features'" routerLink="/agent-home" fragment="features">Features</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'portfolio'" routerLink="/agent-home/portfolio">Portfolio</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'journal-watch'" routerLink="/agent-home/journal-watch">Journal watch</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'renewals'" routerLink="/agent-home/renewal-docket">Renewals</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'competitor-watch'" routerLink="/agent-home/competitor-watch">Competitors</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'new-filing-watch'" routerLink="/agent-home/new-filing-watch">New filings</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'trademark-search'" routerLink="/agent-home/trademark-search-report">Trademark search</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'agent-lookup'" routerLink="/agent-home" fragment="agent-lookup">Agent lookup</a>
+      <a class="home-nav-link" [class.is-active]="activeLink === 'pricing'" routerLink="/agent-home" fragment="pricing-section">Pricing</a>
+    </nav>
+
+    <div class="home-nav-actions">
+      <a class="home-sign-in" href="/agent-login">Sign in</a>
+      <a class="home-start" href="/create-agent-account">Start free <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+    </div>
+  </div>
+</header>

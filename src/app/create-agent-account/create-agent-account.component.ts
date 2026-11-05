@@ -13,6 +13,7 @@ import { LoadingService } from '../common/loading.service';
 import { Login } from '../../models/login';
 import { AuthService } from '../../models/auth.services';
 import { GoogleSignInService } from '../shared/services/google-sign-in.service';
+import { AgentOnboardingIntentService } from '../shared/services/agent-onboarding-intent.service';
 
 type AccountType = 'ATTORNEY_AGENT' | 'BUSINESS';
 type DirectoryEntry = AgentDirectoryEntry | ProprietorDirectoryEntry;
@@ -26,7 +27,7 @@ export class CreateAgentAccountComponent implements AfterViewInit {
   private readonly search$ = new Subject<string>();
   @ViewChild('googleButton') private googleButton?: ElementRef<HTMLElement>;
 
-  constructor(private readonly agentData: AgentDataService, private readonly dataService: DataService, private readonly storage: LocalStorageService, private readonly loading: LoadingService, private readonly toastr: ToastrService, private readonly router: Router, private readonly recaptcha: ReCaptchaV3Service, private readonly auth: AuthService, private readonly googleSignIn: GoogleSignInService) {
+  constructor(private readonly agentData: AgentDataService, private readonly dataService: DataService, private readonly storage: LocalStorageService, private readonly loading: LoadingService, private readonly toastr: ToastrService, private readonly router: Router, private readonly recaptcha: ReCaptchaV3Service, private readonly auth: AuthService, private readonly googleSignIn: GoogleSignInService, private readonly onboardingIntent: AgentOnboardingIntentService) {
     this.search$.pipe(debounceTime(300), distinctUntilChanged(), switchMap(q => { this.searching.set(true); return this.accountType === 'ATTORNEY_AGENT' ? this.agentData.searchAgentAddresses(q) : this.agentData.searchProprietors(q); })).subscribe({ next: entries => { this.entries.set(entries); this.searched.set(true); this.searching.set(false); }, error: () => { this.searching.set(false); this.toastr.error('Could not search the trademark register.'); } });
   }
   get googleSignInConfigured(): boolean { return this.googleSignIn.configured; }
@@ -68,12 +69,22 @@ export class CreateAgentAccountComponent implements AfterViewInit {
       if (!token) { this.loading.hide(); this.submitting = false; this.toastr.error('Google sign-in could not be completed.'); return; }
       this.storage.storeAuthenticationToken(token); const { id, authorities } = this.auth.decodeToken(token); this.storage.setObject('user', { id, authorities });
       this.loading.hide(); this.submitting = false;
-      if (this.auth.hasRole(['ROLE_AGENT'])) this.step.set(2); else this.toastr.error('This Google account is not linked to an agent portal account.');
+      if (this.auth.hasRole(['ROLE_AGENT'])) this.continueAfterAccountCreation(); else this.toastr.error('This Google account is not linked to an agent portal account.');
     }, error: err => { this.loading.hide(); this.submitting = false; this.toastr.error(err?.error?.detail || 'Google sign-in could not be completed.'); } });
   }
   private doLogin(): void {
     const input = new Login(); input.username = this.formData.email; input.password = this.formData.password;
-    this.dataService.login(input.forRequest()).subscribe({ next: response => { const token = response.body!.id_token; this.storage.storeAuthenticationToken(token); const { id, authorities } = this.auth.decodeToken(token); this.storage.setObject('user', { id, authorities }); this.submitting = false; this.step.set(2); }, error: () => { this.submitting = false; this.toastr.error('Account created, but sign-in failed. Please sign in to continue.'); this.router.navigate(['/agent-login']); } });
+    this.dataService.login(input.forRequest()).subscribe({ next: response => { const token = response.body!.id_token; this.storage.storeAuthenticationToken(token); const { id, authorities } = this.auth.decodeToken(token); this.storage.setObject('user', { id, authorities }); this.submitting = false; this.continueAfterAccountCreation(); }, error: () => { this.submitting = false; this.toastr.error('Account created, but sign-in failed. Please sign in to continue.'); this.router.navigate(['/agent-login']); } });
+  }
+  /** A selected public preview can safely skip the second search after the new agent is authenticated. */
+  private continueAfterAccountCreation(): void {
+    const intent = this.onboardingIntent.consume();
+    if (intent?.kind !== 'agent-preview') { this.step.set(2); return; }
+    this.submitting = true;
+    this.agentData.claimTrademarks({ agentName: intent.agentName, claimAllUnderName: true }).pipe(finalize(() => this.submitting = false)).subscribe({
+      next: () => this.goToDashboard(),
+      error: () => { this.toastr.error('Your account is ready, but we could not add those trademarks. You can retry from your portfolio.'); this.goToDashboard(); },
+    });
   }
   goToDashboard(): void { this.router.navigate(['/agent-portal/dashboard']); }
 }

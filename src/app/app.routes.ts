@@ -1,8 +1,53 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-import { agentHostGuard, mainHostGuard } from './guards/host.guard';
+import { agentHomeGuard, agentHostGuard, mainHostGuard } from './guards/host.guard';
 
 export const routes: Routes = [
+    {
+        // Public-facing entry point for agent.trademarx.in. It sits outside the authenticated
+        // portal shell so a practitioner can understand the workspace before signing in.
+        path: 'agent-home',
+        loadComponent: () => import('./agent-portal/agent-home/agent-home.component').then(m => m.AgentHomeComponent),
+        title: 'Trademarx Agent Portal | Trademark practice intelligence',
+        canActivate: [agentHostGuard, agentHomeGuard],
+    },
+    {
+        // Feature deep dives explain a portal capability before an agent signs in.
+        path: 'agent-home/journal-watch',
+        loadComponent: () => import('./agent-portal/agent-journal-watch-feature/agent-journal-watch-feature.component').then(m => m.AgentJournalWatchFeatureComponent),
+        title: 'Journal Watch | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'agent-home/portfolio',
+        loadComponent: () => import('./agent-portal/agent-portfolio-feature/agent-portfolio-feature.component').then(m => m.AgentPortfolioFeatureComponent),
+        title: 'Trademark Portfolio Management | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'agent-home/trademark-search-report',
+        loadComponent: () => import('./agent-portal/agent-search-report-feature/agent-search-report-feature.component').then(m => m.AgentSearchReportFeatureComponent),
+        title: 'Trademark Search Report | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'agent-home/renewal-docket',
+        loadComponent: () => import('./agent-portal/agent-renewal-docket-feature/agent-renewal-docket-feature.component').then(m => m.AgentRenewalDocketFeatureComponent),
+        title: 'Renewal Docket | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'agent-home/new-filing-watch',
+        loadComponent: () => import('./agent-portal/agent-new-filing-watch-feature/agent-new-filing-watch-feature.component').then(m => m.AgentNewFilingWatchFeatureComponent),
+        title: 'New Filing Watch | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
+        path: 'agent-home/competitor-watch',
+        loadComponent: () => import('./agent-portal/agent-competitor-watch-feature/agent-competitor-watch-feature.component').then(m => m.AgentCompetitorWatchFeatureComponent),
+        title: 'Competitor Watch | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
     {
         // ROLE_USER customer portal — standalone shell, no public navbar/footer.
         path: 'portal',

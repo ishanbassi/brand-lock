@@ -7,6 +7,9 @@ import {
   AgentClaimResult,
   AgentDashboardStats,
   AgentDirectoryEntry,
+  AgentHomeDirectoryEntry,
+  AgentHomeLiveSnapshot,
+  AgentHomePortfolioPreview,
   AgentBulkUploadResult,
   AgentDocument,
   AgentDocumentLibraryPage,
@@ -637,6 +640,26 @@ export class AgentDataService {
   // ── Discovery: find and claim marks already in our data ──────────────────
 
   /** Type-ahead over the agent-name directory. */
+  searchPublicAgentPreview(q: string): Observable<AgentHomeDirectoryEntry[]> {
+    return this.http.get<AgentHomeDirectoryEntry[]>(
+      `${this.base}/agent-portal/public/discover/agents`,
+      { params: { q } },
+    );
+  }
+
+  previewPublicAgentPortfolio(agentName: string): Observable<AgentHomePortfolioPreview> {
+    return this.http.get<AgentHomePortfolioPreview>(
+      `${this.base}/agent-portal/public/discover/portfolio-preview`,
+      { params: { agentName } },
+    );
+  }
+
+  livePublicAgentSnapshots(): Observable<AgentHomeLiveSnapshot[]> {
+    return this.http.get<AgentHomeLiveSnapshot[]>(
+      `${this.base}/agent-portal/public/live-portfolio-snapshots`,
+    );
+  }
+
   searchAgents(q: string, limit = 20): Observable<AgentDirectoryEntry[]> {
     return this.http.get<AgentDirectoryEntry[]>(
       `${this.base}/agent-portal/discover/agents?q=${encodeURIComponent(q)}&limit=${limit}`,

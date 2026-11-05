@@ -1,0 +1,678 @@
+<main class="competitor-watch-feature bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary">
+  <app-agent-portal-navbar activeLink="competitor-watch" />
+  <div class="flex flex-col w-full">
+<!-- SECTION 1: HERO & PAN-INDIA TELEMETRY -->
+<section class="relative overflow-hidden pt-6 pb-20 px-6 lg:px-12">
+<!-- Ambient Glow Blobs -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-primary/10 rounded-full blur-[110px] pointer-events-none"></div>
+<div class="absolute top-48 right-10 w-[380px] h-[280px] bg-secondary-container/20 rounded-full blur-[90px] pointer-events-none"></div>
+<div class="max-w-7xl mx-auto relative z-10">
+<!-- Live Status Eyebrow -->
+<div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm tracking-wider uppercase shadow-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-ping"></span>
+          PAN-INDIA CGPDTM TELEMETRY - RIVAL AGENT CODE &amp; FIRM RADAR
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+          Live Sync Across 5 Registry Benches - Sub-5 Min Latency
+        </span>
+</div>
+<!-- Main Catchphrase & Typography Hierarchy -->
+<div class="text-center max-w-4xl mx-auto space-y-5">
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight leading-[1.12]">
+          Track Rival Trademark Agents &amp; Filings The Exact Minute They Are Lodged.
+        </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
+          Never get blindsided by client poaching or surprise encroaching filings again. Monitor competitor law firms by Agent Code (<code class="font-label-sm text-primary px-1.5 py-0.5 rounded bg-surface-container-high">IN-PA-xxxx</code>) or applicant entity across all 5 Indian registry benches (Delhi, Mumbai, Chennai, Kolkata, Ahmedabad) within minutes of online receipt.
+        </p>
+</div>
+<!-- Hero Call-to-Actions -->
+<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+<div class="flex flex-col items-center">
+<a class="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-[0_10px_20px_-5px_rgba(79,70,229,0.35)] hover:bg-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+<span>Start 14-Day Pro Free Trial</span>
+</a>
+<span class="font-label-sm text-label-sm text-outline mt-1.5">No credit card required - Instant 50-mark sync</span>
+</div>
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-sm hover:bg-surface-container-low transition-all" href="#radar-preview">
+<span class="material-symbols-outlined text-primary text-[20px]">play_circle</span>
+<span>Explore Interactive Radar Demo</span>
+</a>
+</div>
+<!-- Trust Bar & Registry Benches -->
+<div class="mt-12 pt-8 flex flex-col items-center gap-4">
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider text-center">
+          Trusted by 450+ IP Advocates, Senior Counsels &amp; Patent-Trademark Attorneys Across India
+        </p>
+<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface">Delhi Bench (Bawana)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface">Mumbai Bench (Antop Hill)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface">Ahmedabad Bench (Ghatlodiya)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface">Chennai Bench (Guindy)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface">Kolkata Bench (Salt Lake)</span>
+</div>
+</div>
+</div>
+<!-- SECTION 2: INTERACTIVE DASHBOARD COCKPIT SHOWCASE -->
+<div class="mt-10 relative" id="radar-preview">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_20px_40px_-15px_rgba(15,23,42,0.12)] overflow-hidden">
+<!-- Cockpit Header Strip -->
+<div class="px-6 py-4 bg-surface-container-low flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="inline-flex p-2 rounded-lg bg-primary-container text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[20px]">crisis_alert</span>
+</span>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Competitor Agent Stream</h3>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-secondary-container text-on-secondary-container">LIVE SOCKET</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time Form TM-A lodgements streamed from e-Register Gateway</p>
+</div>
+</div>
+<!-- Agent Filter Tabs -->
+<div class="flex flex-wrap items-center gap-1.5" id="agent-tab-strip">
+<button type="button" [class]="agentFilterClasses('all')" (click)="selectCompetitor('all')">All Competitors (186)</button>
+<button type="button" [class]="agentFilterClasses('anand')" (click)="selectCompetitor('anand')">Anand and Anand (IN-PA-412 - 48)</button>
+<button type="button" [class]="agentFilterClasses('lall')" (click)="selectCompetitor('lall')">Lall and Sethi (IN-PA-889 - 34)</button>
+<button type="button" [class]="agentFilterClasses('shardul')" (click)="selectCompetitor('shardul')">Shardul Amarchand (IN-PA-1502 - 29)</button>
+</div>
+</div>
+<!-- Main Cockpit Body (2 Columns Layout) -->
+<div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left 8-col: Critical Live Alerts & Feed -->
+<div class="lg:col-span-8 space-y-4">
+<!-- High-Impact Live Conflict Card 1 -->
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-error-container text-on-error-container font-label-sm text-label-sm uppercase">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                      Critical Conflict Detected
+                    </span>
+<span class="font-body-sm text-body-sm text-outline">Filed 3 hrs ago - Delhi Bench</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container-high px-2.5 py-1 rounded-md">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Phonetic Sim:</span>
+<span class="font-label-lg text-label-lg text-error">87% Match</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-on-surface tracking-tight">ZENITH AI CLOUD</span>
+<span class="font-label-md text-label-md text-primary bg-primary-fixed px-2 py-0.5 rounded">Class 42</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+                      Applicant: <strong class="text-on-surface">Zenith Infotech Systems Pvt Ltd</strong> via <span class="font-label-md text-on-surface">Anand &amp; Anand (Agent Code IN-PA-412)</span>
+</p>
+<p class="font-body-sm text-body-sm text-error mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">arrow_right_alt</span>
+                      Threatens your client mark: <strong class="underline decoration-error underline-offset-2">KAVACH CLOUD (App #5812904)</strong>
+</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                      Inspect TM-A
+                    </button>
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-error text-on-error font-label-md text-label-md shadow-sm hover:opacity-95 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">gavel</span>
+                      Draft C&amp;D Notice
+                    </button>
+</div>
+</div>
+</div>
+<!-- High-Impact Client Poaching Alert Card 2 -->
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary"></div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm uppercase">
+<span class="material-symbols-outlined text-[14px]">person_alert</span>
+                      Client Poaching / Account Switch Alert
+                    </span>
+<span class="font-body-sm text-body-sm text-outline">Filed 42 mins ago - Mumbai Bench</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary-container bg-surface-container-high px-2 py-0.5 rounded">High Severity</span>
+</div>
+<div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-on-surface tracking-tight">PAYRUSH B2B</span>
+<span class="font-label-md text-label-md text-primary bg-primary-fixed px-2 py-0.5 rounded">Classes 36, 35</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+                      Applicant: <strong class="text-on-surface">Payrush Technologies India Ltd</strong> (Historically represented by your firm in Class 09)
+                    </p>
+<p class="font-body-sm text-body-sm text-tertiary mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">sync_problem</span>
+                      New Filing Agent: <strong class="underline decoration-tertiary underline-offset-2">K&amp;S Partners (Agent Code IN-PA-1104)</strong>
+</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[16px]">outgoing_mail</span>
+                      Client Outreach Dossier
+                    </button>
+</div>
+</div>
+</div>
+<!-- Stream Micro-Rows (Quick scan) -->
+<div class="p-4 rounded-xl bg-surface-container-low space-y-2.5">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm px-2">
+<span>RECENT LODGEMENTS VIA TRACKED AGENTS</span>
+<span>TIME OF LOR</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest shadow-sm hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-primary">TM-A #6290114</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">NEXORX BIOTECH</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">Class 05 (Pharma)</span>
+<span class="font-body-sm text-body-sm text-outline hidden md:inline">Lall &amp; Sethi - Delhi</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Safe (0 Match)</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest shadow-sm hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-primary">TM-A #6290102</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">URBANSPICE MASALA</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">Class 30 (Spices)</span>
+<span class="font-body-sm text-body-sm text-outline hidden md:inline">Y.J. Trivedi &amp; Co - Ahmedabad</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">Watchlist Match</span>
+</div>
+</div>
+</div>
+<!-- Right 4-col: Real-time Telemetry & Bench Distribution -->
+<div class="lg:col-span-4 space-y-4">
+<!-- Bench Distribution Panel -->
+<div class="p-5 rounded-xl bg-surface-container-low">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-label-lg text-label-lg text-on-surface">Competitor Filings by Bench</h4>
+<span class="font-label-sm text-label-sm text-outline">Last 7 Days</span>
+</div>
+<!-- Bench Bars -->
+<div class="space-y-3">
+<div>
+<div class="flex justify-between font-label-sm text-label-sm mb-1">
+<span class="text-on-surface">Delhi Bench</span>
+<span class="font-bold text-on-surface">39.8% (128 marks)</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 39.8%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-label-sm mb-1">
+<span class="text-on-surface">Mumbai Bench</span>
+<span class="font-bold text-on-surface">28.0% (90 marks)</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 28.0%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-label-sm mb-1">
+<span class="text-on-surface">Ahmedabad Bench</span>
+<span class="font-bold text-on-surface">12.9% (41 marks)</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed-dim rounded-full" style="width: 12.9%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-label-sm mb-1">
+<span class="text-on-surface">Chennai Bench</span>
+<span class="font-bold text-on-surface">11.3% (36 marks)</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim rounded-full" style="width: 11.3%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-label-sm mb-1">
+<span class="text-on-surface">Kolkata Bench</span>
+<span class="font-bold text-on-surface">8.0% (26 marks)</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-outline-variant rounded-full" style="width: 8.0%"></div>
+</div>
+</div>
+</div>
+<div class="mt-5 p-3 rounded-lg bg-surface-container-lowest flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-outline block">Total filings scanned</span>
+<span class="font-metric-number text-metric-number text-on-surface">321</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-secondary block">Conflict rate</span>
+<span class="font-headline-md text-headline-md text-secondary">3.4%</span>
+</div>
+</div>
+</div>
+<!-- Live Telemetry Monitor Badge -->
+<div class="p-4 rounded-xl bg-primary text-on-primary shadow-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-[24px] text-secondary-fixed shrink-0">speed</span>
+<div>
+<h5 class="font-label-lg text-label-lg text-on-primary">CGPDTM Push Socket Status</h5>
+<p class="font-body-sm text-body-sm text-on-primary/80 mt-0.5">
+                    Polling all 5 Indian registrar endpoints every 60s. Latency: <strong class="text-secondary-fixed">142ms</strong>. 0 missed filings in 2025.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: PROBLEM VS SOLUTION (WHY GAZETTE IS TOO LATE) -->
+<section class="py-16 px-6 lg:px-12 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-bold">The Strategic Blindspot in Indian IP</span>
+<h2 class="font-display-lg text-display-lg text-on-surface tracking-tight">
+          Why Monitoring the Official Gazette is Too Little, Too Late
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+          Indian IP advocates have traditionally waited for publication in the weekly Trade Marks Journal. Here is why that legacy practice destroys litigation leverage.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Problem Card 1 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-error-container text-on-error-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[28px]">schedule</span>
+</div>
+<span class="font-label-sm text-label-sm text-error font-bold tracking-wider uppercase block mb-1">Old Way: 4 to 12 Month Lag</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">The Gazette Publication Void</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              By the time an encroaching mark passes formal Examination (FER) and is advertised in the Trade Marks Journal (TMJ), your rival has printed packaging, launched commercial distribution, and established user claims under Section 12.
+            </p>
+</div>
+<div class="mt-6 pt-4 bg-surface-container-low p-3.5 rounded-lg">
+<span class="font-label-sm text-label-sm text-primary font-bold block mb-0.5">TMarx Solution:</span>
+<p class="font-body-sm text-body-sm text-on-surface">Catch the filing on Day 1 at Form TM-A receipt-months before publication.</p>
+</div>
+</div>
+<!-- Problem Card 2 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[28px]">group_remove</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-bold tracking-wider uppercase block mb-1">Risk: Corporate Defection</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">Blind to Client Poaching</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              When an existing corporate client or a promising prospect files a brand new sub-brand through a rival IP boutique, traditional docket systems stay silent. You discover the betrayal only after the mandate is permanently lost.
+            </p>
+</div>
+<div class="mt-6 pt-4 bg-surface-container-low p-3.5 rounded-lg">
+<span class="font-label-sm text-label-sm text-primary font-bold block mb-0.5">TMarx Solution:</span>
+<p class="font-body-sm text-body-sm text-on-surface">Instant alarm if any tracked applicant lodges a mark via any other Agent Code.</p>
+</div>
+</div>
+<!-- Problem Card 3 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high text-primary flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[28px]">trending_up</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold tracking-wider uppercase block mb-1">Gap: Market Intelligence</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">Zero Rival Velocity Data</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Managing Partners lack granular data on which competing firms are scaling aggressive volume in Pharma (Class 5), Software (Class 42), or FMCG across Mumbai and Delhi Registry offices.
+            </p>
+</div>
+<div class="mt-6 pt-4 bg-surface-container-low p-3.5 rounded-lg">
+<span class="font-label-sm text-label-sm text-primary font-bold block mb-0.5">TMarx Solution:</span>
+<p class="font-body-sm text-body-sm text-on-surface">Live league tables and bench penetration analytics updated every 24 hours.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: 4 CORE FEATURE PILLARS -->
+<section class="py-20 px-6 lg:px-12 bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-bold">Unmatched Enforcement Precision</span>
+<h2 class="font-display-lg text-display-lg text-on-surface tracking-tight">
+          Engineered for India's Top IP Litigation &amp; Advisory Practices
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+          Four purpose-built intelligence pillars that turn defensive docketing into an active business development and enforcement advantage.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Pillar 1 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex gap-5 items-start">
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">id_card</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Rival Agent Code Tracking</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-primary-fixed text-primary">IN-PA-xxxx</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Enter any Trademark Agent Code or registered firm name. TMarx intercepts every single fresh application registered under their identifier across Delhi, Mumbai, Chennai, Ahmedabad, and Kolkata within 5 minutes of online receipt.
+            </p>
+<div class="pt-2 flex flex-wrap gap-2">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Agent Code Wildcards</span>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Bench Splitting</span>
+</div>
+</div>
+</div>
+<!-- Pillar 2 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex gap-5 items-start">
+<div class="w-12 h-12 rounded-xl bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">shield_person</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Client Poaching &amp; Account Defense</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-secondary-container text-on-secondary-container">Proactive</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Tag your tier-1 corporate clients. If an applicant entity historically represented by your chamber files a trademark with another advocate or firm, receive an instant escalation alert to immediately salvage the account relationship.
+            </p>
+<div class="pt-2 flex flex-wrap gap-2">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Entity Name Matching</span>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Pitch Account Radar</span>
+</div>
+</div>
+</div>
+<!-- Pillar 3 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex gap-5 items-start">
+<div class="w-12 h-12 rounded-xl bg-error text-on-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">balance</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Section 11 Pre-Grant Sentinel</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-error-container text-on-error-container">FER Pre-empt</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Our phonetic and Devanagari transliteration engine continuously evaluates competitor filings against your portfolio under Sections 11(1) and 11(2). Issue early Cease &amp; Desist warnings before official examination reports are even issued.
+            </p>
+<div class="pt-2 flex flex-wrap gap-2">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Phonetic Sim Engine</span>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Devanagari Multi-Script</span>
+</div>
+</div>
+</div>
+<!-- Pillar 4 -->
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-sm flex gap-5 items-start">
+<div class="w-12 h-12 rounded-xl bg-inverse-surface text-inverse-on-surface flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">analytics</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Bench &amp; Class Velocity Analytics</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-surface-container-high text-on-surface">Macro Intel</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Identify emerging practice growth. Uncover which law firms are acquiring high volumes in Class 05 (Pharma), Class 03 (Cosmetics), Class 09/42 (Tech), or Classes 35-36 (Services). Compare month-on-month market share seamlessly.
+            </p>
+<div class="pt-2 flex flex-wrap gap-2">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Nice Class Heatmaps</span>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface">Monthly Filing Velocity</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: HOW IT WORKS IN 3 STEPS -->
+<section class="py-16 px-6 lg:px-12 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-14">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-bold">Effortless Implementation</span>
+<h2 class="font-display-lg text-display-lg text-on-surface tracking-tight mt-1">
+          Zero Integration Friction. Up and Running in 60 Seconds.
+        </h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm relative">
+<div class="font-metric-number text-metric-number text-primary-fixed-dim mb-4 leading-none">01</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Input Agent Codes or Names</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Paste competitor advocate numbers (e.g. IN-PA-412) or company applicant entities. No complicated registry credentials or client uploads necessary.
+          </p>
+<div class="mt-6 flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+            Takes under 1 minute
+          </div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm relative">
+<div class="font-metric-number text-metric-number text-primary-fixed-dim mb-4 leading-none">02</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Continuous Registry Telemetry</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Our autonomous crawlers query the CGPDTM national e-filing register every 5 minutes across all 5 benches, parsing fresh Form TM-A receipt payloads.
+          </p>
+<div class="mt-6 flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+            24/7 autonomous monitoring
+          </div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm relative">
+<div class="font-metric-number text-metric-number text-primary-fixed-dim mb-4 leading-none">03</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">1-Click Actionable Dossiers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Receive automated WhatsApp &amp; Email alerts containing pre-drafted Cease &amp; Desist letters, Section 11 conflict briefs, and full applicant metadata.
+          </p>
+<div class="mt-6 flex items-center gap-2 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">send</span>
+            Ready to forward to clients
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: SOCIAL PROOF / ADVOCATE TESTIMONIAL -->
+<section class="py-16 px-6 lg:px-12 bg-surface">
+<div class="max-w-5xl mx-auto">
+<div class="p-8 sm:p-12 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-center gap-8">
+<!-- Visual Accent Quote Symbol -->
+<div class="w-16 h-16 rounded-2xl bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[36px]">format_quote</span>
+</div>
+<div class="space-y-4">
+<p class="font-headline-md text-headline-md text-on-surface leading-snug">
+            We caught an encroaching mark filed by an Ahmedabad-based competitor for our key FMCG client within 2 hours of their TM-A lodgement. By the evening, our Cease &amp; Desist notice was delivered. The applicant withdrew the mark before official examination even took place. TMarx is an indispensable operational superpower for Indian IP litigation.
+          </p>
+<div class="flex items-center justify-between flex-wrap gap-4 pt-2">
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Vikramjit Sen</h4>
+<p class="font-body-sm text-body-sm text-outline">Senior Partner, Sen &amp; Associates IP Advocates (New Delhi &amp; Mumbai)</p>
+</div>
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: TRANSPARENT PRICING & FREE TRIAL CONVERSION HOOK -->
+<section class="py-20 px-6 lg:px-12 bg-surface-container-low" id="pricing">
+<div class="max-w-6xl mx-auto">
+<div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-bold">Transparent Indian Pricing</span>
+<h2 class="font-display-lg text-display-lg text-on-surface tracking-tight">
+          Start Free. Scale to Full Practice Intelligence.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+          Simple, transparent plans designed for independent IP attorneys, advocates, and full-service legal chambers.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+<!-- Plan 1: Free Forever -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="font-headline-sm text-headline-sm text-on-surface">Starter Docket</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-high font-label-sm text-label-sm text-on-surface-variant">Solo Practice</span>
+</div>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="font-metric-number text-metric-number text-on-surface">INR 0</span>
+<span class="font-body-md text-body-md text-outline">/ month forever</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+              Perfect for young advocates managing their initial independent client trademark portfolio.
+            </p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+                Up to 50 monitored marks in docket
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+                1 tracked rival agent code
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+                Weekly email conflict summary
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+                CGPDTM e-Register status sync
+              </li>
+</ul>
+</div>
+<a class="w-full py-3 rounded-lg text-center font-label-lg text-label-lg bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors" href="#">
+            Get Started Free
+          </a>
+</div>
+<!-- Plan 2: Pro Practice (Recommended) -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary px-4 py-1 rounded-bl-xl font-label-sm text-label-sm uppercase tracking-wider font-bold">
+            Most Popular
+          </div>
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="font-headline-sm text-headline-sm text-primary">Pro Radar Practice</span>
+</div>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="font-metric-number text-metric-number text-on-surface">INR 999</span>
+<span class="font-body-md text-body-md text-outline">/ month (billed annually)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+              Full-fledged intelligence for boutique IP firms seeking absolute competitive advantage.
+            </p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+<strong>Unlimited</strong> monitored competitor Agent Codes &amp; firms
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+<strong>5-minute real-time</strong> lodgement alerts
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                Instant WhatsApp &amp; SMS urgent conflict push
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                Automated Pre-Grant Cease &amp; Desist generator
+              </li>
+<li class="flex items-center gap-2.5 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                Client Poaching &amp; defection alert trigger
+              </li>
+</ul>
+</div>
+<div class="space-y-2">
+<a class="w-full py-3 rounded-lg text-center font-label-lg text-label-lg bg-primary-container text-on-primary shadow-sm hover:bg-primary transition-all block" href="#">
+              Start 14-Day Free Pro Trial
+            </a>
+<span class="font-label-sm text-label-sm text-outline text-center block">Full Pro access unlocked instantly - Cancel anytime</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 8: BOTTOM INTERACTIVE LEAD-GEN BAR & SCANNER -->
+<section class="py-20 px-6 lg:px-12 bg-surface">
+<div class="max-w-5xl mx-auto">
+<div class="p-8 sm:p-12 rounded-3xl bg-inverse-surface text-inverse-on-surface shadow-xl relative overflow-hidden">
+<!-- Subtle Ambient Background Light -->
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="relative z-10 max-w-2xl space-y-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/30 text-inverse-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px]">search_spark</span>
+            Instant Telemetry Lookup
+          </div>
+<h2 class="font-display-lg text-display-lg text-inverse-on-surface tracking-tight">
+            Test Competitor Filing Radar On Any Agent Code or Firm
+          </h2>
+<p class="font-body-md text-body-md text-inverse-on-surface/80">
+            See recent lodgements and conflict exposures filed by any Indian trademark counsel in the last 48 hours.
+          </p>
+<!-- Search Input Form -->
+<div class="mt-6 flex flex-col sm:flex-row gap-3 pt-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">badge</span>
+<input class="w-full pl-11 pr-4 py-3.5 rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="competitor-search-input" placeholder="Enter Agent Code (e.g. IN-PA-412) or Competitor Firm" type="text" (input)="competitorQuery.set($any($event.target).value)" />
+</div>
+<button type="button" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary transition-all shrink-0 disabled:opacity-70" id="competitor-search-btn" [disabled]="scanning()" (click)="scanCompetitor()">
+<span>{{ scanning() ? 'Scanning registry...' : 'Scan Recent Filings Free' }}</span>
+<span class="material-symbols-outlined text-[18px]">{{ scanning() ? 'progress_activity' : 'arrow_forward' }}</span>
+</button>
+</div>
+<!-- Dynamic Search Result Alert Container -->
+<div class="mt-4 p-4 rounded-xl bg-surface/10 backdrop-blur-md text-inverse-on-surface font-body-sm text-body-sm flex items-center justify-between" [class.hidden]="!scanFeedback()" id="scan-feedback">
+<span id="scan-feedback-text">{{ scanFeedback() }}</span>
+<span class="material-symbols-outlined text-secondary-fixed animate-spin">refresh</span>
+</div>
+<!-- Trust Badges & Compliance Bar -->
+<div class="pt-8 mt-6 flex flex-wrap items-center gap-6 text-inverse-on-surface/70 font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">lock</span>
+<span>256-Bit SSL Encryption</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">verified_user</span>
+<span>DPDPA 2023 Compliant</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">public</span>
+<span>100% Read-Only CGPDTM Public Telemetry</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- MICRO-INTERACTIONS JAVASCRIPT -->
+</div>
+</main>
+<app-agent-portal-footer />

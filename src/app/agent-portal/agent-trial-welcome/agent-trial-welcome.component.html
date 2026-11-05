@@ -1,45 +1,64 @@
 @if (visible()) {
   <div class="trial-backdrop" (click)="dismiss()">
-    <section
-      #dialog
-      class="trial-dialog"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="trial-welcome-title"
-      aria-describedby="trial-welcome-intro"
-      (click)="$event.stopPropagation()"
-    >
-      <button #closeButton type="button" class="trial-dialog__close" aria-label="Dismiss trial welcome" (click)="dismiss()">
-        <ap-icon name="close" [size]="18" />
-      </button>
+    <section #dialog class="trial-dialog" role="dialog" aria-modal="true" aria-labelledby="trial-welcome-title" aria-describedby="trial-welcome-intro" (click)="$event.stopPropagation()">
+      <div class="trial-dialog__stripe" aria-hidden="true"></div>
+      <button #closeButton type="button" class="trial-dialog__close" aria-label="Dismiss trial welcome" (click)="dismiss()"><ap-icon name="close" [size]="18" /></button>
 
-      <div class="trial-dialog__art" aria-hidden="true">
-        <img src="/assets/images/agent-pro-trial-unlocked.png" width="672" height="720" alt="" />
-      </div>
+      <div class="trial-dialog__body">
+        <header class="trial-dialog__header">
+          <div class="trial-dialog__badges">
+            <span class="trial-dialog__badge trial-dialog__badge--primary"><ap-icon name="watch" [size]="14" /> 14-day Pro access unlocked</span>
+            <span class="trial-dialog__badge trial-dialog__badge--success">No card required</span>
+          </div>
 
-      <div class="trial-dialog__content">
-        <h2 id="trial-welcome-title">Your Pro trial starts now</h2>
-        <p id="trial-welcome-intro" class="trial-dialog__intro">
-          For the next <strong>{{ daysRemaining() }} day{{ daysRemaining() === 1 ? '' : 's' }}</strong>, every Pro tool is ready for your practice.
-        </p>
+          <div class="trial-dialog__headline-row">
+            <div>
+              <h2 id="trial-welcome-title">Welcome to Trademarx</h2>
+              <p id="trial-welcome-intro">Your Pro tools are ready to use. Explore the full workflow during your trial, with no billing details needed.</p>
+            </div>
+            <div class="trial-dialog__plan">
+              <span class="trial-dialog__plan-icon"><ap-icon name="watch" [size]="20" /></span>
+              <span><small>Practice plan</small><strong>Pro all-access</strong></span>
+            </div>
+          </div>
+        </header>
 
-        <div class="trial-dialog__end">
-          <ap-icon name="calendar" [size]="18" />
-          <span><strong>Trial ends</strong>{{ trialEndLabel() }}</span>
-        </div>
+        <section class="trial-dialog__progress" aria-label="Trial period">
+          <div class="trial-dialog__days"><strong>{{ daysRemaining() }}</strong><span>days</span></div>
+          <div class="trial-dialog__period-copy">
+            <div><strong>{{ daysRemaining() }} day{{ daysRemaining() === 1 ? '' : 's' }} remaining</strong><span>Active Pro trial</span></div>
+            <p>Full access through <strong>{{ trialEndLabel() }}</strong>. Your account returns to the Free plan when the trial ends; you will never be charged without your consent.</p>
+          </div>
+          <div class="trial-dialog__meter">
+            <div><span>Today</span><span>Trial ends</span></div>
+            <span class="trial-dialog__meter-track"><i [style.width.%]="((14 - daysRemaining()) / 14) * 100"></i></span>
+            <strong>No billing details needed</strong>
+          </div>
+        </section>
 
         @if (features().length > 0) {
           <section class="trial-dialog__features" aria-labelledby="trial-features-title">
-            <h3 id="trial-features-title">Included in your trial</h3>
+            <div class="trial-dialog__section-heading">
+              <h3 id="trial-features-title">Everything in Pro is ready for your practice</h3>
+              <span>All capabilities unlocked</span>
+            </div>
             <ul>
               @for (feature of features(); track feature) {
-                <li><ap-icon name="check" [size]="16" /> <span>{{ feature }}</span></li>
+                <li><span><ap-icon name="check" [size]="17" /></span><p>{{ feature }}</p></li>
               }
             </ul>
           </section>
         }
 
-        <button type="button" class="trial-dialog__cta" (click)="dismiss()">Start exploring</button>
+        <div class="trial-dialog__trust">
+          <span><ap-icon name="card" [size]="18" /> No credit card or billing details required</span>
+          <span><ap-icon name="lock" [size]="18" /> Your access changes only with your approval</span>
+        </div>
+
+        <footer class="trial-dialog__actions">
+          <button type="button" class="trial-dialog__dismiss" (click)="dismiss()">I'll explore later</button>
+          <button type="button" class="trial-dialog__cta" (click)="dismiss()">Explore Pro features <ap-icon name="chevron" [size]="18" /></button>
+        </footer>
       </div>
     </section>
   </div>

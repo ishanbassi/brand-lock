@@ -56,7 +56,7 @@ export class AppComponent {
       // /create-agent-account on agent.trademarx.in, then this global NavigationEnd handler sends
       // it to the main host, where the guard sends it straight back. The same contradiction also
       // affects /forgot-password.
-      const allowed = ['/agent-portal', '/agent-login', '/create-agent-account', '/forgot-password'];
+      const allowed = ['/agent-home', '/agent-portal', '/agent-login', '/create-agent-account', '/forgot-password'];
       if (allowed.some(prefix => url === prefix || url.startsWith(prefix + '/'))) {
         return;
       }

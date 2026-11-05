@@ -1,6 +1,7 @@
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../../models/auth.services';
 import { HostContextService } from '../shared/services/host-context.service';
 
 /**
@@ -41,6 +42,23 @@ export const agentHostGuard: CanActivateFn = () => {
 };
 
 /**
+ * Keeps the agent landing page useful for prospective practitioners while taking a signed-in
+ * agent straight to the workspace they came to use. Authentication is stored in browser storage,
+ * so SSR deliberately renders the public page and lets the browser make this decision on hydrate.
+ */
+export const agentHomeGuard: CanActivateFn = () => {
+  const platformId = inject(PLATFORM_ID);
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!isPlatformBrowser(platformId) || !authService.hasValidToken() || !authService.hasRole(['ROLE_AGENT'])) {
+    return true;
+  }
+
+  return router.createUrlTree(['/agent-portal/dashboard']);
+};
+
+/**
  * Keeps the public site off the agent subdomain.
  *
  * Without this, agent.trademarx.in would happily serve the marketing pages, the registration flow
@@ -59,11 +77,10 @@ export const mainHostGuard: CanActivateFn = () => {
   if (isPlatformBrowser(platformId)) {
     const path = window.location.pathname;
 
-    // The bare root is the address an agent actually types. Sending it across to the marketing
-    // site would be the opposite of what the subdomain is for, so it goes to the agent sign-in
-    // instead — which in turn bounces an already-signed-in agent to their dashboard.
+    // The bare root is the address an agent actually types. Keep it on the agent product,
+    // where practitioners can understand the workspace before signing in.
     if (path === '/' || path === '') {
-      return router.createUrlTree(['/agent-login']);
+      return router.createUrlTree(['/agent-home']);
     }
 
     window.location.href = hostContext.urlOnMainHost(path + window.location.search);
@@ -73,7 +90,7 @@ export const mainHostGuard: CanActivateFn = () => {
   // No window to redirect with during SSR, so refusing the route is what keeps public pages from
   // being rendered under the agent host and handed to a crawler.
   //
-  // Points at the sign-in, not the dashboard: the dashboard is behind AuthGuard, which would send
-  // an unauthenticated server-side render to /login — a public route, which lands back here.
-  return router.createUrlTree(['/agent-login']);
+  // The agent home is public and independently guarded by the agent host, so it is safe to
+  // render it here without falling into the authenticated portal route.
+  return router.createUrlTree(['/agent-home']);
 };
