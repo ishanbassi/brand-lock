@@ -74,7 +74,9 @@
       <pre class="bg-gray-900 text-gray-100 text-sm rounded-lg p-4 overflow-x-auto mb-10"><code>{{ specUrl }}</code></pre>
 
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Response fields</h2>
-      <p class="text-sm text-gray-600 mb-3">Both endpoints return an array of records in this shape.</p>
+      <p class="text-sm text-gray-600 mb-3">
+        Search and journal return arrays of records. The application-number status lookup returns one record in this shape.
+      </p>
       <div class="overflow-x-auto mb-3">
         <table class="w-full text-sm text-left border border-gray-200 rounded-lg">
           <thead class="bg-gray-50 text-gray-700">
@@ -100,8 +102,8 @@
 
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Limits &amp; the one condition</h2>
       <ul class="text-sm text-gray-600 space-y-2 mb-2 list-disc pl-5">
-        <li><strong>Free tier:</strong> 200 requests/day on each of search and journal.</li>
-        <li><strong>Trusted tier:</strong> approved developers receive 10× the daily quota — 2,000 requests/day on each of search and journal, and 5,000 status lookups.</li>
+        <li><strong>Free tier:</strong> 200 requests/day on each of search and journal, plus 50 status lookups.</li>
+        <li><strong>Trusted tier:</strong> approved developers receive 10× the daily quota — 2,000 requests/day on each of search and journal, and 100 status lookups.</li>
         <li><strong>Results are capped</strong> at 20 rows per page — this is a lookup/search API, not a bulk export.</li>
         <li>
           <strong>Pagination depth</strong> stops at <code>page=49</code> (the first 1,000 matches). Follow the <code>Link</code> header's
