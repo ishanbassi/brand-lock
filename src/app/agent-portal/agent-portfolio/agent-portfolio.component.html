@@ -422,20 +422,6 @@
       </table>
     </div>
     <div class="table-bottom-rail">
-      @if (totalPages > 1) {
-        <nav class="pagination" aria-label="Portfolio pages">
-          <button type="button" class="page-btn" [disabled]="page === 0" (click)="goToPage(0)" aria-label="First page"><ap-icon name="chevron" [size]="16" class="flip" /><ap-icon name="chevron" [size]="16" class="double-chevron flip" /></button>
-          <button type="button" class="page-btn" [disabled]="page === 0" (click)="goToPage(page - 1)" aria-label="Previous page"><ap-icon name="chevron" [size]="16" class="flip" /></button>
-          @for (p of getPageRange(); track p) {
-            @if (p === -1) { <span class="page-ellipsis">…</span> } @else {
-              <button type="button" class="page-btn" [class.active]="p === page" [attr.aria-current]="p === page ? 'page' : null" [attr.aria-label]="'Page ' + (p + 1)" (click)="goToPage(p)">{{ p + 1 }}</button>
-            }
-          }
-          <button type="button" class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)" aria-label="Next page"><ap-icon name="chevron" [size]="16" /></button>
-          <button type="button" class="page-btn" [disabled]="page === totalPages - 1" (click)="goToPage(totalPages - 1)" aria-label="Last page"><ap-icon name="chevron" [size]="16" /><ap-icon name="chevron" [size]="16" class="double-chevron" /></button>
-          <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
-        </nav>
-      }
       <div #portfolioHorizontalScroll class="table-horizontal-scroll" tabindex="0" role="region" aria-label="Scroll trademark table horizontally" (scroll)="syncHorizontalScroll(portfolioHorizontalScroll, portfolioTable)"><div #portfolioHorizontalContent></div></div>
     </div>
     </div>

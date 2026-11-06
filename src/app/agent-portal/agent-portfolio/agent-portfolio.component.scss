@@ -1473,11 +1473,6 @@ $white: #ffffff;
 
 .table-workspace:has(.table-bottom-rail) .table-card { border-radius: 10px 10px 0 0; }
 
-.table-bottom-rail .pagination {
-  flex: 0 0 max-content;
-  margin: 6px 0 0;
-}
-
 .table-bottom-rail .table-horizontal-scroll {
   flex: 0 1 26%;
   width: clamp(180px, 26vw, 420px);
