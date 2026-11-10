@@ -28,6 +28,8 @@ const PAGE_DESCRIPTION =
   'Learn how to download a trademark certificate online in India. Search by application number or trademark name, confirm registration status, and continue to the official IP India registry.';
 const CERTIFICATE_DOWNLOAD_SERVICE = 'TRADEMARK_CERTIFICATE_DOWNLOAD';
 const CERTIFICATE_DOWNLOAD_AMOUNT = 50;
+// Temporary launch setting: restore payment by changing this to true.
+const CERTIFICATE_PAYMENT_REQUIRED = false;
 
 @Component({
   selector: 'app-trademark-certificate-download',
@@ -261,6 +263,11 @@ export class TrademarkCertificateDownloadComponent
       this.isCertificateLoading
     )
       return;
+
+    if (!CERTIFICATE_PAYMENT_REQUIRED) {
+      this.beginCertificateDownload();
+      return;
+    }
 
     this.isCertificateUnlockOpen = true;
   }
