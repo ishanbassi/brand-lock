@@ -40,10 +40,16 @@ export type EntityResponseType = HttpResponse<ITrademark>;
 export type EntityArrayResponseType = HttpResponse<ITrademark[]>;
 
 export type LiveRefreshState = 'FRESH' | 'QUEUED' | 'BUSY' | 'NONE' | 'FETCHING' | 'COMPLETED' | 'NOT_FOUND' | 'FAILED';
+export type CertificateDownloadState = 'QUEUED' | 'FETCHING' | 'READY' | 'NOT_AVAILABLE' | 'FAILED' | 'BUSY' | 'NONE';
 
 export interface ILiveRefreshStatus {
   state: LiveRefreshState;
   trademark?: RestTrademark | null;
+}
+
+export interface ICertificateDownloadStatus {
+  state: CertificateDownloadState;
+  message?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -160,6 +166,21 @@ export class TrademarkService {
 
   getLiveRefreshStatus(applicationNo: number): Observable<ILiveRefreshStatus> {
     return this.http.get<ILiveRefreshStatus>(`${this.resourceUrl}/refresh/${applicationNo}/status`);
+  }
+
+  requestRegistrationCertificate(applicationNo: number): Observable<ICertificateDownloadStatus> {
+    return this.http.post<ICertificateDownloadStatus>(`${this.resourceUrl}/${applicationNo}/registration-certificate`, null);
+  }
+
+  getRegistrationCertificateStatus(applicationNo: number): Observable<ICertificateDownloadStatus> {
+    return this.http.get<ICertificateDownloadStatus>(`${this.resourceUrl}/${applicationNo}/registration-certificate/status`);
+  }
+
+  downloadRegistrationCertificate(applicationNo: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.resourceUrl}/${applicationNo}/registration-certificate`, {
+      observe: 'response',
+      responseType: 'blob',
+    });
   }
 
   findBySlug(slug: string): Observable<EntityResponseType> {

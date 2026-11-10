@@ -574,6 +574,11 @@ export const routes: Routes = [
         title: "Trademark Status Check by Application Number | Trademarx",
     },
     {
+        path: "trademark-certificate-download",
+        loadComponent: () => import('./trademark-certificate-download/trademark-certificate-download.component').then(m => m.TrademarkCertificateDownloadComponent),
+        title: "Download Trademark Registration Certificate | Trademarx",
+    },
+    {
         path: "trademark-search-by-company",
         loadComponent: () => import('./trademark-search-by-company/trademark-search-by-company.component').then(m => m.TrademarkSearchByCompanyComponent),
         title: "Trademark Search by Company Name | Trademarx",

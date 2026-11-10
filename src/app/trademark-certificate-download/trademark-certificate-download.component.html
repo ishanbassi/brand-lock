@@ -1,0 +1,1247 @@
+<main
+  class="certificate-page w-full bg-surface min-h-screen font-body-md text-on-surface antialiased"
+>
+  <div class="flex flex-col w-full">
+    <section
+      class="relative w-full bg-gradient-to-b from-surface-container-low via-surface to-surface overflow-hidden pb-12 pt-8"
+    >
+      <div
+        class="absolute -top-24 right-10 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"
+      ></div>
+      <div
+        class="absolute top-40 -left-20 w-80 h-80 rounded-full bg-secondary/5 blur-3xl pointer-events-none"
+      ></div>
+      <div class="max-w-[1440px] mx-auto px-margin relative">
+        <div
+          class="flex flex-wrap items-center justify-between gap-space-sm mb-6"
+        >
+          <nav
+            class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant"
+            aria-label="Breadcrumb"
+          >
+            <a
+              class="hover:text-primary transition-colors flex items-center gap-1"
+              routerLink="/home"
+              ><span class="material-symbols-outlined text-[16px]">home</span
+              ><span>Home</span></a
+            ><span class="text-outline">/</span
+            ><span class="text-primary font-semibold"
+              >Certificate Download</span
+            >
+          </nav>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-status-registered"></span
+            ><span class="tracking-wide uppercase"
+              >Official IP India eStatus retrieval</span
+            >
+          </div>
+        </div>
+        <div class="max-w-4xl space-y-4">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-surface-container text-primary font-label-sm text-label-sm uppercase tracking-wider font-semibold"
+          >
+            <span class="material-symbols-outlined text-[18px]"
+              >verified_user</span
+            >Official registry certificate
+          </div>
+          <h1
+            class="font-display-hero text-display-hero text-on-surface font-bold tracking-tight"
+          >
+            How to Download a Trademark <br /><span class="text-primary"
+              >Registration Certificate Online</span
+            >
+          </h1>
+          <p
+            class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl leading-relaxed"
+          >
+            Search by application number or trademark name, confirm the
+            registration status, and download the official trademark certificate
+            available from IP India.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+          <div
+            class="flex items-center gap-3 p-4 rounded-xl bg-surface-container-lowest shadow-sm"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-status-registered-bg text-status-registered flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-[22px]">gavel</span>
+            </div>
+            <div>
+              <div class="font-title-md text-title-md text-on-surface">
+                Official certificate source
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                Retrieved through the IP India registry
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-3 p-4 rounded-xl bg-surface-container-lowest shadow-sm"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-status-pending-bg text-status-pending flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-[22px]">bolt</span>
+            </div>
+            <div>
+              <div class="font-title-md text-title-md text-on-surface">
+                Application or name search
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                Find the correct registered trademark
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-3 p-4 rounded-xl bg-surface-container-lowest shadow-sm"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-surface-container text-primary flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-[22px]"
+                >picture_as_pdf</span
+              >
+            </div>
+            <div>
+              <div class="font-title-md text-title-md text-on-surface">
+                Direct PDF download
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                Available once the registry confirms registration
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-[1440px] mx-auto w-full px-margin -mt-6 z-10">
+      <div class="bg-surface-container-lowest rounded-2xl shadow-xl p-6 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-6">
+          <div
+            class="inline-flex p-1.5 rounded-xl bg-surface-container-low"
+            role="tablist"
+            aria-label="Search method"
+          >
+            <button
+              type="button"
+              class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-label-md font-label-md font-semibold transition-all"
+              [class.bg-surface-container-lowest]="mode === 'application'"
+              [class.text-primary]="mode === 'application'"
+              [class.shadow-sm]="mode === 'application'"
+              [class.text-on-surface-variant]="mode !== 'application'"
+              (click)="setMode('application')"
+            >
+              <span class="material-symbols-outlined text-[18px]">numbers</span
+              >Search by Application Number</button
+            ><button
+              type="button"
+              class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-label-md font-label-md font-semibold transition-all"
+              [class.bg-surface-container-lowest]="mode === 'name'"
+              [class.text-primary]="mode === 'name'"
+              [class.shadow-sm]="mode === 'name'"
+              [class.text-on-surface-variant]="mode !== 'name'"
+              (click)="setMode('name')"
+            >
+              <span class="material-symbols-outlined text-[18px]"
+                >font_download</span
+              >Search by Trademark Name / Wordmark
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant"
+          >
+            <span class="material-symbols-outlined text-[16px] text-primary"
+              >security</span
+            ><span>Secure registry query</span>
+          </div>
+        </div>
+        <form (ngSubmit)="search()" class="space-y-4">
+          <div
+            *ngIf="mode === 'application'; else wordmarkSearch"
+            class="flex flex-col lg:flex-row items-stretch gap-3"
+          >
+            <div class="relative flex-grow">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline"
+              >
+                <span class="material-symbols-outlined text-[22px]"
+                  >search</span
+                >
+              </div>
+              <input
+                class="w-full h-14 pl-12 pr-28 rounded-xl bg-surface-subtle font-legal-mono text-legal-mono text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none transition-all shadow-inner"
+                name="applicationNumber"
+                inputmode="numeric"
+                [ngModel]="query"
+                (ngModelChange)="onApplicationNumberChange($event)"
+                placeholder="Enter application number, e.g. 6215161"
+              /><span
+                class="absolute right-4 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface-variant uppercase"
+                >Numbers only</span
+              >
+            </div>
+            <button
+              class="h-14 px-8 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center gap-3 transition-colors shadow-md shrink-0"
+              [disabled]="isLoading || !query.trim()"
+            >
+              <span class="material-symbols-outlined text-[20px]">download</span
+              ><span>{{ isLoading ? "Searching…" : "Fetch Certificate" }}</span>
+            </button>
+          </div>
+          <ng-template #wordmarkSearch
+            ><div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+              <div class="relative md:col-span-9">
+                <div
+                  class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline"
+                >
+                  <span class="material-symbols-outlined text-[22px]"
+                    >badge</span
+                  >
+                </div>
+                <input
+                  class="w-full h-14 pl-12 pr-4 rounded-xl bg-surface-subtle font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none transition-all shadow-inner"
+                  name="wordmark"
+                  [ngModel]="query"
+                  (ngModelChange)="query = $event"
+                  placeholder="Search trademark name, e.g. Trademarx, Tata, Zomato"
+                />
+              </div>
+              <button
+                class="h-14 px-8 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center gap-3 transition-colors shadow-md md:col-span-3"
+                [disabled]="isLoading || !query.trim()"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >manage_search</span
+                ><span>Search register</span>
+              </button>
+            </div></ng-template
+          >
+        </form>
+        <div
+          class="mt-6 pt-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-low/60 -mx-6 -mb-6 p-6 rounded-b-2xl"
+        >
+          <div class="flex flex-wrap items-center gap-2">
+            <span
+              class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold mr-1"
+              >Quick sample records:</span
+            ><button
+              type="button"
+              class="px-3 py-1.5 rounded-lg bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary text-on-surface font-legal-mono text-legal-mono transition-colors shadow-sm"
+              (click)="searchSample('6215161')"
+            >
+              App No: 6215161</button
+            ><button
+              type="button"
+              class="px-3 py-1.5 rounded-lg bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary text-on-surface font-legal-mono text-legal-mono transition-colors shadow-sm"
+              (click)="searchSample('5489210')"
+            >
+              App No: 5489210
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-2 text-status-objected font-body-sm text-body-sm"
+          >
+            <span class="material-symbols-outlined text-[18px] shrink-0"
+              >info</span
+            ><span
+              >Certificates are available only for marks recorded as
+              Registered.</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="max-w-[1440px] mx-auto w-full px-margin py-12"
+      aria-live="polite"
+    >
+      <div
+        *ngIf="errorMessage"
+        class="mb-6 p-4 rounded-xl bg-status-refused-bg text-status-refused font-body-md"
+      >
+        {{ errorMessage }}
+      </div>
+      <div
+        *ngIf="
+          hasSearched && !isLoading && !errorMessage && results.length === 0
+        "
+        class="mb-6 p-8 rounded-2xl bg-surface-container-low text-on-surface-variant text-center"
+      >
+        No trademark record found. Check the application number or search using
+        the trademark name.
+      </div>
+      <div
+        *ngIf="results.length > 1"
+        class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3"
+      >
+        <button
+          *ngFor="let trademark of results"
+          type="button"
+          class="text-left p-4 rounded-xl bg-surface-container-lowest shadow-sm hover:bg-surface-container-low"
+          (click)="selectTrademark(trademark)"
+        >
+          <strong>{{ displayName(trademark) }}</strong
+          ><span class="block text-body-sm text-on-surface-variant"
+            >Application No. {{ trademark.applicationNo }} ·
+            {{ trademark.trademarkStatus }}</span
+          >
+        </button>
+      </div>
+      <div
+        *ngIf="selectedTrademark; else dossierEmpty"
+        class="flex flex-col lg:flex-row items-start gap-8"
+      >
+        <div class="w-full lg:w-5/12 space-y-6">
+          <div
+            class="bg-surface-container-lowest rounded-2xl shadow-md p-6 space-y-6"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-16 h-16 rounded-xl bg-surface-container-low flex items-center justify-center p-2 text-primary font-bold text-headline-sm shadow-inner"
+                >
+                  <span class="tracking-widest">TM</span>
+                </div>
+                <div>
+                  <span
+                    class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold"
+                    >{{
+                      isRegistered(selectedTrademark)
+                        ? "Registered trademark"
+                        : "Trademark record"
+                    }}</span
+                  >
+                  <h2
+                    class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight"
+                  >
+                    {{ displayName(selectedTrademark) }}
+                  </h2>
+                  <span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                    >Application status from the register</span
+                  >
+                </div>
+              </div>
+              <div
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold shrink-0"
+                [class.bg-status-registered-bg]="
+                  isRegistered(selectedTrademark)
+                "
+                [class.text-status-registered]="isRegistered(selectedTrademark)"
+                [class.bg-status-objected-bg]="!isRegistered(selectedTrademark)"
+                [class.text-status-objected]="!isRegistered(selectedTrademark)"
+              >
+                <span class="material-symbols-outlined text-[16px]"
+                  >verified</span
+                ><span>{{
+                  selectedTrademark.trademarkStatus || "UNAVAILABLE"
+                }}</span>
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-2 gap-4 py-4 bg-surface-container-low/50 rounded-xl p-4"
+            >
+              <div>
+                <span
+                  class="block font-label-sm text-label-sm text-on-surface-variant uppercase"
+                  >Application No.</span
+                ><span
+                  class="font-legal-mono text-title-md font-bold text-primary"
+                  >{{ selectedTrademark.applicationNo }}</span
+                >
+              </div>
+              <div>
+                <span
+                  class="block font-label-sm text-label-sm text-on-surface-variant uppercase"
+                  >Nice Class</span
+                ><span
+                  class="font-legal-mono text-title-md font-bold text-on-surface"
+                  >Class {{ selectedTrademark.tmClass || "—" }}</span
+                >
+              </div>
+              <div>
+                <span
+                  class="block font-label-sm text-label-sm text-on-surface-variant uppercase"
+                  >Application date</span
+                ><span
+                  class="font-legal-mono text-body-md font-semibold text-on-surface"
+                  >{{
+                    selectedTrademark.applicationDate?.format("DD MMM YYYY") ||
+                      "Not available"
+                  }}</span
+                >
+              </div>
+              <div>
+                <span
+                  class="block font-label-sm text-label-sm text-on-surface-variant uppercase"
+                  >Registry status</span
+                ><span
+                  class="font-legal-mono text-body-md font-semibold text-on-surface"
+                  >{{
+                    selectedTrademark.trademarkStatus || "Not available"
+                  }}</span
+                >
+              </div>
+            </div>
+            <div class="space-y-2">
+              <span
+                class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold"
+                >Registered proprietor</span
+              >
+              <div
+                class="font-body-md text-body-md font-semibold text-on-surface"
+              >
+                {{ selectedTrademark.proprietorName || "Not available" }}
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                {{
+                  selectedTrademark.proprietorAddress ||
+                    "The registry has not published an address for this record."
+                }}
+              </div>
+            </div>
+            <div class="space-y-3 pt-2">
+              <div
+                class="flex items-center justify-between text-body-sm font-body-sm"
+              >
+                <span class="text-on-surface-variant"
+                  >Registration / effective date:</span
+                ><span class="font-legal-mono text-on-surface font-semibold">{{
+                  selectedTrademark.applicationDate?.format("DD MMM YYYY") ||
+                    "See registry record"
+                }}</span>
+              </div>
+              <div
+                class="flex items-center justify-between text-body-sm font-body-sm"
+              >
+                <span class="text-on-surface-variant"
+                  >Validity / renewed until:</span
+                ><span
+                  class="font-legal-mono text-status-registered font-semibold"
+                  >{{
+                    selectedTrademark.renewalDate?.format("DD MMM YYYY") ||
+                      "See certificate"
+                  }}</span
+                >
+              </div>
+              <div
+                class="flex items-center justify-between text-body-sm font-body-sm"
+              >
+                <span class="text-on-surface-variant">Registry office:</span
+                ><span class="font-body-sm text-on-surface font-medium">{{
+                  selectedTrademark.headOffice || "IP India"
+                }}</span>
+              </div>
+            </div>
+            <div class="space-y-3 pt-4">
+              <button
+                type="button"
+                class="w-full h-12 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-[0.99]"
+                [disabled]="
+                  !isRegistered(selectedTrademark) || isCertificateLoading
+                "
+                (click)="openCertificateUnlockModal()"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >picture_as_pdf</span
+                ><span>{{
+                  isCertificateLoading
+                    ? "Preparing official certificate…"
+                    : "Download Official Certificate (PDF)"
+                }}</span>
+              </button>
+              <div
+                *ngIf="certificateMessage"
+                class="text-center font-body-sm text-body-sm text-on-surface-variant"
+              >
+                {{ certificateMessage }}
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  class="h-10 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors"
+                  (click)="openOfficialRegistry()"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >open_in_new</span
+                  ><span>IP India</span></button
+                ><a
+                  *ngIf="selectedTrademark.url"
+                  class="h-10 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors"
+                  [routerLink]="selectedTrademark.url"
+                  ><span class="material-symbols-outlined text-[16px]"
+                    >description</span
+                  ><span>Mark record</span></a
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-4 rounded-xl bg-surface-container-low flex items-center gap-3"
+          >
+            <span class="material-symbols-outlined text-secondary text-[24px]"
+              >verified</span
+            >
+            <div class="text-body-sm font-body-sm text-on-surface-variant">
+              The PDF is retrieved from the official eStatus registry during an
+              authenticated session and held only briefly for your download.
+            </div>
+          </div>
+        </div>
+        <div class="w-full lg:w-7/12">
+          <div
+            class="bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden relative"
+          >
+            <div
+              class="h-12 bg-surface-container px-6 flex items-center justify-between text-on-surface-variant"
+            >
+              <div class="flex items-center gap-2 font-label-sm text-label-sm">
+                <span
+                  class="w-3 h-3 rounded-full bg-status-refused inline-block opacity-75"
+                ></span
+                ><span
+                  class="w-3 h-3 rounded-full bg-status-objected inline-block opacity-75"
+                ></span
+                ><span
+                  class="w-3 h-3 rounded-full bg-status-registered inline-block opacity-75"
+                ></span
+                ><span class="ml-2 font-legal-mono text-on-surface"
+                  >FORM TM-C (Certificate of Registration)</span
+                >
+              </div>
+              <div class="flex items-center gap-3 font-label-sm text-label-sm">
+                <span
+                  class="material-symbols-outlined text-[18px] text-status-registered"
+                  >lock</span
+                ><span>Official registry document</span>
+              </div>
+            </div>
+            <div
+              class="p-8 sm:p-12 bg-canvas-bg text-on-surface relative select-none"
+            >
+              <div
+                class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]"
+              >
+                <span class="material-symbols-outlined text-[340px]"
+                  >shield</span
+                >
+              </div>
+              <div class="text-center space-y-2 mb-8 relative">
+                <div
+                  class="mx-auto w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center text-primary mb-2 shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-[32px]"
+                    >account_balance</span
+                  >
+                </div>
+                <h3
+                  class="font-label-md text-label-md tracking-[0.2em] text-on-surface-variant uppercase font-bold"
+                >
+                  Government of India
+                </h3>
+                <h2
+                  class="font-title-md text-title-md tracking-wider text-primary font-bold uppercase"
+                >
+                  Trade Marks Registry
+                </h2>
+                <div
+                  class="font-body-sm text-body-sm text-on-surface-variant font-medium"
+                >
+                  Trade Marks Act, 1999 · Certificate details from the IP India
+                  register
+                </div>
+                <div
+                  class="inline-block px-4 py-1 mt-2 rounded bg-surface-container-low font-label-md text-label-md font-semibold text-primary"
+                >
+                  CERTIFICATE OF REGISTRATION OF TRADE MARK
+                </div>
+              </div>
+              <div
+                class="space-y-4 font-body-sm text-body-sm leading-relaxed text-on-surface-variant relative"
+              >
+                <p>
+                  Application No.
+                  <span class="font-legal-mono font-bold text-on-surface">{{
+                    selectedTrademark.applicationNo
+                  }}</span>
+                  | Status:
+                  <span class="font-legal-mono font-bold text-on-surface">{{
+                    selectedTrademark.trademarkStatus
+                  }}</span>
+                </p>
+                <p class="text-on-surface">
+                  The selected trademark record has been retrieved so that you
+                  can request the official registration certificate from the
+                  registry.
+                </p>
+                <div class="p-4 rounded-xl bg-surface-container-low space-y-1">
+                  <div
+                    class="font-title-md text-title-md text-primary font-bold"
+                  >
+                    {{
+                      selectedTrademark.proprietorName ||
+                        "REGISTERED PROPRIETOR"
+                    }}
+                  </div>
+                  <div class="font-body-sm text-body-sm text-on-surface">
+                    {{
+                      selectedTrademark.proprietorAddress ||
+                        "Address available in the registry record."
+                    }}
+                  </div>
+                </div>
+                <div class="space-y-1 pt-1">
+                  <span
+                    class="font-label-sm text-label-sm uppercase font-semibold text-on-surface"
+                    >In Class {{ selectedTrademark.tmClass || "—" }}:</span
+                  >
+                  <p
+                    class="font-body-sm text-body-sm bg-surface-container-lowest p-3 rounded-lg text-on-surface-variant"
+                  >
+                    {{
+                      selectedTrademark.details ||
+                        "The official certificate includes the registry’s recorded goods and services specification."
+                    }}
+                  </p>
+                </div>
+                <div
+                  class="my-6 p-6 rounded-xl bg-surface-container-low flex flex-col items-center justify-center space-y-2"
+                >
+                  <div
+                    class="text-headline-md font-headline-md font-black tracking-widest text-primary"
+                  >
+                    {{ displayName(selectedTrademark) }}
+                  </div>
+                  <span
+                    class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant"
+                    >{{ selectedTrademark.type || "Trademark" }}</span
+                  >
+                </div>
+                <p
+                  class="text-on-surface-variant italic font-body-sm text-body-sm"
+                >
+                  This preview helps identify the correct trademark record. The
+                  downloaded PDF remains the official certificate issued by the
+                  Trade Marks Registry.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #dossierEmpty
+        ><div class="flex flex-col lg:flex-row items-start gap-8 opacity-70">
+          <div
+            class="w-full lg:w-5/12 h-80 bg-surface-container-low rounded-2xl"
+          ></div>
+          <div
+            class="w-full lg:w-7/12 h-[480px] bg-surface-container-low rounded-2xl"
+          ></div></div
+      ></ng-template>
+    </section>
+    <section class="w-full bg-surface-container-low py-16">
+      <div class="max-w-[1440px] mx-auto px-margin">
+        <div class="max-w-2xl mb-12">
+          <span
+            class="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-semibold"
+            >Trademark certificate download help</span
+          >
+          <h2
+            class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1"
+          >
+            Frequently Asked Questions
+          </h2>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+            Everything you need to know about how to download a trademark
+            certificate online in India.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <article
+            class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container text-primary flex items-center justify-center font-bold"
+            >
+              <span class="material-symbols-outlined text-[20px]">search</span>
+            </div>
+            <h3 class="font-title-md text-title-md text-on-surface font-bold">
+              How do I find my application number?
+            </h3>
+            <p
+              class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+            >
+              Use the number on your Form TM-A acknowledgement. You can also
+              search by trademark name on this page to find the matching
+              application record.
+            </p>
+          </article>
+          <article
+            class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container text-primary flex items-center justify-center font-bold"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >hourglass_empty</span
+              >
+            </div>
+            <h3 class="font-title-md text-title-md text-on-surface font-bold">
+              Why is my certificate not available?
+            </h3>
+            <p
+              class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+            >
+              Trademark registration certificate download is available only when
+              IP India records the mark as
+              <strong class="text-status-registered">Registered</strong>.
+            </p>
+            <div
+              class="p-2.5 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface-variant"
+            >
+              Pending, objected, opposed, refused and abandoned marks do not
+              have a registration certificate.
+            </div>
+          </article>
+          <article
+            class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container text-primary flex items-center justify-center font-bold"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >verified</span
+              >
+            </div>
+            <h3 class="font-title-md text-title-md text-on-surface font-bold">
+              Is the downloaded PDF official?
+            </h3>
+            <p
+              class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+            >
+              Trademarx retrieves the document that the IP India eStatus
+              registry exposes for the selected registered trademark.
+            </p>
+          </article>
+        </div>
+        <div
+          class="mt-12 p-8 rounded-2xl bg-surface-container text-on-surface shadow-md flex flex-col lg:flex-row items-center justify-between gap-6"
+        >
+          <div class="space-y-2 max-w-2xl text-center lg:text-left">
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface-container-highest text-primary font-label-sm text-label-sm uppercase font-semibold"
+            >
+              <span class="material-symbols-outlined text-[16px]"
+                >support_agent</span
+              >Need trademark help?
+            </div>
+            <h3
+              class="font-headline-sm text-headline-sm font-bold text-primary"
+            >
+              Certificate unavailable or mark under formalities?
+            </h3>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              Search the record first, then use the official registry status to
+              understand the next step for your trademark application.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 shrink-0">
+            <a
+              class="h-12 px-6 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-title-md text-title-md flex items-center gap-2 shadow-sm transition-colors"
+              routerLink="/trademark-status-check"
+              ><span class="material-symbols-outlined text-[20px]">search</span
+              ><span>Check TM status</span></a
+            ><button
+              type="button"
+              class="h-12 px-6 rounded-xl bg-surface-container-lowest hover:bg-surface text-primary font-title-md text-title-md flex items-center gap-2 shadow-sm transition-colors"
+              (click)="openOfficialRegistry()"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >open_in_new</span
+              ><span>Open IP India</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div
+    *ngIf="isCertificateUnlockOpen"
+    class="fixed inset-0 z-[2001] flex items-center justify-center p-4 bg-tertiary/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="certificate-unlock-title"
+  >
+    <div
+      class="bg-surface-container-lowest rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden relative border border-outline-variant/40 flex flex-col max-h-[92vh]"
+    >
+      <div
+        class="px-6 py-4 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between shrink-0"
+      >
+        <div>
+          <div class="flex items-center gap-2">
+            <h3
+              id="certificate-unlock-title"
+              class="font-title-md text-title-md text-on-surface font-bold"
+            >
+              Certificate Preview &amp; Verification
+            </h3>
+            <span
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-status-registered-bg text-status-registered font-label-sm text-label-sm font-semibold"
+            >
+              <span class="material-symbols-outlined text-[13px]"
+                >verified</span
+              >
+              Statutory Form TM-C &bull; CGPDTM Registry
+            </span>
+          </div>
+          <p class="font-label-md text-label-md text-on-surface-variant mt-0.5">
+            App No.
+            <span class="font-legal-mono font-semibold text-primary">{{
+              selectedTrademark?.applicationNo
+            }}</span>
+            &bull;
+            <span class="font-semibold text-on-surface">{{
+              displayName(selectedTrademark!)
+            }}</span>
+            (Class {{ selectedTrademark?.tmClass || "-" }}) &bull; Form RG-2
+          </p>
+        </div>
+        <button
+          type="button"
+          class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+          [disabled]="isCertificatePaymentStarting"
+          (click)="closeCertificateUnlockModal()"
+          aria-label="Close certificate preview"
+        >
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="relative overflow-y-auto p-6 bg-surface-subtle flex-1">
+        <div
+          class="bg-canvas-bg rounded-xl shadow-md border border-outline-variant/30 overflow-hidden select-none relative"
+        >
+          <div class="w-full relative">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ljA4La7lSctmpDKaZK2IQQbezqZZ2hbUgGf6p15T-aP2CkuHjoLIv7G4d35vhBTjwlYwFHY_qaVOoPKJESp5oQ0Ucp-6F0mS-QJ6OZxGbRgwpJ2MVTdgw_CL65gYno3zKR9bCQIC1uq0SUSTbVQhk6PZglxgG0b4T5Vr59Ucw8006U3saZVd42_XZzFhOXaEMK0lq3czhJ1WQ5egCNwSfUJ4LNixfHaieU9iKYXvDODr_-yHCud9"
+              [alt]="
+                'Official Trademark Registration Certificate Form RG-2 No. ' +
+                selectedTrademark?.applicationNo
+              "
+              class="w-full h-auto block object-contain select-none pointer-events-none"
+            />
+            <div
+              class="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-surface-subtle via-surface-subtle/80 to-transparent pointer-events-none backdrop-blur-sm"
+            ></div>
+          </div>
+        </div>
+
+        <div class="absolute inset-x-6 sm:inset-x-10 bottom-6 z-20">
+          <div
+            class="bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl p-5 sm:p-6 shadow-2xl border border-primary/20 text-center space-y-4"
+          >
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-objected-bg text-status-objected border border-status-objected/20 font-label-sm text-label-sm font-semibold mx-auto"
+            >
+              <span class="material-symbols-outlined text-[16px]">lock</span>
+              Official High-Resolution PDF Locked
+            </div>
+            <div class="space-y-1 max-w-lg mx-auto">
+              <h4 class="font-title-md text-title-md text-on-surface font-bold">
+                Unlock Verified Statutory Trademark Certificate
+              </h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Get the full unredacted official PDF with the statutory QR code
+                and digital signature seal.
+              </p>
+            </div>
+            <div class="max-w-md mx-auto space-y-2">
+              <button
+                type="button"
+                class="w-full h-12 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-[0.99]"
+                [disabled]="isCertificatePaymentStarting"
+                (click)="startCertificatePayment()"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >lock_open</span
+                >
+                <span>{{
+                  isCertificatePaymentStarting
+                    ? "Opening secure payment..."
+                    : "Unlock &amp; Download Official PDF"
+                }}</span>
+                <span
+                  class="bg-on-primary/20 px-2 py-0.5 rounded text-label-md font-bold font-legal-mono"
+                  >&#8377;50</span
+                >
+              </button>
+              <div
+                class="flex items-center justify-center gap-3 text-[11px] font-label-sm text-on-surface-variant pt-1"
+              >
+                <span class="flex items-center gap-1"
+                  ><span
+                    class="material-symbols-outlined text-[14px] text-status-registered"
+                    >check_circle</span
+                  >Instant PDF Delivery</span
+                >
+                <span>&bull;</span>
+                <span class="flex items-center gap-1"
+                  ><span
+                    class="material-symbols-outlined text-[14px] text-secondary"
+                    >account_balance_wallet</span
+                  >UPI, Cards &amp; Netbanking</span
+                >
+              </div>
+            </div>
+            <p
+              class="text-[11px] font-label-sm text-on-surface-variant text-center"
+            >
+              One-time nominal processing fee &bull; Official CGPDTM registry
+              sync guaranteed &bull; Instant tax invoice provided
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="px-6 py-3 bg-surface-container-low border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-3 text-label-sm font-label-sm text-on-surface-variant shrink-0"
+      >
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[16px] text-secondary"
+            >shield</span
+          >
+          <span>256-bit Encrypted &bull; 100% CGPDTM Sync Guarantee</span>
+        </div>
+        <a
+          class="text-primary hover:underline flex items-center gap-1 font-semibold"
+          href="mailto:support@trademarx.in"
+        >
+          <span>Need assistance? Contact IP Helpdesk</span>
+          <span class="material-symbols-outlined text-[14px]">headset_mic</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="isCertificateLoading || isCertificatePaymentVerifying || isCertificateReady"
+    class="certificate-loading-modal fixed inset-0 z-[100] flex items-center justify-center p-4 bg-tertiary/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="certificate-loading-title"
+  >
+    <div
+      class="bg-surface-container-lowest rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden relative border border-outline-variant/40 flex flex-col max-h-[92vh]"
+    >
+      <div
+        class="px-6 py-4 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between shrink-0"
+      >
+        <div>
+          <div class="flex items-center gap-2">
+            <h3
+              id="certificate-loading-title"
+              class="font-title-md text-title-md text-on-surface font-bold"
+            >
+              {{
+                isCertificateReady
+                  ? "Certificate Ready to Download"
+                  : isCertificatePaymentVerifying
+                    ? "Confirming Secure Payment"
+                    : "Compiling Digital Certificate"
+              }}
+            </h3>
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-registered-bg text-status-registered font-label-sm text-label-sm font-semibold"
+              ><span
+                class="w-1.5 h-1.5 rounded-full bg-status-registered animate-pulse"
+              ></span
+              >{{
+                isCertificateReady
+                  ? "Official PDF prepared"
+                  : isCertificatePaymentVerifying
+                    ? "Payment confirmation active"
+                    : "Registry handshake active"
+              }}</span
+            >
+          </div>
+          <p class="font-label-md text-label-md text-on-surface-variant mt-0.5">
+            Application No.
+            <span class="font-legal-mono font-semibold text-primary">{{
+              selectedTrademark?.applicationNo
+            }}</span>
+            ·
+            <span class="font-semibold text-on-surface">{{
+              displayName(selectedTrademark!)
+            }}</span>
+            (Class {{ selectedTrademark?.tmClass || "—" }})
+          </p>
+        </div>
+        <span
+          class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant"
+          ><span class="material-symbols-outlined text-[18px]">lock</span></span
+        >
+      </div>
+      <div
+        class="relative overflow-y-auto p-6 bg-surface-subtle flex-1 space-y-6"
+      >
+        <div
+          class="certificate-loading-illustration bg-canvas-bg rounded-xl shadow-sm border border-outline-variant/30 p-4 flex flex-col items-center justify-center relative overflow-hidden"
+        >
+          <div class="loading-orbit orbit-one"></div>
+          <div class="loading-orbit orbit-two"></div>
+          <div class="loading-server">
+            <span class="material-symbols-outlined">dns</span>
+          </div>
+          <div class="loading-registry">
+            <span class="material-symbols-outlined">account_balance</span>
+          </div>
+          <div class="loading-document">
+            <div class="loading-emblem">
+              <span class="material-symbols-outlined">account_balance</span>
+            </div>
+            <strong>GOVERNMENT OF INDIA</strong><b>TRADE MARKS REGISTRY</b
+            ><small>FORM TM-C (RULE 56)</small><i></i><i></i><i></i>
+            <div class="loading-mark">
+              {{ displayName(selectedTrademark!) }}
+            </div>
+            <i></i><i></i>
+            <div class="loading-qr"></div>
+            <div class="loading-seal">★</div>
+            <div class="loading-beam"></div>
+          </div>
+          <div class="loading-pill">
+            <span class="loading-disc"></span
+            ><span>GENERATING OFFICIAL PDF...</span
+            ><span class="material-symbols-outlined">south</span>
+          </div>
+          <div class="loading-badge sync-badge">✓ CGPDTM Sync</div>
+          <div class="loading-badge sealed-badge">
+            <span class="material-symbols-outlined">lock</span>256-bit Sealed
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/30 shadow-sm space-y-3"
+        >
+          <div
+            class="flex items-center justify-between font-label-md text-label-md"
+          >
+            <span class="font-semibold text-on-surface flex items-center gap-2"
+              ><span
+                class="material-symbols-outlined text-[18px] text-primary animate-pulse"
+                >sync</span
+              >Processing Document Pipeline</span
+            ><span class="font-legal-mono font-bold text-primary"
+              >{{ certificateProgress | number: "1.0-0" }}% · Preparing official
+              PDF</span
+            >
+          </div>
+          <div
+            class="w-full h-2 rounded-full bg-surface-container overflow-hidden"
+          >
+            <div
+              class="h-full bg-primary rounded-full transition-all duration-300"
+              [style.width.%]="certificateProgress"
+            ></div>
+          </div>
+        </div>
+        <div
+          class="space-y-2.5 bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/30 shadow-sm"
+        >
+          <h4
+            class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-bold mb-3"
+          >
+            Statutory Compilation Checklist
+          </h4>
+          <div
+            class="flex items-center justify-between p-2 rounded-lg text-body-sm font-body-sm"
+            [class.bg-surface-container-low]="certificateStep > 0"
+          >
+            <div class="flex items-center gap-2.5">
+              <span
+                class="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                [class.bg-status-registered-bg]="certificateStep > 0"
+                [class.text-status-registered]="certificateStep > 0"
+                [class.bg-surface-container]="certificateStep === 0"
+                [class.text-primary]="certificateStep === 0"
+                ><span class="material-symbols-outlined text-[15px]">{{
+                  certificateStep > 0 ? "check" : "progress_activity"
+                }}</span></span
+              ><span class="text-on-surface font-medium"
+                >Querying CGPDTM Master Registry</span
+              >
+            </div>
+            <span
+              class="font-legal-mono text-[11px] font-semibold"
+              [class.text-status-registered]="certificateStep > 0"
+              [class.text-primary]="certificateStep === 0"
+              >{{ certificateStep > 0 ? "COMPLETED" : "ACTIVE" }}</span
+            >
+          </div>
+          <div
+            class="flex items-center justify-between p-2 rounded-lg text-body-sm font-body-sm"
+            [class.bg-surface-container-low]="certificateStep > 1"
+          >
+            <div class="flex items-center gap-2.5">
+              <span
+                class="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                [class.bg-status-registered-bg]="certificateStep > 1"
+                [class.text-status-registered]="certificateStep > 1"
+                [class.bg-surface-container]="certificateStep <= 1"
+                [class.text-primary]="certificateStep === 1"
+                [class.text-outline]="certificateStep < 1"
+                ><span class="material-symbols-outlined text-[15px]">{{
+                  certificateStep > 1
+                    ? "check"
+                    : certificateStep === 1
+                      ? "progress_activity"
+                      : "hourglass_empty"
+                }}</span></span
+              ><span class="text-on-surface font-medium"
+                >Verifying registration status</span
+              >
+            </div>
+            <span
+              class="font-legal-mono text-[11px]"
+              [class.text-status-registered]="certificateStep > 1"
+              [class.text-primary]="certificateStep === 1"
+              [class.text-outline]="certificateStep < 1"
+              >{{
+                certificateStep > 1
+                  ? "COMPLETED"
+                  : certificateStep === 1
+                    ? "ACTIVE"
+                    : "QUEUED"
+              }}</span
+            >
+          </div>
+          <div
+            class="flex items-center justify-between p-2 rounded-lg text-body-sm font-body-sm"
+            [class.bg-status-pending-bg]="certificateStep === 2"
+            [class.bg-surface-container-low]="certificateStep > 2"
+          >
+            <div class="flex items-center gap-2.5">
+              <span
+                class="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                [class.bg-status-registered-bg]="certificateStep > 2"
+                [class.text-status-registered]="certificateStep > 2"
+                [class.bg-surface-container]="certificateStep <= 2"
+                [class.text-primary]="certificateStep === 2"
+                [class.text-outline]="certificateStep < 2"
+                ><span class="material-symbols-outlined text-[15px]">{{
+                  certificateStep > 2
+                    ? "check"
+                    : certificateStep === 2
+                      ? "progress_activity"
+                      : "hourglass_empty"
+                }}</span></span
+              ><span
+                class="font-medium"
+                [class.text-primary]="certificateStep === 2"
+                [class.text-on-surface]="certificateStep !== 2"
+                >Preparing official certificate file</span
+              >
+            </div>
+            <span
+              class="font-legal-mono text-[11px]"
+              [class.text-status-registered]="certificateStep > 2"
+              [class.text-status-pending]="certificateStep === 2"
+              [class.text-outline]="certificateStep < 2"
+              >{{
+                certificateStep > 2
+                  ? "COMPLETED"
+                  : certificateStep === 2
+                    ? "ACTIVE"
+                    : "QUEUED"
+              }}</span
+            >
+          </div>
+          <div
+            class="flex items-center justify-between p-2 rounded-lg text-body-sm font-body-sm"
+            [class.bg-status-pending-bg]="certificateStep === 3"
+          >
+            <div class="flex items-center gap-2.5">
+              <span
+                class="w-5 h-5 rounded-full bg-surface-container text-primary flex items-center justify-center shrink-0"
+                ><span class="material-symbols-outlined text-[14px]">{{
+                  certificateStep === 3
+                    ? "progress_activity"
+                    : "hourglass_empty"
+                }}</span></span
+              ><span
+                class="font-medium"
+                [class.text-primary]="certificateStep === 3"
+                [class.text-on-surface-variant]="certificateStep !== 3"
+                >Streaming PDF to your browser</span
+              >
+            </div>
+            <span
+              class="font-legal-mono text-[11px]"
+              [class.text-status-pending]="certificateStep === 3"
+              [class.text-outline]="certificateStep !== 3"
+              >{{ certificateStep === 3 ? "FINALISING" : "QUEUED" }}</span
+            >
+          </div>
+        </div>
+        <div class="space-y-3">
+          <button
+            type="button"
+            class="w-full h-12 rounded-xl font-title-md text-title-md flex items-center justify-center gap-2"
+            [ngClass]="
+              isCertificateReady
+                ? 'bg-primary-container hover:bg-primary text-on-primary shadow-lg transition-transform active:scale-[0.99]'
+                : 'bg-surface-container text-outline cursor-not-allowed opacity-80'
+            "
+            [disabled]="!isCertificateReady"
+            (click)="downloadReadyCertificate()"
+          >
+            <span
+              class="material-symbols-outlined text-[20px]"
+              [class.animate-pulse]="!isCertificateReady"
+              >{{ isCertificateReady ? "download" : "hourglass_top" }}</span
+            ><span>{{
+              isCertificateReady
+                ? "Download Official PDF"
+                : "Preparing PDF Download..."
+            }}</span>
+          </button>
+          <div
+            class="flex items-center justify-center gap-2 text-center text-[11px] font-label-sm text-on-surface-variant"
+          >
+            <span class="material-symbols-outlined text-[15px] text-secondary"
+              >info</span
+            ><span
+              >Please keep this window open while the registry prepares your
+              document.</span
+            >
+          </div>
+        </div>
+      </div>
+      <div
+        class="px-6 py-3 bg-surface-container-low border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-3 text-label-sm font-label-sm text-on-surface-variant shrink-0"
+      >
+        <div class="flex items-center gap-2">
+          <span
+            class="material-symbols-outlined text-[16px] text-status-registered"
+            >verified</span
+          ><span class="font-legal-mono text-[11px]"
+            >Session-protected registry document transfer</span
+          >
+        </div>
+        <span class="text-primary flex items-center gap-1 font-semibold"
+          ><span>Certificate preparation in progress</span
+          ><span class="material-symbols-outlined text-[14px]"
+            >headset_mic</span
+          ></span
+        >
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,4 +1,5 @@
 export type ServiceType = 'TRADEMARK_REGISTRATION'
+  | 'TRADEMARK_CERTIFICATE_DOWNLOAD'
   | 'MSME' | 'ISO' | 'IEC' | 'TRADEMARK_RENEWAL'
   | 'TRADEMARK_OBJECTION' | 'TRADEMARK_WATCH' | 'TRADEMARK_ASSIGNMENT' | 'TRADEMARK_OPPOSITION' | 'TRADEMARK_HEARING'
   | 'ISO_14001' | 'ISO_45001' | 'ISO_27001' | 'ISO_22000';
@@ -23,6 +24,11 @@ export interface ServiceOrderSummary {
 }
 
 export const SERVICE_CONFIG: Record<ServiceType, { name: string; price: number; description: string }> = {
+  TRADEMARK_CERTIFICATE_DOWNLOAD: {
+    name: 'Trademark Registration Certificate Download',
+    price: 50,
+    description: 'Official trademark registration certificate PDF download'
+  },
   MSME: {
     name: 'MSME / Udyam Registration',
     price: 499,
