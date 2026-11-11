@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import dayjs from 'dayjs/esm';
+import { Router, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 
 import { CreateOrderResponse } from '../../models/create-order-response.model';
 import { RazorPayOrderResponse } from '../../models/razorpay-order-response.model';
 import { ITrademark } from '../../models/trademark.model';
+import { environment } from '../../environments/environment';
 import { ScriptLoaderService } from '../shared/services/script-loader.service';
 import { SeoService } from '../shared/services/seo.service';
 import { ServicePaymentService } from '../shared/services/service-payment.service';
@@ -21,6 +21,20 @@ import { WindowRefService } from '../shared/services/window-ref.service';
 
 type SearchMode = 'application' | 'name';
 
+interface CertificateRequestSnapshot {
+  applicationNo: number;
+  name?: string | null;
+  tmClass?: number | null;
+  trademarkStatus?: string | null;
+  savedAt: number;
+}
+
+interface CompletedCertificateSnapshot extends CertificateRequestSnapshot {
+  proprietorName?: string | null;
+  applicationDate?: string | null;
+  completedAt: number;
+}
+
 const PAGE_URL = 'https://trademarx.in/trademark-certificate-download';
 const PAGE_TITLE =
   'How to Download Trademark Registration Certificate Online | Trademarx';
@@ -28,6 +42,10 @@ const PAGE_DESCRIPTION =
   'Learn how to download a trademark certificate online in India. Search by application number or trademark name, confirm registration status, and continue to the official IP India registry.';
 const CERTIFICATE_DOWNLOAD_SERVICE = 'TRADEMARK_CERTIFICATE_DOWNLOAD';
 const CERTIFICATE_DOWNLOAD_AMOUNT = 50;
+const CERTIFICATE_DOWNLOAD_TIMEOUT_MS = 60_000;
+const CERTIFICATE_REQUEST_STORAGE_KEY = 'trademarx.certificate-request';
+const CERTIFICATE_REQUEST_RETENTION_MS = 30 * 60_000;
+const COMPLETED_CERTIFICATE_STORAGE_KEY = 'trademarx.certificate-complete';
 // Temporary launch setting: restore payment by changing this to true.
 const CERTIFICATE_PAYMENT_REQUIRED = false;
 
@@ -45,6 +63,9 @@ export class TrademarkCertificateDownloadComponent
 
   mode: SearchMode = 'application';
   query = '';
+  selectedClass: number | null = null;
+  readonly trademarkClasses = Array.from({ length: 45 }, (_, index) => index + 1);
+  private readonly missingTrademarkImages = new Set<string>();
   results: ITrademark[] = [];
   selectedTrademark: ITrademark | null = null;
   isLoading = false;
@@ -55,30 +76,15 @@ export class TrademarkCertificateDownloadComponent
   isCertificatePaymentVerifying = false;
   isCertificateLoading = false;
   isCertificateReady = false;
+  isCertificateErrorOpen = false;
   certificateMessage = '';
+  certificateErrorMessage = '';
   certificateProgress = 0;
   certificateStep = 0;
   private certificatePollTimer?: number;
   private certificateProgressTimer?: number;
+  private certificateTimeoutTimer?: number;
   private certificateReadyApplicationNo?: number;
-
-  /** A populated, real registry record makes the first visit useful before a search. */
-  readonly defaultSampleTrademark: ITrademark = {
-    id: 9570220,
-    applicationNo: 2690553,
-    applicationDate: dayjs('2014-03-03'),
-    name: 'BASSI & ASSOCIATES',
-    trademarkStatus: 'Registered',
-    tmClass: 45,
-    type: 'TRADEMARK',
-    proprietorName: 'MR. ANIL BASSI',
-    proprietorAddress:
-      '4, First Floor, Syncicate Complex, Bindraban Road, Civil Lines, Ludhiana (Punjab)',
-    headOffice: 'DELHI',
-    renewalDate: dayjs('2034-03-03'),
-    details:
-      'Legal services; security services for the protection of property and individuals; personal and social services rendered by others to meet the needs of individuals.',
-  };
 
   readonly faqs = [
     {
@@ -109,6 +115,7 @@ export class TrademarkCertificateDownloadComponent
     private readonly windowRef: WindowRefService,
     private readonly toastService: ToastrService,
     private readonly ngZone: NgZone,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -167,7 +174,7 @@ export class TrademarkCertificateDownloadComponent
       ],
       'trademark-certificate-download',
     );
-    this.loadDefaultSample();
+    this.restoreCertificateRequest();
   }
 
   ngOnDestroy(): void {
@@ -179,23 +186,12 @@ export class TrademarkCertificateDownloadComponent
     if (this.mode === mode) return;
     this.mode = mode;
     this.query = '';
+    this.selectedClass = null;
     this.resetResults();
   }
 
   onApplicationNumberChange(value: string): void {
     this.query = value.replace(/\D/g, '').slice(0, 10);
-  }
-
-  searchSample(applicationNo: string): void {
-    this.setMode('application');
-    this.query = applicationNo;
-    this.search();
-  }
-
-  private loadDefaultSample(): void {
-    this.query = String(this.defaultSampleTrademark.applicationNo);
-    this.results = [this.defaultSampleTrademark];
-    this.selectedTrademark = this.defaultSampleTrademark;
   }
 
   search(): void {
@@ -208,12 +204,13 @@ export class TrademarkCertificateDownloadComponent
     this.results = [];
     this.selectedTrademark = null;
     this.clearCertificateRequest();
+    this.clearPersistedCertificateRequest();
     this.certificateMessage = '';
 
     const request =
       this.mode === 'application'
         ? this.trademarkService.searchByApplicationNumber(query)
-        : this.trademarkService.quickSearch(query);
+        : this.trademarkService.quickSearch(query, this.selectedClass);
 
     request.pipe(finalize(() => (this.isLoading = false))).subscribe({
       next: (response) => {
@@ -224,7 +221,7 @@ export class TrademarkCertificateDownloadComponent
           this.mode === 'application'
             ? responseResults.slice(0, 1)
             : responseResults;
-        if (this.results.length === 1) this.selectTrademark(this.results[0]);
+        if (this.results.length > 0) this.selectTrademark(this.results[0]);
       },
       error: () => {
         this.errorMessage =
@@ -235,6 +232,7 @@ export class TrademarkCertificateDownloadComponent
 
   selectTrademark(trademark: ITrademark): void {
     this.clearCertificateRequest();
+    this.clearPersistedCertificateRequest();
     this.certificateMessage = '';
     this.selectedTrademark = trademark;
     window.setTimeout(() =>
@@ -242,6 +240,28 @@ export class TrademarkCertificateDownloadComponent
         .getElementById('certificate-result')
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
     );
+  }
+
+  hasTrademarkImage(trademark: ITrademark): boolean {
+    return !!trademark.imgUrl && !this.missingTrademarkImages.has(trademark.imgUrl);
+  }
+
+  trademarkImageUrl(trademark: ITrademark): string {
+    return `${environment.BaseApiUrl}files/${trademark.imgUrl}`;
+  }
+
+  markImageUnavailable(trademark: ITrademark): void {
+    if (trademark.imgUrl) this.missingTrademarkImages.add(trademark.imgUrl);
+  }
+
+  trademarkInitials(trademark: ITrademark): string {
+    return this.displayName(trademark)
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase();
   }
 
   isRegistered(trademark: ITrademark | null): boolean {
@@ -386,8 +406,12 @@ export class TrademarkCertificateDownloadComponent
       return;
 
     this.clearCertificateRequest();
+    this.persistCertificateRequest(applicationNo);
+    this.isCertificateErrorOpen = false;
+    this.certificateErrorMessage = '';
     this.isCertificateLoading = true;
     this.startCertificateProgress();
+    this.startCertificateTimeout();
     this.certificateMessage =
       'Preparing your official certificate from the registry.';
     this.trademarkService
@@ -423,6 +447,7 @@ export class TrademarkCertificateDownloadComponent
 
   private resetResults(): void {
     this.clearCertificateRequest();
+    this.clearPersistedCertificateRequest();
     this.certificateMessage = '';
     this.results = [];
     this.selectedTrademark = null;
@@ -476,9 +501,11 @@ export class TrademarkCertificateDownloadComponent
           link.download = `trademark-registration-certificate-${applicationNo}.pdf`;
           link.click();
           URL.revokeObjectURL(url);
-          this.finishCertificateRequest(
-            'Your official certificate has downloaded.',
-          );
+          this.clearCertificateRequest();
+          this.clearPersistedCertificateRequest();
+          this.certificateMessage = 'Your official certificate has downloaded.';
+          this.persistCompletedCertificate(applicationNo);
+          void this.router.navigate(['/trademark-certificate-download/complete']);
         },
         error: () =>
           this.finishCertificateRequest(
@@ -497,7 +524,30 @@ export class TrademarkCertificateDownloadComponent
 
   private finishCertificateRequest(message: string): void {
     this.clearCertificateRequest();
+    this.clearPersistedCertificateRequest();
     this.certificateMessage = message;
+    this.certificateErrorMessage = message;
+    this.isCertificateErrorOpen = true;
+  }
+
+  closeCertificateErrorModal(): void {
+    this.isCertificateErrorOpen = false;
+  }
+
+  retryCertificateDownload(): void {
+    this.isCertificateErrorOpen = false;
+    this.beginCertificateDownload();
+  }
+
+  emailCertificateSupport(): void {
+    const applicationNo = this.selectedTrademark?.applicationNo ?? '';
+    const subject = encodeURIComponent(
+      `Certificate download assistance — Application No. ${applicationNo}`,
+    );
+    const body = encodeURIComponent(
+      `Please help me obtain the trademark registration certificate for application number ${applicationNo}.`,
+    );
+    window.location.href = `mailto:support@trademarx.in?subject=${subject}&body=${body}`;
   }
 
   private clearCertificateRequest(): void {
@@ -509,6 +559,10 @@ export class TrademarkCertificateDownloadComponent
       window.clearTimeout(this.certificateProgressTimer);
       this.certificateProgressTimer = undefined;
     }
+    if (this.certificateTimeoutTimer !== undefined) {
+      window.clearTimeout(this.certificateTimeoutTimer);
+      this.certificateTimeoutTimer = undefined;
+    }
     this.isCertificateLoading = false;
     this.isCertificateReady = false;
     this.certificateReadyApplicationNo = undefined;
@@ -516,36 +570,154 @@ export class TrademarkCertificateDownloadComponent
     this.certificateStep = 0;
   }
 
+  private restoreCertificateRequest(): void {
+    const snapshot = this.readCertificateRequestSnapshot();
+    if (!snapshot) return;
+
+    const trademark: ITrademark = {
+      id: 0,
+      applicationNo: snapshot.applicationNo,
+      name: snapshot.name,
+      tmClass: snapshot.tmClass,
+      trademarkStatus: snapshot.trademarkStatus ?? 'Registered',
+    };
+    this.query = String(snapshot.applicationNo);
+    this.results = [trademark];
+    this.selectedTrademark = trademark;
+    this.isCertificateLoading = true;
+    this.certificateMessage = 'Restoring your certificate request.';
+    this.startCertificateProgress();
+    this.startCertificateTimeout();
+
+    this.trademarkService
+      .getRegistrationCertificateStatus(snapshot.applicationNo)
+      .subscribe({
+        next: status => {
+          if (status.state === 'NONE') {
+            this.clearCertificateRequest();
+            this.beginCertificateDownload();
+            return;
+          }
+          this.handleCertificateStatus(snapshot.applicationNo, status);
+        },
+        error: () =>
+          this.finishCertificateRequest(
+            'We could not restore the certificate request. Please try again.',
+          ),
+      });
+  }
+
+  private startCertificateTimeout(): void {
+    this.certificateTimeoutTimer = window.setTimeout(
+      () => {
+        if (!this.isCertificateLoading) return;
+        this.finishCertificateRequest(
+          'The registry is taking longer than expected to prepare this certificate. Please try again.',
+        );
+      },
+      CERTIFICATE_DOWNLOAD_TIMEOUT_MS,
+    );
+  }
+
+  private persistCertificateRequest(applicationNo: number): void {
+    const trademark = this.selectedTrademark;
+    if (!trademark) return;
+    const snapshot: CertificateRequestSnapshot = {
+      applicationNo,
+      name: trademark.name,
+      tmClass: trademark.tmClass,
+      trademarkStatus: trademark.trademarkStatus,
+      savedAt: Date.now(),
+    };
+    try {
+      localStorage.setItem(CERTIFICATE_REQUEST_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch {
+      // Storage can be unavailable in private browsing; the live request still proceeds.
+    }
+  }
+
+  private readCertificateRequestSnapshot(): CertificateRequestSnapshot | null {
+    try {
+      const raw = localStorage.getItem(CERTIFICATE_REQUEST_STORAGE_KEY);
+      if (!raw) return null;
+      const snapshot = JSON.parse(raw) as CertificateRequestSnapshot;
+      if (
+        !Number.isSafeInteger(snapshot.applicationNo) ||
+        !Number.isFinite(snapshot.savedAt) ||
+        Date.now() - snapshot.savedAt > CERTIFICATE_REQUEST_RETENTION_MS
+      ) {
+        this.clearPersistedCertificateRequest();
+        return null;
+      }
+      return snapshot;
+    } catch {
+      this.clearPersistedCertificateRequest();
+      return null;
+    }
+  }
+
+  private clearPersistedCertificateRequest(): void {
+    try {
+      localStorage.removeItem(CERTIFICATE_REQUEST_STORAGE_KEY);
+    } catch {
+      // Nothing to clear when browser storage is unavailable.
+    }
+  }
+
+  private persistCompletedCertificate(applicationNo: number): void {
+    const trademark = this.selectedTrademark;
+    if (!trademark) return;
+    const snapshot: CompletedCertificateSnapshot = {
+      applicationNo,
+      name: trademark.name,
+      tmClass: trademark.tmClass,
+      trademarkStatus: trademark.trademarkStatus,
+      proprietorName: trademark.proprietorName,
+      applicationDate: trademark.applicationDate?.format('D MMM YYYY') ?? null,
+      savedAt: Date.now(),
+      completedAt: Date.now(),
+    };
+    try {
+      localStorage.setItem(
+        COMPLETED_CERTIFICATE_STORAGE_KEY,
+        JSON.stringify(snapshot),
+      );
+    } catch {
+      // The PDF still downloads if browser storage is unavailable.
+    }
+  }
+
   private startCertificateProgress(): void {
     this.certificateProgress = 4;
     this.certificateStep = 0;
     const advance = (): void => {
       if (!this.isCertificateLoading) return;
-      if (this.certificateProgress < 62) {
-        this.certificateProgress = Math.min(62, this.certificateProgress + 8);
-      } else if (this.certificateProgress < 88) {
-        this.certificateProgress = Math.min(88, this.certificateProgress + 2);
+      if (this.certificateProgress < 70) {
+        // Establish progress promptly without making the opening state feel instantaneous.
+        this.certificateProgress = Math.min(70, this.certificateProgress + 8);
+      } else if (this.certificateProgress < 94) {
+        this.certificateProgress = Math.min(94, this.certificateProgress + 0.6);
       } else {
         this.certificateProgress = Math.min(
-          93,
-          this.certificateProgress + 0.35,
+          96,
+          this.certificateProgress + 0.2,
         );
       }
       this.certificateStep =
         this.certificateProgress < 24
           ? 0
-          : this.certificateProgress < 52
+          : this.certificateProgress < 56
             ? 1
-            : this.certificateProgress < 88
+            : this.certificateProgress < 90
               ? 2
               : 3;
       this.certificateProgressTimer = window.setTimeout(
         advance,
-        this.certificateProgress < 62
+        this.certificateProgress < 70
           ? 180
-          : this.certificateProgress < 88
-            ? 520
-            : 900,
+          : this.certificateProgress < 94
+            ? 900
+            : 1100,
       );
     };
     this.certificateProgressTimer = window.setTimeout(advance, 160);
@@ -555,6 +727,10 @@ export class TrademarkCertificateDownloadComponent
     if (this.certificateProgressTimer !== undefined) {
       window.clearTimeout(this.certificateProgressTimer);
     }
+    if (this.certificateTimeoutTimer !== undefined) {
+      window.clearTimeout(this.certificateTimeoutTimer);
+      this.certificateTimeoutTimer = undefined;
+    }
     const finish = (): void => {
       this.certificateProgress = Math.min(100, this.certificateProgress + 7);
       this.certificateStep = 3;
@@ -562,11 +738,8 @@ export class TrademarkCertificateDownloadComponent
         this.certificateProgressTimer = window.setTimeout(finish, 55);
         return;
       }
-      this.isCertificateLoading = false;
-      this.isCertificateReady = true;
-      this.certificateReadyApplicationNo = applicationNo;
-      this.certificateMessage =
-        'Your official certificate is ready to download.';
+      this.certificateMessage = 'Starting your official certificate download.';
+      this.downloadCertificateFile(applicationNo);
     };
     finish();
   }
