@@ -115,6 +115,7 @@ const CORE_PAGES = [
   { loc: `${SITE_URL}/iso`, lastmod: TODAY },
   { loc: `${SITE_URL}/iso/iso-9001-2015`, lastmod: TODAY },
   { loc: `${SITE_URL}/search`, lastmod: TODAY },
+  { loc: `${SITE_URL}/trademark-certificate-download`, lastmod: TODAY },
   { loc: `${SITE_URL}/about-us`, lastmod: TODAY },
   { loc: `${SITE_URL}/blogs`, lastmod: TODAY },
   { loc: `${SITE_URL}/contact`, lastmod: TODAY },

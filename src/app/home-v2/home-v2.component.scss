@@ -192,6 +192,123 @@
     }
 }
 
+/* ---------- Trademark certificate download ---------- */
+.certificate-download-section {
+    padding: 1rem 0 2.5rem;
+}
+
+.certificate-download-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: 2.5rem 3rem;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--primary-color);
+    color: white;
+}
+
+.certificate-download-content {
+    max-width: 690px;
+
+    h2 {
+        margin-bottom: 0.65rem;
+        color: white;
+        font-size: clamp(1.45rem, 2.4vw, 2rem);
+        font-weight: 700;
+    }
+
+    p {
+        max-width: 65ch;
+        margin-bottom: 1.1rem;
+        color: rgba(255, 255, 255, 0.88);
+        line-height: 1.6;
+    }
+}
+
+.certificate-download-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 1.5rem;
+    margin: 0 0 1.4rem;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    i {
+        color: var(--accent-color, #ffc629);
+    }
+}
+
+.certificate-download-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.25rem;
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    i {
+        font-size: 0.8rem;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover i {
+        transform: translateX(3px);
+    }
+
+    &:focus-visible {
+        outline: 3px solid var(--accent-color, #ffc629);
+        outline-offset: 3px;
+    }
+}
+
+.certificate-download-mark {
+    display: grid;
+    flex: 0 0 auto;
+    width: 150px;
+    height: 150px;
+    place-items: center;
+    align-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.94);
+    text-align: center;
+
+    i {
+        color: var(--accent-color, #ffc629);
+        font-size: 2.8rem;
+    }
+
+    span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1.35;
+        text-transform: uppercase;
+    }
+}
+
 /* ---------- Service cards: CTA + popular badge ---------- */
 .services-grid {
     .service-card {
@@ -471,6 +588,20 @@
 }
 
 @media (max-width: 768px) {
+    .certificate-download-inner {
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+
+    .certificate-download-mark {
+        width: 110px;
+        height: 110px;
+
+        i {
+            font-size: 2.1rem;
+        }
+    }
+
     .hero {
         padding: 2.5rem 0 3.5rem;
     }
@@ -510,5 +641,23 @@
 }
 
 @media (max-width: 576px) {
+    .certificate-download-section {
+        padding-bottom: 1.5rem;
+    }
+
+    .certificate-download-inner {
+        align-items: flex-start;
+        padding: 1.75rem;
+    }
+
+    .certificate-download-mark {
+        display: none;
+    }
+
+    .certificate-download-cta {
+        width: 100%;
+        justify-content: center;
+    }
+
     .compare-grid { grid-template-columns: 1fr; }
 }
