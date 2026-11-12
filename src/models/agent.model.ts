@@ -533,6 +533,12 @@ export interface AgentJournalWatchResult {
   /** Candidate pairs actually scored — distinguishes "no conflicts" from "nothing comparable". */
   pairsScored: number;
   conflicts: AgentJournalConflict[];
+  /** Total matching conflicts before the current page is sliced. */
+  totalConflicts: number;
+  page: number;
+  size: number;
+  totalPages: number;
+  countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
   /** True when the result cap was hit, so the list is not exhaustive. */
   truncated: boolean;
   durationMs: number;

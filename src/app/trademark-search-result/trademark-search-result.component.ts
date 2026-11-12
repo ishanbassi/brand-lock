@@ -38,13 +38,25 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
       const tmClassParam = params.get('tmClass');
       this.tmClass = tmClassParam ? Number(tmClassParam) : null;
       if (q) {
-
-        if (this.isBrowser) {
-          this.loadingService.show();
-        }
-        this.isLoading = true;
         this.query = q;
-        this.trademarkService.quickSearch(this.query, this.tmClass)
+        this.currentPage = 0;
+        this.loadPage(0);
+      }
+      else {
+        this.query = undefined;
+        this.results = [];
+        this.totalResults = 0;
+      }
+    });
+  }
+
+  private loadPage(page: number): void {
+    if (!this.query || page < 0 || (this.totalPages > 0 && page >= this.totalPages)) return;
+    if (this.isBrowser) {
+      this.loadingService.show();
+    }
+    this.isLoading = true;
+    this.trademarkService.quickSearch(this.query, this.tmClass, { page, size: this.pageSize })
           .pipe(
             finalize(() => {
               if (this.isBrowser) {
@@ -54,15 +66,11 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
             })
           )
           .subscribe(res => {
-            this.results = res.body
-            this.totalResults = this.results?.length || 0;
+            this.results = res.body;
+            this.totalResults = Number(res.headers.get('X-Total-Count')) || 0;
+            this.currentPage = page;
             this.setSeoTags();
-          })
-      }
-      else {
-        this.query = undefined;
-      }
-    });
+          });
   }
 
   query?: string;
@@ -72,6 +80,11 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   private isBrowser = false;
   isLoading = false;
   totalResults = 0;
+  readonly pageSize = 20;
+  currentPage = 0;
+  get totalPages(): number {
+    return Math.ceil(this.totalResults / this.pageSize);
+  }
   @ViewChild('searchBoxWrapper') searchBoxWrapper!: ElementRef;
 
   focusOnSearchBar() {
@@ -87,6 +100,14 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   }
   trackById(_: number, item: ITrademark) {
     return item.id;
+  }
+
+  previousPage(): void {
+    this.loadPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.loadPage(this.currentPage + 1);
   }
 
   highlight(text?: string | null): string {

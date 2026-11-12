@@ -32,7 +32,16 @@ export class AgentSearchReportComponent {
 
   query = '';
   clientName = '';
-  searchType: SearchReportType = 'startswith';
+  searchType: SearchReportType = 'phonetic';
+  statusBucket = '';
+  readonly statusBuckets = [
+    { value: '', label: 'Any status' },
+    { value: 'REGISTERED', label: 'Registered' },
+    { value: 'OBJECTED_OR_OPPOSED', label: 'Objected / Opposed' },
+    { value: 'UNDER_EXAMINATION_OR_ADVERTISED', label: 'Under Examination / Advertised' },
+    { value: 'ABANDONED_WITHDRAWN_REJECTED', label: 'Abandoned / Withdrawn / Rejected' },
+    { value: 'OTHER_UNKNOWN', label: 'Other / Unknown' },
+  ];
   pageSize: 10 | 100 | 1000 = 100;
   currentPage = 0;
   readonly selectedIds = new Set<number>();
@@ -143,7 +152,7 @@ export class AgentSearchReportComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.agentData.previewSearchReport(term, this.selectedClasses(), this.searchType, page, this.pageSize).subscribe({
+    this.agentData.previewSearchReport(term, this.selectedClasses(), this.searchType, page, this.pageSize, this.statusBucket).subscribe({
       next: result => {
         this.clearArtwork();
         this.report.set(result);
@@ -160,6 +169,10 @@ export class AgentSearchReportComponent {
   }
 
   onSearchTypeChange(): void {
+    if (this.report() && this.query.trim()) this.run();
+  }
+
+  onStatusBucketChange(): void {
     if (this.report() && this.query.trim()) this.run();
   }
 

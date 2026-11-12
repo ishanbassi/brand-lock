@@ -273,7 +273,7 @@
       @if (counts().total > 0) {
         <div class="risk-filters">
           <button [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">
-            All ({{ counts().total }})
+            All ({{ allConflictCount() }})
           </button>
           <button class="risk-high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">
             High ({{ counts().high }})
@@ -352,6 +352,16 @@
             </article>
           }
         </div>
+        @if (result()!.totalPages > 1) {
+          <div class="browse-footer watch-pagination">
+            <span>Showing {{ result()!.page * result()!.size + 1 }}–{{ result()!.page * result()!.size + result()!.conflicts.length }} of {{ result()!.totalConflicts }}</span>
+            <div class="pager">
+              <button type="button" (click)="goToWatchPage(result()!.page - 1)" [disabled]="result()!.page === 0 || running()">Previous</button>
+              <span>Page {{ result()!.page + 1 }} of {{ result()!.totalPages }}</span>
+              <button type="button" (click)="goToWatchPage(result()!.page + 1)" [disabled]="result()!.page + 1 >= result()!.totalPages || running()">Next</button>
+            </div>
+          </div>
+        }
       }
     </section>
   }

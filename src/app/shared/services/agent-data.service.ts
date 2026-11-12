@@ -368,9 +368,12 @@ export class AgentDataService {
     searchType: 'startswith' | 'contains' | 'phonetic',
     page: number,
     size: 10 | 100 | 1000,
+    statusBucket?: string,
   ): Observable<SearchReport> {
+    let params = this.searchReportParams(query, tmClasses, searchType).set('page', page).set('size', size);
+    if (statusBucket) params = params.set('statusBucket', statusBucket);
     return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, {
-      params: this.searchReportParams(query, tmClasses, searchType).set('page', page).set('size', size),
+      params,
     });
   }
 
@@ -620,11 +623,19 @@ export class AgentDataService {
    * Scores the portfolio against one journal issue. `tmClasses` confines the check to those NICE
    * classes; empty or omitted checks every class.
    */
-  runJournalWatch(journalNo: number, tmClasses?: number[] | null): Observable<AgentJournalWatchResult> {
+  runJournalWatch(
+    journalNo: number,
+    tmClasses?: number[] | null,
+    page = 0,
+    size = 20,
+    riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW',
+  ): Observable<AgentJournalWatchResult> {
+    let params = this.tmClassParams(tmClasses).set('page', page).set('size', size);
+    if (riskLevel) params = params.set('riskLevel', riskLevel);
     return this.http.post<AgentJournalWatchResult>(
       `${this.base}/agent-portal/watch/journals/${journalNo}`,
       {},
-      { params: this.tmClassParams(tmClasses) },
+      { params },
     );
   }
 

@@ -206,11 +206,11 @@
         </div>
 
         <!-- Pagination -->
-        <!-- <div class="pagination" *ngIf="!isLoading && trademarks.length > 0 && totalPages > 1">
+        <div class="pagination" *ngIf="!isLoading && results && results.length > 0 && totalPages > 1">
           <button 
             class="pagination-btn" 
             type="button"
-            [disabled]="currentPage === 1"
+            [disabled]="currentPage === 0"
             (click)="previousPage()"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -220,13 +220,13 @@
           </button>
 
           <span class="pagination-info">
-            Page {{ currentPage }} of {{ totalPages }}
+            Page {{ currentPage + 1 }} of {{ totalPages }}
           </span>
 
           <button 
             class="pagination-btn" 
             type="button"
-            [disabled]="currentPage === totalPages"
+            [disabled]="currentPage + 1 >= totalPages"
             (click)="nextPage()"
           >
             Next
@@ -234,7 +234,7 @@
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </button>
-        </div> -->
+        </div>
       </div>
 
       <!-- Right Column: Ad Campaigns -->

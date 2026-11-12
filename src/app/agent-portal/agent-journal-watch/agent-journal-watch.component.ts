@@ -68,7 +68,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   running = signal(false);
   exporting = signal<ExportFormat | null>(null);
   printing = signal(false);
-  readonly selectedConflicts = new Set<string>();
+  readonly selectedConflicts = new Map<string, AgentJournalConflict>();
   private firmName = 'Trademarx';
   private accentColor = '#1f4e79';
   private logoUrl: string | null = null;
@@ -83,6 +83,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   /** Risk filter. Empty shows everything. */
   riskFilter = signal<'' | 'HIGH' | 'MEDIUM' | 'LOW'>('');
+  readonly watchPageSize = 20;
 
   constructor(
     private readonly agentDataService: AgentDataService,
@@ -140,9 +141,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   visibleConflicts = computed<AgentJournalConflict[]>(() => {
-    const all = this.result()?.conflicts ?? [];
-    const filter = this.riskFilter();
-    return filter ? all.filter(c => c.riskLevel === filter) : all;
+    return this.result()?.conflicts ?? [];
   });
 
   searchPlaceholder = computed(() =>
@@ -388,14 +387,17 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   counts = computed(() => {
-    const all = this.result()?.conflicts ?? [];
+    const current = this.result();
     return {
-      total: all.length,
-      high: all.filter(c => c.riskLevel === 'HIGH').length,
-      medium: all.filter(c => c.riskLevel === 'MEDIUM').length,
-      low: all.filter(c => c.riskLevel === 'LOW').length,
+      total: current?.totalConflicts ?? 0,
+      high: current?.countsByRisk?.HIGH ?? 0,
+      medium: current?.countsByRisk?.MEDIUM ?? 0,
+      low: current?.countsByRisk?.LOW ?? 0,
     };
   });
+
+  allConflictCount = computed(() => Object.values(this.result()?.countsByRisk ?? {})
+    .reduce((total, count) => total + count, 0));
 
   classSummary = computed(() => {
     const n = this.selectedClasses().length;
@@ -423,10 +425,24 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.result.set(null);
     this.selectedConflicts.clear();
     const classes = [...this.selectedClasses()];
-    this.agentDataService.runJournalWatch(journal, classes).subscribe({
+    this.ranWithClasses = classes;
+    this.loadWatchPage(0);
+  }
+
+  goToWatchPage(page: number): void {
+    const current = this.result();
+    if (!current || page < 0 || page >= current.totalPages || page === current.page || this.running()) return;
+    this.loadWatchPage(page);
+  }
+
+  private loadWatchPage(page: number): void {
+    const journal = this.selectedJournal();
+    if (journal == null) return;
+    this.running.set(true);
+    this.error.set('');
+    this.agentDataService.runJournalWatch(journal, this.ranWithClasses, page, this.watchPageSize, this.riskFilter() || undefined).subscribe({
       next: res => {
         this.result.set(res);
-        this.ranWithClasses = classes;
         this.running.set(false);
       },
       error: () => {
@@ -441,7 +457,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     const journal = this.result()?.journalNo;
     if (journal == null || this.exporting() || this.printing()) return;
     if (format === 'pdf') {
-      const selected = (this.result()?.conflicts ?? []).filter(conflict => this.selectedConflicts.has(this.cardKey(conflict)));
+      const selected = [...this.selectedConflicts.values()];
       if (!selected.length) {
         this.error.set('Select at least one conflict to print.');
         return;
@@ -472,7 +488,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   toggleConflictSelection(conflict: AgentJournalConflict): void {
     const key = this.cardKey(conflict);
-    this.selectedConflicts.has(key) ? this.selectedConflicts.delete(key) : this.selectedConflicts.add(key);
+    this.selectedConflicts.has(key) ? this.selectedConflicts.delete(key) : this.selectedConflicts.set(key, conflict);
   }
 
   private printHtml(journal: number, conflicts: AgentJournalConflict[]): string {
@@ -519,7 +535,9 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   setRiskFilter(level: '' | 'HIGH' | 'MEDIUM' | 'LOW'): void {
+    if (level === this.riskFilter()) return;
     this.riskFilter.set(level);
+    if (this.result()) this.loadWatchPage(0);
   }
 
   scorePercent(score: number): number {
