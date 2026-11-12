@@ -209,7 +209,7 @@ export class TrademarkCertificateDownloadComponent
     const request =
       this.mode === 'application'
         ? this.trademarkService.searchByApplicationNumber(query)
-        : this.trademarkService.quickSearch(query, this.selectedClass);
+        : this.trademarkService.liveSearch(query, this.selectedClass);
 
     request.pipe(finalize(() => (this.isLoading = false))).subscribe({
       next: (response) => {
