@@ -241,6 +241,13 @@ export class TrademarkCertificateDownloadComponent
     );
   }
 
+  downloadCertificateFor(trademark: ITrademark): void {
+    if (!this.isRegistered(trademark) || this.isCertificateLoading) return;
+
+    this.selectTrademark(trademark);
+    this.openCertificateUnlockModal();
+  }
+
   hasTrademarkImage(trademark: ITrademark): boolean {
     return !!trademark.imgUrl && !this.missingTrademarkImages.has(trademark.imgUrl);
   }

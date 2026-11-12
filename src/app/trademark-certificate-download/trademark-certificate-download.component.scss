@@ -2,6 +2,9 @@
 
 :host { display: block; }
 
+/* Search-result cards use type, status, and a direct action rather than decorative metadata icons. */
+.certificate-result-card .material-symbols-outlined { display: none; }
+
 /* The supplied Stitch page's token system, scoped so it cannot recolour other public pages. */
 .certificate-page { font-family: Inter, sans-serif; background: #f8f9ff; color: #121c2a; }
 .certificate-page .bg-surface { background-color: #f8f9ff; }.certificate-page .bg-surface-subtle { background-color: #f8fafc; }.certificate-page .bg-surface-container-lowest { background-color: #fff; }.certificate-page .bg-surface-container-low { background-color: #eff4ff; }.certificate-page .bg-surface-container { background-color: #e6eeff; }.certificate-page .bg-surface-container-high { background-color: #dee9fc; }.certificate-page .bg-surface-container-highest { background-color: #d9e3f6; }.certificate-page .bg-canvas-bg { background-color: #fff; }.certificate-page .bg-primary { background-color: #00288e; }.certificate-page .bg-primary-container { background-color: #1e40af; }.certificate-page .bg-secondary { background-color: #0051d5; }.certificate-page .bg-status-registered-bg { background-color: #ecfdf5; }.certificate-page .bg-status-pending-bg { background-color: #f0f9ff; }.certificate-page .bg-status-objected-bg { background-color: #fffbeb; }.certificate-page .bg-status-refused-bg { background-color: #fef2f2; }.certificate-page .bg-status-registered { background-color: #059669; }.certificate-page .bg-status-objected { background-color: #d97706; }.certificate-page .bg-status-refused { background-color: #dc2626; }.certificate-page .bg-primary\/5 { background-color: rgb(0 40 142 / .05); }.certificate-page .bg-secondary\/5 { background-color: rgb(0 81 213 / .05); }
