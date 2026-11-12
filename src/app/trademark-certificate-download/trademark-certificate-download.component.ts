@@ -46,7 +46,7 @@ const CERTIFICATE_DOWNLOAD_TIMEOUT_MS = 60_000;
 const CERTIFICATE_REQUEST_STORAGE_KEY = 'trademarx.certificate-request';
 const CERTIFICATE_REQUEST_RETENTION_MS = 30 * 60_000;
 const COMPLETED_CERTIFICATE_STORAGE_KEY = 'trademarx.certificate-complete';
-const CERTIFICATE_PAYMENT_REQUIRED = true;
+const CERTIFICATE_PAYMENT_REQUIRED = false;
 
 @Component({
   selector: 'app-trademark-certificate-download',
