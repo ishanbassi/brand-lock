@@ -32,7 +32,7 @@ export class AgentSearchReportComponent {
 
   query = '';
   clientName = '';
-  searchType: SearchReportType = 'phonetic';
+  searchType: SearchReportType = 'startswith';
   statusBucket = '';
   readonly statusBuckets = [
     { value: '', label: 'Any status' },

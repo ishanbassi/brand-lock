@@ -76,7 +76,16 @@ describe('AgentSearchReportComponent', () => {
     component.onSearchTypeChange();
 
     expect(agentData.previewSearchReport).toHaveBeenCalledTimes(2);
-    expect(agentData.previewSearchReport.calls.mostRecent().args).toEqual(['ALPHA', [9], 'contains', 0, 100]);
+    expect(agentData.previewSearchReport.calls.mostRecent().args).toEqual(['ALPHA', [9], 'contains', 0, 100, '']);
+  });
+
+  it('renders the match-rule filter with every supported search type', () => {
+    const fixture = TestBed.createComponent(AgentSearchReportComponent);
+    fixture.detectChanges();
+
+    const select = fixture.nativeElement.querySelector('#searchType') as HTMLSelectElement | null;
+    expect(select).withContext('match-rule filter').not.toBeNull();
+    expect(Array.from(select!.options).map(option => option.value)).toEqual(['startswith', 'contains', 'phonetic']);
   });
 
   it('includes every on-screen result field in the printable PDF markup', () => {

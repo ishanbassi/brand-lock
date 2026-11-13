@@ -9,6 +9,14 @@
       <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
     </div>
     <div class="field">
+      <label for="searchType">Match rule</label>
+      <select id="searchType" [(ngModel)]="searchType" name="searchType" (change)="onSearchTypeChange()">
+        <option value="startswith">Starts With</option>
+        <option value="contains">Contain search</option>
+        <option value="phonetic">Phonetic</option>
+      </select>
+    </div>
+    <div class="field">
       <label for="statusBucket">Trademark status</label>
       <select id="statusBucket" [(ngModel)]="statusBucket" name="statusBucket" (change)="onStatusBucketChange()">
         @for (bucket of statusBuckets; track bucket.value) {
