@@ -1,4 +1,4 @@
-<main class="search-report-feature bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary">
+﻿<main class="search-report-feature bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary">
   <app-agent-portal-navbar activeLink="trademark-search" />
   <div class="flex flex-col w-full">
 <!-- Hero Section -->
@@ -18,18 +18,15 @@
       </h1>
 <!-- Subtitle -->
 <p class="font-body-lg text-on-surface-variant max-w-3xl mb-8 leading-relaxed">
-        Bypass the clunky official IP India portal. Run unrestricted multi-class clearance searches powered by 5-minute registry ingestion, automated Phonetic &amp; Devanagari matching, and 1-click law firm branded PDF/Excel clearance reports.
+        Bypass the clunky official IP India portal. Run unrestricted multi-class clearance searches powered by 5-minute registry ingestion, automated Phonetic  matching, and 1-click law firm branded PDF/Excel clearance reports.
       </p>
 <!-- Dual CTAs -->
 <div class="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full justify-center">
 <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary-container text-on-primary font-label-lg shadow-md hover:bg-primary transition-all" href="#interactive-simulator">
 <span class="material-symbols-outlined text-[20px]">search_check</span>
-<span>Run Free Clearance Search (50 Free Searches)</span>
+<span>Set Up Portfolio</span>
 </a>
-<a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg shadow-sm hover:bg-surface-container transition-all" href="#sample-dossier">
-<span class="material-symbols-outlined text-[20px] text-primary">download</span>
-<span>Download Sample PDF Search Report</span>
-</a>
+
 </div>
 <!-- Reassurance Badges -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-4xl">
@@ -72,7 +69,8 @@
 <div class="flex flex-col lg:flex-row gap-3">
 <div class="relative flex-1">
 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px]">search</span>
-<input class="w-full pl-12 pr-4 py-3 rounded-lg bg-surface-container font-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-high transition-colors" id="markSearchInput" placeholder="Enter wordmark, prefix, or phonetic string..." type="text" value="KAVACH"/>
+<label class="sr-only" for="markSearchInput">Trademark search term</label>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg bg-surface-container font-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-high transition-colors" id="markSearchInput" placeholder="Enter wordmark, prefix, or phonetic string..." type="text" [(ngModel)]="query" (keydown.enter)="runSearch()"/>
 </div>
 <button type="button" class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-lg bg-primary-container text-on-primary font-label-lg shadow-sm hover:bg-primary transition-all disabled:opacity-70" [disabled]="searching()" (click)="runSearch()">
 <span class="material-symbols-outlined text-[20px]">{{ searching() ? 'progress_activity' : 'bolt' }}</span>
@@ -85,9 +83,9 @@
 <div class="space-y-2">
 <span class="font-label-sm text-on-surface-variant uppercase">Search Mode Algorithm</span>
 <div class="flex flex-wrap gap-2" id="queryTypePills">
-<button type="button" [class]="modeClasses('contains')" (click)="selectMode('contains')">Contains (*KAVACH*)</button>
-<button type="button" [class]="modeClasses('starts')" (click)="selectMode('starts')">Starts With (KAVACH*)</button>
-<button type="button" [class]="modeClasses('phonetic')" (click)="selectMode('phonetic')">Phonetic (CAVACH / KAWACH)</button>
+<button type="button" [class]="modeClasses('contains')" (click)="selectMode('contains')">Contains</button>
+<button type="button" [class]="modeClasses('starts')" (click)="selectMode('starts')">Starts With</button>
+<button type="button" [class]="modeClasses('phonetic')" (click)="selectMode('phonetic')">Phonetic</button>
 </div>
 </div>
 <!-- Multi-Class Selector -->
@@ -98,7 +96,6 @@
 <button type="button" [class]="classTagClasses('10')" (click)="toggleClass('10')">Class 10 (Medical)</button>
 <button type="button" [class]="classTagClasses('35')" (click)="toggleClass('35')">Class 35 (Retail &amp; Ad)</button>
 <button type="button" [class]="classTagClasses('42')" (click)="toggleClass('42')">Class 42 (SaaS/Tech)</button>
-<button type="button" [class]="classTagClasses('all')" (click)="toggleAllClasses()">+ Select All</button>
 </div>
 </div>
 </div>
@@ -106,7 +103,13 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 bg-surface-container-low p-3 rounded-lg">
 <div class="flex items-center gap-2 text-on-surface font-body-sm">
 <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container font-label-sm"></span>
-<span>Found <strong class="font-label-md text-primary">42 matching marks</strong> across 4 selected classes in <strong class="text-secondary font-label-md">0.08s</strong></span>
+@if (report(); as report) {
+<span>Found <strong class="font-label-md text-primary">{{ report.totalResults }} matching marks</strong> across {{ report.tmClasses.length || 45 }} selected classes.</span>
+} @else if (searching()) {
+<span>Searching the registry records…</span>
+} @else {
+<span>Enter a wordmark to run a search.</span>
+}
 <span class="hidden md:inline text-on-surface-variant">(vs. IP India avg: 45s + Captcha solve)</span>
 </div>
 <!-- Export Action Buttons -->
@@ -125,110 +128,24 @@
 </button>
 </div>
 </div>
-<!-- Sample Live Data Rows -->
-<div class="space-y-2.5 overflow-x-auto">
-<!-- Result Card 1 -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-all shadow-sm">
+<!-- Live registry result rows -->
+<div class="space-y-2.5 overflow-x-auto" aria-live="polite">
+@if (searching()) {
+<div class="p-6 text-center font-body-sm text-on-surface-variant">Searching registry records…</div>
+} @else if (report()) {
+@for (row of report()!.rows; track row.trademarkId) {
+<article class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-all shadow-sm">
 <div class="flex items-start sm:items-center gap-3 min-w-0">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-<span class="font-label-md text-primary tracking-tighter font-extrabold">KVCH</span>
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0"><span class="font-label-md text-primary tracking-tighter font-extrabold">{{ (row.name || 'TM').slice(0, 4) }}</span></div>
+<div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><span class="font-headline-sm text-on-surface">{{ row.name || 'Unnamed mark' }}</span><span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-fixed text-on-primary-fixed">{{ row.trademarkStatus || 'Status unavailable' }}</span></div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-on-surface-variant mt-0.5"><span>App No: <strong>#{{ row.applicationNo || '—' }}</strong></span><span>-</span><span>Class: <strong>{{ row.tmClass || '—' }}</strong></span><span>-</span><span>Proprietor: <strong>{{ row.proprietorName || 'Not available' }}</strong></span></div></div>
 </div>
-<div class="min-w-0">
-<div class="flex items-center gap-2">
-<span class="font-headline-sm text-on-surface">KAVACH HEALTH</span>
-<span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant">Registered</span>
-</div>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-on-surface-variant mt-0.5">
-<span>App No: <strong>#4829104</strong></span>
-<span>-</span>
-<span>Class: <strong>05 (Pharmaceuticals)</strong></span>
-<span>-</span>
-<span>Proprietor: <strong>Cipla Bioceuticals Ltd</strong></span>
-<span>-</span>
-<span>Filed: <strong>14 Mar 2018</strong></span>
-</div>
-</div>
-</div>
-<div class="flex items-center justify-between lg:justify-end gap-4 shrink-0">
-<div class="text-right">
-<span class="block font-label-sm text-on-surface-variant">Conflict Risk</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm">
-<span class="w-1.5 h-1.5 rounded-full bg-error"></span> High Risk
-                </span>
-</div>
-<button class="px-3 py-1.5 rounded-md bg-surface-container font-label-sm text-on-surface hover:bg-surface-container-high transition-colors">
-                View Dossier
-              </button>
-</div>
-</div>
-<!-- Result Card 2 -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-all shadow-sm">
-<div class="flex items-start sm:items-center gap-3 min-w-0">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-primary text-[24px]">verified_user</span>
-</div>
-<div class="min-w-0">
-<div class="flex items-center gap-2">
-<span class="font-headline-sm text-on-surface">RAKSHA KAVACH</span>
-<span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-tertiary-fixed text-on-tertiary-fixed-variant">Objected (Sec 11)</span>
-</div>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-on-surface-variant mt-0.5">
-<span>App No: <strong>#5910283</strong></span>
-<span>-</span>
-<span>Class: <strong>10 (Medical Devices)</strong></span>
-<span>-</span>
-<span>Proprietor: <strong>Apex Diagnostics LLP</strong></span>
-<span>-</span>
-<span>Filed: <strong>22 Nov 2022</strong></span>
-</div>
-</div>
-</div>
-<div class="flex items-center justify-between lg:justify-end gap-4 shrink-0">
-<div class="text-right">
-<span class="block font-label-sm text-on-surface-variant">Conflict Risk</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Medium Risk
-                </span>
-</div>
-<button class="px-3 py-1.5 rounded-md bg-surface-container font-label-sm text-on-surface hover:bg-surface-container-high transition-colors">
-                View Dossier
-              </button>
-</div>
-</div>
-<!-- Result Card 3 -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-all shadow-sm">
-<div class="flex items-start sm:items-center gap-3 min-w-0">
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-<span class="font-label-md text-on-surface-variant font-extrabold">KV</span>
-</div>
-<div class="min-w-0">
-<div class="flex items-center gap-2">
-<span class="font-headline-sm text-on-surface">KAVACHAM AI</span>
-<span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-fixed text-on-primary-fixed">Exam Report Issued</span>
-</div>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-on-surface-variant mt-0.5">
-<span>App No: <strong>#6108420</strong></span>
-<span>-</span>
-<span>Class: <strong>42 (SaaS / AI)</strong></span>
-<span>-</span>
-<span>Proprietor: <strong>TechShield Solutions Pvt Ltd</strong></span>
-<span>-</span>
-<span>Filed: <strong>08 Jan 2024</strong></span>
-</div>
-</div>
-</div>
-<div class="flex items-center justify-between lg:justify-end gap-4 shrink-0">
-<div class="text-right">
-<span class="block font-label-sm text-on-surface-variant">Conflict Risk</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Low Risk
-                </span>
-</div>
-<button class="px-3 py-1.5 rounded-md bg-surface-container font-label-sm text-on-surface hover:bg-surface-container-high transition-colors">
-                View Dossier
-              </button>
-</div>
-</div>
+<div class="flex items-center justify-between lg:justify-end gap-4 shrink-0"><div class="text-right"><span class="block font-label-sm text-on-surface-variant">Conflict Risk</span><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm" [class]="riskClasses(row)"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> {{ row.riskBand }} Risk</span></div><button type="button" class="px-3 py-1.5 rounded-md bg-surface-container font-label-sm text-on-surface hover:bg-surface-container-high transition-colors">View Dossier</button></div>
+</article>
+} @empty { <div class="p-6 text-center font-body-sm text-on-surface-variant">No matching marks were found for this search.</div> }
+} @else if (searchError()) {
+<div class="p-6 text-center font-body-sm text-error" role="alert">{{ searchError() }}</div>
+}
 </div>
 </div>
 </div>
@@ -238,8 +155,8 @@
 <div class="max-w-7xl mx-auto px-gutter-desktop space-y-12">
 <div class="text-center max-w-3xl mx-auto">
 <span class="font-label-sm uppercase tracking-wider text-primary">BENCHMARK COMPARISON</span>
-<h2 class="font-display-lg text-on-surface mt-2">Official IP India Portal vs. TMarx Engine</h2>
-<p class="font-body-lg text-on-surface-variant mt-3">Why premier Indian intellectual property chambers and in-house enterprise counsel switch to TMarx.</p>
+<h2 class="font-display-lg text-on-surface mt-2">Official IP India Portal vs. Trademarx Engine</h2>
+<p class="font-body-lg text-on-surface-variant mt-3">Why premier Indian intellectual property chambers and in-house enterprise counsel switch to Trademarx.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
 <!-- Official IP India Portal -->
@@ -285,14 +202,12 @@
 </div>
 </div>
 </div>
-<!-- TMarx Engine -->
+<!-- Trademarx Engine -->
 <div class="bg-surface-container-highest/40 rounded-xl p-space-lg shadow-md space-y-6">
 <div class="flex items-center justify-between pb-4">
 <div class="flex items-center gap-3">
 <span class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-headline-sm"></span>
 <div>
-<h3 class="font-headline-md text-on-surface">TMarx Clearance Engine</h3>
-<span class="font-body-sm text-primary font-bold">tmarx.in (Next-Gen Telemetry)</span>
 </div>
 </div>
 <span class="px-2.5 py-1 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm">High Velocity</span>
@@ -470,9 +385,9 @@
 <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-surface-container text-primary font-headline-sm">
               03
             </div>
-<h3 class="font-headline-md text-on-surface">Phonetic &amp; Devanagari Matching</h3>
+<h3 class="font-headline-md text-on-surface">Phonetic  Matching</h3>
 <p class="font-body-md text-on-surface-variant leading-relaxed">
-              Proprietary Indian IP NLP engine matching homophones, vowel mutations (C/K/Q, V/W, PH/F), and Devanagari script transliterations that Indian examiners routinely cite under Section 11(1).
+              Proprietary Indian IP NLP engine matching homophones and vowel mutations (C/K/Q, V/W, PH/F) that Indian examiners routinely cite under Section 11(1).
             </p>
 </div>
 <div class="bg-surface-container-low p-3.5 rounded-lg space-y-1">
@@ -480,244 +395,14 @@
 <div class="flex flex-wrap gap-1.5 pt-1">
 <span class="px-2 py-0.5 rounded bg-surface-container font-body-sm text-on-surface"><strong>CAVACH</strong></span>
 <span class="px-2 py-0.5 rounded bg-surface-container font-body-sm text-on-surface"><strong>KAWACH</strong></span>
-<span class="px-2 py-0.5 rounded bg-surface-container font-body-sm text-on-surface"><strong></strong> (Devanagari)</span>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- Law Firm Branded Reporting Showcase -->
-<section class="w-full bg-surface-container-low py-space-xl" id="sample-dossier">
-<div class="max-w-7xl mx-auto px-gutter-desktop space-y-12">
-<div class="text-center max-w-3xl mx-auto">
-<span class="font-label-sm uppercase tracking-wider text-primary">CLIENT-READY DELIVERABLES</span>
-<h2 class="font-headline-lg text-on-surface mt-2">1-Click Law Firm Branded Dossiers</h2>
-<p class="font-body-md text-on-surface-variant mt-2">Impress clients with professional search opinions. Automatically formatted with your logo, letterhead, and statutory risk ratings.</p>
-</div>
-<!-- Dossier Visual Mockup -->
-<div class="bg-surface-container-lowest rounded-2xl shadow-xl p-space-md lg:p-space-xl max-w-5xl mx-auto">
-<!-- Mock Letterhead -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 bg-surface-container-low/50 p-4 rounded-xl">
-<div class="flex items-center gap-3">
-<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary font-headline-md">
-              
-            </div>
-<div>
-<div class="font-headline-sm text-on-surface">Adv. Arvind Krishnamoorthy &amp; Associates</div>
-<div class="font-body-sm text-on-surface-variant">Advocates &amp; IP Attorneys - Nariman Point, Mumbai - Bar Council No: MAH/2984/2012</div>
-</div>
-</div>
-<div class="text-left sm:text-right">
-<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm inline-block">Official Opinion Clearance Dossier</span>
-<div class="font-body-sm text-on-surface-variant mt-1">Date: 28 October 2025 - Ref: TM/2025/CLR-941</div>
-</div>
-</div>
-<!-- Scope & Mark Information Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-<div class="p-4 rounded-xl bg-surface-container-low space-y-1">
-<span class="font-label-sm text-on-surface-variant uppercase">Proposed Mark Name</span>
-<div class="font-headline-sm text-on-surface">KAVACH HEALTHCARE</div>
-<div class="font-body-sm text-on-surface-variant">Word &amp; Device Application</div>
-</div>
-<div class="p-4 rounded-xl bg-surface-container-low space-y-1">
-<span class="font-label-sm text-on-surface-variant uppercase">Clearance Classes</span>
-<div class="font-headline-sm text-on-surface">Class 05 &amp; Class 42</div>
-<div class="font-body-sm text-on-surface-variant">Pharmaceuticals &amp; Health-Tech SaaS</div>
-</div>
-<div class="p-4 rounded-xl bg-surface-container-low space-y-1">
-<span class="font-label-sm text-on-surface-variant uppercase">Overall Clearance Opinion</span>
-<div class="font-headline-sm text-secondary flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[20px]">check_circle</span>
-<span>Available with Caveats</span>
-</div>
-<div class="font-body-sm text-on-surface-variant">Low Section 9 / Moderate Sec 11(1)</div>
-</div>
-</div>
-<!-- Risk Matrix Breakdown -->
-<div class="space-y-3 pt-2">
-<h4 class="font-headline-sm text-on-surface">Statutory Conflict Risk Assessment</h4>
-<div class="space-y-2">
-<!-- Row 1 -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-<div class="space-y-0.5">
-<div class="font-label-md text-on-surface">Section 9(1)(a) Distinctiveness Grounds</div>
-<div class="font-body-sm text-on-surface-variant">Word is arbitrary for Class 42 software solutions; inherently distinctive.</div>
-</div>
-<span class="px-2.5 py-1 rounded font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant self-start sm:self-auto">Low Objection Risk</span>
-</div>
-<!-- Row 2 -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-<div class="space-y-0.5">
-<div class="font-label-md text-on-surface">Section 11(1) Relative Conflicting Marks (Class 05)</div>
-<div class="font-body-sm text-on-surface-variant">Prior registered mark #4829104 'KAVACH HEALTH' in Class 05. Recommend disclaimer or consent.</div>
-</div>
-<span class="px-2.5 py-1 rounded font-label-sm bg-error-container text-on-error-container self-start sm:self-auto">High Conflict (Class 05)</span>
-</div>
-</div>
-</div>
-<!-- Signature Block & Download Banner -->
-<div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-6 bg-surface-container-low p-4 rounded-xl">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary text-[28px]">draw</span>
-<div>
-<div class="font-label-md text-on-surface">Digitally Stamped Opinion Memo</div>
-<div class="font-body-sm text-on-surface-variant">Generated in 1-Click with Custom Counsel Letterhead</div>
-</div>
-</div>
-<div class="flex gap-2">
-<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-container text-on-primary font-label-md shadow-sm hover:bg-primary transition-all">
-<span class="material-symbols-outlined text-[18px]">download</span>
-<span>Download Branded Sample PDF</span>
-</button>
-<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-lowest text-on-surface font-label-md shadow-sm hover:bg-surface-container transition-all">
-<span class="material-symbols-outlined text-[18px] text-secondary">file_download</span>
-<span>Sample .xlsx</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Testimonial & Predictable Pricing Section -->
-<section class="w-full bg-surface py-space-xl lg:py-24">
-<div class="max-w-7xl mx-auto px-gutter-desktop space-y-16">
-<!-- Testimonial Banner -->
-<div class="bg-surface-container-low rounded-2xl p-space-lg lg:p-space-xl flex flex-col lg:flex-row items-center gap-8 shadow-sm">
-<div class="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl overflow-hidden shrink-0 shadow-md">
-<img class="w-full h-full object-cover" data-alt="Close up professional portrait of a senior Indian intellectual property advocate wearing legal band and dark blazer in high-end New Delhi law library, confident smile, warm cinematic studio light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr3Q2nD1aZg7NJD8NubqQKJQd7jwDl5tyEa-Yxvq5QJdrVFm1q_iH9OwqJlwUyigUROnMJVFPdr_5zYh7_O-1M8nsHTXHAy6w6XHp_q9rORv4olQqiXUAaQo-zpf49Ggzq3GtTF1aqj6mkrRbx2xieIxqQwuHahlqGF7DDDPURps52X5Yz_Rzl0RIOmouriRquXfEbLnbC-m9WELHxTpkPzTOMpd22Okcl4rkH5xy5"/>
-</div>
-<div class="space-y-3 flex-1 text-center lg:text-left">
-<div class="flex justify-center lg:justify-start text-tertiary">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
-</div>
-<p class="font-headline-sm text-on-surface italic leading-relaxed">
-            "Before TMarx, conducting multi-class clearance searches for FMCG or pharmaceutical clients across 8 different classes took our associates over 3 hours of battling IP India session dropouts and captcha loops. With TMarx, we execute comprehensive phonetic and Devanagari searches in seconds and export client-ready branded clearance opinions immediately. We save over 15 hours every single week."
-          </p>
-<div>
-<span class="font-headline-sm text-on-surface block">Rohan Deshmukh</span>
-<span class="font-body-sm text-on-surface-variant">Senior Partner, Deshmukh &amp; Khurana IP Chambers, New Delhi</span>
-</div>
-</div>
-</div>
-<!-- Pricing Plans -->
-<div class="space-y-8">
-<div class="text-center max-w-2xl mx-auto">
-<span class="font-label-sm uppercase tracking-wider text-primary">TRANSPARENT VALUE</span>
-<h2 class="font-headline-lg text-on-surface mt-1">Simple Plans Designed for Indian IP Practices</h2>
-<p class="font-body-md text-on-surface-variant">Start free with 50 instant searches, or upgrade to unrestricted enterprise clearance.</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-<!-- Solo Practitioner Card -->
-<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md space-y-6 flex flex-col justify-between">
-<div class="space-y-4">
-<div class="flex justify-between items-start">
-<div>
-<h3 class="font-headline-md text-on-surface">Solo Practitioner</h3>
-<p class="font-body-sm text-on-surface-variant">For independent advocates starting trademark practice</p>
-</div>
-<span class="px-2.5 py-1 rounded bg-surface-container font-label-sm text-on-surface">Free Forever</span>
-</div>
-<div class="flex items-baseline gap-1">
-<span class="font-metric-number text-on-surface">INR 0</span>
-<span class="font-body-sm text-on-surface-variant">/ forever</span>
-</div>
-<ul class="space-y-3 font-body-sm text-on-surface">
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
-<span><strong>50 Free Clearance Searches</strong> / month</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
-<span>Standard Contains &amp; Prefix Matching</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
-<span>Single-Class Search Execution</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
-<span>Standard Excel (.xlsx) Summary Export</span>
-</li>
-</ul>
-</div>
-<a class="w-full inline-flex items-center justify-center py-3 rounded-lg bg-surface-container text-on-surface font-label-md hover:bg-surface-container-high transition-all" href="#">
-              Start Free (No Credit Card)
-            </a>
-</div>
-<!-- Pro Practice Card -->
-<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-xl space-y-6 flex flex-col justify-between relative overflow-hidden">
-<div class="absolute top-0 right-0 px-4 py-1 bg-primary text-on-primary font-label-sm rounded-bl-lg">
-              MOST POPULAR
-            </div>
-<div class="space-y-4">
-<div class="flex justify-between items-start">
-<div>
-<h3 class="font-headline-md text-on-surface">Pro Practice</h3>
-<p class="font-body-sm text-on-surface-variant">For law firms, docketing teams &amp; enterprise in-house counsel</p>
-</div>
-</div>
-<div class="flex items-baseline gap-1">
-<span class="font-metric-number text-primary">INR 999</span>
-<span class="font-body-sm text-on-surface-variant">/ month (billed annually)</span>
-</div>
-<ul class="space-y-3 font-body-sm text-on-surface">
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span><strong>Unlimited Searches</strong> (Zero OTP &amp; Zero 100-Cap)</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span><strong>Multi-Class Concurrent Search</strong> (Classes 1-45)</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span><strong>Phonetic &amp; Devanagari AI</strong> Matching Engine</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span><strong>Firm-Branded White-Label PDF</strong> Opinion Dossiers</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span>Continuous 5-Minute CGPDTM Telemetry Sync</span>
-</li>
-</ul>
-</div>
-<a class="w-full inline-flex items-center justify-center py-3 rounded-lg bg-primary-container text-on-primary font-label-lg shadow-md hover:bg-primary transition-all" href="#">
-              Upgrade to Pro Practice
-            </a>
-</div>
-</div>
-</div>
-<!-- Bottom Instant Test Search Banner -->
-<div class="bg-primary text-on-primary rounded-2xl p-space-lg lg:p-space-xl shadow-xl flex flex-col items-center text-center space-y-6">
-<div class="space-y-2 max-w-2xl">
-<span class="font-label-sm uppercase tracking-wider text-on-primary-container">TEST LIVE TELEMETRY NOW</span>
-<h3 class="font-display-lg text-on-primary">Enter Mark Name to Test Search Across 8M+ Records</h3>
-<p class="font-body-md text-on-primary-container">No signups, no phone OTPs, and no waiting. See how lightning-fast Indian trademark clearance can truly be.</p>
-</div>
-<div class="w-full max-w-2xl flex flex-col sm:flex-row gap-3">
-<input class="flex-1 px-4 py-3 rounded-lg bg-surface font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-fixed" placeholder="e.g. ZOID LABS, VAKIL AI, NUTRAKAVACH..." type="text"/>
-<button class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-surface-container-lowest text-primary font-label-lg shadow-md hover:bg-surface-container transition-all">
-<span class="material-symbols-outlined text-[20px]">search</span>
-<span>Search 8M+ Registry</span>
-</button>
-</div>
-<div class="flex flex-wrap items-center justify-center gap-4 text-on-primary-container font-label-sm">
-<span> Sub-120ms indexing</span>
-<span>-</span>
-<span> All 45 Nice classes supported</span>
-<span>-</span>
-<span> 100% CGPDTM verified registry sync</span>
-</div>
-</div>
-</div>
-</section>
+
 </div>
 </main>
+<app-agent-pricing-plans />
 <app-agent-portal-footer />

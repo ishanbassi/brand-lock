@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:host { display: block; }
+
+.hearings-feature { background: #faf8ff; color: #131b2e; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
+.hearings-feature * { box-sizing: border-box; }
+.hearings-feature :focus-visible { outline: 2px solid #4f46e5; outline-offset: 3px; }
+.hearings-feature ::selection { background: #4f46e5; color: #fff; }
+.hearings-shell { margin: 0 auto; max-width: 1160px; min-width: 0; padding-inline: 24px; }
+
+.hearings-hero { background: #fff; overflow: hidden; padding: 108px 0 76px; position: relative; }
+.hearings-hero::after { background: #eeedff; border-radius: 50%; content: ''; filter: blur(6px); height: 510px; position: absolute; right: -195px; top: -265px; width: 510px; }
+.breadcrumb { align-items: center; color: #747287; display: flex; font-size: 12px; font-weight: 600; gap: 8px; margin-bottom: 34px; position: relative; z-index: 1; }
+.breadcrumb a { color: #4f46e5; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.hero-layout { align-items: center; display: grid; gap: 72px; grid-template-columns: minmax(0, 1fr) 420px; min-width: 0; position: relative; z-index: 1; }
+.hero-copy { max-width: 620px; min-width: 0; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2 { overflow-wrap: break-word; }
+h1 { color: #17142b; font-size: clamp(38px, 4.2vw, 58px); font-weight: 800; letter-spacing: -.045em; line-height: 1.07; margin-bottom: 20px; }
+.hero-summary { color: #5d5b70; font-size: 17px; line-height: 1.7; margin-bottom: 29px; max-width: 590px; }
+.hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; }
+.button { align-items: center; border-radius: 9px; display: inline-flex; font-size: 14px; font-weight: 750; gap: 8px; justify-content: center; line-height: 1.2; padding: 14px 18px; text-decoration: none; transition: background .18s ease, box-shadow .18s ease, transform .18s ease; }
+.button:hover { transform: translateY(-1px); }
+.button--primary { background: #4f46e5; box-shadow: 0 8px 18px rgba(79, 70, 229, .18); color: #fff; }
+.button--primary:hover { background: #4038ca; box-shadow: 0 10px 23px rgba(79, 70, 229, .25); }
+.button--quiet { color: #3d3b51; padding-inline: 12px; }
+.button--quiet:hover { background: #f0eff8; }
+.button--inverted { background: #fff; color: #3f36c9; white-space: nowrap; }
+.button--inverted:hover { background: #f5f4ff; }
+.button--full { width: 100%; }
+.button .material-symbols-outlined { font-size: 19px; }
+.hero-note { align-items: center; color: #706e81; display: flex; font-size: 12px; gap: 7px; margin: 23px 0 0; }
+.hero-note .material-symbols-outlined { color: #5d55d5; font-size: 17px; }
+
+.cause-list { background: #272245; border-radius: 16px; box-shadow: 0 22px 52px rgba(28, 22, 69, .22); color: #fff; max-width: 420px; overflow: hidden; padding: 22px; position: relative; width: 100%; }
+.cause-list::before { background: rgba(129, 118, 255, .3); border-radius: 50%; content: ''; height: 170px; position: absolute; right: -65px; top: -100px; width: 170px; }
+.cause-list__topline { align-items: flex-start; display: flex; justify-content: space-between; margin-bottom: 19px; position: relative; }
+.cause-list__overline { color: #bab5e5; display: block; font-size: 10px; font-weight: 800; letter-spacing: .1em; margin-bottom: 5px; text-transform: uppercase; }
+.cause-list__topline strong { font-size: 15px; }
+.cause-list__live { align-items: center; background: rgba(255,255,255,.11); border-radius: 30px; color: #eeeefe; display: flex; font-size: 10px; font-weight: 700; gap: 5px; padding: 6px 8px; }
+.cause-list__live span { background: #7ee5b2; border-radius: 50%; height: 6px; width: 6px; }
+.cause-list__date { align-items: center; background: rgba(255,255,255,.08); border-radius: 8px; color: #d6d3ef; display: flex; font-size: 12px; font-weight: 600; gap: 7px; margin-bottom: 11px; padding: 10px 11px; }
+.cause-list__date .material-symbols-outlined { color: #aaa2ff; font-size: 17px; }
+.cause-list__entry { align-items: center; border-bottom: 1px solid rgba(255,255,255,.11); display: grid; gap: 10px; grid-template-columns: 32px minmax(0, 1fr) auto; padding: 13px 2px; }
+.cause-list__entry strong, .cause-list__entry span { display: block; }
+.cause-list__entry strong { color: #fff; font-size: 11px; letter-spacing: .025em; margin-bottom: 3px; }
+.cause-list__entry div span { color: #c6c2e5; font-size: 10px; line-height: 1.35; }
+.mark-initials { align-items: center; border-radius: 9px; display: flex; font-size: 10px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
+.mark-initials--violet { background: #665bd9; }.mark-initials--amber { background: #bf704d; }.mark-initials--blue { background: #367ea9; }
+.entry-time { color: #a7a0d9; font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 700; }
+.cause-list__footer { align-items: center; color: #d4d0ef; display: flex; font-size: 11px; gap: 8px; line-height: 1.45; margin: 15px 0 0; }
+.cause-list__footer .material-symbols-outlined { color: #a9a1ff; font-size: 17px; }
+
+.hearings-content { padding: 88px 0; }
+.content-grid { align-items: start; display: grid; gap: 72px; grid-template-columns: minmax(0, 1fr) 358px; min-width: 0; }
+.information-column, .action-column { min-width: 0; }
+.content-intro { max-width: 670px; }
+.content-intro h2, .action-panel h2, .closing-callout h2 { color: #1c1834; font-size: clamp(27px, 3vw, 36px); font-weight: 800; letter-spacing: -.035em; line-height: 1.16; margin-bottom: 15px; }
+.content-intro > p:last-child { color: #656276; font-size: 15px; line-height: 1.75; }
+.benefit-panel { border-bottom: 1px solid #dddbea; border-top: 1px solid #dddbea; margin-top: 35px; padding: 28px 0; }
+.benefit-panel h3, .workflow h3 { color: #211d37; font-size: 16px; font-weight: 800; letter-spacing: -.015em; margin-bottom: 17px; }
+.benefit-list { display: grid; gap: 13px; list-style: none; margin: 0; padding: 0; }
+.benefit-list li { align-items: flex-start; color: #575569; display: flex; font-size: 14px; gap: 10px; line-height: 1.5; }
+.benefit-list .material-symbols-outlined { color: #5146d0; font-size: 19px; margin-top: 1px; }
+.workflow { margin-top: 34px; }
+.workflow ol { list-style: none; margin: 0; padding: 0; }
+.workflow li { display: grid; gap: 14px; grid-template-columns: 30px minmax(0, 1fr); padding-bottom: 21px; position: relative; }
+.workflow li:not(:last-child)::before { background: #d9d7ed; bottom: 0; content: ''; left: 14px; position: absolute; top: 31px; width: 1px; }
+.step-number { align-items: center; background: #e9e7fb; border-radius: 50%; color: #4439bc; display: flex; font-size: 12px; font-weight: 800; height: 30px; justify-content: center; position: relative; z-index: 1; }
+.workflow strong { color: #29243f; display: block; font-size: 14px; margin: 3px 0 4px; }
+.workflow p { color: #6b687a; font-size: 13px; line-height: 1.55; margin-bottom: 0; }
+
+.action-panel { background: #fff; border-radius: 16px; box-shadow: 0 13px 38px rgba(51, 45, 88, .11); padding: 32px; position: sticky; top: 94px; }
+.action-panel__icon { color: #5046d2; font-size: 29px; margin-bottom: 20px; }
+.action-panel h2 { font-size: 24px; line-height: 1.2; margin-bottom: 12px; }
+.action-panel > p { color: #686578; font-size: 14px; line-height: 1.65; }
+.action-panel ul { border-bottom: 1px solid #e5e3ee; border-top: 1px solid #e5e3ee; list-style: none; margin: 22px 0; padding: 15px 0; }
+.action-panel li { align-items: center; color: #515064; display: flex; font-size: 12px; gap: 8px; line-height: 1.4; padding: 5px 0; }
+.action-panel li .material-symbols-outlined { color: #4f46e5; font-size: 17px; }
+.action-panel__note { font-size: 11px !important; margin: 15px 0 0; text-align: center; }
+.action-panel__note a { color: #4940c8; font-weight: 700; text-underline-offset: 2px; }
+
+.closing-callout { background: #4037bb; color: #fff; padding: 47px 0; }
+.closing-callout__inner { align-items: center; display: flex; gap: 30px; justify-content: space-between; }
+.closing-callout h2 { color: #fff; font-size: 29px; margin-bottom: 8px; }
+.closing-callout p { color: #dcd9ff; font-size: 14px; margin-bottom: 0; }
+
+@media (max-width: 920px) { .hero-layout, .content-grid { gap: 48px; grid-template-columns: minmax(0, 1fr); }.hero-copy { max-width: 690px; }.cause-list { max-width: 500px; }.action-column { max-width: 500px; width: 100%; }.action-panel { position: static; }.closing-callout__inner { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 600px) { .hearings-shell { padding-inline: 18px; }.hearings-hero { padding: 90px 0 52px; }.breadcrumb { margin-bottom: 28px; } h1 { font-size: 38px; }.hero-summary { font-size: 15px; }.hero-actions { align-items: stretch; flex-direction: column; }.button { width: 100%; }.button--quiet { justify-content: center; }.hero-note { align-items: flex-start; }.cause-list { max-width: none; }.hearings-content { padding: 58px 0; }.content-grid { gap: 38px; }.action-panel { padding: 26px; }.closing-callout { padding: 38px 0; }.closing-callout h2 { font-size: 26px; }.button--inverted { width: auto; } }

@@ -1,581 +1,791 @@
-<main class="renewal-docket-feature bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary">
+<main
+  class="renewal-docket-feature bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary"
+>
   <app-agent-portal-navbar activeLink="renewals" />
-  <div class="flex flex-col w-full">
-<!-- Top Stat Live Ticker Banner -->
-<div class="w-full bg-surface-container py-space-sm px-gutter-desktop shadow-sm">
-<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-space-sm font-label-md text-on-surface-variant">
-<div class="flex items-center gap-space-xs">
-<span class="inline-flex w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-<span class="font-label-sm text-secondary uppercase tracking-wider">Live Telemetry</span>
-<span class="text-on-surface font-semibold">Active Trademarks Monitored:</span>
-<span class="text-primary font-bold">8,419,204</span>
-</div>
-<div class="flex items-center gap-space-md">
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-tertiary-container text-[16px]">schedule</span>
-<span class="">Imminent Expiries (90d): <strong class="text-on-surface">18,420</strong></span>
-</div>
-<div class="hidden md:flex items-center gap-1.5">
-<span class="material-symbols-outlined text-secondary text-[16px]">verified</span>
-<span class="">Sec. 25(3) Surcharges Pre-empted: <strong class="text-secondary font-bold">INR 42.8 Lakhs</strong> this month</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Hero Section -->
-<section class="w-full px-gutter-desktop py-space-xl lg:py-24 bg-surface relative overflow-hidden">
-<!-- Ambient subtle luminous glow -->
-<div class="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
-<div class="absolute top-1/2 left-0 w-80 h-80 rounded-full bg-secondary/5 blur-3xl pointer-events-none"></div>
-<div class="max-w-7xl mx-auto flex flex-col items-center text-center">
-<!-- Eyebrow Badge -->
-<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high text-primary font-label-sm uppercase tracking-wider shadow-sm mb-space-md">
-<span class="material-symbols-outlined text-[16px]">verified_user</span>
-<span class="">Feature Deep Dive - Section 25 &amp; Rules 57-59 Statutory Sentinel</span>
-</div>
-<!-- Headline -->
-<h1 class="font-display-lg text-on-surface max-w-4xl tracking-tight mb-space-md">
-        Never Let an Indian Trademark Lapse. <br class="hidden sm:inline">
-<span class="text-primary">Zero Surcharges.</span> Zero Missed Restorations.
-      </h1>
-<!-- Subtitle -->
-<p class="font-body-lg text-on-surface-variant max-w-3xl mb-space-xl">
-        Automated 10-year validity tracking across Mumbai, Delhi, Chennai, Kolkata, and Ahmedabad. Distinguish between standard 6-month pre-expiry windows, Section 25(3) late surcharge periods (+INR 4,500 penalty), and Section 25(4) restoration cutoffs - with automated WhatsApp client reminders and 1-click Form TM-R docketing.
-      </p>
-<!-- Hero Actions -->
-<div class="flex flex-col sm:flex-row items-center justify-center gap-space-md w-full sm:w-auto mb-space-xl">
-<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3.5 bg-primary-container text-on-primary font-label-lg rounded-lg shadow-md hover:bg-primary transition-all" href="#audit-tool">
-<span class="material-symbols-outlined text-[20px]">policy</span>
-<span class="">Audit My Expiring Marks Free (50 Marks)</span>
-</a>
-<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3.5 bg-surface-container-lowest text-on-surface font-label-lg rounded-lg shadow-sm hover:bg-surface-container transition-all" href="#sample-docket">
-<span class="material-symbols-outlined text-primary text-[20px]">layers</span>
-<span class="">Explore Sample Renewal Docket</span>
-</a>
-</div>
-<!-- Jurisdictional Trust Bar -->
-<div class="flex flex-wrap items-center justify-center gap-y-2 gap-x-space-lg text-on-surface-variant font-label-md">
-<span class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-secondary text-[18px]">domain</span>
-<span class="">All 5 TMR Jurisdictions Tracked</span>
-</span>
-<span class="text-outline-variant">-</span>
-<span class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-primary text-[18px]">mark_email_read</span>
-<span class="">Rule 58 Form O-3 Notice Detection</span>
-</span>
-<span class="text-outline-variant">-</span>
-<span class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-secondary text-[18px]">key</span>
-<span class="">Bank-Grade Class-3 DSC E-Filing Prep</span>
-</span>
-</div>
-</div>
-</section>
-<!-- Interactive Renewal Cockpit / Radar Hero Widget -->
-<section class="w-full px-gutter-desktop -mt-8 pb-space-xl" id="sample-docket">
-<div class="max-w-7xl mx-auto bg-surface-container-lowest rounded-xl shadow-xl p-space-lg lg:p-space-xl">
-<!-- Cockpit Header -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg pb-space-md bg-surface-container-low p-space-md rounded-lg">
-<div>
-<div class="flex items-center gap-space-xs mb-1">
-<span class="font-headline-sm text-on-surface">Statutory 3-Phase Horizon Radar</span>
-<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase">Direct TMR Feed</span>
-</div>
-<p class="font-body-sm text-on-surface-variant">Real-time status breakdown for portfolio under CGPDTM Code: <strong>IN/ATT/28419</strong></p>
-</div>
-<div class="flex items-center gap-space-xs">
-<button class="px-space-md py-1.5 bg-surface text-on-surface rounded font-label-md shadow-sm hover:bg-surface-container transition-all flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px]">file_download</span>
-<span class="">Export TM-R Schedule</span>
-</button>
-<button class="px-space-md py-1.5 bg-primary text-on-primary rounded font-label-md shadow-sm hover:bg-primary-container transition-all flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px]">sync</span>
-<span class="">Instant TMR Pull</span>
-</button>
-</div>
-</div>
-<!-- Statutory Timeline Visualization Bar -->
-<div class="mb-space-xl bg-surface p-space-md rounded-xl shadow-sm">
-<div class="flex items-center justify-between mb-space-xs font-label-md text-on-surface">
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px] text-primary">timeline</span>
-            Statutory Trajectory: Section 25, Trade Marks Act, 1999
-          </span>
-<span class="font-label-sm text-on-surface-variant">Registration Base: Year 10 Cycle</span>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm mt-3">
-<!-- Phase 1 -->
-<div class="bg-secondary-container/20 p-space-md rounded-lg relative overflow-hidden">
-<div class="flex items-center justify-between mb-1">
-<span class="px-2 py-0.5 rounded font-label-sm bg-secondary text-on-secondary">Phase 1 - Standard</span>
-<span class="font-label-sm text-secondary font-bold">Standard Fee: INR 9,000</span>
-</div>
-<div class="font-headline-sm text-on-surface mb-1">Normal Renewal Window</div>
-<p class="font-body-sm text-on-surface-variant">6 months prior to statutory expiration date. Safe renewal under Rule 57 without surcharges.</p>
-</div>
-<!-- Phase 2 -->
-<div class="bg-tertiary-fixed/30 p-space-md rounded-lg relative overflow-hidden">
-<div class="flex items-center justify-between mb-1">
-<span class="px-2 py-0.5 rounded font-label-sm bg-tertiary-container text-on-tertiary">Phase 2 - Surcharge</span>
-<span class="font-label-sm text-tertiary font-bold">+INR 4,500 Late Fee</span>
-</div>
-<div class="font-headline-sm text-on-surface mb-1">Section 25(3) Grace Window</div>
-<p class="font-body-sm text-on-surface-variant">Up to 6 months post-expiration. Statutory surcharge applies immediately. O-3 notice alert issued.</p>
-</div>
-<!-- Phase 3 -->
-<div class="bg-error-container/40 p-space-md rounded-lg relative overflow-hidden">
-<div class="flex items-center justify-between mb-1">
-<span class="px-2 py-0.5 rounded font-label-sm bg-error text-on-error">Phase 3 - Restoration</span>
-<span class="font-label-sm text-error font-bold">+INR 9,000 Restoration</span>
-</div>
-<div class="font-headline-sm text-on-surface mb-1">Section 25(4) Restoration</div>
-<p class="font-body-sm text-on-surface-variant">6 to 12 months after removal from Register. Requires Form TM-R + TM-W affidavit proving non-abandonment.</p>
-</div>
-</div>
-</div>
-<!-- Live Mock Dockets -->
-<div class="space-y-space-md">
-<!-- Sample Card 1: Urgent Grace Period -->
-<div class="p-space-md rounded-xl bg-surface shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
-<div class="flex items-start gap-space-md">
-<div class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center shrink-0 text-tertiary">
-<span class="material-symbols-outlined text-[28px]">warning</span>
-</div>
-<div>
-<div class="flex flex-wrap items-center gap-space-xs mb-1">
-<span class="font-headline-md text-on-surface">VAYU PAY</span>
-<span class="px-2 py-0.5 rounded font-label-sm bg-surface-container-highest text-on-surface">Class 36</span>
-<span class="font-label-md text-on-surface-variant">App #3910291 - Mumbai Registry</span>
-<span class="px-2.5 py-0.5 rounded-full font-label-sm bg-error-container text-error font-bold">18 Days to Removal</span>
-</div>
-<p class="font-body-sm text-on-surface-variant mb-1">
-                Proprietor: <strong>Kronos FinTech Solutions Pvt Ltd</strong> - Expired: 14 Aug 2024 - Grace Cutoff: 14 Feb 2025
-              </p>
-<div class="inline-flex items-center gap-1.5 font-label-sm text-tertiary bg-tertiary-fixed/40 px-2 py-0.5 rounded">
-<span class="material-symbols-outlined text-[14px]">payments</span>
-<span class="">Section 25(3) Penalty Active: Total Filing INR 13,500 (INR 9,000 + INR 4,500 Late Surcharge)</span>
-</div>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-space-xs shrink-0">
-<button class="px-space-md py-2 bg-secondary text-on-secondary rounded-lg font-label-md shadow-sm hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">chat</span>
-<span class="">Send WhatsApp Notice</span>
-</button>
-<button class="px-space-md py-2 bg-primary-container text-on-primary rounded-lg font-label-md shadow-sm hover:bg-primary transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">description</span>
-<span class="">Generate Form TM-R</span>
-</button>
-</div>
-</div>
-<!-- Sample Card 2: Advance Renewal Window -->
-<div class="p-space-md rounded-xl bg-surface shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
-<div class="flex items-start gap-space-md">
-<div class="w-12 h-12 rounded-lg bg-secondary-container flex items-center justify-center shrink-0 text-secondary">
-<span class="material-symbols-outlined text-[28px]">verified</span>
-</div>
-<div>
-<div class="flex flex-wrap items-center gap-space-xs mb-1">
-<span class="font-headline-md text-on-surface">GLOVIA PHARMA</span>
-<span class="px-2 py-0.5 rounded font-label-sm bg-surface-container-highest text-on-surface">Class 05</span>
-<span class="font-label-md text-on-surface-variant">App #4108221 - Delhi Registry</span>
-<span class="px-2.5 py-0.5 rounded-full font-label-sm bg-secondary-container text-on-secondary-container font-bold">Standard Window (114 Days Left)</span>
-</div>
-<p class="font-body-sm text-on-surface-variant mb-1">
-                Proprietor: <strong>Glovia Laboratories Ltd</strong> - Validity Expiry: 18 Jun 2025 - Next Cycle: 2035
-              </p>
-<div class="inline-flex items-center gap-1.5 font-label-sm text-secondary bg-secondary-container/30 px-2 py-0.5 rounded">
-<span class="material-symbols-outlined text-[14px]">price_check</span>
-<span class="">Normal E-Filing Fee: INR 9,000 (Zero Surcharge Applied)</span>
-</div>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-space-xs shrink-0">
-<button class="px-space-md py-2 bg-surface-container text-on-surface rounded-lg font-label-md shadow-sm hover:bg-surface-container-high transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">forward_to_inbox</span>
-<span class="">Client Renewal Advisory</span>
-</button>
-<button class="px-space-md py-2 bg-primary-container text-on-primary rounded-lg font-label-md shadow-sm hover:bg-primary transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">description</span>
-<span class="">Draft TM-R</span>
-</button>
-</div>
-</div>
-<!-- Sample Card 3: Notice O-3 Alert -->
-<div class="p-space-md rounded-xl bg-surface shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
-<div class="flex items-start gap-space-md">
-<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0 text-primary">
-<span class="material-symbols-outlined text-[28px]">mark_email_unread</span>
-</div>
-<div>
-<div class="flex flex-wrap items-center gap-space-xs mb-1">
-<span class="font-headline-md text-on-surface">AURA CLOUD</span>
-<span class="px-2 py-0.5 rounded font-label-sm bg-surface-container-highest text-on-surface">Class 42</span>
-<span class="font-label-md text-on-surface-variant">App #4892019 - Chennai Registry</span>
-<span class="px-2.5 py-0.5 rounded-full font-label-sm bg-tertiary-fixed text-tertiary font-bold">Rule 58 Form O-3 Detected</span>
-</div>
-<p class="font-body-sm text-on-surface-variant mb-1">
-                Proprietor: <strong>Aura Infrastructures Private Limited</strong> - Dispatched by TMR: 12 Oct 2024
-              </p>
-<div class="inline-flex items-center gap-1.5 font-label-sm text-primary bg-primary-fixed/50 px-2 py-0.5 rounded">
-<span class="material-symbols-outlined text-[14px]">alarm</span>
-<span class="">Statutory 45-day response countdown running before trademark removal notice</span>
-</div>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-space-xs shrink-0">
-<button class="px-space-md py-2 bg-surface-container text-on-surface rounded-lg font-label-md shadow-sm hover:bg-surface-container-high transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">visibility</span>
-<span class="">Inspect O-3 Notice</span>
-</button>
-<button class="px-space-md py-2 bg-primary-container text-on-primary rounded-lg font-label-md shadow-sm hover:bg-primary transition-all flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]">send</span>
-<span class="">Fast TM-R Filing</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Problem / Danger Section -->
-<section class="w-full px-gutter-desktop py-space-xl bg-surface-container-low">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-3xl mx-auto mb-space-xl">
-<span class="font-label-sm uppercase tracking-wider text-error">The Cost of Stale Docketing</span>
-<h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
-          Why Trademark Renewals Slip Through the Cracks in Indian Law Firms
-        </h2>
-<p class="font-body-md text-on-surface-variant">
-          Indian trademark rights run on strict 10-year statutory clocks. When docketing relies on desktop spreadsheets and disconnected associate calendars, severe legal and financial risks follow.
-        </p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-<!-- Danger 1 -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-<div>
-<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary mb-space-md">
-<span class="material-symbols-outlined text-[28px]">calendar_month</span>
-</div>
-<h3 class="font-headline-md text-on-surface mb-space-xs">The Silent 10-Year Amnesia</h3>
-<p class="font-body-md text-on-surface-variant">
-              Applications filed back in 2014 and 2015 live buried in legacy spreadsheets, archived emails, or notebooks of departed colleagues. When no automated system recalculates registration anniversary dates, clients lose vital marks without notice.
-            </p>
-</div>
-<div class="mt-space-md pt-space-md bg-surface-container-low p-space-sm rounded-lg text-on-surface-variant font-label-sm">
-<strong class="text-on-surface">Outcome:</strong> Brand equity forfeited to squatters in identical Nice classes.
-          </div>
-</div>
-<!-- Danger 2 -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-<div>
-<div class="w-12 h-12 rounded-lg bg-error-container flex items-center justify-center text-error mb-space-md">
-<span class="material-symbols-outlined text-[28px]">currency_rupee</span>
-</div>
-<h3 class="font-headline-md text-on-surface mb-space-xs">The INR 4,500 + INR 9,000 Penalty Trap</h3>
-<p class="font-body-md text-on-surface-variant">
-              Missing the standard Rule 57 window triggers a mandatory INR 4,500 Section 25(3) late fee. If delayed further into Section 25(4) restoration, statutory filing jumps to INR 18,000 plus tedious TM-W affidavits and contested revival hearings before the Hearing Board.
-            </p>
-</div>
-<div class="mt-space-md pt-space-md bg-error-container/30 p-space-sm rounded-lg text-error font-label-sm">
-<strong class="text-error">Outcome:</strong> Severe client friction, invoice write-offs, and malpractice liability.
-          </div>
-</div>
-<!-- Danger 3 -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-<div>
-<div class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary mb-space-md">
-<span class="material-symbols-outlined text-[28px]">mark_email_read</span>
-</div>
-<h3 class="font-headline-md text-on-surface mb-space-xs">O-3 Notice Delivery Failures</h3>
-<p class="font-body-md text-on-surface-variant">
-              Relying on the Trademark Registry's physical Form O-3 postal dispatch is fatal. Address changes, postal returns, and backlogs mean hundreds of marks are removed without the attorney ever receiving the statutory notice.
-            </p>
-</div>
-<div class="mt-space-md pt-space-md bg-tertiary-fixed/30 p-space-sm rounded-lg text-tertiary font-label-sm">
-<strong class="text-tertiary">Outcome:</strong> Registry publishes "Removed from Register" in the TM Journal silently.
-          </div>
-</div>
-</div>
-</div>
-</section>
-<!-- 3-Step Automated Sentinel Workflow -->
-<section class="w-full px-gutter-desktop py-space-xl lg:py-24 bg-surface">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-2xl mx-auto mb-space-xl">
-<span class="font-label-sm uppercase tracking-wider text-primary">Autonomous Defense System</span>
-<h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
-          How TMarx Safeguards Every Trademark in 3 Steps
-        </h2>
-<p class="font-body-md text-on-surface-variant">
-          Connect your attorney code once. Our high-frequency engine tracks every renewal stage from 180 days ahead down to the final DSC signoff.
-        </p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg relative">
-<!-- Step 1 -->
-<div class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-space-md">
-<span class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center">1</span>
-<span class="font-label-sm uppercase text-primary tracking-wide">Registry Auto-Sync</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Automated Registry Telemetry</h3>
-<p class="font-body-md text-on-surface-variant">
-              TMarx queries CGPDTM databases across Mumbai, Delhi, Chennai, Kolkata, and Ahmedabad. It extracts the genuine Certificate Issue Date, filing date, and calculates the exact 10-year statutory deadline for every registered mark under your agency.
-            </p>
-</div>
-<div class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Zero manual Excel entry or data maintenance</span>
-</div>
-</div>
-<!-- Step 2 -->
-<div class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-space-md">
-<span class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center">2</span>
-<span class="font-label-sm uppercase text-primary tracking-wide">Dynamic Cadence</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Multi-Tier Automated Alarms</h3>
-<p class="font-body-md text-on-surface-variant">
-              Automated reminders deploy automatically at 180, 90, 60, 30, and 7 days prior to expiry. Client WhatsApp nudges and partner advisory summaries trigger based on customized legal workflows.
-            </p>
-</div>
-<div class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">notifications_active</span>
-<span class="">Omnichannel: WhatsApp, Email &amp; Calendar</span>
-</div>
-</div>
-<!-- Step 3 -->
-<div class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-space-md">
-<span class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center">3</span>
-<span class="font-label-sm uppercase text-primary tracking-wide">1-Click Assembly</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">1-Click TM-R &amp; TM-W Generation</h3>
-<p class="font-body-md text-on-surface-variant">
-              Generate error-free, pre-filled Form TM-R with agent details, address for service, applicant status, and fees pre-calculated. Ready for instant digital signature via e-filing portal.
-            </p>
-</div>
-<div class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">bolt</span>
-<span class="">Reduces drafting time from 20 mins to 15 seconds</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Deep Capabilities Grid (6 Features) -->
-<section class="w-full px-gutter-desktop py-space-xl bg-surface-container-low">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-2xl mx-auto mb-space-xl">
-<span class="font-label-sm uppercase tracking-wider text-primary">Comprehensive Defense Grid</span>
-<h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
-          Built Specifically for Indian IP Law Practitioners
-        </h2>
-<p class="font-body-md text-on-surface-variant">
-          Engineered to eliminate administrative drag and provide infallible client protection.
-        </p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
-<!-- Feature 1 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">palette</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Statutory 3-Phase Color-Coded Sentinel</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Visual clarity across the entire pipeline: Green for standard renewal window (6 months), Amber for Section 25(3) late surcharge, and Crimson for Section 25(4) restoration cutoff.
-          </p>
-</div>
-<!-- Feature 2 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">sms</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Automated WhatsApp Client Nudges</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Send white-labeled WhatsApp reminders with your firms logo and letterhead directly to corporate brand managers with payment breakdown and 1-tap confirmation links.
-          </p>
-</div>
-<!-- Feature 3 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">description</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Form TM-R &amp; TM-W Draft Assembler</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Zero retyping. Automatically merges proprietor details, agent code, Class number, and statutory fee calculations into official statutory XML/PDF ready for IP India upload.
-          </p>
-</div>
-<!-- Feature 4 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">hub</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Multi-Branch Jurisdictional Telemetry</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Unified dashboard harmonizing filings across all five TMR branches - Mumbai, New Delhi, Chennai, Kolkata, and Ahmedabad - without separate registry logins.
-          </p>
-</div>
-<!-- Feature 5 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">summarize</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Bulk Client Portfolio Expiry Audits</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Generate poli*shed PDF &amp; Excel renewal schedules for corporate enterprise clients. Demonstrate proactive value before client in-house counsels ask about upcoming expiries.
-          </p>
-</div>
-<!-- Feature 6 -->
-<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary mb-space-sm">
-<span class="material-symbols-outlined text-[22px]">assignment_ind</span>
-</div>
-<h3 class="font-headline-sm text-on-surface mb-space-xs">Power of Attorney (TM-48) Validity Check</h3>
-<p class="font-body-sm text-on-surface-variant">
-            Cross-checks whether an existing TM-48 power of attorney on record covers renewal filing or if a fresh execution is required, preventing unnecessary registry objections.
-          </p>
-</div>
-</div>
-</div>
-</section>
-<!-- High-Impact Testimonial Section -->
-<section class="w-full px-gutter-desktop py-space-xl bg-surface">
-<div class="max-w-5xl mx-auto bg-surface-container p-space-lg lg:p-space-xl rounded-xl shadow-md relative overflow-hidden">
-<div class="flex flex-col md:flex-row items-center gap-space-lg">
-<div class="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-primary text-[48px]">format_quote</span>
-</div>
-<div class="space-y-space-sm text-center md:text-left">
-<p class="font-headline-sm text-on-surface italic">
-            In October alone, TMarx caught two Class 30 and three Class 05 registrations for an FMCG client where the physical O-3 notice was mailed to a vacated factory address in Pune. We filed TM-R within the standard window, saving the client from INR 22,500 in statutory late surcharges and avoiding a disastrous Section 25(4) restoration lawsuit. TMarx pays for itself in a single morning.
-          </p>
-<div>
-<div class="font-headline-sm text-on-surface">Adv. Rajeshwar Sen</div>
-<div class="font-body-sm text-on-surface-variant">Senior IP Partner, Sen &amp; Associates Advocates (Mumbai &amp; New Delhi)</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Transparent Pricing Section -->
-<section class="w-full px-gutter-desktop py-space-xl bg-surface-container-low">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-2xl mx-auto mb-space-xl">
-<span class="font-label-sm uppercase tracking-wider text-primary">Simple, Predictable Economics</span>
-<h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
-          Start Protecting Your Renewal Portfolio Today
-        </h2>
-<p class="font-body-md text-on-surface-variant">
-          No credit card needed to audit your first 50 marks. Scale effortlessly as your docket grows.
-        </p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg max-w-4xl mx-auto">
-<!-- Solo Plan -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-space-xs">
-<h3 class="font-headline-md text-on-surface">Solo Practitioner</h3>
-<span class="px-2 py-0.5 rounded font-label-sm bg-surface-container text-on-surface">Free Forever</span>
-</div>
-<p class="font-body-sm text-on-surface-variant mb-space-md">Perfect for independent advocates managing boutique dockets.</p>
-<div class="mb-space-lg">
-<span class="font-metric-number text-on-surface">INR 0</span>
-<span class="font-body-sm text-on-surface-variant"> / month</span>
-</div>
-<ul class="space-y-space-xs font-body-sm text-on-surface-variant mb-space-lg">
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Track up to 50 active trademarks</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Standard 180 &amp; 90-day email alerts</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Form TM-R template generation</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">All 5 Indian TM Registry branches</span>
-</li>
-</ul>
-</div>
-<button class="w-full py-3 bg-surface-container text-on-surface rounded-lg font-label-md hover:bg-surface-container-high transition-all">
-            Get Started Free
-          </button>
-</div>
-<!-- Pro Plan -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-xl flex flex-col justify-between relative overflow-hidden">
-<div class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm px-3 py-1 rounded-bl-lg uppercase tracking-wider">
-            Most Popular
-          </div>
-<div>
-<div class="flex items-center justify-between mb-space-xs">
-<h3 class="font-headline-md text-on-surface">Pro Practice</h3>
-<span class="px-2 py-0.5 rounded font-label-sm bg-primary-fixed text-primary">Full Sentinel</span>
-</div>
-<p class="font-body-sm text-on-surface-variant mb-space-md">For active law firms, corporate legal depts &amp; TM agents.</p>
-<div class="mb-space-lg">
-<span class="font-metric-number text-on-surface">INR 999</span>
-<span class="font-body-sm text-on-surface-variant"> / month (billed annually)</span>
-</div>
-<ul class="space-y-space-xs font-body-sm text-on-surface-variant mb-space-lg">
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class=""><strong>Unlimited</strong> monitored trademarks</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Automated WhatsApp Client Reminders</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Rule 58 Form O-3 automated gazette matching</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">White-labeled client renewal reports (PDF/Excel)</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-<span class="">Section 25(3) &amp; 25(4) automated calculation</span>
-</li>
-</ul>
-</div>
-<button class="w-full py-3 bg-primary-container text-on-primary rounded-lg font-label-md hover:bg-primary transition-all shadow-md">
-            Start 14-Day Free Pro Trial
-          </button>
-</div>
-</div>
-</div>
-</section>
-<!-- Bottom CTA: Instant Agent Code Lookup Box -->
-<section class="w-full px-gutter-desktop py-space-xl bg-surface" id="audit-tool">
-<div class="max-w-5xl mx-auto bg-surface-container-high rounded-xl p-space-lg lg:p-space-xl shadow-lg text-center">
-<span class="material-symbols-outlined text-primary text-[42px] mb-space-xs">radar</span>
-<h2 class="font-headline-lg text-on-surface mb-space-xs">Instant Expiry Audit by Agent Code</h2>
-<p class="font-body-md text-on-surface-variant max-w-xl mx-auto mb-space-lg">
-        Enter your Registered Trade Marks Agent code (e.g., IN/ATT/0192) or Attorney name to preview upcoming renewal milestones across all 5 branches.
-      </p>
-<form class="flex flex-col sm:flex-row items-center justify-center gap-space-xs max-w-xl mx-auto" (submit)="startOnboarding($event)">
-<div class="relative w-full">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">search</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" placeholder="Enter Agent Code (e.g. 28419) or Firm Name" required="" type="text">
-</div>
-<button class="w-full sm:w-auto px-space-lg py-3 bg-primary text-on-primary font-label-md rounded-lg shadow hover:bg-primary-container transition-all whitespace-nowrap" type="submit">
-          Run Sentinel Scan
-        </button>
-</form>
-<div class="mt-space-md text-on-surface-variant font-label-sm">
-        Protected under DPDP Act 2023 - Direct read-only CGPDTM Public Gazette index
+
+  <div
+    class="w-full bg-surface-container py-space-sm px-gutter-desktop shadow-sm"
+  >
+    <div
+      class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-space-sm font-label-md text-on-surface-variant"
+    >
+      <div class="flex items-center gap-space-xs">
+        <span
+          class="inline-flex w-2 h-2 rounded-full bg-secondary animate-pulse"
+        ></span
+        ><span class="font-label-sm text-secondary uppercase tracking-wider"
+          >Registry preview</span
+        ><span class="text-on-surface font-semibold">Renewal windows:</span
+        ><span class="text-primary font-bold">Section 25 monitored</span>
       </div>
-</div>
-</section>
-</div>
+      <div class="hidden md:flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary text-[16px]"
+          >verified</span
+        ><span>Public IP India registry data · a limited pre-account view</span>
+      </div>
+    </div>
+  </div>
+
+  <section
+    class="w-full px-gutter-desktop py-space-xl lg:py-24 bg-surface relative overflow-hidden"
+  >
+    <div
+      class="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"
+    ></div>
+    <div
+      class="absolute top-1/2 left-0 w-80 h-80 rounded-full bg-secondary/5 blur-3xl pointer-events-none"
+    ></div>
+    <div
+      class="max-w-7xl mx-auto flex flex-col items-center text-center relative"
+    >
+      <div
+        class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high text-primary font-label-sm uppercase tracking-wider shadow-sm mb-space-md"
+      >
+        <span class="material-symbols-outlined text-[16px]">verified_user</span
+        ><span>Section 25 &amp; Rules 57–59 Statutory Sentinel</span>
+      </div>
+      <h1
+        class="font-display-lg text-on-surface max-w-4xl tracking-tight mb-space-md"
+      >
+        Never let an Indian trademark lapse.<br class="hidden sm:inline" /><span
+          class="text-primary"
+        >
+          Review renewal risk early.</span
+        >
+      </h1>
+      <p class="font-body-lg text-on-surface-variant max-w-3xl mb-space-xl">
+        Search the public register for your firm’s marks and see the dates that
+        need attention now: standard renewal windows, Section 25(3) late
+        renewals, and Section 25(4) restoration cases.
+      </p>
+      <div
+        class="flex flex-col sm:flex-row items-center justify-center gap-space-md w-full sm:w-auto mb-space-xl"
+      >
+        <button
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3.5 bg-primary-container text-on-primary font-label-lg rounded-lg shadow-md hover:bg-primary transition-all"
+          type="button"
+          (click)="startOnboarding()"
+        >
+          <span class="material-symbols-outlined text-[20px]">policy</span
+          ><span>Audit my expiring marks</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full px-gutter-desktop -mt-8 pb-space-xl" id="audit-tool">
+    <div
+      class="max-w-7xl mx-auto bg-surface-container-lowest rounded-xl shadow-xl p-space-lg lg:p-space-xl"
+    >
+      <div class="max-w-2xl mx-auto text-center mb-space-lg">
+        <h2 class="font-headline-lg text-on-surface">
+          Start with an agent or firm name
+        </h2>
+        <p class="font-body-md text-on-surface-variant mt-space-xs">
+          Search the public IP India registry. This preview shows only marks
+          with a renewal date in a current statutory action window.
+        </p>
+      </div>
+      <div class="relative max-w-2xl mx-auto">
+        <label class="sr-only" for="renewal-agent-search"
+          >Search by agent or firm name</label
+        >
+        <span
+          class="material-symbols-outlined absolute left-3 top-3 text-outline-variant text-[20px]"
+          >search</span
+        >
+        <input
+          id="renewal-agent-search"
+          class="w-full pl-10 pr-28 py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+          [(ngModel)]="agentQuery"
+          (ngModelChange)="onAgentQueryChange($event)"
+          (keydown.enter)="searchNow()"
+          placeholder="Start with an agent or firm name"
+          type="text"
+          autocomplete="off"
+          aria-autocomplete="list"
+          [attr.aria-expanded]="suggestions().length > 0"
+        />
+        <button
+          class="absolute right-1.5 top-1.5 px-space-md py-1.5 bg-primary text-on-primary font-label-md rounded-lg hover:bg-primary-container transition-all disabled:opacity-60"
+          type="button"
+          (click)="searchNow()"
+          [disabled]="searching()"
+        >
+          {{ searching() ? "Searching" : "Search" }}
+        </button>
+        @if (suggestions().length) {
+          <div
+            class="absolute z-10 top-[calc(100%+0.5rem)] left-0 right-0 bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden"
+            role="listbox"
+            aria-label="Matching agents and firms"
+          >
+            @for (agent of suggestions(); track agent.agentName) {
+              <button
+                class="w-full px-space-md py-space-sm text-left hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-sm"
+                type="button"
+                role="option"
+                (click)="selectAgent(agent)"
+              >
+                <span
+                  ><span class="block font-label-md text-on-surface">{{
+                    agent.displayName
+                  }}</span
+                  ><span class="block font-body-sm text-on-surface-variant"
+                    >{{ agent.markCount | number }} registry marks</span
+                  ></span
+                ><span class="material-symbols-outlined text-primary"
+                  >arrow_forward</span
+                >
+              </button>
+            }
+          </div>
+        }
+      </div>
+      @if (searchError()) {
+        <p
+          class="max-w-2xl mx-auto mt-space-sm text-error font-body-sm"
+          role="alert"
+        >
+          {{ searchError() }}
+        </p>
+      }
+      @if (previewLoading()) {
+        <p
+          class="text-center py-space-xl text-on-surface-variant"
+          role="status"
+        >
+          Reading registry renewal dates…
+        </p>
+      }
+      @if (previewError()) {
+        <p class="text-center py-space-xl text-error" role="alert">
+          {{ previewError() }}
+        </p>
+      }
+    </div>
+  </section>
+
+  @if (selectedPreview(); as preview) {
+    <section class="w-full px-gutter-desktop pb-space-xl" id="sample-docket">
+      <div
+        class="max-w-7xl mx-auto bg-surface-container-lowest rounded-xl shadow-xl p-space-lg lg:p-space-xl"
+      >
+        <div
+          class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg pb-space-md bg-surface-container-low p-space-md rounded-lg"
+        >
+          <div>
+            <div class="flex items-center gap-space-xs mb-1">
+              <span class="font-headline-sm text-on-surface"
+                >Statutory 3-Phase Horizon Radar</span
+              ><span
+                class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase"
+                >Public preview</span
+              >
+            </div>
+            <p class="font-body-sm text-on-surface-variant">
+              {{ preview.displayName }} ·
+              {{ preview.totalMarks | number }} registry marks under this firm
+              name
+            </p>
+          </div>
+          <button
+            class="px-space-md py-1.5 bg-primary text-on-primary rounded font-label-md shadow-sm hover:bg-primary-container transition-all flex items-center gap-1"
+            type="button"
+            (click)="startOnboarding()"
+          >
+            <span class="material-symbols-outlined text-[16px]"
+              >rocket_launch</span
+            ><span>Set up my renewal docket</span>
+          </button>
+        </div>
+
+        <div class="mb-space-xl bg-surface p-space-md rounded-xl shadow-sm">
+          <div
+            class="flex items-center justify-between mb-space-xs font-label-md text-on-surface"
+          >
+            <span class="flex items-center gap-1"
+              ><span class="material-symbols-outlined text-[18px] text-primary"
+                >timeline</span
+              >Statutory trajectory: Section 25, Trade Marks Act, 1999</span
+            ><span class="font-label-sm text-on-surface-variant"
+              >Registry-confirmed renewal dates</span
+            >
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm mt-3">
+            <button
+              class="text-left bg-secondary-container/20 p-space-md rounded-lg relative overflow-hidden transition-all hover:shadow-sm"
+              [class.radar-active]="activeFilter() === 'UPCOMING'"
+              type="button"
+              (click)="setFilter('UPCOMING')"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <span
+                  class="px-2 py-0.5 rounded font-label-sm bg-secondary text-on-secondary"
+                  >Phase 1 · Standard</span
+                ><span class="font-label-sm text-secondary font-bold"
+                  >{{ preview.upcomingCount | number }} upcoming</span
+                >
+              </div>
+              <div class="font-headline-sm text-on-surface mb-1">
+                Normal renewal window
+              </div>
+              <p class="font-body-sm text-on-surface-variant">
+                Six months before the registry renewal date. Standard Rule 57
+                renewal window.
+              </p>
+              <span
+                class="inline-flex mt-2 px-2 py-0.5 rounded font-label-sm bg-secondary text-on-secondary"
+                >Basic renewal fee: ₹9,000</span
+              >
+            </button>
+            <button
+              class="text-left bg-tertiary-fixed/30 p-space-md rounded-lg relative overflow-hidden transition-all hover:shadow-sm"
+              [class.radar-active]="activeFilter() === 'SECTION_25_3'"
+              type="button"
+              (click)="setFilter('SECTION_25_3')"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <span
+                  class="px-2 py-0.5 rounded font-label-sm bg-tertiary-container text-on-tertiary"
+                  >Phase 2 · Surcharge</span
+                ><span class="font-label-sm text-tertiary font-bold"
+                  >{{ preview.section253Count | number }} overdue</span
+                >
+              </div>
+              <div class="font-headline-sm text-on-surface mb-1">
+                Section 25(3) grace window
+              </div>
+              <p class="font-body-sm text-on-surface-variant">
+                Up to six months after the renewal date. The statutory late
+                surcharge applies.
+              </p>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <span
+                  class="px-2 py-0.5 rounded font-label-sm bg-surface-container-lowest text-on-surface"
+                  >Basic fee: ₹9,000</span
+                ><span
+                  class="px-2 py-0.5 rounded font-label-sm bg-tertiary-container text-on-tertiary"
+                  >Late surcharge: +₹4,500</span
+                >
+              </div>
+            </button>
+            <button
+              class="text-left bg-error-container/40 p-space-md rounded-lg relative overflow-hidden transition-all hover:shadow-sm"
+              [class.radar-active]="activeFilter() === 'SECTION_25_4'"
+              type="button"
+              (click)="setFilter('SECTION_25_4')"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <span
+                  class="px-2 py-0.5 rounded font-label-sm bg-error text-on-error"
+                  >Phase 3 · Restoration</span
+                ><span class="font-label-sm text-error font-bold"
+                  >{{ preview.section254Count | number }} overdue</span
+                >
+              </div>
+              <div class="font-headline-sm text-on-surface mb-1">
+                Section 25(4) restoration
+              </div>
+              <p class="font-body-sm text-on-surface-variant">
+                Beyond the grace window, within the public docket’s restoration
+                review period.
+              </p>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <span
+                  class="px-2 py-0.5 rounded font-label-sm bg-surface-container-lowest text-on-surface"
+                  >Basic fee: ₹9,000</span
+                ><span
+                  class="px-2 py-0.5 rounded font-label-sm bg-error text-on-error"
+                  >Restoration: +₹9,000</span
+                >
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md"
+        >
+          <div>
+            <h2 class="font-headline-md text-on-surface">
+              {{
+                activeFilter() === "all"
+                  ? "Renewal docket preview"
+                  : activeFilter() === "UPCOMING"
+                    ? "Upcoming renewals"
+                    : activeFilter() === "SECTION_25_3"
+                      ? "Section 25(3) overdue renewals"
+                      : "Section 25(4) restoration cases"
+              }}
+            </h2>
+            <p class="font-body-sm text-on-surface-variant">
+              At most three registry records: one from each statutory category
+              currently requiring a renewal decision.
+            </p>
+          </div>
+          <button
+            class="px-space-md py-1.5 bg-surface-container text-on-surface rounded font-label-md hover:bg-surface-container-high transition-all"
+            type="button"
+            (click)="setFilter('all')"
+            [disabled]="activeFilter() === 'all'"
+          >
+            Show all
+          </button>
+        </div>
+
+        @if (docketMarks().length) {
+          <div class="space-y-space-md">
+            @for (
+              mark of docketMarks();
+              track mark.applicationNo ?? mark.name
+            ) {
+              <article
+                class="p-space-md rounded-xl bg-surface shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-space-md"
+                [class.docket-upcoming]="mark.renewalStage === 'UPCOMING'"
+                [class.docket-surcharge]="mark.renewalStage === 'SECTION_25_3'"
+                [class.docket-restoration]="
+                  mark.renewalStage === 'SECTION_25_4'
+                "
+              >
+                <div class="flex items-start gap-space-md">
+                  <div
+                    class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+                    [class.bg-secondary-container]="
+                      mark.renewalStage === 'UPCOMING'
+                    "
+                    [class.text-secondary]="mark.renewalStage === 'UPCOMING'"
+                    [class.bg-tertiary-fixed]="
+                      mark.renewalStage === 'SECTION_25_3'
+                    "
+                    [class.text-tertiary]="mark.renewalStage === 'SECTION_25_3'"
+                    [class.bg-error-container]="
+                      mark.renewalStage === 'SECTION_25_4'
+                    "
+                    [class.text-error]="mark.renewalStage === 'SECTION_25_4'"
+                  >
+                    <span class="material-symbols-outlined text-[28px]">{{
+                      stageIcon(mark)
+                    }}</span>
+                  </div>
+                  <div>
+                    <div class="flex flex-wrap items-center gap-space-xs mb-1">
+                      <span class="font-headline-md text-on-surface">{{
+                        mark.name || "Unnamed mark"
+                      }}</span><span
+                        class="px-2 py-0.5 rounded font-label-sm bg-surface-container-highest text-on-surface"
+                        >Class {{ mark.tmClass ?? "—" }}</span
+                      ><span class="font-label-md text-on-surface-variant"
+                        >App #{{ mark.applicationNo ?? "—" }}</span
+                      ><span
+                        class="px-2.5 py-0.5 rounded-full font-label-sm font-bold"
+                        [class.bg-secondary-container]="
+                          mark.renewalStage === 'UPCOMING'
+                        "
+                        [class.text-on-secondary-container]="
+                          mark.renewalStage === 'UPCOMING'
+                        "
+                        [class.bg-tertiary-fixed]="
+                          mark.renewalStage === 'SECTION_25_3'
+                        "
+                        [class.text-tertiary]="
+                          mark.renewalStage === 'SECTION_25_3'
+                        "
+                        [class.bg-error-container]="
+                          mark.renewalStage === 'SECTION_25_4'
+                        "
+                        [class.text-error]="
+                          mark.renewalStage === 'SECTION_25_4'
+                        "
+                        >{{ stageLabel(mark) }}</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-on-surface-variant mb-1">
+                      Registry status:
+                      <strong>{{
+                        mark.trademarkStatus || "Not recorded"
+                      }}</strong>
+                      · Renewal date:
+                      <strong>{{ mark.renewalDate | date: "dd MMM y" }}</strong>
+                    </p>
+                    <div
+                      class="inline-flex items-center gap-1.5 font-label-sm px-2 py-0.5 rounded"
+                      [class.text-secondary]="mark.renewalStage === 'UPCOMING'"
+                      [class.bg-secondary-container]="
+                        mark.renewalStage === 'UPCOMING'
+                      "
+                      [class.text-tertiary]="
+                        mark.renewalStage === 'SECTION_25_3'
+                      "
+                      [class.bg-tertiary-fixed]="
+                        mark.renewalStage === 'SECTION_25_3'
+                      "
+                      [class.text-error]="mark.renewalStage === 'SECTION_25_4'"
+                      [class.bg-error-container]="
+                        mark.renewalStage === 'SECTION_25_4'
+                      "
+                    >
+                      <span class="material-symbols-outlined text-[14px]">{{
+                        mark.renewalStage === "UPCOMING"
+                          ? "price_check"
+                          : "payments"
+                      }}</span><span>{{
+                        mark.renewalStage === "UPCOMING"
+                          ? "Standard Rule 57 renewal window"
+                          : mark.renewalStage === "SECTION_25_3"
+                            ? "Late-renewal surcharge review required"
+                            : "Restoration review required before action"
+                      }}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 mt-2 font-label-sm">
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface"
+                        >Basic fee: ₹9,000</span
+                      >
+                      @if (mark.renewalStage === "SECTION_25_3") {
+                        <span
+                          class="px-2 py-0.5 rounded bg-tertiary-container text-on-tertiary"
+                          >Late surcharge: +₹4,500</span
+                        >
+                      }
+                      @if (mark.renewalStage === "SECTION_25_4") {
+                        <span class="px-2 py-0.5 rounded bg-error text-on-error"
+                          >Restoration: +₹9,000</span
+                        >
+                      }
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="px-space-md py-2 bg-primary-container text-on-primary rounded-lg font-label-md shadow-sm hover:bg-primary transition-all flex items-center gap-1.5 shrink-0"
+                  type="button"
+                  (click)="startOnboarding()"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >arrow_forward</span
+                  ><span>Set up to action</span>
+                </button>
+              </article>
+            }
+          </div>
+        } @else {
+          <div
+            class="rounded-xl bg-surface-container-low p-space-xl text-center"
+          >
+            <span class="material-symbols-outlined text-secondary text-[32px]"
+              >task_alt</span
+            >
+            <h3 class="font-headline-sm text-on-surface mt-space-sm">
+              No marks in the current action windows
+            </h3>
+            <p class="font-body-sm text-on-surface-variant mt-space-xs">
+              This preview includes the standard six-month renewal period and
+              overdue dates from no more than the last year.
+            </p>
+          </div>
+        }
+        <div
+          class="mt-space-lg p-space-md rounded-xl bg-primary-fixed/50 flex flex-col sm:flex-row gap-space-md items-start sm:items-center justify-between"
+        >
+          <div class="flex items-start gap-space-sm">
+            <span class="material-symbols-outlined text-primary text-[22px]"
+              >lock</span
+            >
+            <p class="font-body-sm text-on-surface-variant">
+              This is a limited public preview. Create your workspace to select
+              the full portfolio and turn these dates into a working docket.
+            </p>
+          </div>
+          <button
+            class="w-full sm:w-auto shrink-0 px-space-lg py-2.5 bg-primary text-on-primary rounded-lg font-label-md shadow-sm hover:bg-primary-container transition-all"
+            type="button"
+            (click)="startOnboarding()"
+          >
+            Set up my renewal docket
+          </button>
+        </div>
+      </div>
+    </section>
+  }
+
+  <section
+    class="w-full px-gutter-desktop py-space-xl bg-surface-container-low"
+  >
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-space-xl">
+        <span class="font-label-sm uppercase tracking-wider text-error"
+          >The Cost of Stale Docketing</span
+        >
+        <h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
+          Why trademark renewals slip through the cracks
+        </h2>
+        <p class="font-body-md text-on-surface-variant">
+          Trademark rights run on statutory clocks. When renewal records sit
+          across spreadsheets, inboxes, and disconnected calendars, the legal
+          and financial risk compounds quickly.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary mb-space-md"
+            >
+              <span class="material-symbols-outlined text-[28px]"
+                >calendar_month</span
+              >
+            </div>
+            <h3 class="font-headline-md text-on-surface mb-space-xs">
+              The silent 10-year date
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              Older registrations can be buried in legacy working files and past
+              correspondence, with no consistent way to spot their next renewal
+              date.
+            </p>
+          </div>
+          <div
+            class="mt-space-md pt-space-md bg-surface-container-low p-space-sm rounded-lg text-on-surface-variant font-label-sm"
+          >
+            <strong class="text-on-surface">Risk:</strong> a renewal date can
+            pass before the team sees it.
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-12 h-12 rounded-lg bg-error-container flex items-center justify-center text-error mb-space-md"
+            >
+              <span class="material-symbols-outlined text-[28px]"
+                >currency_rupee</span
+              >
+            </div>
+            <h3 class="font-headline-md text-on-surface mb-space-xs">
+              The late-fee trap
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              Once a renewal leaves the standard window, Section 25(3)
+              introduces a surcharge. Restoration review brings another fee
+              layer and additional recovery work.
+            </p>
+          </div>
+          <div
+            class="mt-space-md pt-space-md bg-error-container/30 p-space-sm rounded-lg text-error font-label-sm"
+          >
+            <strong>Risk:</strong> avoidable costs and urgent client
+            conversations.
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary mb-space-md"
+            >
+              <span class="material-symbols-outlined text-[28px]"
+                >mark_email_read</span
+              >
+            </div>
+            <h3 class="font-headline-md text-on-surface mb-space-xs">
+              Notice delivery failures
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              A practice needs a clear view of each renewal date rather than
+              relying on a notice reaching the right address at the right
+              moment.
+            </p>
+          </div>
+          <div
+            class="mt-space-md pt-space-md bg-tertiary-fixed/30 p-space-sm rounded-lg text-tertiary font-label-sm"
+          >
+            <strong>Risk:</strong> a statutory deadline receives no internal
+            follow-up.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full px-gutter-desktop py-space-xl lg:py-24 bg-surface">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-space-xl">
+        <span class="font-label-sm uppercase tracking-wider text-primary"
+          >Autonomous Defense System</span
+        >
+        <h2 class="font-headline-lg text-on-surface mt-1 mb-space-sm">
+          How Trademarx safeguards every renewal in three steps
+        </h2>
+        <p class="font-body-md text-on-surface-variant">
+          Move from an initial public-register preview to a working portfolio
+          and a routine renewal review without rebuilding the firm’s data
+          manually.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+        <div
+          class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div class="flex items-center justify-between mb-space-md">
+              <span
+                class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center"
+                >1</span
+              ><span class="font-label-sm uppercase text-primary tracking-wide"
+                >Registry lookup</span
+              >
+            </div>
+            <h3 class="font-headline-sm text-on-surface mb-space-xs">
+              Find the firm’s public records
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              Search the registry-backed directory by agent or firm name and
+              select the matching entry.
+            </p>
+          </div>
+          <div
+            class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-secondary text-[18px]"
+              >manage_search</span
+            ><span>Firm name and registry data in one view</span>
+          </div>
+        </div>
+        <div
+          class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div class="flex items-center justify-between mb-space-md">
+              <span
+                class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center"
+                >2</span
+              ><span class="font-label-sm uppercase text-primary tracking-wide"
+                >Dynamic cadence</span
+              >
+            </div>
+            <h3 class="font-headline-sm text-on-surface mb-space-xs">
+              Read the statutory stage
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              The renewal preview distinguishes normal, surcharge, and
+              restoration windows using the registry renewal date.
+            </p>
+          </div>
+          <div
+            class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-secondary text-[18px]"
+              >timeline</span
+            ><span>Section 25 timing made visible</span>
+          </div>
+        </div>
+        <div
+          class="p-space-lg rounded-xl bg-surface-container shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div class="flex items-center justify-between mb-space-md">
+              <span
+                class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm flex items-center justify-center"
+                >3</span
+              ><span class="font-label-sm uppercase text-primary tracking-wide"
+                >Workspace setup</span
+              >
+            </div>
+            <h3 class="font-headline-sm text-on-surface mb-space-xs">
+              Activate the renewal docket
+            </h3>
+            <p class="font-body-md text-on-surface-variant">
+              Open the guided onboarding flow to connect the selected firm’s
+              marks and continue into the full portfolio workspace.
+            </p>
+          </div>
+          <div
+            class="mt-space-md p-space-sm rounded bg-surface font-label-sm text-on-surface flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-secondary text-[18px]"
+              >rocket_launch</span
+            ><span>Guided account and portfolio setup</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="w-full px-gutter-desktop py-space-xl bg-surface-container-low"
+  >
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-space-xl">
+        <h2 class="font-headline-lg text-on-surface mb-space-sm">
+          A three-phase view of every renewal decision
+        </h2>
+        <p class="font-body-md text-on-surface-variant">
+          The docket makes the statutory stage visible before a missed date
+          becomes an expensive recovery exercise.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm"
+        >
+          <div
+            class="w-12 h-12 rounded-lg bg-secondary-container flex items-center justify-center text-secondary mb-space-md"
+          >
+            <span class="material-symbols-outlined text-[28px]"
+              >event_available</span
+            >
+          </div>
+          <h3 class="font-headline-md text-on-surface mb-space-xs">Upcoming</h3>
+          <p class="font-body-md text-on-surface-variant">
+            See registry-confirmed renewal dates in the normal six-month Rule 57
+            window, earliest first.
+          </p>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm"
+        >
+          <div
+            class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary mb-space-md"
+          >
+            <span class="material-symbols-outlined text-[28px]">warning</span>
+          </div>
+          <h3 class="font-headline-md text-on-surface mb-space-xs">
+            Section 25(3)
+          </h3>
+          <p class="font-body-md text-on-surface-variant">
+            Separate late-renewal cases from routine work so the surcharge
+            period is not overlooked.
+          </p>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm"
+        >
+          <div
+            class="w-12 h-12 rounded-lg bg-error-container flex items-center justify-center text-error mb-space-md"
+          >
+            <span class="material-symbols-outlined text-[28px]">gpp_maybe</span>
+          </div>
+          <h3 class="font-headline-md text-on-surface mb-space-xs">
+            Section 25(4)
+          </h3>
+          <p class="font-body-md text-on-surface-variant">
+            Flag cases in the restoration review period, where additional
+            recovery action may be needed.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <app-agent-pricing-plans />
+  <app-agent-portal-footer />
+  <app-agent-onboarding-modal
+    [open]="onboardingModalOpen()"
+    [preview]="null"
+    (closed)="onboardingModalOpen.set(false)"
+  />
 </main>
-<app-agent-portal-footer />

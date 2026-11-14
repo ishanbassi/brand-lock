@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { Subscription, combineLatest, forkJoin } from 'rxjs';
 
 import { SeoService } from '../../shared/services/seo.service';
+import { SsrStatusService } from '../../shared/services/ssr-status.service';
 import { IProprietorProfile, TrademarkProprietorService } from '../../shared/services/trademark-proprietor.service';
 import { ITrademark } from '../../../models/trademark.model';
 import { environment } from '../../../environments/environment';
@@ -35,6 +37,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly seo = inject(SeoService);
+  private readonly ssrStatus = inject(SsrStatusService);
   private readonly proprietorService = inject(TrademarkProprietorService);
 
   readonly baseUrl = environment.BaseApiUrl;
@@ -102,7 +105,14 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
       },
       // An unknown slug 404s at the API, and the error page sets the real HTTP status —
       // without this a dead /trademarks-by/ URL would serve an empty page under a 200.
-      error: () => this.router.navigateByUrl('/not-found', { skipLocationChange: true }),
+      error: (error: unknown) => {
+        // A suppressed profile is intentionally gone, rather than an unknown URL. Preserve that
+        // distinction in SSR so crawlers see 410 Gone while browsers use the normal error view.
+        if (error instanceof HttpErrorResponse && error.status === 410) {
+          this.ssrStatus.setStatus(410);
+        }
+        this.router.navigateByUrl('/not-found', { skipLocationChange: true });
+      },
     });
   }
 

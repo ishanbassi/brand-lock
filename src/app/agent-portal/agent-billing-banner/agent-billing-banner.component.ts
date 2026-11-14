@@ -42,12 +42,13 @@ export class AgentBillingBannerComponent {
       return null;
     }
 
-    if (s.status === 'TRIALING' && s.entitled && s.trialEndsAt) {
+    if ((s.status === 'TRIALING' || s.status === 'SCHEDULED') && s.entitled && s.trialEndsAt) {
       const days = Math.max(0, Math.ceil(dayjs(s.trialEndsAt).diff(dayjs(), 'hour') / 24));
+      const trialCountdown = days === 0 ? 'Your free trial ends today.' : `Free trial: ${days} day${days === 1 ? '' : 's'} left.`;
       return {
         tone: days <= 3 ? 'warn' : 'info',
-        message: days === 0 ? 'Your free trial ends today.' : `Free trial: ${days} day${days === 1 ? '' : 's'} left.`,
-        action: 'Choose a plan',
+        message: s.status === 'SCHEDULED' ? `${trialCountdown} Autopay is set.` : trialCountdown,
+        action: s.status === 'SCHEDULED' ? 'View billing' : 'Choose a plan',
       };
     }
     if (s.status === 'PAST_DUE') {

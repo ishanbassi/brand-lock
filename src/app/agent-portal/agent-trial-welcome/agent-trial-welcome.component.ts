@@ -103,7 +103,7 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
   }
 
   private armForTrial(state: BillingState): void {
-    if (state.status !== 'TRIALING' || !state.entitled || !state.trialEndsAt || this.wasDismissed(state.trialEndsAt)) return;
+    if ((state.status !== 'TRIALING' && state.status !== 'SCHEDULED') || !state.entitled || !state.trialEndsAt || this.wasDismissed(state.trialEndsAt)) return;
     this.trial.set(state);
     this.showTimer = window.setTimeout(() => {
       this.focusedBeforeOpen = document.activeElement instanceof HTMLElement ? document.activeElement : null;

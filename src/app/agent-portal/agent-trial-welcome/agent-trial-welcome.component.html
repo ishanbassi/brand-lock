@@ -8,13 +8,13 @@
         <header class="trial-dialog__header">
           <div class="trial-dialog__badges">
             <span class="trial-dialog__badge trial-dialog__badge--primary"><ap-icon name="watch" [size]="14" /> 14-day Pro access unlocked</span>
-            <span class="trial-dialog__badge trial-dialog__badge--success">No card required</span>
+            <span class="trial-dialog__badge trial-dialog__badge--success">Autopay authorised</span>
           </div>
 
           <div class="trial-dialog__headline-row">
             <div>
               <h2 id="trial-welcome-title">Welcome to Trademarx</h2>
-              <p id="trial-welcome-intro">Your Pro tools are ready to use. Explore the full workflow during your trial, with no billing details needed.</p>
+              <p id="trial-welcome-intro">Your Pro tools are ready to use. Your Razorpay autopay mandate is approved; nothing is charged until the trial ends.</p>
             </div>
             <div class="trial-dialog__plan">
               <span class="trial-dialog__plan-icon"><ap-icon name="watch" [size]="20" /></span>
@@ -32,7 +32,7 @@
           <div class="trial-dialog__meter">
             <div><span>Today</span><span>Trial ends</span></div>
             <span class="trial-dialog__meter-track"><i [style.width.%]="((14 - daysRemaining()) / 14) * 100"></i></span>
-            <strong>No billing details needed</strong>
+            <strong>No charge today</strong>
           </div>
         </section>
 
@@ -51,8 +51,8 @@
         }
 
         <div class="trial-dialog__trust">
-          <span><ap-icon name="card" [size]="18" /> No credit card or billing details required</span>
-          <span><ap-icon name="lock" [size]="18" /> Your access changes only with your approval</span>
+          <span><ap-icon name="card" [size]="18" /> Autopay is approved for your selected plan</span>
+          <span><ap-icon name="lock" [size]="18" /> Your first charge is after the trial ends</span>
         </div>
 
         <footer class="trial-dialog__actions">

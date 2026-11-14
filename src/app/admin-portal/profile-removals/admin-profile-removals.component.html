@@ -1,0 +1,80 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Public Profile Removals</h1>
+      <p class="page-sub">Take an address-scoped proprietor portfolio offline without deleting the underlying registry records.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error" role="alert">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert-success" role="status">{{ success() }}</div>
+  }
+
+  <section class="table-card removal-form" aria-labelledby="remove-profile-heading">
+    <h2 id="remove-profile-heading">Remove a public profile</h2>
+    <p class="form-hint">Paste the reported <code>https://trademarx.in/trademarks-by/…</code> URL. Every alternate URL for the same proprietor address will also return <strong>410 Gone</strong>.</p>
+
+    <div class="form-group">
+      <label class="form-label" for="profile-url">Public profile URL</label>
+      <input id="profile-url" class="form-control" type="url" inputmode="url" [(ngModel)]="form.url" placeholder="https://trademarx.in/trademarks-by/name/1234567" />
+    </div>
+    <div class="detail-grid">
+      <div class="form-group">
+        <label class="form-label" for="removal-reason">Internal reason</label>
+        <textarea id="removal-reason" class="form-control" rows="2" [(ngModel)]="form.reason" placeholder="e.g. Copyright/privacy removal request"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="case-reference">Case reference</label>
+        <input id="case-reference" class="form-control" type="text" [(ngModel)]="form.caseReference" placeholder="e.g. Google reference ID" />
+      </div>
+    </div>
+    <button class="btn-primary" [disabled]="saving()" (click)="suppress()">{{ saving() ? 'Removing…' : 'Remove public profile' }}</button>
+  </section>
+
+  <section class="table-card" aria-labelledby="active-removals-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="active-removals-heading">Active removals</h2>
+        <p class="muted">{{ suppressions().length }} active profile{{ suppressions().length === 1 ? '' : 's' }} excluded from public access and sitemap output.</p>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Reason / reference</th>
+            <th>Removed</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (i of [1, 2, 3]; track i) {
+              <tr class="skeleton-row"><td colspan="4"><div class="skeleton-line"></div></td></tr>
+            }
+          } @else if (suppressions().length === 0) {
+            <tr><td colspan="4" class="empty-cell">No public profile removals are active.</td></tr>
+          } @else {
+            @for (suppression of suppressions(); track suppression.id) {
+              <tr>
+                <td><a class="cell-strong profile-link" [href]="suppression.url" target="_blank" rel="noopener">{{ suppression.url }}</a></td>
+                <td>
+                  <div class="stacked">
+                    <span>{{ suppression.reason || '—' }}</span>
+                    @if (suppression.caseReference) { <span class="muted">{{ suppression.caseReference }}</span> }
+                  </div>
+                </td>
+                <td class="muted">{{ suppression.createdAt | date: 'mediumDate' }}<br />{{ suppression.createdBy }}</td>
+                <td><button class="btn-ghost restore-button" [disabled]="restoringId() === suppression.id" (click)="restore(suppression)">{{ restoringId() === suppression.id ? 'Restoring…' : 'Restore' }}</button></td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

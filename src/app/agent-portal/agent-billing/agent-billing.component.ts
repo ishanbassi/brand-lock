@@ -25,7 +25,7 @@ import { IconComponent } from '../ui/icon.component';
 const METERED: FeatureKey[] = ['PORTFOLIO_SIZE', 'COMPETITOR_WATCHES', 'SEARCH_REPORTS_PER_MONTH', 'DOCUMENT_STORAGE_MB'];
 
 /** States in which Razorpay holds an authorised mandate - the agent already has a subscription. */
-const LIVE_MANDATE: SubscriptionStatus[] = ['ACTIVE', 'PAST_DUE', 'PAUSED'];
+const LIVE_MANDATE: SubscriptionStatus[] = ['SCHEDULED', 'ACTIVE', 'PAST_DUE', 'PAUSED'];
 
 interface Meter {
   key: FeatureKey;
@@ -126,6 +126,9 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.blockedFeature.set((this.route.snapshot.queryParamMap.get('feature') as FeatureKey | null) ?? null);
+    if (this.route.snapshot.queryParamMap.get('interval') === 'monthly') {
+      this.interval.set('MONTHLY');
+    }
 
     // Loaded on arrival rather than on the button, so the modal opens without a visible wait.
     // Browser only: the loader appends to `document`, which does not exist during server rendering.
@@ -207,7 +210,15 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
     this.error.set('');
     this.notice.set('Payment received. Confirming with Razorpay…');
     this.billing.verify(result).subscribe({
-      next: state => (this.isLive(state) ? this.activated() : this.awaitActivation()),
+      next: state => {
+        if (state.status === 'SCHEDULED') {
+          this.mandateScheduled(state);
+        } else if (this.isLive(state)) {
+          this.activated();
+        } else {
+          this.awaitActivation();
+        }
+      },
       // A failed verify does not mean a failed payment: the webhook will still apply a genuine one.
       error: () => this.awaitActivation(),
     });
@@ -220,7 +231,9 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
     this.activationPoll = timer(3000, 4000).subscribe(tick => {
       this.billing.loadState().subscribe({
         next: state => {
-          if (this.isLive(state)) {
+          if (state.status === 'SCHEDULED') {
+            this.mandateScheduled(state);
+          } else if (this.isLive(state)) {
             this.activated();
           } else if (tick >= 9) {
             this.activationPoll?.unsubscribe();
@@ -241,6 +254,17 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
     this.blockedFeature.set(null);
     this.notice.set('Your subscription is active. Thank you!');
     this.loadPayments();
+  }
+
+  private mandateScheduled(state: BillingState): void {
+    this.activationPoll?.unsubscribe();
+    this.busy.set(false);
+    this.blockedFeature.set(null);
+    this.notice.set(
+      state.nextChargeAt
+        ? `Autopay is authorised. Your first charge is on ${this.date(state.nextChargeAt)} after the free trial.`
+        : 'Autopay is authorised. Your first charge is due when the free trial ends.',
+    );
   }
 
   private isLive(state: BillingState): boolean {
@@ -281,6 +305,10 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
           return `Everything is switched on until ${this.date(s.trialEndsAt)} - ${days} day${days === 1 ? '' : 's'} left. Choose a plan below to keep it that way.`;
         }
         break;
+      case 'SCHEDULED':
+        return s.nextChargeAt
+          ? `Autopay is authorised. Your first charge is on ${this.date(s.nextChargeAt)} after your free trial.`
+          : 'Autopay is authorised. Your first charge is due when your free trial ends.';
       case 'ACTIVE':
         if (s.cancelAtPeriodEnd) {
           return `Cancelled. Your plan stays on until ${this.date(s.currentPeriodEnd ?? s.entitledUntil)}, and you won't be charged again.`;
@@ -305,13 +333,14 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
   }
 
   planTitle(s: BillingState): string {
-    return s.status === 'TRIALING' && s.entitled ? 'Free trial' : s.effectivePlanName;
+    return (s.status === 'TRIALING' || s.status === 'SCHEDULED') && s.entitled ? 'Free trial' : s.effectivePlanName;
   }
 
   statusLabel(status: SubscriptionStatus): string {
     const labels: Record<SubscriptionStatus, string> = {
       TRIALING: 'Trial',
       PENDING_AUTH: 'Awaiting payment',
+      SCHEDULED: 'Autopay scheduled',
       ACTIVE: 'Active',
       PAST_DUE: 'Payment retrying',
       PAUSED: 'Paused',
@@ -323,7 +352,7 @@ export class AgentBillingComponent implements OnInit, OnDestroy {
   }
 
   statusTone(status: SubscriptionStatus): string {
-    if (status === 'ACTIVE' || status === 'TRIALING') return 'ok';
+    if (status === 'ACTIVE' || status === 'TRIALING' || status === 'SCHEDULED') return 'ok';
     if (status === 'PAST_DUE' || status === 'PAUSED' || status === 'PENDING_AUTH') return 'warn';
     if (status === 'HALTED') return 'danger';
     return 'neutral';

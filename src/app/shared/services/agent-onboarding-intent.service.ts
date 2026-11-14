@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 
 export type AgentOnboardingIntent =
-  | { kind: 'agent-preview'; agentName: string }
+  | { kind: 'agent-preview'; agentName: string; agentNames?: string[] }
   | { kind: 'spreadsheet' };
 
 /**
@@ -27,7 +27,11 @@ export class AgentOnboardingIntentService {
     try {
       const intent = JSON.parse(raw) as AgentOnboardingIntent;
       if (intent.kind === 'agent-preview' && typeof intent.agentName === 'string' && intent.agentName.trim().length >= 2) {
-        return { kind: 'agent-preview', agentName: intent.agentName.trim() };
+        const agentNames = Array.isArray(intent.agentNames)
+          ? [...new Set(intent.agentNames.filter(name => typeof name === 'string').map(name => name.trim()).filter(name => name.length >= 2))]
+          : [];
+        const agentName = intent.agentName.trim();
+        return { kind: 'agent-preview', agentName, agentNames: agentNames.includes(agentName) ? agentNames : [agentName, ...agentNames] };
       }
       return intent.kind === 'spreadsheet' ? intent : null;
     } catch {

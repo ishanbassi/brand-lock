@@ -1,9 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, forkJoin, of, switchMap } from 'rxjs';
 import {
   AgentHomeDirectoryEntry,
   AgentHomeLiveSnapshot,
@@ -13,11 +13,13 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentOnboardingIntentService } from '../../shared/services/agent-onboarding-intent.service';
 import { AgentPortalNavbarComponent } from '../ui/agent-portal-navbar.component';
 import { AgentPortalFooterComponent } from '../ui/agent-portal-footer.component';
+import { AgentPricingPlansComponent } from '../ui/agent-pricing-plans.component';
+import { AgentOnboardingModalComponent } from '../ui/agent-onboarding-modal.component';
 
 @Component({
   selector: 'app-agent-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, AgentPortalNavbarComponent, AgentPortalFooterComponent],
+imports: [CommonModule, FormsModule, AgentPortalNavbarComponent, AgentPortalFooterComponent, AgentPricingPlansComponent, AgentOnboardingModalComponent],
   templateUrl: './agent-home.component.html',
   styleUrl: './agent-home.component.scss',
 })
@@ -29,12 +31,14 @@ export class AgentHomeComponent implements OnInit, OnDestroy {
   private readonly agentData = inject(AgentDataService);
   private readonly onboardingIntent = inject(AgentOnboardingIntentService);
   private readonly search$ = new Subject<string>();
-  private annualBilling = true;
   private liveRefreshTimer?: number;
   private liveRotationTimer?: number;
+  @ViewChild('heroAgentInput') private heroAgentInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('pricingPlans') private pricingPlans?: ElementRef<HTMLElement>;
 
   agentQuery = '';
   readonly suggestions = signal<AgentHomeDirectoryEntry[]>([]);
+  readonly selectedAgentVariations = signal<AgentHomeDirectoryEntry[]>([]);
   readonly searching = signal(false);
   readonly searchError = signal('');
   readonly previewLoading = signal(false);
@@ -42,6 +46,7 @@ export class AgentHomeComponent implements OnInit, OnDestroy {
   readonly selectedPreview = signal<AgentHomePortfolioPreview | null>(null);
   readonly liveSnapshots = signal<AgentHomeLiveSnapshot[]>([]);
   readonly liveSnapshotIndex = signal(0);
+  readonly onboardingModalOpen = signal(false);
 
   constructor() {
     this.search$
@@ -109,28 +114,81 @@ export class AgentHomeComponent implements OnInit, OnDestroy {
     this.search$.next(query);
   }
 
-  selectAgent(entry: AgentHomeDirectoryEntry): void {
-    this.agentQuery = entry.displayName;
+  focusPortfolioSearch(): void {
+    const input = this.heroAgentInput?.nativeElement;
+    if (!input) return;
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => input.focus(), 300);
+  }
+
+  scrollToPricing(): void {
+    this.pricingPlans?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  isAgentVariationSelected(entry: AgentHomeDirectoryEntry): boolean {
+    return this.selectedAgentVariations().some(selected => selected.agentName === entry.agentName);
+  }
+
+  selectedAgentNames(): string[] {
+    return this.selectedAgentVariations().map(entry => entry.agentName);
+  }
+
+  toggleAgentVariation(entry: AgentHomeDirectoryEntry): void {
+    const selected = this.selectedAgentVariations();
+    this.selectedAgentVariations.set(
+      this.isAgentVariationSelected(entry)
+        ? selected.filter(candidate => candidate.agentName !== entry.agentName)
+        : [...selected, entry],
+    );
+    this.selectedPreview.set(null);
+    this.previewError.set('');
+  }
+
+  previewSelectedVariations(): void {
+    const selections = this.selectedAgentVariations();
+    if (!selections.length) return;
+
     this.suggestions.set([]);
     this.previewLoading.set(true);
     this.previewError.set('');
-    this.agentData.previewPublicAgentPortfolio(entry.agentName).subscribe({
-      next: preview => {
-        this.selectedPreview.set(preview);
+    this.selectedPreview.set(null);
+    forkJoin(selections.map(entry => this.agentData.previewPublicAgentPortfolio(entry.agentName))).subscribe({
+      next: previews => {
+        this.selectedPreview.set({
+          agentName: selections[0].agentName,
+          displayName: selections.length === 1 ? previews[0].displayName : `${selections.length} selected name variations`,
+          totalMarks: previews.reduce((total, preview) => total + preview.totalMarks, 0),
+          marks: previews.flatMap(preview => preview.marks).slice(0, 4),
+        });
         this.previewLoading.set(false);
       },
       error: () => {
-        this.previewError.set('We could not load this portfolio preview. Please choose the name again.');
+        this.previewError.set('We could not load this portfolio preview. Please choose the names again.');
         this.previewLoading.set(false);
       },
     });
   }
 
+  beginPortfolioOnboarding(): void {
+    if (this.selectedAgentVariations().length) {
+      this.previewSelectedVariations();
+      return;
+    }
+    this.searchNow();
+  }
+
   startAgentOnboarding(): void {
     const preview = this.selectedPreview();
     if (!preview) return;
-    this.onboardingIntent.set({ kind: 'agent-preview', agentName: preview.agentName });
-    void this.router.navigate(['/create-agent-account']);
+    this.openOnboardingModal();
+  }
+
+  openPricingOnboarding(): void {
+    this.openOnboardingModal();
+  }
+
+  private openOnboardingModal(): void {
+    this.onboardingModalOpen.set(true);
   }
 
   startSpreadsheetOnboarding(): void {
@@ -138,26 +196,17 @@ export class AgentHomeComponent implements OnInit, OnDestroy {
     void this.router.navigate(['/create-agent-account']);
   }
 
+
   liveSnapshot(): AgentHomeLiveSnapshot | null {
     const snapshots = this.liveSnapshots();
     return snapshots.length ? snapshots[this.liveSnapshotIndex() % snapshots.length] : null;
-  }
-
-  togglePricing(): void {
-    this.annualBilling = !this.annualBilling;
-    const toggle = document.getElementById('billingToggle');
-    const price = document.getElementById('proPriceVal');
-    const period = document.getElementById('proPricePeriod');
-    toggle?.classList.toggle('justify-end', this.annualBilling);
-    toggle?.classList.toggle('justify-start', !this.annualBilling);
-    if (price) price.textContent = this.annualBilling ? 'INR 999' : 'INR 1,500';
-    if (period) period.textContent = this.annualBilling ? '/ month (INR 12,000 billed annually)' : '/ month (Billed monthly)';
   }
 
   toggleFaq(event: MouseEvent): void {
     const trigger = event.currentTarget as HTMLElement | null;
     trigger?.nextElementSibling?.classList.toggle('hidden');
   }
+
 
   private refreshLiveSnapshots(): void {
     this.agentData.livePublicAgentSnapshots().subscribe({

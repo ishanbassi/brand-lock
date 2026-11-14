@@ -81,7 +81,12 @@ export class CreateAgentAccountComponent implements AfterViewInit {
     const intent = this.onboardingIntent.consume();
     if (intent?.kind !== 'agent-preview') { this.step.set(2); return; }
     this.submitting = true;
-    this.agentData.claimTrademarks({ agentName: intent.agentName, claimAllUnderName: true }).pipe(finalize(() => this.submitting = false)).subscribe({
+    const agentNames = intent.agentNames?.length ? intent.agentNames : [intent.agentName];
+    from(agentNames).pipe(
+      concatMap(agentName => this.agentData.claimTrademarks({ agentName, claimAllUnderName: true })),
+      toArray(),
+      finalize(() => this.submitting = false),
+    ).subscribe({
       next: () => this.goToDashboard(),
       error: () => { this.toastr.error('Your account is ready, but we could not add those trademarks. You can retry from your portfolio.'); this.goToDashboard(); },
     });

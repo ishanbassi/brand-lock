@@ -216,7 +216,12 @@
                 </div>
               </div>
               <div class="row-actions">
-                @if (item.status === 'DONE') {
+                @if (canJoinHearing(item)) {
+                  <a class="row-btn row-btn--primary" [href]="item.hearingUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
+                    <ap-icon name="globe" [size]="14" />
+                    Join hearing
+                  </a>
+                } @else if (item.status === 'DONE') {
                   <button type="button" class="row-btn" (click)="undo(item, $event)" [disabled]="isSaving(item)">Undo</button>
                 } @else if (!isRecordOnly(item)) {
                   <button type="button" class="row-btn row-btn--primary" (click)="markDone(item, $event)" [disabled]="isSaving(item)">
@@ -277,7 +282,12 @@
 
                 <!-- The action sits beside the thing it affects, not in a toolbar elsewhere. -->
                 <div class="row-actions">
-                  @if (item.status === 'DONE') {
+                  @if (canJoinHearing(item)) {
+                    <a class="row-btn row-btn--primary" [href]="item.hearingUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
+                      <ap-icon name="globe" [size]="14" />
+                      Join hearing
+                    </a>
+                  } @else if (item.status === 'DONE') {
                     <button type="button" class="row-btn" (click)="undo(item, $event)" [disabled]="isSaving(item)">
                       Undo
                     </button>

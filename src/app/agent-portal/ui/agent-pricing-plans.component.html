@@ -1,0 +1,101 @@
+<section class="agent-pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="pricing-heading">
+      <span class="pricing-label">Plans</span>
+      <h2>Choose the setup that fits your practice.</h2>
+      <p>Start with the Free tier, then move to Pro when your team needs a shared workspace.</p>
+      <div class="billing-control">
+        <span [class.active]="!annualBilling()">Monthly</span>
+        <button type="button" class="billing-toggle" [class.annual]="annualBilling()" [attr.aria-pressed]="annualBilling()" aria-label="Toggle annual billing" (click)="toggleBilling()"><span></span></button>
+        <span [class.active]="annualBilling()">Billed annually</span>
+      </div>
+    </div>
+
+    <div class="plan-grid">
+      <article class="plan-card">
+        <div>
+          <span class="plan-audience">For getting started</span>
+          <h3>Free tier</h3>
+          <p class="plan-description">A simple way to begin organising the trademark portfolio your team manages.</p>
+          <div class="price"><strong>₹0</strong><span>/ month</span></div>
+          <ul>
+            <li><span class="material-symbols-outlined">check</span>Up to 10 trademarks in your portfolio</li>
+            <li><span class="material-symbols-outlined">check</span>Portfolio workspace</li>
+            <li><span class="material-symbols-outlined">check</span>3 search reports per day</li>
+            <li><span class="material-symbols-outlined">check</span>Latest Trade Marks Journal issue</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Shared practice workspace</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Conflict alerts on every new journal issue</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Every past Trade Marks Journal issue</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Early warning on new filings that resemble your marks</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Deadlines calendar with renewals and hearings</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Competitor-firm watch</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Portfolio import from Excel</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>PDF and Excel exports</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Custom report branding</li>
+            <li class="unavailable"><span class="material-symbols-outlined" aria-hidden="true">close</span>Document storage</li>
+          </ul>
+        </div>
+        <button type="button" class="plan-action secondary" (click)="startOnboarding()">Get started free</button>
+      </article>
+
+      <article class="plan-card featured">
+        <span class="popular">Recommended</span>
+        <span class="trial-sticker">14 days free</span>
+        <div>
+          <span class="plan-audience">For active practices</span>
+          <h3>Pro Practice</h3>
+          <p class="plan-description">For teams that need a shared portfolio workspace and a more structured review process.</p>
+          <div class="price price--trial">
+            <del><strong>{{ proPrice() }}</strong></del>
+            <strong>₹0</strong>
+            <span>{{ proPeriod() }}</span>
+          </div>
+          <ul>
+            <li><span class="material-symbols-outlined">check</span>Shared practice workspace</li>
+            <li><span class="material-symbols-outlined">check</span>Unlimited trademarks in your portfolio</li>
+            <li><span class="material-symbols-outlined">check</span>Conflict alerts on every new journal issue</li>
+            <li><span class="material-symbols-outlined">check</span>Every past Trade Marks Journal issue</li>
+            <li><span class="material-symbols-outlined">check</span>Early warning on new filings that resemble your marks</li>
+            <li><span class="material-symbols-outlined">check</span>Deadlines calendar with renewals and hearings</li>
+            <li><span class="material-symbols-outlined">check</span>Watch up to 50 competitor firms</li>
+            <li><span class="material-symbols-outlined">check</span>Unlimited search reports</li>
+            <li><span class="material-symbols-outlined">check</span>Import your portfolio from Excel</li>
+            <li><span class="material-symbols-outlined">check</span>PDF and Excel exports</li>
+            <li><span class="material-symbols-outlined">check</span>Your firm's logo and colours on reports</li>
+            <li><span class="material-symbols-outlined">check</span>500 MB of document storage</li>
+          </ul>
+        </div>
+        <button type="button" class="plan-action primary" (click)="startOnboarding()">Choose Pro Practice</button>
+      </article>
+
+      <!-- Firm / Enterprise is intentionally hidden until this offering is enabled. -->
+      <!--
+      <article class="plan-card">
+        <div>
+          <span class="plan-audience">For larger teams</span>
+          <h3>Firm / Enterprise</h3>
+          <p class="plan-description">Talk with us about a setup that matches your firm's working arrangement.</p>
+          <div class="price"><strong>Custom</strong><span>tailored plan</span></div>
+          <ul>
+            <li><span class="material-symbols-outlined">check</span>Practice-wide setup</li>
+            <li><span class="material-symbols-outlined">check</span>Portfolio management workspace</li>
+            <li><span class="material-symbols-outlined">check</span>Conflict alerts on every new journal issue</li>
+            <li><span class="material-symbols-outlined">check</span>Trade Marks Journal history</li>
+            <li><span class="material-symbols-outlined">check</span>Early warning on similar new filings</li>
+            <li><span class="material-symbols-outlined">check</span>Deadlines calendar with renewals and hearings</li>
+            <li><span class="material-symbols-outlined">check</span>Competitor-firm watch</li>
+            <li><span class="material-symbols-outlined">check</span>Trademark search reports</li>
+            <li><span class="material-symbols-outlined">check</span>Portfolio import from Excel</li>
+            <li><span class="material-symbols-outlined">check</span>PDF and Excel exports</li>
+            <li><span class="material-symbols-outlined">check</span>Custom report branding</li>
+            <li><span class="material-symbols-outlined">check</span>Document storage</li>
+            <li><span class="material-symbols-outlined">check</span>Guided onboarding</li>
+            <li><span class="material-symbols-outlined">check</span>Flexible team arrangement</li>
+          </ul>
+        </div>
+        <button type="button" class="plan-action secondary" (click)="startOnboarding()">Talk to us</button>
+      </article>
+      -->
+    </div>
+  </div>
+</section>

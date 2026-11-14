@@ -1,0 +1,104 @@
+<main class="hearings-feature">
+  <app-agent-portal-navbar activeLink="hearings" />
+
+  <section class="hearings-hero" aria-labelledby="hearings-title">
+    <div class="hearings-shell">
+      <div class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/agent-home">Agent Portal</a><span aria-hidden="true">/</span><span>Hearings</span>
+      </div>
+
+      <div class="hero-layout">
+        <div class="hero-copy">
+          <h1 id="hearings-title">Know every hearing date before it becomes urgent.</h1>
+          <p class="hero-summary">Trademarx matches published Trademark Registry hearing lists against the portfolio you manage, giving your team one dependable view of what is listed next.</p>
+          <div class="hero-actions">
+            <button type="button" class="button button--primary" (click)="onboardingModalOpen.set(true)">Start monitoring hearings <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+          </div>
+          <p class="hero-note"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Built for trademark agents and IP teams managing active portfolios.</p>
+        </div>
+
+        <aside class="cause-list" aria-label="Illustrative hearing list preview">
+          <div class="cause-list__topline">
+            <div>
+              <span class="cause-list__overline">Hearing board</span>
+              <strong>Today’s matched listings</strong>
+            </div>
+            <span class="cause-list__live"><span></span> Preview</span>
+          </div>
+          <div class="cause-list__date"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span><span>Illustrative schedule</span></div>
+          <div class="cause-list__entry">
+            <span class="mark-initials mark-initials--violet">NV</span>
+            <div><strong>NOVAVERA</strong><span>Application 5482910 · Class 35</span></div>
+            <span class="entry-time">10:30</span>
+          </div>
+          <div class="cause-list__entry">
+            <span class="mark-initials mark-initials--amber">OP</span>
+            <div><strong>ORBIT PAY</strong><span>Application 4876203 · Class 36</span></div>
+            <span class="entry-time">12:15</span>
+          </div>
+          <div class="cause-list__entry">
+            <span class="mark-initials mark-initials--blue">SL</span>
+            <div><strong>SERENE LABS</strong><span>Application 5219477 · Class 5</span></div>
+            <span class="entry-time">14:00</span>
+          </div>
+          <p class="cause-list__footer"><span class="material-symbols-outlined" aria-hidden="true">notifications_active</span> Your workspace turns matching listings into clear alerts.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="hearings-content" id="how-it-works" aria-labelledby="workflow-title">
+    <div class="hearings-shell content-grid">
+      <div class="information-column">
+        <div class="content-intro">
+          <h2 id="workflow-title">A clearer way to stay ready for a listed matter.</h2>
+          <p>Hearing dates are published through Registry cause lists and can move quickly. Keep your team focused on the matters that match your portfolio, with their application details and timing in one place.</p>
+        </div>
+
+        <div class="benefit-panel">
+          <h3>What your hearing docket keeps visible</h3>
+          <ul class="benefit-list">
+            <li><span class="material-symbols-outlined" aria-hidden="true">task_alt</span><span>Hearing listings matched against the marks in your managed portfolio</span></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">task_alt</span><span>Application number, class, mark name and the published hearing date together</span></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">task_alt</span><span>A dedicated upcoming-hearings view alongside your other statutory dates</span></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">task_alt</span><span>Timely alerts so the right person can review the listing and prepare next steps</span></li>
+          </ul>
+        </div>
+
+        <div class="workflow">
+          <h3>How it works</h3>
+          <ol>
+            <li><span class="step-number">1</span><div><strong>Set up your portfolio</strong><p>Connect the registered marks your firm manages to a Trademarx workspace.</p></div></li>
+            <li><span class="step-number">2</span><div><strong>We watch published hearing lists</strong><p>New Registry cause-list entries are checked against the application numbers in your docket.</p></div></li>
+            <li><span class="step-number">3</span><div><strong>Review the listing with context</strong><p>See the date and mark details in your hearing view, then coordinate your preparation with confidence.</p></div></li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="action-column" aria-labelledby="action-title">
+        <div class="action-panel">
+          <span class="material-symbols-outlined action-panel__icon" aria-hidden="true">notifications_active</span>
+          <h2 id="action-title">Keep hearings in your daily docket.</h2>
+          <p>Set up your agent workspace to bring your portfolio, deadlines and Registry hearing listings into one workflow.</p>
+          <ul>
+            <li><span class="material-symbols-outlined" aria-hidden="true">check</span> Portfolio-linked hearing view</li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">check</span> Upcoming-listing alerts</li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">check</span> Built for multi-mark portfolios</li>
+          </ul>
+          <button type="button" class="button button--primary button--full" (click)="onboardingModalOpen.set(true)">Create your free workspace <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+          <p class="action-panel__note">Already have an account? <a routerLink="/agent-login">Sign in to your dashboard</a>.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="closing-callout" aria-labelledby="closing-title">
+    <div class="hearings-shell closing-callout__inner">
+      <div><h2 id="closing-title">A hearing is a listing, not a surprise.</h2><p>Give your team the registry context it needs before the hearing date arrives.</p></div>
+      <button type="button" class="button button--inverted" (click)="onboardingModalOpen.set(true)">Start free <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+    </div>
+  </section>
+
+  <app-agent-portal-footer />
+  <app-agent-onboarding-modal [open]="onboardingModalOpen()" [preview]="null" (closed)="onboardingModalOpen.set(false)" />
+</main>

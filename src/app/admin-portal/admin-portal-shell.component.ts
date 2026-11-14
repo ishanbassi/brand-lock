@@ -38,6 +38,7 @@ export class AdminPortalShellComponent {
     { label: 'Scraped Trademarks', icon: '🔍', route: '/admin-portal/scraped-trademarks' },
     { label: 'Backlinks',    icon: '🔗', route: '/admin-portal/backlinks' },
     { label: 'API Consumers', icon: '🔌', route: '/admin-portal/api-consumers' },
+    { label: 'Profile Removals', icon: '', route: '/admin-portal/profile-removals' },
   ];
 
   constructor(

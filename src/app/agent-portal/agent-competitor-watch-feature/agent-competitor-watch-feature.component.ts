@@ -1,13 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { AgentPortalFooterComponent } from '../ui/agent-portal-footer.component';
 import { AgentPortalNavbarComponent } from '../ui/agent-portal-navbar.component';
+import { AgentPricingPlansComponent } from '../ui/agent-pricing-plans.component';
 
 type Competitor = 'all' | 'anand' | 'lall' | 'shardul';
 
 @Component({
   selector: 'app-agent-competitor-watch-feature',
   standalone: true,
-  imports: [AgentPortalNavbarComponent, AgentPortalFooterComponent],
+  imports: [AgentPortalNavbarComponent, AgentPortalFooterComponent, AgentPricingPlansComponent],
   templateUrl: './agent-competitor-watch-feature.component.html',
   styleUrl: './agent-competitor-watch-feature.component.scss',
 })

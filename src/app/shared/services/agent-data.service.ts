@@ -1,5 +1,11 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType, HttpParams, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpEvent,
+  HttpEventType,
+  HttpParams,
+  HttpResponse,
+} from '@angular/common/http';
 import { filter, map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -10,6 +16,7 @@ import {
   AgentHomeDirectoryEntry,
   AgentHomeLiveSnapshot,
   AgentHomePortfolioPreview,
+  AgentHomeRenewalPreview,
   AgentBulkUploadResult,
   AgentDocument,
   AgentDocumentLibraryPage,
@@ -65,63 +72,129 @@ export class AgentDataService {
 
   // ── ISO certificate docket ─────────────────────────────────────────────
 
-  getIsoCertificates(options: { q?: string; isoType?: string; sort?: string; dir?: 'asc' | 'desc' } = {}): Observable<IsoCertificate[]> {
+  getIsoCertificates(
+    options: {
+      q?: string;
+      isoType?: string;
+      sort?: string;
+      dir?: 'asc' | 'desc';
+    } = {},
+  ): Observable<IsoCertificate[]> {
     let params = new HttpParams();
     if (options.q?.trim()) params = params.set('q', options.q.trim());
     if (options.isoType) params = params.set('isoType', options.isoType);
     if (options.sort) params = params.set('sort', options.sort);
     if (options.dir) params = params.set('dir', options.dir);
-    return this.http.get<IsoCertificate[]>(`${this.base}/agent-portal/iso-certificates`, { params });
+    return this.http.get<IsoCertificate[]>(
+      `${this.base}/agent-portal/iso-certificates`,
+      { params },
+    );
   }
 
   addIsoCertificate(data: Partial<IsoCertificate>): Observable<IsoCertificate> {
-    return this.http.post<IsoCertificate>(`${this.base}/agent-portal/iso-certificates`, data);
+    return this.http.post<IsoCertificate>(
+      `${this.base}/agent-portal/iso-certificates`,
+      data,
+    );
   }
 
-  updateIsoCertificate(id: number, data: Partial<IsoCertificate>): Observable<IsoCertificate> {
-    return this.http.put<IsoCertificate>(`${this.base}/agent-portal/iso-certificates/${id}`, data);
+  updateIsoCertificate(
+    id: number,
+    data: Partial<IsoCertificate>,
+  ): Observable<IsoCertificate> {
+    return this.http.put<IsoCertificate>(
+      `${this.base}/agent-portal/iso-certificates/${id}`,
+      data,
+    );
   }
 
   deleteIsoCertificate(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/iso-certificates/${id}`);
+    return this.http.delete<void>(
+      `${this.base}/agent-portal/iso-certificates/${id}`,
+    );
   }
 
   getIsoCustomFields(): Observable<IsoCustomField[]> {
-    return this.http.get<IsoCustomField[]>(`${this.base}/agent-portal/iso-certificates/custom-fields`);
+    return this.http.get<IsoCustomField[]>(
+      `${this.base}/agent-portal/iso-certificates/custom-fields`,
+    );
   }
 
-  createIsoCustomField(label: string, dataType: IsoCustomField['dataType']): Observable<IsoCustomField> {
-    return this.http.post<IsoCustomField>(`${this.base}/agent-portal/iso-certificates/custom-fields`, { label, dataType });
+  createIsoCustomField(
+    label: string,
+    dataType: IsoCustomField['dataType'],
+  ): Observable<IsoCustomField> {
+    return this.http.post<IsoCustomField>(
+      `${this.base}/agent-portal/iso-certificates/custom-fields`,
+      { label, dataType },
+    );
   }
 
-  updateIsoCustomField(id: number, changes: Partial<Pick<IsoCustomField, 'label' | 'showInList'>>): Observable<IsoCustomField> {
-    return this.http.patch<IsoCustomField>(`${this.base}/agent-portal/iso-certificates/custom-fields/${id}`, changes);
+  updateIsoCustomField(
+    id: number,
+    changes: Partial<Pick<IsoCustomField, 'label' | 'showInList'>>,
+  ): Observable<IsoCustomField> {
+    return this.http.patch<IsoCustomField>(
+      `${this.base}/agent-portal/iso-certificates/custom-fields/${id}`,
+      changes,
+    );
   }
 
   getIsoPartySuggestions(q: string): Observable<IsoPartySuggestion[]> {
-    return this.http.get<IsoPartySuggestion[]>(`${this.base}/agent-portal/iso-certificates/party-suggestions`, { params: { q } });
+    return this.http.get<IsoPartySuggestion[]>(
+      `${this.base}/agent-portal/iso-certificates/party-suggestions`,
+      { params: { q } },
+    );
   }
 
-  listIsoDocuments(certificateId: number): Observable<IsoCertificateDocument[]> {
-    return this.http.get<IsoCertificateDocument[]>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents`);
+  listIsoDocuments(
+    certificateId: number,
+  ): Observable<IsoCertificateDocument[]> {
+    return this.http.get<IsoCertificateDocument[]>(
+      `${this.base}/agent-portal/iso-certificates/${certificateId}/documents`,
+    );
   }
 
-  uploadIsoDocument(certificateId: number, file: File): Observable<IsoCertificateDocument> {
-    const form = new FormData(); form.append('file', file);
-    return this.http.post<IsoCertificateDocument>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents`, form);
+  uploadIsoDocument(
+    certificateId: number,
+    file: File,
+  ): Observable<IsoCertificateDocument> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<IsoCertificateDocument>(
+      `${this.base}/agent-portal/iso-certificates/${certificateId}/documents`,
+      form,
+    );
   }
 
-  downloadIsoDocument(certificateId: number, documentId: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}/download`, { responseType: 'blob' });
+  downloadIsoDocument(
+    certificateId: number,
+    documentId: number,
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}/download`,
+      { responseType: 'blob' },
+    );
   }
 
-  deleteIsoDocument(certificateId: number, documentId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}`);
+  deleteIsoDocument(
+    certificateId: number,
+    documentId: number,
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.base}/agent-portal/iso-certificates/${certificateId}/documents/${documentId}`,
+    );
   }
 
   // Registration (public)
-  registerAgent(data: AgentRegistration): Observable<HttpResponse<AgentProfile>> {
-    return this.http.post<AgentProfile>(`${this.base}/agent-portal/register`, data, { observe: 'response' });
+  registerAgent(
+    data: AgentRegistration,
+  ): Observable<HttpResponse<AgentProfile>> {
+    return this.http.post<AgentProfile>(
+      `${this.base}/agent-portal/register`,
+      data,
+      { observe: 'response' },
+    );
   }
 
   // Profile
@@ -137,20 +210,22 @@ export class AgentDataService {
   readonly agentProfile = this.profileState.asReadonly();
 
   getProfile(): Observable<AgentProfile> {
-    return this.http.get<AgentProfile>(`${this.base}/agent-portal/profile`).pipe(
-      tap(p => this.profileState.set(p)),
-    );
+    return this.http
+      .get<AgentProfile>(`${this.base}/agent-portal/profile`)
+      .pipe(tap((p) => this.profileState.set(p)));
   }
 
   updateProfile(data: Partial<AgentProfile>): Observable<AgentProfile> {
-    return this.http.put<AgentProfile>(`${this.base}/agent-portal/profile`, data).pipe(
-      tap(p => this.profileState.set(p)),
-    );
+    return this.http
+      .put<AgentProfile>(`${this.base}/agent-portal/profile`, data)
+      .pipe(tap((p) => this.profileState.set(p)));
   }
 
   // Dashboard
   getDashboardStats(): Observable<AgentDashboardStats> {
-    return this.http.get<AgentDashboardStats>(`${this.base}/agent-portal/dashboard/stats`);
+    return this.http.get<AgentDashboardStats>(
+      `${this.base}/agent-portal/dashboard/stats`,
+    );
   }
 
   // Portfolio CRUD
@@ -161,12 +236,21 @@ export class AgentDataService {
    * ever holds one page of twenty, so filtering locally searched 20 marks out of thousands and
    * almost always came back empty.
    */
-  getPortfolio(page = 0, size = 20, query: AgentPortfolioQuery = {}): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
-    const params = this.portfolioParams(query).set('page', page).set('size', size);
-    return this.http.get<AgentPortfolioTrademark[]>(`${this.base}/agent-portal/portfolio`, {
-      params,
-      observe: 'response',
-    });
+  getPortfolio(
+    page = 0,
+    size = 20,
+    query: AgentPortfolioQuery = {},
+  ): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
+    const params = this.portfolioParams(query)
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<AgentPortfolioTrademark[]>(
+      `${this.base}/agent-portal/portfolio`,
+      {
+        params,
+        observe: 'response',
+      },
+    );
   }
 
   /** The listing's filter and sort as query params — shared by the listing and both exports. */
@@ -192,23 +276,43 @@ export class AgentDataService {
 
   /** The status buckets and classes actually present in this agent's portfolio, with counts. */
   getPortfolioFilterOptions(): Observable<AgentPortfolioFilterOptions> {
-    return this.http.get<AgentPortfolioFilterOptions>(`${this.base}/agent-portal/portfolio/filter-options`);
+    return this.http.get<AgentPortfolioFilterOptions>(
+      `${this.base}/agent-portal/portfolio/filter-options`,
+    );
   }
 
   getPortfolioItem(id: number): Observable<AgentPortfolioTrademark> {
-    return this.http.get<AgentPortfolioTrademark>(`${this.base}/agent-portal/portfolio/${id}`);
+    return this.http.get<AgentPortfolioTrademark>(
+      `${this.base}/agent-portal/portfolio/${id}`,
+    );
   }
 
-  addToPortfolio(data: AgentPortfolioTrademark): Observable<AgentPortfolioTrademark> {
-    return this.http.post<AgentPortfolioTrademark>(`${this.base}/agent-portal/portfolio`, data);
+  addToPortfolio(
+    data: AgentPortfolioTrademark,
+  ): Observable<AgentPortfolioTrademark> {
+    return this.http.post<AgentPortfolioTrademark>(
+      `${this.base}/agent-portal/portfolio`,
+      data,
+    );
   }
 
-  addPortfolioItem(data: Partial<AgentPortfolioTrademark>): Observable<AgentPortfolioTrademark> {
-    return this.http.post<AgentPortfolioTrademark>(`${this.base}/agent-portal/portfolio`, data);
+  addPortfolioItem(
+    data: Partial<AgentPortfolioTrademark>,
+  ): Observable<AgentPortfolioTrademark> {
+    return this.http.post<AgentPortfolioTrademark>(
+      `${this.base}/agent-portal/portfolio`,
+      data,
+    );
   }
 
-  updatePortfolioItem(id: number, data: Partial<AgentPortfolioTrademark>): Observable<AgentPortfolioTrademark> {
-    return this.http.put<AgentPortfolioTrademark>(`${this.base}/agent-portal/portfolio/${id}`, data);
+  updatePortfolioItem(
+    id: number,
+    data: Partial<AgentPortfolioTrademark>,
+  ): Observable<AgentPortfolioTrademark> {
+    return this.http.put<AgentPortfolioTrademark>(
+      `${this.base}/agent-portal/portfolio/${id}`,
+      data,
+    );
   }
 
   deletePortfolioItem(id: number): Observable<void> {
@@ -218,19 +322,28 @@ export class AgentDataService {
   // Excel import
   previewImport(file: File): Observable<AgentImportResult> {
     return this.previewImportWithProgress(file).pipe(
-      filter((event): event is HttpResponse<AgentImportResult> => event.type === HttpEventType.Response),
-      map(event => event.body as AgentImportResult),
+      filter(
+        (event): event is HttpResponse<AgentImportResult> =>
+          event.type === HttpEventType.Response,
+      ),
+      map((event) => event.body as AgentImportResult),
     );
   }
 
   /** Upload events let the inline portfolio importer show both file-transfer and parsing states. */
-  previewImportWithProgress(file: File): Observable<HttpEvent<AgentImportResult>> {
+  previewImportWithProgress(
+    file: File,
+  ): Observable<HttpEvent<AgentImportResult>> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/preview`, form, {
-      observe: 'events',
-      reportProgress: true,
-    });
+    return this.http.post<AgentImportResult>(
+      `${this.base}/agent-portal/portfolio/preview`,
+      form,
+      {
+        observe: 'events',
+        reportProgress: true,
+      },
+    );
   }
 
   /**
@@ -240,37 +353,55 @@ export class AgentDataService {
    * per-column selection state to lose or accidentally omit.
    */
   confirmImport(batchId: number): Observable<AgentImportResult> {
-    return this.http.post<AgentImportResult>(`${this.base}/agent-portal/portfolio/import`, {}, {
-      params: new HttpParams().set('batchId', batchId),
-    });
+    return this.http.post<AgentImportResult>(
+      `${this.base}/agent-portal/portfolio/import`,
+      {},
+      {
+        params: new HttpParams().set('batchId', batchId),
+      },
+    );
   }
 
   /** Every conflict recorded across the whole portfolio — what the digest email links to. */
   getAllConflicts(): Observable<WatchConflictHistory[]> {
-    return this.http.get<WatchConflictHistory[]>(`${this.base}/agent-portal/watch/conflicts`);
+    return this.http.get<WatchConflictHistory[]>(
+      `${this.base}/agent-portal/watch/conflicts`,
+    );
   }
 
   /** Set a conflict aside, or bring it back. `OPPOSING` is not settable here — use opposeConflict. */
-  setConflictStatus(id: number, status: 'OPEN' | 'DISMISSED'): Observable<void> {
-    return this.http.patch<void>(`${this.base}/agent-portal/watch/conflicts/${id}`, { status });
+  setConflictStatus(
+    id: number,
+    status: 'OPEN' | 'DISMISSED',
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.base}/agent-portal/watch/conflicts/${id}`,
+      { status },
+    );
   }
 
   /** Convert a journal conflict into an opposition-window deadline. Returns the created deadline. */
   opposeConflict(id: number): Observable<Deadline> {
-    return this.http.post<Deadline>(`${this.base}/agent-portal/watch/conflicts/${id}/oppose`, {});
+    return this.http.post<Deadline>(
+      `${this.base}/agent-portal/watch/conflicts/${id}/oppose`,
+      {},
+    );
   }
-
 
   // Phase 2 — Portfolio export
   /** The caller's own upload history — backs the "we're checking your file" banner. */
   getOwnImports(): Observable<AgentImportSummary[]> {
-    return this.http.get<AgentImportSummary[]>(`${this.base}/agent-portal/imports`);
+    return this.http.get<AgentImportSummary[]>(
+      `${this.base}/agent-portal/imports`,
+    );
   }
 
   // ── Documents ────────────────────────────────────────────────────────────
 
   listDocuments(trademarkId: number): Observable<AgentDocument[]> {
-    return this.http.get<AgentDocument[]>(`${this.base}/agent-portal/portfolio/${trademarkId}/documents`);
+    return this.http.get<AgentDocument[]>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/documents`,
+    );
   }
 
   uploadDocument(
@@ -283,7 +414,10 @@ export class AgentDataService {
     if (meta.documentType) form.append('documentType', meta.documentType);
     if (meta.notes) form.append('notes', meta.notes);
     if (meta.documentDate) form.append('documentDate', meta.documentDate);
-    return this.http.post<AgentDocument>(`${this.base}/agent-portal/portfolio/${trademarkId}/documents`, form);
+    return this.http.post<AgentDocument>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/documents`,
+      form,
+    );
   }
 
   /**
@@ -292,14 +426,23 @@ export class AgentDataService {
    */
   // ── Deadlines ──────────────────────────────────────────────────────────
 
-  getDeadlines(from?: string | null, to?: string | null): Observable<Deadline[]> {
+  getDeadlines(
+    from?: string | null,
+    to?: string | null,
+  ): Observable<Deadline[]> {
     let params = new HttpParams();
     if (from) params = params.set('from', from);
     if (to) params = params.set('to', to);
-    return this.http.get<Deadline[]>(`${this.base}/agent-portal/deadlines`, { params });
+    return this.http.get<Deadline[]>(`${this.base}/agent-portal/deadlines`, {
+      params,
+    });
   }
 
-  downloadUpcomingRenewalsExcel(from: string, to: string, includeDone: boolean): Observable<Blob> {
+  downloadUpcomingRenewalsExcel(
+    from: string,
+    to: string,
+    includeDone: boolean,
+  ): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/reports/renewals.xlsx`, {
       params: { from, to, includeDone },
       responseType: 'blob',
@@ -329,13 +472,21 @@ export class AgentDataService {
       d.setDate(d.getDate() + offset);
       return d.toISOString().slice(0, 10);
     };
-    this.getDeadlines(day(-OVERDUE_RENEWAL_LOOKBACK_DAYS), day(HEARING_BADGE_DAYS)).subscribe({
-      next: rows => {
-        const open = (rows ?? []).filter(d => d.status === 'OPEN');
+    this.getDeadlines(
+      day(-OVERDUE_RENEWAL_LOOKBACK_DAYS),
+      day(HEARING_BADGE_DAYS),
+    ).subscribe({
+      next: (rows) => {
+        const open = (rows ?? []).filter((d) => d.status === 'OPEN');
         this.deadlineCountsState.set({
-          overdueRenewals: open.filter(d => d.deadlineType === 'RENEWAL' && d.daysUntilDue < 0).length,
+          overdueRenewals: open.filter(
+            (d) => d.deadlineType === 'RENEWAL' && d.daysUntilDue < 0,
+          ).length,
           hearingsThisWeek: open.filter(
-            d => d.deadlineType === 'HEARING' && d.daysUntilDue >= 0 && d.daysUntilDue <= HEARING_BADGE_DAYS,
+            (d) =>
+              d.deadlineType === 'HEARING' &&
+              d.daysUntilDue >= 0 &&
+              d.daysUntilDue <= HEARING_BADGE_DAYS,
           ).length,
         });
       },
@@ -353,11 +504,14 @@ export class AgentDataService {
     target: { id?: number | null; derivedKey?: string | null },
     status: Deadline['status'],
   ): Observable<Deadline> {
-    return this.http.patch<Deadline>(`${this.base}/agent-portal/deadlines/status`, {
-      id: target.id ?? null,
-      derivedKey: target.derivedKey ?? null,
-      status,
-    });
+    return this.http.patch<Deadline>(
+      `${this.base}/agent-portal/deadlines/status`,
+      {
+        id: target.id ?? null,
+        derivedKey: target.derivedKey ?? null,
+        status,
+      },
+    );
   }
 
   // ── Reports ────────────────────────────────────────────────────────────
@@ -370,11 +524,16 @@ export class AgentDataService {
     size: 10 | 100 | 1000,
     statusBucket?: string,
   ): Observable<SearchReport> {
-    let params = this.searchReportParams(query, tmClasses, searchType).set('page', page).set('size', size);
+    let params = this.searchReportParams(query, tmClasses, searchType)
+      .set('page', page)
+      .set('size', size);
     if (statusBucket) params = params.set('statusBucket', statusBucket);
-    return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/search`, {
-      params,
-    });
+    return this.http.get<SearchReport>(
+      `${this.base}/agent-portal/reports/search`,
+      {
+        params,
+      },
+    );
   }
 
   downloadSearchReport(
@@ -384,9 +543,17 @@ export class AgentDataService {
     selectedIds: number[],
     clientName?: string | null,
   ): Observable<Blob> {
-    let params = this.searchReportParams(query, tmClasses, searchType, selectedIds);
+    let params = this.searchReportParams(
+      query,
+      tmClasses,
+      searchType,
+      selectedIds,
+    );
     if (clientName) params = params.set('clientName', clientName);
-    return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, { params, responseType: 'blob' });
+    return this.http.get(`${this.base}/agent-portal/reports/search.pdf`, {
+      params,
+      responseType: 'blob',
+    });
   }
 
   /**
@@ -403,7 +570,8 @@ export class AgentDataService {
     for (const c of tmClasses ?? []) {
       params = params.append('tmClasses', String(c));
     }
-    for (const id of selectedIds ?? []) params = params.append('selectedIds', String(id));
+    for (const id of selectedIds ?? [])
+      params = params.append('selectedIds', String(id));
     return params;
   }
 
@@ -415,38 +583,64 @@ export class AgentDataService {
     selectedIds: number[],
   ): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/reports/search.xlsx`, {
-      params: this.searchReportParams(query, tmClasses, searchType, selectedIds),
+      params: this.searchReportParams(
+        query,
+        tmClasses,
+        searchType,
+        selectedIds,
+      ),
       responseType: 'blob',
     });
   }
 
   getSearchResultArtwork(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/search/${id}/artwork`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/reports/search/${id}/artwork`,
+      { responseType: 'blob' },
+    );
   }
 
-  downloadWatchReport(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.pdf`, {
-      params: this.tmClassParams(tmClasses),
-      responseType: 'blob',
-    });
+  downloadWatchReport(
+    journalNo: number,
+    tmClasses?: number[] | null,
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.base}/agent-portal/reports/watch/${journalNo}.pdf`,
+      {
+        params: this.tmClassParams(tmClasses),
+        responseType: 'blob',
+      },
+    );
   }
 
   /** The same watch run as a spreadsheet, with both marks' goods and services. */
-  downloadWatchReportExcel(journalNo: number, tmClasses?: number[] | null): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/watch/${journalNo}.xlsx`, {
-      params: this.tmClassParams(tmClasses),
-      responseType: 'blob',
-    });
+  downloadWatchReportExcel(
+    journalNo: number,
+    tmClasses?: number[] | null,
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.base}/agent-portal/reports/watch/${journalNo}.xlsx`,
+      {
+        params: this.tmClassParams(tmClasses),
+        responseType: 'blob',
+      },
+    );
   }
 
   /** One mark's register record, as a spreadsheet. */
   exportTrademarkExcel(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/export/excel`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/portfolio/${id}/export/excel`,
+      { responseType: 'blob' },
+    );
   }
 
   /** One mark's register record on the firm's letterhead. */
   exportTrademarkPdf(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/reports/trademark/${id}.pdf`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/reports/trademark/${id}.pdf`,
+      { responseType: 'blob' },
+    );
   }
 
   /**
@@ -454,19 +648,27 @@ export class AgentDataService {
    * a blob because the endpoint needs the auth header an <img src> cannot send. 404s when absent.
    */
   getTrademarkArtwork(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/artwork`, { responseType: 'blob' });
+    return this.http.get(`${this.base}/agent-portal/portfolio/${id}/artwork`, {
+      responseType: 'blob',
+    });
   }
 
   // ── Report branding ────────────────────────────────────────────────────
 
   updateBranding(branding: Partial<AgentBranding>): Observable<AgentBranding> {
-    return this.http.put<AgentBranding>(`${this.base}/agent-portal/branding`, branding);
+    return this.http.put<AgentBranding>(
+      `${this.base}/agent-portal/branding`,
+      branding,
+    );
   }
 
   uploadLogo(file: File): Observable<{ hasLogo: boolean }> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<{ hasLogo: boolean }>(`${this.base}/agent-portal/branding/logo`, form);
+    return this.http.post<{ hasLogo: boolean }>(
+      `${this.base}/agent-portal/branding/logo`,
+      form,
+    );
   }
 
   removeLogo(): Observable<void> {
@@ -475,7 +677,9 @@ export class AgentDataService {
 
   /** The stored logo, for the profile preview. Streamed — there is no static URL for it. */
   getLogo(): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/branding/logo`, { responseType: 'blob' });
+    return this.http.get(`${this.base}/agent-portal/branding/logo`, {
+      responseType: 'blob',
+    });
   }
 
   // ── Document library (portfolio-wide) ──────────────────────────────────
@@ -484,24 +688,31 @@ export class AgentDataService {
   // spans every mark, which is what an agent actually needs when they know the document but not
   // which application it was filed against.
 
-  getDocumentLibrary(options: {
-    type?: string | null;
-    clientRef?: string | null;
-    q?: string | null;
-    page?: number;
-    size?: number;
-  } = {}): Observable<AgentDocumentLibraryPage> {
+  getDocumentLibrary(
+    options: {
+      type?: string | null;
+      clientRef?: string | null;
+      q?: string | null;
+      page?: number;
+      size?: number;
+    } = {},
+  ): Observable<AgentDocumentLibraryPage> {
     let params = new HttpParams()
       .set('page', String(options.page ?? 0))
       .set('size', String(options.size ?? 25));
     if (options.type) params = params.set('type', options.type);
     if (options.clientRef) params = params.set('clientRef', options.clientRef);
     if (options.q) params = params.set('q', options.q);
-    return this.http.get<AgentDocumentLibraryPage>(`${this.base}/agent-portal/documents`, { params });
+    return this.http.get<AgentDocumentLibraryPage>(
+      `${this.base}/agent-portal/documents`,
+      { params },
+    );
   }
 
   getDocumentLibrarySummary(): Observable<AgentDocumentLibrarySummary> {
-    return this.http.get<AgentDocumentLibrarySummary>(`${this.base}/agent-portal/documents/summary`);
+    return this.http.get<AgentDocumentLibrarySummary>(
+      `${this.base}/agent-portal/documents/summary`,
+    );
   }
 
   uploadDocuments(
@@ -510,7 +721,7 @@ export class AgentDataService {
     meta: { documentType?: string; notes?: string },
   ): Observable<AgentBulkUploadResult> {
     const form = new FormData();
-    files.forEach(file => form.append('files', file));
+    files.forEach((file) => form.append('files', file));
     if (meta.documentType) form.append('documentType', meta.documentType);
     if (meta.notes) form.append('notes', meta.notes);
     return this.http.post<AgentBulkUploadResult>(
@@ -519,16 +730,27 @@ export class AgentDataService {
     );
   }
 
-  reclassifyDocument(documentId: number, documentType: string): Observable<AgentDocument> {
-    return this.http.patch<AgentDocument>(`${this.base}/agent-portal/documents/${documentId}/type`, { documentType });
+  reclassifyDocument(
+    documentId: number,
+    documentType: string,
+  ): Observable<AgentDocument> {
+    return this.http.patch<AgentDocument>(
+      `${this.base}/agent-portal/documents/${documentId}/type`,
+      { documentType },
+    );
   }
 
   downloadDocument(documentId: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/documents/${documentId}/download`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/documents/${documentId}/download`,
+      { responseType: 'blob' },
+    );
   }
 
   deleteDocument(documentId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/documents/${documentId}`);
+    return this.http.delete<void>(
+      `${this.base}/agent-portal/documents/${documentId}`,
+    );
   }
 
   // ── Registry sync & agent notes ──────────────────────────────────────────
@@ -538,15 +760,25 @@ export class AgentDataService {
    * asynchronously, so the caller re-loads to see the result rather than blocking on it.
    */
   refreshFromRegistry(trademarkId: number): Observable<{ state: string }> {
-    return this.http.post<{ state: string }>(`${this.base}/agent-portal/portfolio/${trademarkId}/refresh`, {});
+    return this.http.post<{ state: string }>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/refresh`,
+      {},
+    );
   }
 
   /** Updates the agent's private notes for a mark. Allowed whatever the mark's provenance. */
   updatePortfolioLink(
     trademarkId: number,
-    updates: { agentNotes?: string; clientReference?: string; customFields?: Record<string, string | null> },
+    updates: {
+      agentNotes?: string;
+      clientReference?: string;
+      customFields?: Record<string, string | null>;
+    },
   ): Observable<Record<string, unknown>> {
-    return this.http.patch<Record<string, unknown>>(`${this.base}/agent-portal/portfolio/${trademarkId}/link`, updates);
+    return this.http.patch<Record<string, unknown>>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/link`,
+      updates,
+    );
   }
 
   // ── Custom fields ────────────────────────────────────────────────────────
@@ -558,28 +790,49 @@ export class AgentDataService {
    * session rather than being anything shared or cached globally.
    */
   getCustomFields(): Observable<AgentCustomField[]> {
-    return this.http.get<AgentCustomField[]>(`${this.base}/agent-portal/custom-fields`);
+    return this.http.get<AgentCustomField[]>(
+      `${this.base}/agent-portal/custom-fields`,
+    );
   }
 
-  createCustomField(label: string, dataType = 'TEXT'): Observable<AgentCustomField> {
-    return this.http.post<AgentCustomField>(`${this.base}/agent-portal/custom-fields`, { label, dataType });
+  createCustomField(
+    label: string,
+    dataType = 'TEXT',
+  ): Observable<AgentCustomField> {
+    return this.http.post<AgentCustomField>(
+      `${this.base}/agent-portal/custom-fields`,
+      { label, dataType },
+    );
   }
 
   /** Label, type, order and grid visibility. The key is immutable — values are stored under it. */
   updateCustomField(
     fieldId: number,
-    updates: { label?: string; dataType?: string; displayOrder?: number; showInList?: boolean },
+    updates: {
+      label?: string;
+      dataType?: string;
+      displayOrder?: number;
+      showInList?: boolean;
+    },
   ): Observable<AgentCustomField> {
-    return this.http.patch<AgentCustomField>(`${this.base}/agent-portal/custom-fields/${fieldId}`, updates);
+    return this.http.patch<AgentCustomField>(
+      `${this.base}/agent-portal/custom-fields/${fieldId}`,
+      updates,
+    );
   }
 
   /** Soft — values stay on every mark, so this is recoverable by re-creating the field. */
   deleteCustomField(fieldId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/custom-fields/${fieldId}`);
+    return this.http.delete<void>(
+      `${this.base}/agent-portal/custom-fields/${fieldId}`,
+    );
   }
 
   /** Folds one field's values into another across every mark, then retires the source. */
-  mergeCustomField(fieldId: number, targetId: number): Observable<{ movedValues: number }> {
+  mergeCustomField(
+    fieldId: number,
+    targetId: number,
+  ): Observable<{ movedValues: number }> {
     return this.http.post<{ movedValues: number }>(
       `${this.base}/agent-portal/custom-fields/${fieldId}/merge-into/${targetId}`,
       {},
@@ -590,7 +843,9 @@ export class AgentDataService {
 
   /** Journal issues available to check, newest first. */
   getWatchJournals(limit = 24): Observable<number[]> {
-    return this.http.get<number[]>(`${this.base}/agent-portal/watch/journals?limit=${limit}`);
+    return this.http.get<number[]>(
+      `${this.base}/agent-portal/watch/journals?limit=${limit}`,
+    );
   }
 
   /** Published rows in this issue whose application numbers are linked to the caller's portfolio. */
@@ -605,18 +860,30 @@ export class AgentDataService {
     );
   }
 
-  getPortfolioLinks(applicationNos: number[]): Observable<Record<string, number>> {
+  getPortfolioLinks(
+    applicationNos: number[],
+  ): Observable<Record<string, number>> {
     let params = new HttpParams();
-    for (const applicationNo of applicationNos) params = params.append('applicationNos', applicationNo);
-    return this.http.get<Record<string, number>>(`${this.base}/agent-portal/watch/portfolio-links`, { params });
+    for (const applicationNo of applicationNos)
+      params = params.append('applicationNos', applicationNo);
+    return this.http.get<Record<string, number>>(
+      `${this.base}/agent-portal/watch/portfolio-links`,
+      { params },
+    );
   }
 
   exportJournalTrademarkExcel(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/watch/journal/marks/${id}/export/excel`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/watch/journal/marks/${id}/export/excel`,
+      { responseType: 'blob' },
+    );
   }
 
   exportJournalTrademarkPdf(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/watch/journal/marks/${id}/export/pdf`, { responseType: 'blob' });
+    return this.http.get(
+      `${this.base}/agent-portal/watch/journal/marks/${id}/export/pdf`,
+      { responseType: 'blob' },
+    );
   }
 
   /**
@@ -630,7 +897,9 @@ export class AgentDataService {
     size = 20,
     riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW',
   ): Observable<AgentJournalWatchResult> {
-    let params = this.tmClassParams(tmClasses).set('page', page).set('size', size);
+    let params = this.tmClassParams(tmClasses)
+      .set('page', page)
+      .set('size', size);
     if (riskLevel) params = params.set('riskLevel', riskLevel);
     return this.http.post<AgentJournalWatchResult>(
       `${this.base}/agent-portal/watch/journals/${journalNo}`,
@@ -658,9 +927,20 @@ export class AgentDataService {
     );
   }
 
-  previewPublicAgentPortfolio(agentName: string): Observable<AgentHomePortfolioPreview> {
+  previewPublicAgentPortfolio(
+    agentName: string,
+  ): Observable<AgentHomePortfolioPreview> {
     return this.http.get<AgentHomePortfolioPreview>(
       `${this.base}/agent-portal/public/discover/portfolio-preview`,
+      { params: { agentName } },
+    );
+  }
+
+  previewPublicAgentRenewals(
+    agentName: string,
+  ): Observable<AgentHomeRenewalPreview> {
+    return this.http.get<AgentHomeRenewalPreview>(
+      `${this.base}/agent-portal/public/discover/renewal-preview`,
       { params: { agentName } },
     );
   }
@@ -677,24 +957,45 @@ export class AgentDataService {
     );
   }
 
-  searchAgentAddresses(q: string, limit = 20): Observable<AgentDirectoryEntry[]> {
-    return this.http.get<AgentDirectoryEntry[]>(`${this.base}/agent-portal/discover/agent-addresses`, {
-      params: { q, limit },
-    });
+  searchAgentAddresses(
+    q: string,
+    limit = 20,
+  ): Observable<AgentDirectoryEntry[]> {
+    return this.http.get<AgentDirectoryEntry[]>(
+      `${this.base}/agent-portal/discover/agent-addresses`,
+      {
+        params: { q, limit },
+      },
+    );
   }
 
-  searchProprietors(q: string, limit = 20): Observable<ProprietorDirectoryEntry[]> {
-    return this.http.get<ProprietorDirectoryEntry[]>(`${this.base}/agent-portal/discover/proprietors`, {
-      params: { q, limit },
-    });
+  searchProprietors(
+    q: string,
+    limit = 20,
+  ): Observable<ProprietorDirectoryEntry[]> {
+    return this.http.get<ProprietorDirectoryEntry[]>(
+      `${this.base}/agent-portal/discover/proprietors`,
+      {
+        params: { q, limit },
+      },
+    );
   }
 
-  claimProprietorTrademarks(request: AgentClaimRequest): Observable<AgentClaimResult> {
-    return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/proprietor-claim`, request);
+  claimProprietorTrademarks(
+    request: AgentClaimRequest,
+  ): Observable<AgentClaimResult> {
+    return this.http.post<AgentClaimResult>(
+      `${this.base}/agent-portal/discover/proprietor-claim`,
+      request,
+    );
   }
 
   /** The marks filed under one exact agent name. */
-  discoverTrademarks(agentName: string, page = 0, size = 100): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
+  discoverTrademarks(
+    agentName: string,
+    page = 0,
+    size = 100,
+  ): Observable<HttpResponse<AgentPortfolioTrademark[]>> {
     return this.http.get<AgentPortfolioTrademark[]>(
       `${this.base}/agent-portal/discover/trademarks?agentName=${encodeURIComponent(agentName)}&page=${page}&size=${size}`,
       { observe: 'response' },
@@ -703,7 +1004,10 @@ export class AgentDataService {
 
   /** Links the selected marks into the caller's portfolio. */
   claimTrademarks(request: AgentClaimRequest): Observable<AgentClaimResult> {
-    return this.http.post<AgentClaimResult>(`${this.base}/agent-portal/discover/claim`, request);
+    return this.http.post<AgentClaimResult>(
+      `${this.base}/agent-portal/discover/claim`,
+      request,
+    );
   }
 
   /** The portfolio as a spreadsheet, narrowed and ordered as the listing is. No query = everything. */
@@ -728,35 +1032,48 @@ export class AgentDataService {
     });
   }
 
-
   // ── Competitor watch ─────────────────────────────────────────────────────
   //
   // Firms are chosen from the same directory as onboarding (searchAgents above), so a watched name
   // is always one that actually appears on the register.
 
   getCompetitorWatches(): Observable<CompetitorWatch[]> {
-    return this.http.get<CompetitorWatch[]>(`${this.base}/agent-portal/competitors`);
+    return this.http.get<CompetitorWatch[]>(
+      `${this.base}/agent-portal/competitors`,
+    );
   }
 
   /** Adds several at once - a firm often files under more than one spelling. */
   addCompetitorWatches(names: string[]): Observable<CompetitorAddResult> {
-    return this.http.post<CompetitorAddResult>(`${this.base}/agent-portal/competitors`, { names });
+    return this.http.post<CompetitorAddResult>(
+      `${this.base}/agent-portal/competitors`,
+      { names },
+    );
   }
 
   removeCompetitorWatch(watchId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/competitors/${watchId}`);
+    return this.http.delete<void>(
+      `${this.base}/agent-portal/competitors/${watchId}`,
+    );
   }
 
   getCompetitorFeed(page = 0, size = 25): Observable<CompetitorFeedPage> {
-    return this.http.get<CompetitorFeedPage>(`${this.base}/agent-portal/competitors/feed?page=${page}&size=${size}`);
+    return this.http.get<CompetitorFeedPage>(
+      `${this.base}/agent-portal/competitors/feed?page=${page}&size=${size}`,
+    );
   }
 
   markCompetitorFeedSeen(): Observable<{ cleared: number }> {
-    return this.http.post<{ cleared: number }>(`${this.base}/agent-portal/competitors/feed/seen`, {});
+    return this.http.post<{ cleared: number }>(
+      `${this.base}/agent-portal/competitors/feed/seen`,
+      {},
+    );
   }
 
   // Phase 2 — Agent public profile
   getPublicAgentProfile(agentCode: string): Observable<AgentPublicProfile> {
-    return this.http.get<AgentPublicProfile>(`${this.base}/agent-portal/public/${agentCode}`);
+    return this.http.get<AgentPublicProfile>(
+      `${this.base}/agent-portal/public/${agentCode}`,
+    );
   }
 }

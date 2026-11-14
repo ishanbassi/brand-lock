@@ -13,6 +13,12 @@ export const routes: Routes = [
     },
     {
         // Feature deep dives explain a portal capability before an agent signs in.
+        path: 'agent-home/hearings',
+        loadComponent: () => import('./agent-portal/agent-hearings-feature/agent-hearings-feature.component').then(m => m.AgentHearingsFeatureComponent),
+        title: 'Trademark Hearing Alerts | Trademarx Agent Portal',
+        canActivate: [agentHostGuard],
+    },
+    {
         path: 'agent-home/journal-watch',
         loadComponent: () => import('./agent-portal/agent-journal-watch-feature/agent-journal-watch-feature.component').then(m => m.AgentJournalWatchFeatureComponent),
         title: 'Journal Watch | Trademarx Agent Portal',

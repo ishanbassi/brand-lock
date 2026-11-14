@@ -190,7 +190,12 @@ export interface AgentCustomField {
 /** One status bucket of the agent's portfolio, as counted by the server. */
 export interface AgentStatusCount {
   /** Stable bucket identifier — colours and ordering key off this, never the label. */
-  key: 'REGISTERED' | 'OBJECTED_OR_OPPOSED' | 'UNDER_EXAMINATION_OR_ADVERTISED' | 'ABANDONED_WITHDRAWN_REJECTED' | 'OTHER_UNKNOWN';
+  key:
+    | 'REGISTERED'
+    | 'OBJECTED_OR_OPPOSED'
+    | 'UNDER_EXAMINATION_OR_ADVERTISED'
+    | 'ABANDONED_WITHDRAWN_REJECTED'
+    | 'OTHER_UNKNOWN';
   label: string;
   count: number;
 }
@@ -323,6 +328,25 @@ export interface AgentHomePortfolioPreview {
   marks: AgentHomeMarkPreview[];
 }
 
+/** A limited, public-register renewal worklist shown before an agent creates an account. */
+export interface AgentHomeRenewalMarkPreview extends AgentHomeMarkPreview {
+  renewalDate: string;
+  /** Standard renewal window, s.25(3) late-renewal window, or s.25(4) restoration window. */
+  renewalStage: 'UPCOMING' | 'SECTION_25_3' | 'SECTION_25_4';
+  daysUntilRenewal: number;
+}
+
+/** The public renewal docket is intentionally capped; full selection happens during onboarding. */
+export interface AgentHomeRenewalPreview {
+  agentName: string;
+  displayName: string;
+  totalMarks: number;
+  upcomingCount: number;
+  section253Count: number;
+  section254Count: number;
+  marks: AgentHomeRenewalMarkPreview[];
+}
+
 /** A name plus record count; no trademark or client data is returned for the live hero card. */
 export interface AgentHomeLiveSnapshot {
   displayName: string;
@@ -368,7 +392,6 @@ export interface AgentImportSummary {
   /** Still awaiting an admin or the agent's own confirmation. */
   pending?: boolean;
 }
-
 
 /**
  * A file the agent has attached to one mark.
@@ -472,7 +495,14 @@ export interface Deadline {
   id?: number | null;
   /** Present on computed entries, which have no row until the agent acts on them. */
   derivedKey?: string | null;
-  deadlineType: 'RENEWAL' | 'OPPOSITION_WINDOW' | 'HEARING' | 'EXAM_REPLY' | 'COUNTER_STATEMENT' | 'EVIDENCE' | 'OTHER';
+  deadlineType:
+    | 'RENEWAL'
+    | 'OPPOSITION_WINDOW'
+    | 'HEARING'
+    | 'EXAM_REPLY'
+    | 'COUNTER_STATEMENT'
+    | 'EVIDENCE'
+    | 'OTHER';
   dueDate: string;
   status: 'OPEN' | 'DONE' | 'WAIVED' | 'MISSED';
   source: 'DERIVED' | 'AGENT' | 'REGISTRY';
@@ -483,6 +513,8 @@ export interface Deadline {
   trademarkName?: string | null;
   applicationNo?: number | null;
   tmClass?: number | null;
+  /** Same-day Registry virtual hearing room. Omitted until the Registry publishes it. */
+  hearingUrl?: string | null;
   /** Negative when overdue. Computed server-side so every client agrees on "today". */
   daysUntilDue: number;
 }
@@ -543,7 +575,6 @@ export interface AgentJournalWatchResult {
   truncated: boolean;
   durationMs: number;
 }
-
 
 /**
  * A rival firm on the agent's watch list.

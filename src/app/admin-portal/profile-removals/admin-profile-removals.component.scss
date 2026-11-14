@@ -1,0 +1,57 @@
+.removal-form {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+}
+
+.removal-form h2,
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.form-hint {
+  max-width: 72ch;
+  margin: 0.45rem 0 1.25rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.55;
+}
+
+.form-hint code {
+  font-size: 0.88em;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+}
+
+.profile-link {
+  display: inline-block;
+  max-width: 38rem;
+  overflow-wrap: anywhere;
+}
+
+.restore-button {
+  white-space: nowrap;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .removal-form {
+    padding: 1rem;
+  }
+
+  .section-heading {
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .profile-link {
+    max-width: 16rem;
+  }
+}

@@ -67,6 +67,11 @@ export const adminPortalRoutes: Routes = [
     title: 'API Consumers | Admin',
   },
   {
+    path: 'profile-removals',
+    loadComponent: () => import('./profile-removals/admin-profile-removals.component').then(m => m.AdminProfileRemovalsComponent),
+    title: 'Public Profile Removals | Admin',
+  },
+  {
     path: 'scraped-trademarks',
     loadComponent: () =>
       import('./scraped-trademarks/admin-scraped-trademarks.component').then(m => m.AdminScrapedTrademarksComponent),

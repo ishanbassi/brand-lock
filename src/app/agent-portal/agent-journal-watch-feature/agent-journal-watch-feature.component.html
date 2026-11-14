@@ -1,75 +1,117 @@
-<main class="journal-feature pt-20">
+<main class="journal-feature">
   <app-agent-portal-navbar activeLink="journal-watch" />
 
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="live-label"><i></i> TMJ radar and opposition sentinel</p>
-      <h1>Never miss an infringing trademark published in the Trade Marks Journal.</h1>
-      <p class="lede">Every Monday, the Trade Marks Registry publishes thousands of marks in the official TMJ gazette. TMarx scans them in seconds with phonetic and Devanagari transliteration matchingâ€”before the strict four-month Section 21 opposition window closes.</p>
-      <div class="cta-row">
-        <a class="button button-primary" routerLink="/create-agent-account"><span class="material-symbols-outlined">radar</span> Start free Journal Watch</a>
-        <a class="button button-soft" href="#simulator"><span class="material-symbols-outlined">description</span> Explore a sample report</a>
+  <section class="journal-hero">
+    <div class="hero-glow hero-glow-primary"></div>
+    <div class="hero-glow hero-glow-secondary"></div>
+    <div class="hero-content">
+      <span class="eyebrow"><i></i> Journal Watch</span>
+      <h1>Keep the latest Trade Marks Journal close to your portfolio.</h1>
+      <p class="hero-copy">Review published IP India journal records in a focused workspace, then decide which entries need your team’s attention.</p>
+      <div class="hero-actions">
+        <button type="button" class="action primary-action" (click)="onboardingModalOpen.set(true)"><span class="material-symbols-outlined">radar</span> Set up Journal Watch</button>
       </div>
-      <p class="telemetry"><b><i></i> Gazette Issue #2148 live ingested</b><span>â€¢</span>14,821 applications indexed at 06:02 AM IST</p>
+      <p class="live-status" aria-live="polite">
+        @if (loading()) {
+          <span><i></i> Checking the public journal</span>
+        } @else {
+          @if (latestJournal(); as journal) {
+            <span><i></i> Journal {{ journal }} is ready to review</span>
+          } @else {
+            <span class="status-error">{{ loadError() }}</span>
+          }
+        }
+      </p>
     </div>
 
-    <article class="radar-panel" aria-label="Sample journal-watch conflicts">
-      <div class="radar-head">
-        <div class="radar-title"><span class="icon-block material-symbols-outlined">gavel</span><div><strong>Weekly Gazette Intelligence Sentinel</strong><small>Trade Marks Journal No. 2148 Â· Published 28 Oct 2024</small></div></div>
-        <span class="priority"><i></i> 2 high-priority conflicts</span>
-      </div>
-      <div class="conflict-grid">
-        <article class="conflict-card danger">
-          <div class="card-heading"><div><small>Conflict detection #TMJ-9821</small><h2>Phonetic similarity alert</h2></div><b>94% phonetic score</b></div>
-          <div class="mark-comparison"><div><small>Your client's mark</small><strong>AURA FLOW</strong><span>Class 42 Â· Software / Cloud SaaS</span><em>App #4912089 Â· Registration granted</em></div><div class="impugned"><small>Published in TMJ 2148</small><strong>AURAFY</strong><span>Class 42 Â· SaaS &amp; data hosting</span><em>App #6104921 Â· Page 1,482</em></div></div>
-          <div class="deadline"><span class="material-symbols-outlined">timer</span><div><b>Section 21 opposition window</b><small>Statutory cutoff: 28 Feb 2025</small></div><strong>118 days left</strong></div>
-          <div class="action-row"><a class="button button-primary" routerLink="/create-agent-account">Prepare TM-O notice</a><button type="button" class="icon-button" aria-label="Download Gazette PDF"><span class="material-symbols-outlined">download</span></button><button type="button" class="icon-button" aria-label="Share as WhatsApp memo"><span class="material-symbols-outlined">share</span></button></div>
-        </article>
-        <article class="conflict-card warning">
-          <div class="card-heading"><div><small>Conflict detection #TMJ-9822</small><h2>Devanagari transliteration flag</h2></div><b>Cross-script 98% match</b></div>
-          <div class="mark-comparison"><div><small>Your client's mark</small><strong>GLOVIA</strong><span>Class 05 Â· Pharma &amp; therapeutics</span><em>App #3882012 Â· Registration active</em></div><div class="impugned"><small>Published in TMJ 2148</small><strong>à¤—à¥à¤²à¥‹à¤µà¤¿à¤¯à¤¾ / GLOVIA</strong><span>Class 05 Â· Dietary supplements</span><em>App #6107388 Â· Page 3,112</em></div></div>
-          <p class="script-note"><span class="material-symbols-outlined">translate</span><span><b>Script trap identified.</b> The algorithm resolved the Devanagari token to its phonetic equivalent and flagged the matched goods.</span></p>
-          <div class="action-row"><a class="button button-primary" routerLink="/create-agent-account">Prepare TM-O notice</a><button type="button" class="icon-button" aria-label="Download Gazette PDF"><span class="material-symbols-outlined">download</span></button><button type="button" class="icon-button" aria-label="Share as WhatsApp memo"><span class="material-symbols-outlined">share</span></button></div>
-        </article>
-      </div>
-    </article>
+    <section class="journal-cockpit" id="latest-journal" aria-label="Latest public trademark journal">
+      <header class="cockpit-header">
+        <div class="cockpit-title">
+          <span class="cockpit-icon material-symbols-outlined">gavel</span>
+          <div>
+            <span class="cockpit-kicker">Public journal inspection</span>
+            @if (latestIssue(); as issue) {
+              <h2>Trade Marks Journal {{ issue.journalNo }}</h2>
+              <p>{{ issue.count | number }} published records available in this issue</p>
+            } @else {
+              <h2>Latest journal issue</h2>
+              <p>Published IP India records appear here when the issue is available.</p>
+            }
+          </div>
+        </div>
+        <span class="public-chip"><i></i> Public IP India records</span>
+      </header>
+
+      @if (loading()) {
+        <div class="record-grid loading-records" aria-live="polite">
+          @for (row of [1, 2, 3]; track row) { <div class="record-skeleton"></div> }
+        </div>
+      } @else {
+        @if (latestJournal(); as journal) {
+          @if (entriesLoading()) {
+            <div class="record-grid loading-records" aria-live="polite">
+              @for (row of [1, 2, 3]; track row) { <div class="record-skeleton"></div> }
+            </div>
+          } @else if (journalEntries().length) {
+            <div class="record-grid">
+              @for (mark of journalEntries(); track mark.id ?? mark.applicationNo) {
+                <article class="record-card">
+                  <div class="record-topline"><span>Published record</span><span>Class {{ mark.tmClass ?? '—' }}</span></div>
+                  <h3>{{ mark.name || 'Unnamed mark' }}</h3>
+                  <p>Application {{ mark.applicationNo ?? '—' }}</p>
+                  <div class="record-proprietor"><span class="material-symbols-outlined">business</span><span>{{ mark.proprietorName || 'Proprietor not listed' }}</span></div>
+                  <span class="record-status">{{ mark.trademarkStatus || 'Status not listed' }}</span>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="empty-journal"><span class="material-symbols-outlined">description</span><p>The issue is available, but its published records are not ready to display yet.</p></div>
+          }
+          <div class="cockpit-footer">
+            <p>Source: Public IP India journal</p>
+            
+            <button type="button" class="action primary-action compact" (click)="onboardingModalOpen.set(true)">Get Started<span class="material-symbols-outlined">arrow_forward</span></button>
+          </div>
+        } @else {
+          <div class="empty-journal"><span class="material-symbols-outlined">event_busy</span><p>Check back when the next public IP India journal issue is available.</p></div>
+        }
+      }
+    </section>
   </section>
 
-  <section class="problem-section">
-    <div class="section-copy centered"><h2>Why manual Monday TMJ checking fails Indian law firms.</h2><p>Gazette pages are dense, deadlines are statutory and exact-name searches miss the threats that matter most.</p></div>
-    <div class="failure-grid">
-      <article><span class="material-symbols-outlined">schedule</span><h3>The four-month clock starts quietly</h3><p>A late discovery leaves precious little time to obtain instructions and prepare an opposition.</p></article>
-      <article><span class="material-symbols-outlined">search_off</span><h3>Direct name matching is not enough</h3><p>Phonetic spellings, Hindi scripts and class-adjacent goods routinely evade manual review.</p></article>
-      <article><span class="material-symbols-outlined">folder_off</span><h3>Evidence fragments across matters</h3><p>Teams need the gazette page, score, client mark and next action in one defensible record.</p></article>
+  <section class="section section-why">
+    <div class="section-heading centered"><h2>Journal review should be clear and repeatable.</h2><p>Use the published source record, your portfolio context, and a simple review flow in one place.</p></div>
+    <div class="reason-grid">
+      <article><span class="reason-icon material-symbols-outlined">manage_search</span><h3>Start with the source record</h3><p>Open the current public journal issue and review the original published details.</p></article>
+      <article><span class="reason-icon material-symbols-outlined">folder_open</span><h3>Keep portfolio context nearby</h3><p>Use Journal Watch from your workspace to review records alongside the marks you manage.</p></article>
+      <article><span class="reason-icon material-symbols-outlined">task_alt</span><h3>Make the next step visible</h3><p>Give your team a clearer starting point for the follow-up work that matters.</p></article>
     </div>
   </section>
 
-  <section class="workflow-section">
-    <div class="section-copy"><h2>A weekly opposition workflow that your team can trust.</h2><p>TMarx turns a volatile gazette release into a clear worklist for every portfolio.</p></div>
-    <ol class="workflow">
-      <li><span>01</span><div><h3>Ingest the official gazette</h3><p>New journal entries are structured, classified and made searchable as soon as the weekly issue is available.</p></div></li>
-      <li><span>02</span><div><h3>Compare every client mark</h3><p>Text, phonetic, visual and cross-script signals surface conflictsâ€”not just exact hits.</p></div></li>
-      <li><span>03</span><div><h3>Prioritise statutory action</h3><p>Review risk, goods overlap, opposition cutoff and source record in one report.</p></div></li>
+  <section class="section section-workflow">
+    <div class="section-heading"><h2>A practical journal review workflow.</h2><p>Built around real published records rather than a fixed product demonstration.</p></div>
+    <ol class="workflow-list">
+      <li><span>1</span><div><h3>Open the latest issue</h3><p>Review the live public journal record as soon as it is available.</p></div></li>
+      <li><span>2</span><div><h3>Check your portfolio context</h3><p>Bring the marks your team manages into the same review process.</p></div></li>
+      <li><span>3</span><div><h3>Record the next action</h3><p>Use the published details to guide an informed follow-up with your team or client.</p></div></li>
     </ol>
   </section>
 
-  <section id="simulator" class="simulator-section">
-    <div class="section-copy centered"><h2>See how a journal finding becomes an action brief.</h2><p>Choose a sample conflict to inspect the evidence your team receives.</p></div>
-    <div class="simulator">
-      <div class="sim-tabs" role="tablist" aria-label="Sample conflicts">
-        @for (simulation of simulations; track simulation.clientMark; let i = $index) {
-          <button type="button" role="tab" [attr.aria-selected]="activeSimulation() === i" [class.selected]="activeSimulation() === i" (click)="activeSimulation.set(i)">{{ simulation.clientMark }}</button>
-        }
-      </div>
-      @let simulation = simulations[activeSimulation()];
-      <div class="brief-head"><div><span>Journal Watch action brief</span><h3>{{ simulation.conflictType }}</h3></div><strong>{{ simulation.score }} match</strong></div>
-      <div class="brief-marks"><article><span>Your client's mark</span><strong>{{ simulation.clientMark }}</strong><p>{{ simulation.clientClass }}</p></article><span class="versus">vs</span><article class="flagged"><span>Published in TMJ 2148</span><strong>{{ simulation.impugnedMark }}</strong><p>{{ simulation.impugnedClass }}</p></article></div>
-      <div class="brief-action"><span class="material-symbols-outlined">gavel</span><div><span>Recommended action</span><strong>{{ simulation.action }}</strong><p>{{ simulation.grounds }}</p></div></div>
-      <a class="button button-primary" routerLink="/create-agent-account">Start watching your portfolio <span class="material-symbols-outlined">arrow_forward</span></a>
+  <section class="section section-capabilities">
+    <div class="section-heading centered"><h2>One workspace for a more grounded review.</h2><p>Journal Watch keeps the essentials close without making promises the product does not support.</p></div>
+    <div class="capability-grid">
+      <article><span class="material-symbols-outlined">newspaper</span><h3>Live journal availability</h3><p>See the latest published issue from the same public journal source used by Trademarx.</p></article>
+      <article><span class="material-symbols-outlined">bookmark</span><h3>Portfolio-led review</h3><p>Set up a workspace to assess entries against the trademarks your team manages.</p></article>
+      <article><span class="material-symbols-outlined">open_in_new</span><h3>Direct source access</h3><p>Open the full public issue whenever you need to inspect additional published records.</p></article>
     </div>
   </section>
 
-  <section class="final-cta"><div><h2>Protect the marks your clients trust you with.</h2><p>Deploy automated Journal Watch in two minutes and keep every Section 21 priority window in view.</p></div><div class="cta-row"><a class="button button-primary" routerLink="/create-agent-account">Start free Journal Watch <span class="material-symbols-outlined">arrow_forward</span></a><a class="button button-soft" routerLink="/agent-login">Sign in to your workspace</a></div></section>
+  <section class="journal-cta">
+    <div><h2>Keep your next journal review ready.</h2><p>Create a Trademarx workspace to review published issues with the portfolio context your team needs.</p></div>
+    <div class="hero-actions"><button type="button" class="action primary-action" (click)="onboardingModalOpen.set(true)">Set up Journal Watch <span class="material-symbols-outlined">arrow_forward</span></button></div>
+  </section>
 
+  <app-agent-pricing-plans />
   <app-agent-portal-footer />
+  <app-agent-onboarding-modal [open]="onboardingModalOpen()" [preview]="null" (closed)="onboardingModalOpen.set(false)" />
 </main>

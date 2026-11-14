@@ -23,6 +23,7 @@ export type FeatureKey =
 export type SubscriptionStatus =
   | 'TRIALING'
   | 'PENDING_AUTH'
+  | 'SCHEDULED'
   | 'ACTIVE'
   | 'PAST_DUE'
   | 'PAUSED'

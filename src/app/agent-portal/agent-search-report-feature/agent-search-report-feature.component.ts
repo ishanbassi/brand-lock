@@ -1,20 +1,30 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { SearchReport, SearchReportRow } from '../../../models/agent.model';
+import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentPortalFooterComponent } from '../ui/agent-portal-footer.component';
 import { AgentPortalNavbarComponent } from '../ui/agent-portal-navbar.component';
+import { AgentPricingPlansComponent } from '../ui/agent-pricing-plans.component';
 
 type SearchMode = 'contains' | 'starts' | 'phonetic';
 
 @Component({
   selector: 'app-agent-search-report-feature',
   standalone: true,
-  imports: [AgentPortalNavbarComponent, AgentPortalFooterComponent],
+  imports: [FormsModule, AgentPortalNavbarComponent, AgentPortalFooterComponent, AgentPricingPlansComponent],
   templateUrl: './agent-search-report-feature.component.html',
   styleUrl: './agent-search-report-feature.component.scss',
 })
 export class AgentSearchReportFeatureComponent {
+  private readonly agentData = inject(AgentDataService);
+  private searchRequestId = 0;
+
+  query = 'KAVACH';
   readonly searchMode = signal<SearchMode>('contains');
   readonly selectedClasses = signal(new Set(['05', '10', '42']));
   readonly searching = signal(false);
+  readonly report = signal<SearchReport | null>(null);
+  readonly searchError = signal('');
 
   selectMode(mode: SearchMode): void {
     this.searchMode.set(mode);
@@ -45,9 +55,39 @@ export class AgentSearchReportFeatureComponent {
   }
 
   runSearch(): void {
-    if (this.searching()) return;
+    const query = this.query.trim();
+    if (!query) return;
+    const mode = this.searchMode();
+    const searchType = mode === 'starts' ? 'startswith' : mode;
+    const requestId = ++this.searchRequestId;
     this.searching.set(true);
-    window.setTimeout(() => this.searching.set(false), 350);
+    this.searchError.set('');
+    this.agentData.previewSearchReport(
+      query,
+      [...this.selectedClasses()].map(Number),
+      searchType,
+      0,
+      10,
+    ).subscribe({
+      next: report => {
+        if (requestId !== this.searchRequestId) return;
+        this.report.set(report);
+        this.searching.set(false);
+      },
+      error: () => {
+        if (requestId !== this.searchRequestId) return;
+        this.report.set(null);
+        this.searchError.set('We could not run the registry search. Please try again.');
+        this.searching.set(false);
+      },
+    });
+  }
+
+  riskClasses(row: SearchReportRow): string {
+    return row.riskBand === 'HIGH'
+      ? 'bg-error-container text-on-error-container'
+      : row.riskBand === 'MEDIUM'
+        ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+        : 'bg-secondary-fixed text-on-secondary-fixed-variant';
   }
 }
-

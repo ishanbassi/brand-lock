@@ -540,6 +540,11 @@ export class AgentDeadlinesComponent implements OnInit {
     return item.deadlineType === 'HEARING';
   }
 
+  /** A Registry room URL is actionable only on its hearing date. */
+  canJoinHearing(item: Deadline): boolean {
+    return item.deadlineType === 'HEARING' && item.daysUntilDue === 0 && !!item.hearingUrl;
+  }
+
   chipClass(item: Deadline): string {
     if (item.status === 'DONE') return 'ap-chip ap-chip--done';
     // A hearing is never overdue — it is a listing, not a task. Today's hearing keeps the "due"

@@ -92,8 +92,8 @@
               @if (selectedFeatures().length > 0) {
                 <ul class="plan-card__features">@for (line of selectedFeatures(); track line) { <li><ap-icon class="plan-card__tick" name="check" [size]="15" /> {{ line }}</li> }</ul>
               }
-              <button type="button" class="ap-btn ap-btn--primary plan-card__cta" [disabled]="busy()" (click)="choose(plan)">@if (busy()) { Opening checkout… } @else { Subscribe for {{ rupees(plan.amountPaise) }} {{ plan.billingInterval === 'ANNUAL' ? 'a year' : 'a month' }} }</button>
-              <p class="plan-card__fine">Secure checkout via Razorpay. Authorise autopay once by UPI, card, or netbanking; cancel any time from this page.</p>
+              <button type="button" class="ap-btn ap-btn--primary plan-card__cta" [disabled]="busy()" (click)="choose(plan)">@if (busy()) { Opening checkout… } @else { Authorise autopay &amp; start 14-day trial }</button>
+              <p class="plan-card__fine">Secure checkout via Razorpay. Approve autopay by UPI, card, or netbanking to activate the trial; ₹0 is charged today. Cancel any time from this page.</p>
             </article>
           } @else { <div class="ap-empty">Plans aren't available right now. Please try again later.</div> }
         </section>
