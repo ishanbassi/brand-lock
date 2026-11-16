@@ -21,7 +21,7 @@
       </p>
       <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
         Everywhere else this data sits behind an enterprise contract or a per-query bill. Here it's free — in exchange for one small
-        attribution link back to TradeMarx on your site.
+        attribution link back to TradeMarx on your site, placed anywhere except the footer.
       </p>
 
       <ul class="flex flex-col sm:flex-row flex-wrap justify-center gap-x-8 gap-y-3 max-w-3xl mx-auto">
@@ -117,7 +117,8 @@
         </li>
         <li><strong>CORS is open</strong> — call it straight from browser JavaScript on any origin.</li>
         <li>
-          <strong>Attribution required:</strong> add the snippet you'll receive after signup somewhere visible on your registered domain. We
+          <strong>Attribution required:</strong> add the snippet you'll receive after signup somewhere visible on your registered domain, outside
+          the site footer. We
           check for it weekly — a missing link warns you first, then suspends the key after repeated misses.
         </li>
       </ul>
@@ -161,7 +162,7 @@
               />
             </div>
             <div>
-              <label class="text-xs font-medium text-gray-700">Domain you'll add the attribution link to *</label>
+              <label class="text-xs font-medium text-gray-700">Domain you'll add the attribution link to (outside the footer) *</label>
               <input
                 type="text"
                 name="registeredDomain"
@@ -208,7 +209,7 @@
             </button>
           </div>
 
-          <label class="text-xs font-medium text-gray-700">Attribution snippet — add this to {{ formData.registeredDomain }}</label>
+          <label class="text-xs font-medium text-gray-700">Attribution snippet — add this to {{ formData.registeredDomain }}, outside the footer</label>
           <div class="mt-1 mb-5">
             <pre class="bg-gray-50 border border-gray-200 text-xs rounded-md p-3 overflow-x-auto">{{ r.attributionSnippetHtml }}</pre>
             <button
