@@ -55,13 +55,29 @@ $content-bg: var(--ap-paper);
 }
 
 .sidebar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
   text-decoration: none;
-  font-size: 1.4rem;
-  font-weight: 800;
   white-space: nowrap;
 
-  .brand-tm { color: #3525cd; }
-  .brand-arx { color: $text-main; }
+  img {
+    display: block;
+    width: 82px;
+    height: auto;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+.brand-product {
+  padding-left: 0.45rem;
+  border-left: 1px solid var(--ap-rule);
+  color: $text-muted;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .collapse-btn {

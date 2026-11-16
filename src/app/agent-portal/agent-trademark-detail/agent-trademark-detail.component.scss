@@ -1,469 +1,69 @@
-$accent: var(--ap-accent);
-$accent-light: var(--ap-accent);
-$danger: var(--ap-overdue);
-$success: var(--ap-done);
-$gray-50: var(--ap-paper);
-$gray-100: var(--ap-paper);
-$gray-200: var(--ap-rule);
-$gray-400: var(--ap-ink-faint);
-$gray-500: var(--ap-ink-muted);
-$gray-600: var(--ap-ink-muted);
-$gray-800: var(--ap-ink);
-$white: #ffffff;
-
-* { box-sizing: border-box; }
-
-.detail-page {
-  padding: var(--ap-space-6);
-  max-width: 980px;
-  color: $gray-800;
-
-  @media (max-width: 768px) { padding: var(--ap-space-4); }
+:host {
+  display: block;
 }
 
-.back-link {
-  display: inline-block;
-  color: $gray-400;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
-  margin-bottom: var(--ap-space-4);
-
-  &:hover { color: $accent; }
+/* Bootstrap's default heading margin offsets icons in shared flex rows. */
+:host h2,
+:host h3 {
+  margin: 0;
 }
 
-.loading-state, .loading-inline, .empty-inline {
-  color: $gray-400;
-  font-size: 0.9375rem;
-  padding: var(--ap-space-5) 0;
-}
-
-.loading-inline, .empty-inline { padding: var(--ap-space-3) 0; font-size: 0.875rem; }
-
-// ── ARTWORK ─────────────────────────────────────────────
-// Image beside the facts on wide screens, above them on narrow ones.
-.details-layout.has-artwork {
-  display: grid;
-  grid-template-columns: minmax(160px, 220px) 1fr;
-  gap: var(--ap-space-5);
-  align-items: start;
-
-  @media (max-width: 640px) { grid-template-columns: 1fr; }
-}
-
-.artwork {
-  margin: var(--ap-space-3) 0 0;
-  display: flex;
+:host .material-symbols-outlined.text-\[22px\] {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 160px;
-  padding: var(--ap-space-3);
-  background: var(--ap-paper);
-  border: 1px solid var(--ap-rule);
-  border-radius: 10px;
-
-  img {
-    display: block;
-    max-width: 100%;
-    max-height: 240px;
-    object-fit: contain;
-  }
+  height: 22px;
+  line-height: 1;
 }
 
-.artwork-note {
-  font-size: 0.8125rem;
-  color: var(--ap-ink-faint);
+.mark-specimen {
+  overflow: hidden;
+}
+
+.mark-specimen__name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 2.25rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
   text-align: center;
 }
 
-// ── HEADER ──────────────────────────────────────────────
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--ap-space-5);
-  flex-wrap: wrap;
-  margin-bottom: var(--ap-space-4);
-
-  h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 var(--ap-space-2); }
+.mark-specimen--long {
+  padding: 0.5rem;
 }
-
-.title-meta {
-  display: flex;
-  gap: var(--ap-space-3);
-  align-items: center;
-  flex-wrap: wrap;
-  color: $gray-600;
-  font-size: 0.875rem;
-}
-
-.status-chip {
-  background: $gray-100;
-  border-radius: 999px;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  font-size: 0.8125rem;
-}
-
-.detail-actions {
-  display: flex;
-  gap: var(--ap-space-2);
-  flex-wrap: wrap;
-}
-
-// ── BUTTONS ─────────────────────────────────────────────
-.btn-primary, .btn-ghost, .btn-danger, .btn-danger-ghost {
-  border-radius: 9px;
-  padding: var(--ap-space-2) var(--ap-space-3);
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.btn-primary {
-  background: $accent;
-  border: 1px solid $accent;
-  color: $white;
-
-  &:hover:not(:disabled) { background: $accent-light; }
-  &:disabled { opacity: 0.45; cursor: not-allowed; }
-}
-
-.btn-ghost {
-  background: $white;
-  border: 1px solid $gray-200;
-  color: $gray-600;
-
-  &:hover:not(:disabled) { border-color: $accent; color: $accent; }
-  &:disabled { opacity: 0.45; cursor: not-allowed; }
-}
-
-.btn-danger {
-  background: $danger;
-  border: 1px solid $danger;
-  color: $white;
-
-  &:disabled { opacity: 0.45; cursor: not-allowed; }
-}
-
-// Destructive action is present but visually quiet — findable without inviting a stray click.
-.btn-danger-ghost {
-  background: $white;
-  border: 1px solid $gray-200;
-  color: $gray-400;
-
-  &:hover { border-color: $danger; color: $danger; }
-}
-
-.btn-ghost-xs, .btn-danger-xs {
-  border-radius: 7px;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  background: $white;
-  border: 1px solid $gray-200;
-  color: $gray-600;
-
-  &:disabled { opacity: 0.45; }
-}
-
-.btn-danger-xs:hover { border-color: $danger; color: $danger; }
-
-.refresh-status {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-3) var(--ap-space-4);
-  margin-bottom: var(--ap-space-4);
-  border-radius: 10px;
-  background: var(--ap-accent-soft);
-  color: $accent;
-  font-size: .875rem;
-
-  &.success { background: var(--ap-done-soft); color: var(--ap-done); }
-  &.warning { background: var(--ap-due-soft); color: var(--ap-due); }
-}
-
-.refresh-spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid $gray-200;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: refresh-spin .8s linear infinite;
-  flex: 0 0 auto;
-}
-
-@keyframes refresh-spin { to { transform: rotate(360deg); } }
-
-// ── ALERTS ──────────────────────────────────────────────
-.alert-info, .alert-error, .source-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--ap-space-4);
-  border-radius: 10px;
-  padding: var(--ap-space-3) var(--ap-space-4);
-  font-size: 0.875rem;
-  margin-bottom: var(--ap-space-4);
-}
-
-.alert-info { background: var(--ap-accent-soft); border: 1px solid #c7d2fe; color: #3730a3; }
-.alert-error { background: var(--ap-overdue-soft); border: 1px solid var(--ap-overdue-soft); color: var(--ap-overdue); }
-.source-banner { background: $gray-50; border: 1px solid $gray-200; color: $gray-600; }
-
-.alert-dismiss {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 1.125rem;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.6;
-
-  &:hover { opacity: 1; }
-}
-
-.confirm-panel {
-  background: var(--ap-overdue-soft);
-  border: 1px solid var(--ap-overdue-soft);
-  border-radius: 12px;
-  padding: var(--ap-space-4) var(--ap-space-4);
-  margin-bottom: var(--ap-space-4);
-
-  strong { display: block; margin-bottom: var(--ap-space-1); color: #991b1b; }
-  p { margin: 0 0 var(--ap-space-3); color: $gray-600; font-size: 0.875rem; line-height: 1.55; max-width: 62ch; }
-}
-
-.confirm-actions { display: flex; gap: var(--ap-space-2); }
-
-// ── CARDS ───────────────────────────────────────────────
-.card {
-  background: $white;
-  border: 1px solid $gray-200;
-  border-radius: 14px;
-  padding: var(--ap-space-5);
-  margin-bottom: var(--ap-space-4);
-
-  h2 { font-size: 1rem; font-weight: 700; margin: 0 0 var(--ap-space-1); }
-}
-
-.card-hint {
-  color: $gray-400;
-  font-size: 0.8125rem;
-  margin: 0 0 var(--ap-space-4);
-  line-height: 1.5;
-  max-width: 70ch;
-
-  &.small { margin: var(--ap-space-2) 0 0; }
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--ap-space-4);
-  margin: var(--ap-space-3) 0 0;
-
-  dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: $gray-400; font-weight: 600; }
-  dd { margin: var(--ap-space-1) 0 0; font-size: 0.9375rem; color: $gray-800; }
-}
-
-.goods {
-  margin-top: var(--ap-space-4);
-  padding-top: var(--ap-space-4);
-  border-top: 1px solid $gray-100;
-
-  dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: $gray-400; font-weight: 600; }
-  p { margin: var(--ap-space-1) 0 0; color: $gray-600; font-size: 0.875rem; line-height: 1.6; }
-}
-
-// ── DOCUMENTS ───────────────────────────────────────────
-.doc-list { list-style: none; padding: 0; margin: 0 0 var(--ap-space-4); }
-
-.doc-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--ap-space-4);
-  padding: var(--ap-space-3) 0;
-  border-bottom: 1px solid $gray-100;
-  flex-wrap: wrap;
-}
-
-.doc-main { display: flex; flex-direction: column; gap: var(--ap-space-1); min-width: 0; }
-.doc-name { font-weight: 600; font-size: 0.9375rem; }
-.doc-meta { font-size: 0.8125rem; color: $gray-400; }
-.doc-notes { font-size: 0.8125rem; color: $gray-600; font-style: italic; }
-.doc-actions { display: flex; gap: var(--ap-space-2); flex-shrink: 0; }
-
-.upload-row {
-  display: flex;
-  gap: var(--ap-space-2);
-  align-items: center;
-  flex-wrap: wrap;
-  padding-top: var(--ap-space-4);
-  border-top: 1px solid $gray-100;
-
-  input[type='text'] { flex: 1; min-width: 10rem; }
-
-  input, select {
-    padding: var(--ap-space-2) var(--ap-space-2);
-    border: 1px solid $gray-200;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.8125rem;
-  }
-}
-
-// ── NOTES ───────────────────────────────────────────────
-.notes-actions { display: flex; align-items: center; gap: var(--ap-space-3); }
-.saved-flag { color: $success; font-size: 0.8125rem; font-weight: 600; }
-
-// A workbook is inherently a column/value record. Keeping this as a compact two-column sheet
-// makes long imports scannable and preserves the source column order supplied by the API.
-.spreadsheet-fields {
-  border: 1px solid $gray-200;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.spreadsheet-heading,
-.spreadsheet-field-row {
-  display: grid;
-  grid-template-columns: minmax(150px, 30%) minmax(0, 1fr);
-}
-
-.spreadsheet-heading {
-  background: $gray-50;
-  border-bottom: 1px solid $gray-200;
-  color: $gray-500;
-  font-size: 0.6875rem;
-  font-weight: 700;
+.mark-specimen--long .mark-specimen__name {
+  font-size: 1rem;
+  line-height: 1.15;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
-
-  span { padding: var(--ap-space-2) var(--ap-space-3); }
+}
+.mark-specimen__caption {
+  flex: 0 0 auto;
+  margin-top: 4px;
 }
 
-.spreadsheet-field-row {
-  align-items: center;
-  border-bottom: 1px solid $gray-100;
-  margin: 0;
-
-  &:last-child { border-bottom: 0; }
-
-  input {
-    width: 100%;
-    border: 0;
-    border-left: 1px solid $gray-100;
-    border-radius: 0;
-    padding: var(--ap-space-3);
-    background: transparent;
-
-    &:focus { outline: none; box-shadow: inset 0 0 0 2px var(--ap-accent-soft); }
-  }
+:host ::ng-deep ap-export-menu .export-trigger {
+  min-height: 40px;
+  padding: 0.625rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: #f2f3ff;
+  color: #131b2e;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
 }
 
-.spreadsheet-field-name {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ap-space-2);
-  min-width: 0;
-  padding: var(--ap-space-3);
-  color: $gray-600;
-  font-size: 0.8125rem;
-  font-weight: 650;
-  overflow-wrap: anywhere;
+:host ::ng-deep ap-export-menu .export-trigger:hover:not(:disabled) {
+  background: #eaedff;
+  color: #131b2e;
 }
 
-@media (max-width: 560px) {
-  .spreadsheet-heading { display: none; }
-
-  .spreadsheet-field-row {
-    display: block;
-    padding: var(--ap-space-3);
-
-    & + .spreadsheet-field-row { border-top: 1px solid $gray-100; }
-
-    input {
-      border: 1px solid $gray-200;
-      border-radius: 7px;
-      margin-top: var(--ap-space-1);
-    }
-  }
-
-  .spreadsheet-field-name { padding: 0; }
+:host ::ng-deep ap-export-menu {
+  position: relative;
+  z-index: 40;
 }
 
-.empty-hint {
-  color: $gray-400;
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  margin: 0 0 var(--ap-space-4);
-  max-width: 70ch;
-}
-
-// Files staged for upload, before the request goes out.
-.staged-files {
-  list-style: none;
-  margin: var(--ap-space-2) 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ap-space-1);
-
-  li {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--ap-space-1);
-    background: var(--ap-paper);
-    border-radius: 999px;
-    padding: var(--ap-space-1) var(--ap-space-2) var(--ap-space-1) var(--ap-space-3);
-    font-size: 0.75rem;
-    color: var(--ap-ink);
-    max-width: 260px;
-  }
-}
-
-.staged-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.staged-remove {
-  background: none;
-  border: none;
-  color: var(--ap-ink-faint);
-  font-size: 0.95rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-
-  &:hover {
-    color: var(--ap-overdue);
-  }
-}
-
-// Files the server refused. Shown alongside what saved, not instead of it.
-.upload-failures {
-  list-style: none;
-  margin: var(--ap-space-2) 0 0;
-  padding: var(--ap-space-2) var(--ap-space-3);
-  border: 1px solid color-mix(in srgb, var(--ap-due) 35%, transparent);
-  background: var(--ap-due-soft);
-  border-radius: 8px;
-  font-size: 0.78rem;
-  color: var(--ap-due);
-
-  li + li {
-    margin-top: var(--ap-space-1);
-  }
+:host ::ng-deep ap-export-menu .export-panel {
+  z-index: 50;
 }

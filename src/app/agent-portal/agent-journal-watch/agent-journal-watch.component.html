@@ -1,367 +1,115 @@
 <div class="watch-page">
-  <header class="watch-header">
-    <div>
-      <h1>Trademark Journal Watch</h1>
-      <p class="subtitle">
-        Check your portfolio against a published journal issue. Marks advertised in a journal are
-        open to opposition for four months from the date of advertisement.
-      </p>
-    </div>
-  </header>
-
-  @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
-  }
+  @if (error()) { <div class="alert-error" role="alert">{{ error() }}</div> }
 
   @if (selectedJournal() === null) {
-  <section class="journal-shelf" aria-labelledby="journal-heading">
-    <div class="section-heading">
+    <header class="watch-header">
       <div>
-        <h2 id="journal-heading">Choose a journal</h2>
-        <p>Open an issue to browse every published mark or check it against your portfolio.</p>
+        <h1>Trademark Journal Watch</h1>
+        <p class="subtitle">Check your portfolio against a published journal issue. Marks advertised in a journal are open to opposition for four months from the date of advertisement.</p>
       </div>
-      <span class="issue-count">{{ journals().length }} available</span>
-    </div>
-
-    @if (loadingJournals()) {
-      <div class="journal-loading" role="status">Loading journal issues…</div>
-    } @else if (journals().length === 0) {
-      <div class="journal-loading">No journal issues are available yet.</div>
-    } @else {
-      <div class="journal-grid">
-        @for (j of journals(); track j; let first = $first) {
-          <button
-            type="button"
-            class="journal-tile"
-            [class.selected]="selectedJournal() === j"
-            [attr.aria-pressed]="selectedJournal() === j"
-            [disabled]="running()"
-            (click)="selectJournal(j)"
-          >
-            <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
-            <span class="journal-copy">
-              <strong>Journal {{ j }}</strong>
-              <small>{{ first ? 'Latest available issue' : 'Published issue' }}</small>
-            </span>
-            @if (first) { <span class="latest-badge">Latest</span> }
-            <ap-icon class="journal-arrow" name="chevron" [size]="16" />
-          </button>
-        }
+    </header>
+    <section class="journal-shelf" aria-labelledby="journal-heading">
+      <div class="section-heading">
+        <div><h2 id="journal-heading">Choose a journal</h2><p>Open an issue to browse every published mark or check it against your portfolio.</p></div>
+        <span class="issue-count">{{ journals().length }} available</span>
       </div>
-    }
-  </section>
+      @if (loadingJournals()) {
+        <div class="journal-loading" role="status">Loading journal issues…</div>
+      } @else if (journals().length === 0) {
+        <div class="journal-loading">No journal issues are available yet.</div>
+      } @else {
+        <div class="journal-grid">
+          @for (journal of journals(); track journal; let first = $first) {
+            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal" [attr.aria-pressed]="selectedJournal() === journal" [disabled]="running()" (click)="selectJournal(journal)">
+              <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
+              <span class="journal-copy"><strong>Journal {{ journal }}</strong><small>{{ first ? 'Latest available issue' : 'Published issue' }}</small></span>
+              @if (first) { <span class="latest-badge">Latest</span> }
+              <ap-icon class="journal-arrow" name="chevron" [size]="16" />
+            </button>
+          }
+        </div>
+      }
+    </section>
   } @else {
-  <section class="journal-workspace">
-    <div class="workspace-head">
-      <div>
-        <button type="button" class="back-to-journals" (click)="backToJournals()">
-          <ap-icon name="chevron" [size]="14" /> All journals
-        </button>
-        <h2>Journal {{ selectedJournal() }}</h2>
-        <p>Search this issue, find your own publications, or run a portfolio conflict check.</p>
-      </div>
-      <div class="workspace-actions">
-        <button type="button" class="btn-outline" [class.active]="portfolioOnly()" (click)="findMyPublishedMarks()" [disabled]="browsing()">
-          <ap-icon name="portfolio" [size]="16" /> {{ portfolioOnly() ? 'Showing my published marks' : 'Find my published marks' }}
-        </button>
-      </div>
-    </div>
-
-    <div class="filters-bar" role="search" [attr.aria-label]="'Filter Journal ' + selectedJournal()">
-      <div class="search-group">
-        <select
-          class="search-by"
-          aria-label="Search by"
-          [ngModel]="searchField()"
-          (ngModelChange)="setSearchField($event)"
-        >
-          @for (field of searchFields; track field.value) {
-            <option [value]="field.value">{{ field.label }}</option>
-          }
-        </select>
-        <div class="search-wrap">
-          <span class="search-icon"><ap-icon name="search" [size]="16" /></span>
-          <input
-            type="search"
-            class="search-input"
-            [attr.aria-label]="searchPlaceholder()"
-            [attr.inputmode]="searchField() === 'applicationNo' ? 'numeric' : null"
-            [placeholder]="searchPlaceholder()"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange()"
-            autocomplete="off"
-          />
-          @if (searchTerm) {
-            <button type="button" class="search-clear" (click)="clearSearch()" aria-label="Clear search">
-              <ap-icon name="close" [size]="16" />
-            </button>
-          }
-          @if (suggestionsLoading()) { <span class="suggestion-spinner spinner" aria-hidden="true"></span> }
-
-          @if (suggestionsOpen() && searchField() !== 'applicationNo') {
-            <div class="suggestion-panel">
-              @if (suggestions().length) {
-                @for (suggestion of suggestions(); track suggestion) {
-                  <label class="suggestion-row" [class.selected]="isSuggestionSelected(suggestion)">
-                    <input type="checkbox" [checked]="isSuggestionSelected(suggestion)" (change)="toggleSuggestion(suggestion)" />
-                    <span>{{ suggestion }}</span>
-                  </label>
-                }
-              } @else if (!suggestionsLoading()) {
-                <div class="suggestion-empty">No matching {{ searchFieldLabel().toLowerCase() }} found in this journal.</div>
-              }
-            </div>
-          }
+    <section class="watch-hero" aria-labelledby="watch-title">
+      <div class="hero-orb hero-orb-one"></div><div class="hero-orb hero-orb-two"></div>
+      <div class="hero-content">
+        <div>
+          <div class="hero-meta"><span class="issue-chip"><span></span> Trade Marks Journal Gazette</span><span class="registry-label">Govt. of India · CGPDTM Registry</span><strong>TMJ No. {{ selectedJournal() }}</strong></div>
+          <h1 id="watch-title" class="watch-hero-title" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">Automated Journal Watch</h1>
+          <div class="hero-facts"><span><ap-icon name="journal" [size]="16" /> Total marks: <strong>{{ browseTotal() | number }}</strong></span><span><ap-icon name="watch" [size]="16" /> Search and review published marks</span>@if (result()) { <span class="alert-fact">{{ counts().total }} active conflict{{ counts().total === 1 ? '' : 's' }}</span> }</div>
         </div>
+        <button type="button" class="run-hero-button" [disabled]="running()" (click)="run()"><ap-icon name="watch" [size]="19" />{{ running() ? 'Checking portfolio…' : 'Run Journal Watch Scan' }}</button>
       </div>
-    </div>
+    </section>
 
-    @if (portfolioOnly() || selectedFilterEntries().length) {
-      <div class="active-filters" aria-label="Selected filters">
-        @if (portfolioOnly()) {
-          <span class="filter-token portfolio-token"><ap-icon name="portfolio" [size]="14" /> In my portfolio</span>
-        }
-        @for (filter of selectedFilterEntries(); track filter.field + filter.value) {
-          <span class="filter-token">
-            <small>{{ filter.label }}</small> {{ filter.value }}
-            <button type="button" (click)="removeFilter(filter.field, filter.value)" [attr.aria-label]="'Remove ' + filter.value">
-              <ap-icon name="close" [size]="13" />
-            </button>
-          </span>
-        }
-        <button type="button" class="clear-filters" (click)="clearAllFilters()">Clear filters</button>
-      </div>
-    }
-
-    @if (browseError()) {
-      <div class="browse-message error">{{ browseError() }}</div>
-    } @else if (browsing()) {
-      <div class="browse-message" role="status"><span class="spinner"></span> Loading Journal {{ selectedJournal() }}…</div>
-    } @else if (journalMarks().length === 0) {
-      <div class="browse-message">
-        {{ portfolioOnly() ? 'No marks from your portfolio were published in this journal.' : 'No published marks match this search.' }}
-      </div>
-    } @else {
-      <div class="journal-table-wrap">
-        <table class="journal-table">
-          <thead><tr><th>Trademark</th><th>Application no.</th><th>Class</th><th>Party</th><th>Agent</th><th></th></tr></thead>
-          <tbody>
-            @for (tm of journalMarks(); track tm.id) {
-              <tr>
-                <td><strong>{{ tm.name || 'Untitled mark' }}</strong></td>
-                <td class="tabular">{{ tm.applicationNo || '—' }}</td>
-                <td class="tabular">{{ tm.tmClass || '—' }}</td>
-                <td>{{ tm.proprietorName || '—' }}</td>
-                <td>{{ tm.agentName || '—' }}</td>
-                <td>
-                  <a class="view-mark" [routerLink]="markRoute(tm)">
-                    {{ tm.applicationNo && portfolioLinks()[tm.applicationNo.toString()] ? 'Open portfolio mark' : 'View mark' }}
-                  </a>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="browse-footer">
-        <span>{{ browseTotal() | number }} published mark{{ browseTotal() === 1 ? '' : 's' }}</span>
-        @if (browsePages() > 1) {
-          <div class="pager">
-            <button type="button" (click)="goToBrowsePage(browsePage() - 1)" [disabled]="browsePage() === 1">Previous</button>
-            <span>Page {{ browsePage() }} of {{ browsePages() }}</span>
-            <button type="button" (click)="goToBrowsePage(browsePage() + 1)" [disabled]="browsePage() === browsePages()">Next</button>
-          </div>
-        }
-      </div>
-    }
-
-    <div class="watch-controls">
-      <div class="watch-copy">
-        <ap-icon name="watch" [size]="20" />
-        <div><strong>Check for portfolio conflicts</strong><span>Compare your marks with every relevant publication in this issue.</span></div>
-      </div>
-
-    <div class="class-select">
-      <span>Classes</span>
-      <button
-        type="button"
-        class="class-toggle"
-        [disabled]="running()"
-        (click)="classPickerOpen.set(!classPickerOpen())"
-      >
-        {{ classSummary() }}
-        <span class="caret" aria-hidden="true">▾</span>
-      </button>
-
-      @if (classPickerOpen()) {
-        <div class="class-popover">
-          <div class="class-popover-head">
-            <span>Check only these classes</span>
-            <button type="button" class="link-btn" (click)="clearClasses()">All classes</button>
-          </div>
-          <div class="class-grid">
-            @for (c of allClasses; track c) {
-              <label class="class-chip" [class.checked]="selectedClasses().includes(c)">
-                <input
-                  type="checkbox"
-                  [checked]="selectedClasses().includes(c)"
-                  (change)="toggleClass(c)"
-                />
-                {{ c }}
-              </label>
-            }
+    <section class="filter-plane" role="search" [attr.aria-label]="'Filter Journal ' + selectedJournal()">
+      <div class="search-row">
+        <div class="search-shell">
+          <ap-icon class="search-icon" name="search" [size]="20" />
+          <select class="search-field" aria-label="Search by" [ngModel]="searchField()" (ngModelChange)="setSearchField($event)">@for (field of searchFields; track field.value) { <option [value]="field.value">{{ field.label }}</option> }</select>
+          <div class="search-wrap">
+            <input type="search" class="search-input" [attr.aria-label]="searchPlaceholder()" [attr.inputmode]="searchField() === 'applicationNo' ? 'numeric' : null" [placeholder]="searchPlaceholder()" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" autocomplete="off" />
+            @if (searchTerm) { <button type="button" class="search-clear" (click)="clearSearch()" aria-label="Clear search"><ap-icon name="close" [size]="16" /></button> }
           </div>
         </div>
-      }
-    </div>
+        <div class="quick-actions">
+          <button type="button" class="our-marks-button" [class.active]="portfolioOnly()" [disabled]="browsing()" (click)="findMyPublishedMarks()"><ap-icon name="portfolio" [size]="18" /><span>{{ portfolioOnly() ? 'My published marks' : 'Our Published Marks' }}</span></button>
+          <button type="button" class="high-risk-button" [class.active]="riskFilter() === 'HIGH'" [disabled]="!result()" (click)="toggleHighConflicts()">High conflicts @if (result()) { ({{ counts().high }}) }</button>
+          <button type="button" class="reset-button" [disabled]="running()" (click)="run()" aria-label="Run journal watch scan again" title="Run scan again"><ap-icon name="refresh" [size]="18" /></button>
+        </div>
+      </div>
 
-    <button class="btn-primary" [disabled]="running() || selectedJournal() === null" (click)="run()">
-      {{ running() ? 'Checking portfolio…' : 'Run journal watch' }}
-    </button>
-    </div>
-  </section>
+      <div class="filter-grid">
+        <label class="filter-control"><span>TMJ Issue</span><select [ngModel]="selectedJournal()" (ngModelChange)="selectJournal($event)" [disabled]="running()">@for (journal of journals(); track journal) { <option [ngValue]="journal">TMJ No. {{ journal }}</option> }</select></label>
+        <div class="filter-control class-control">
+          <span>Nice Class</span><button type="button" class="class-toggle" [disabled]="running()" (click)="classPickerOpen.set(!classPickerOpen())">{{ classSummary() }} <span aria-hidden="true">⌄</span></button>
+          @if (classPickerOpen()) { <div class="class-popover"><div class="class-popover-head"><span>Check only these classes</span><button type="button" (click)="clearClasses()">All classes</button></div><div class="class-grid">@for (c of allClasses; track c) { <label class="class-chip" [class.checked]="selectedClasses().includes(c)"><input type="checkbox" [checked]="selectedClasses().includes(c)" (change)="toggleClass(c)" />{{ c }}</label> }</div></div> }
+        </div>
+        <label class="filter-control"><span>Watch Risk Level</span><select [ngModel]="riskFilter()" [disabled]="!result()" (ngModelChange)="setRiskFilter($event)"><option value="">All risk tiers</option><option value="HIGH">High conflict</option><option value="MEDIUM">Moderate match</option><option value="LOW">Low match</option></select></label>
+      </div>
+
+      <div class="scope-bar"><div class="active-scope"><span>Active scope:</span><span class="scope-token">Issue: TMJ {{ selectedJournal() }}</span><span class="scope-token">{{ classSummary() }}</span>@if (portfolioOnly()) { <span class="scope-token portfolio-token"><ap-icon name="portfolio" [size]="13" /> Our marks</span> }</div><span>@if (showingConflicts()) { Showing <strong>{{ counts().total }}</strong> conflicts } @else { Showing <strong>{{ browseTotal() | number }}</strong> published marks }</span></div>
+    </section>
+
+    @if (!showingConflicts()) {
+    @if (browsing()) { <div class="status-panel" role="status"><span class="spinner"></span>Loading Journal {{ selectedJournal() }}…</div> }
+    @else if (browseError()) { <div class="alert-error" role="alert">{{ browseError() }}</div> }
+    @else if (journalMarks().length === 0) { <div class="status-panel">{{ portfolioOnly() ? 'No marks from your portfolio were published in this journal.' : 'No published marks match this search.' }}</div> }
+    @else {
+      <section class="journal-feed" aria-label="Published trademarks">
+        @for (tm of journalMarks(); track tm.id) {
+          <article class="mark-card">
+            @if (tm.imgUrl && !artworkFailed(tm) && artworkUrl(tm); as artwork) { <div class="mark-tile mark-artwork"><img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" /></div> } @else { <div class="mark-tile mark-initials" aria-label="Trademark initials">{{ markMonogram(tm.name) }}</div> }
+            <div class="mark-content"><div class="mark-badges"><span>Class {{ tm.tmClass || '—' }}</span><span>Published mark</span></div><h2>{{ tm.name || 'Untitled mark' }} <small>Application No. {{ tm.applicationNo || '—' }}</small></h2><p><strong>Applicant:</strong> {{ tm.proprietorName || 'Not recorded' }} <i>•</i> <strong>Agent:</strong> {{ tm.agentName || 'Not recorded' }}</p></div>
+            <a class="view-mark-button" [routerLink]="markRoute(tm)">{{ tm.applicationNo && portfolioLinks()[tm.applicationNo.toString()] ? 'Open portfolio mark' : 'View trademark details' }} <ap-icon name="chevron" [size]="14" /></a>
+          </article>
+        }
+      </section>
+      <div class="feed-footer"><span>Journal data loaded for TMJ {{ selectedJournal() }}</span>@if (browsePages() > 1) { <div class="pager"><button type="button" (click)="goToBrowsePage(browsePage() - 1)" [disabled]="browsePage() === 1">Previous</button><span>Page {{ browsePage() }} of {{ browsePages() }}</span><button type="button" (click)="goToBrowsePage(browsePage() + 1)" [disabled]="browsePage() === browsePages()">Next</button></div> }</div>
+    }
+    }
   }
 
-  @if (running()) {
-    <div class="running-note">
-      Comparing every mark in your portfolio against this issue. A large portfolio can take a
-      moment.
-    </div>
-  }
+  @if (running()) { <div class="running-note"><span class="spinner"></span>Comparing every relevant portfolio mark against this journal.</div> }
 
-  @if (result()) {
-    <section class="results">
-      <div class="summary">
-        <div class="summary-main">
-          <strong>{{ counts().total }}</strong>
-          possible conflict{{ counts().total === 1 ? '' : 's' }} in Journal {{ result()!.journalNo }}
-        </div>
-        <div class="summary-actions">
-          @if (counts().total > 0) {
-            <span class="selected-count">{{ selectedConflicts.size }} selected to print</span>
-            <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
-          }
-        </div>
-      </div>
-
-      <div class="summary-meta">
-        {{ result()!.pairsScored | number }} comparison{{ result()!.pairsScored === 1 ? '' : 's' }}
-        in {{ (result()!.durationMs / 1000).toFixed(1) }}s
-      </div>
-
-      <!--
-        pairsScored = 0 means nothing was even comparable — usually an empty portfolio or marks
-        that have not been tokenised — which is a very different situation from a clean result.
-      -->
-      @if (counts().total === 0 && result()!.pairsScored === 0) {
-        <div class="empty-note warn">
-          Nothing in your portfolio could be compared against this issue. If you have just added
-          marks, they may not be indexed yet.
-        </div>
-      } @else if (counts().total === 0) {
-        <div class="empty-note good">
-          No conflicting marks found in this issue. Nothing to oppose.
-        </div>
-      }
-
-      @if (result()!.truncated) {
-        <div class="empty-note warn">
-          Showing the strongest matches only — there were more results than we display at once.
-        </div>
-      }
-
+  @if (result() && showingConflicts()) {
+    <section class="results" aria-labelledby="results-heading">
+      <div class="results-header"><div><h2 id="results-heading">{{ counts().total }} conflict{{ counts().total === 1 ? '' : 's' }} identified</h2><p>{{ result()!.pairsScored | number }} comparisons completed in {{ (result()!.durationMs / 1000).toFixed(1) }} seconds.</p></div><div class="results-actions"><button type="button" class="show-entries-button" (click)="showJournalEntries()">Show all journal entries</button>@if (counts().total > 0) { <div class="export-actions"><span>{{ selectedConflicts.size }} selected</span><ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" /></div> }</div></div>
+      @if (counts().total === 0) { <div class="empty-note" [class.warning]="result()!.pairsScored === 0">{{ result()!.pairsScored === 0 ? 'Nothing in your portfolio could be compared against this issue. Newly added marks may not be indexed yet.' : 'No conflicting marks found in this issue. Nothing to oppose.' }}</div> }
+      @if (result()!.truncated) { <div class="empty-note warning">Showing the strongest matches only — there are more results than can be displayed at once.</div> }
       @if (counts().total > 0) {
-        <div class="risk-filters">
-          <button [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">
-            All ({{ allConflictCount() }})
-          </button>
-          <button class="risk-high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">
-            High ({{ counts().high }})
-          </button>
-          <button class="risk-medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">
-            Medium ({{ counts().medium }})
-          </button>
-          <button class="risk-low" [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">
-            Low ({{ counts().low }})
-          </button>
-        </div>
-
+        <div class="risk-tabs"><button [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">All ({{ allConflictCount() }})</button><button class="high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">High ({{ counts().high }})</button><button class="medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">Medium ({{ counts().medium }})</button><button [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">Low ({{ counts().low }})</button></div>
         <div class="conflict-list">
           @for (c of visibleConflicts(); track c.conflictingTrademarkId) {
             <article class="conflict-card" [class]="'risk-' + c.riskLevel.toLowerCase()">
-              <label class="conflict-select"><input type="checkbox" [checked]="isConflictSelected(c)" (change)="toggleConflictSelection(c)" [attr.aria-label]="'Select conflict with ' + (c.conflictingTrademarkName || 'trademark') + ' for printing'" /><span>Select</span></label>
-              <div class="conflict-score">
-                <span class="score-value">{{ scorePercent(c.score) }}%</span>
-                <span class="score-label">{{ c.riskLevel }}</span>
-              </div>
-
-              <div class="conflict-body">
-                <!-- The agent's own mark first: with hundreds of clients, "which of mine?" is the
-                     first question, and a list of journal marks alone is unactionable. -->
-                <div class="side yours">
-                  <span class="side-label">Your mark</span>
-                  <span class="mark-name">{{ c.portfolioTrademarkName || '—' }}</span>
-                  <span class="mark-meta">
-                    @if (c.portfolioApplicationNo) { App {{ c.portfolioApplicationNo }} · }
-                    Class {{ c.portfolioTmClass || '—' }}
-                  </span>
-                  <!-- Goods/services on both sides: a same-class, similar-sounding mark covering
-                       unrelated goods is a very different threat from one covering the same. -->
-                  <div class="goods">
-                    <span class="goods-label">Goods / services</span>
-                    <p class="goods-text" [class.clamped]="isLong(c.portfolioDetails) && !isExpanded(c)">
-                      {{ c.portfolioDetails || 'No description on record.' }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="versus" aria-hidden="true">vs</div>
-
-                <div class="side theirs">
-                  <span class="side-label">Advertised in Journal {{ c.journalNo }}</span>
-                  <span class="mark-name">{{ c.conflictingTrademarkName || '—' }}</span>
-                  <span class="mark-meta">
-                    @if (c.conflictingApplicationNo) { App {{ c.conflictingApplicationNo }} · }
-                    Class {{ c.conflictingTmClass || '—' }}
-                  </span>
-                  @if (c.conflictingProprietorName) {
-                    <span class="proprietor">{{ c.conflictingProprietorName }}</span>
-                  }
-                  <div class="goods">
-                    <span class="goods-label">Goods / services</span>
-                    <p class="goods-text" [class.clamped]="isLong(c.conflictingDetails) && !isExpanded(c)">
-                      {{ c.conflictingDetails || 'No description on record.' }}
-                    </p>
-                  </div>
-                  @if (c.conflictingTrademarkId) {
-                    <a
-                      class="view-mark"
-                      [routerLink]="['/agent-portal/watch/journal/marks', c.conflictingTrademarkId]"
-                    >
-                      View mark
-                    </a>
-                  }
-                </div>
-
-                @if (isLong(c.portfolioDetails) || isLong(c.conflictingDetails)) {
-                  <button type="button" class="link-btn goods-toggle" (click)="toggleExpanded(c)">
-                    {{ isExpanded(c) ? 'Show less' : 'Show full descriptions' }}
-                  </button>
-                }
-              </div>
+              <label class="conflict-select"><input type="checkbox" [checked]="isConflictSelected(c)" (change)="toggleConflictSelection(c)" [attr.aria-label]="'Select conflict with ' + (c.conflictingTrademarkName || 'trademark')" /> Select</label>
+              <div class="score"><strong>{{ scorePercent(c.score) }}%</strong><span>{{ c.riskLevel }} match</span></div>
+              <div class="conflict-content"><div class="conflict-badges"><span>{{ c.riskLevel }} similarity</span><span>Class {{ c.conflictingTmClass || '—' }}</span></div><h3>{{ c.conflictingTrademarkName || '—' }} <small>Application No. {{ c.conflictingApplicationNo || '—' }}</small></h3><p><strong>Potential conflict with your mark:</strong> {{ c.portfolioTrademarkName || '—' }} · Class {{ c.portfolioTmClass || '—' }}</p><div class="conflict-details"><div><small>Your mark — goods / services</small><p [class.clamped]="isLong(c.portfolioDetails) && !isExpanded(c)">{{ c.portfolioDetails || 'No description on record.' }}</p></div><div><small>Advertised mark — goods / services</small><p [class.clamped]="isLong(c.conflictingDetails) && !isExpanded(c)">{{ c.conflictingDetails || 'No description on record.' }}</p></div></div><div class="conflict-actions">@if (c.conflictingTrademarkId) { <a class="view-mark" [routerLink]="['/agent-portal/watch/journal/marks', c.conflictingTrademarkId]">View trademark details <ap-icon name="chevron" [size]="14" /></a> } @if (isLong(c.portfolioDetails) || isLong(c.conflictingDetails)) { <button type="button" (click)="toggleExpanded(c)">{{ isExpanded(c) ? 'Show less' : 'Show full descriptions' }}</button> }</div></div>
             </article>
           }
         </div>
-        @if (result()!.totalPages > 1) {
-          <div class="browse-footer watch-pagination">
-            <span>Showing {{ result()!.page * result()!.size + 1 }}–{{ result()!.page * result()!.size + result()!.conflicts.length }} of {{ result()!.totalConflicts }}</span>
-            <div class="pager">
-              <button type="button" (click)="goToWatchPage(result()!.page - 1)" [disabled]="result()!.page === 0 || running()">Previous</button>
-              <span>Page {{ result()!.page + 1 }} of {{ result()!.totalPages }}</span>
-              <button type="button" (click)="goToWatchPage(result()!.page + 1)" [disabled]="result()!.page + 1 >= result()!.totalPages || running()">Next</button>
-            </div>
-          </div>
-        }
+        @if (result()!.totalPages > 1) { <div class="feed-footer result-pagination"><span>Showing {{ result()!.page * result()!.size + 1 }}–{{ result()!.page * result()!.size + result()!.conflicts.length }} of {{ result()!.totalConflicts }}</span><div class="pager"><button type="button" (click)="goToWatchPage(result()!.page - 1)" [disabled]="result()!.page === 0 || running()">Previous</button><span>Page {{ result()!.page + 1 }} of {{ result()!.totalPages }}</span><button type="button" (click)="goToWatchPage(result()!.page + 1)" [disabled]="result()!.page + 1 >= result()!.totalPages || running()">Next</button></div></div> }
       }
     </section>
   }

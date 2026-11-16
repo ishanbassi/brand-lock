@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
@@ -26,7 +26,13 @@ import {
 @Component({
   selector: 'app-agent-trademark-detail',
   standalone: true,
-  imports: [IconComponent, ExportMenuComponent, CommonModule, FormsModule, RouterModule],
+  imports: [
+    IconComponent,
+    ExportMenuComponent,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+  ],
   templateUrl: './agent-trademark-detail.component.html',
   styleUrl: './agent-trademark-detail.component.scss',
 })
@@ -41,7 +47,9 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
 
   // Actions
   refreshing = signal(false);
-  refreshState = signal<'idle' | 'queued' | 'fetching' | 'updated' | 'busy' | 'failed'>('idle');
+  refreshState = signal<
+    'idle' | 'queued' | 'fetching' | 'updated' | 'busy' | 'failed'
+  >('idle');
   refreshMessage = signal('');
   private refreshPoll?: Subscription;
   private static readonly REFRESH_POLL_INTERVAL_MS = 5000;
@@ -92,6 +100,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly trademarkService: TrademarkService,
+    private readonly host: ElementRef<HTMLElement>,
   ) {}
 
   ngOnInit(): void {
@@ -110,7 +119,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   private loadCustomFields(): void {
     this.agentDataService.getCustomFields().subscribe({
       // A firm with no imported spreadsheet has none, which is a normal empty state, not an error.
-      next: fields => this.customFields.set(fields),
+      next: (fields) => this.customFields.set(fields),
       error: () => this.customFields.set([]),
     });
   }
@@ -118,11 +127,12 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   load(): void {
     this.loading.set(true);
     this.agentDataService.getPortfolioItem(this.trademarkId).subscribe({
-      next: tm => {
+      next: (tm) => {
         this.mark.set(tm);
         this.customValues = { ...(tm.customFields ?? {}) };
         this.loading.set(false);
         this.loadArtwork(tm);
+        this.deferSpecimenInitials(tm.name);
       },
       error: () => {
         this.error.set('Could not load this trademark.');
@@ -144,11 +154,14 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     }
     this.artworkState.set('loading');
     this.agentDataService.getTrademarkArtwork(this.trademarkId).subscribe({
-      next: blob => {
+      next: (blob) => {
         this.artworkUrl.set(URL.createObjectURL(blob));
         this.artworkState.set('ready');
       },
-      error: () => this.artworkState.set('failed'),
+      error: () => {
+        this.artworkState.set('failed');
+        this.deferSpecimenInitials(tm.name);
+      },
     });
   }
 
@@ -158,23 +171,40 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     this.artworkUrl.set(null);
   }
 
+  /** The visual specimen shows artwork when available, otherwise compact initials. */
+  private deferSpecimenInitials(name: string | undefined): void {
+    setTimeout(() => {
+      this.host.nativeElement.querySelectorAll<HTMLElement>('.mark-specimen__name').forEach(element => {
+        element.textContent = this.trademarkInitials(name);
+      });
+    });
+  }
+
   // ── Export ───────────────────────────────────────────────────────────────
 
   export(format: ExportFormat): void {
     if (this.exporting()) return;
     this.exporting.set(format);
     const tm = this.mark();
-    const key = tm?.applicationNo ? String(tm.applicationNo) : fileSlug(tm?.name, 'trademark');
-    const request = format === 'excel'
-      ? this.agentDataService.exportTrademarkExcel(this.trademarkId)
-      : this.agentDataService.exportTrademarkPdf(this.trademarkId);
+    const key = tm?.applicationNo
+      ? String(tm.applicationNo)
+      : fileSlug(tm?.name, 'trademark');
+    const request =
+      format === 'excel'
+        ? this.agentDataService.exportTrademarkExcel(this.trademarkId)
+        : this.agentDataService.exportTrademarkPdf(this.trademarkId);
     request.subscribe({
-      next: blob => {
-        saveBlob(blob, `trademark-${key}.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+      next: (blob) => {
+        saveBlob(
+          blob,
+          `trademark-${key}.${format === 'excel' ? 'xlsx' : 'pdf'}`,
+        );
         this.exporting.set(null);
       },
       error: () => {
-        this.error.set(`Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`);
+        this.error.set(
+          `Could not generate the ${format === 'excel' ? 'Excel file' : 'PDF'}.`,
+        );
         this.exporting.set(null);
       },
     });
@@ -186,28 +216,44 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     if (this.refreshing()) return;
     this.refreshing.set(true);
     this.refreshState.set('queued');
-    this.refreshMessage.set('Sending this application to the trademark registry…');
+    this.refreshMessage.set(
+      'Sending this application to the trademark registry…',
+    );
     this.notice.set('');
     this.agentDataService.refreshFromRegistry(this.trademarkId).subscribe({
-      next: res => {
+      next: (res) => {
         switch (res.state) {
           case 'QUEUED':
             this.refreshState.set('fetching');
-            this.refreshMessage.set('Searching the trademark registry — this can take a couple of minutes.');
+            this.refreshMessage.set(
+              'Searching the trademark registry — this can take a couple of minutes.',
+            );
             this.pollRegistryRefresh();
             break;
           case 'BUSY':
-            this.finishRefresh('busy', 'The registry queue is busy right now. Please try again in a few minutes.');
+            this.finishRefresh(
+              'busy',
+              'The registry queue is busy right now. Please try again in a few minutes.',
+            );
             break;
           case 'NO_APPLICATION_NO':
-            this.finishRefresh('failed', 'This mark has no application number, so there is nothing to look up yet.');
+            this.finishRefresh(
+              'failed',
+              'This mark has no application number, so there is nothing to look up yet.',
+            );
             break;
           default:
-            this.finishRefresh('failed', 'The registry did not accept the refresh request. Please try again.');
+            this.finishRefresh(
+              'failed',
+              'The registry did not accept the refresh request. Please try again.',
+            );
         }
       },
       error: () => {
-        this.finishRefresh('failed', 'Could not reach the trademark registry. Please try again in a few minutes.');
+        this.finishRefresh(
+          'failed',
+          'Could not reach the trademark registry. Please try again in a few minutes.',
+        );
       },
     });
   }
@@ -215,7 +261,10 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   private pollRegistryRefresh(): void {
     const applicationNo = this.mark()?.applicationNo;
     if (!applicationNo) {
-      this.finishRefresh('failed', 'This mark has no application number, so there is nothing to look up yet.');
+      this.finishRefresh(
+        'failed',
+        'This mark has no application number, so there is nothing to look up yet.',
+      );
       return;
     }
     let settled = false;
@@ -226,28 +275,42 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     )
       .pipe(
         take(AgentTrademarkDetailComponent.REFRESH_MAX_POLLS),
-        switchMap(() => this.trademarkService.getLiveRefreshStatus(applicationNo)),
+        switchMap(() =>
+          this.trademarkService.getLiveRefreshStatus(applicationNo),
+        ),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           if (response.state === 'COMPLETED') {
             settled = true;
             this.load();
-            this.finishRefresh('updated', 'Updated with the latest details from the trademark registry.');
+            this.finishRefresh(
+              'updated',
+              'Updated with the latest details from the trademark registry.',
+            );
             this.refreshPoll?.unsubscribe();
           } else if (['FAILED', 'NOT_FOUND', 'NONE'].includes(response.state)) {
             settled = true;
-            this.finishRefresh('failed', 'The registry could not return this application. Please try again later.');
+            this.finishRefresh(
+              'failed',
+              'The registry could not return this application. Please try again later.',
+            );
             this.refreshPoll?.unsubscribe();
           }
         },
         error: () => {
           settled = true;
-          this.finishRefresh('failed', 'Could not reach the trademark registry. Please try again in a few minutes.');
+          this.finishRefresh(
+            'failed',
+            'Could not reach the trademark registry. Please try again in a few minutes.',
+          );
         },
         complete: () => {
           if (!settled) {
-            this.finishRefresh('failed', 'The registry is taking longer than usual. Please try again in a few minutes.');
+            this.finishRefresh(
+              'failed',
+              'The registry is taking longer than usual. Please try again in a few minutes.',
+            );
           }
         },
       });
@@ -299,16 +362,18 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     for (const field of this.customFields()) {
       payload[field.fieldKey] = this.customValues[field.fieldKey] ?? '';
     }
-    this.agentDataService.updatePortfolioLink(this.trademarkId, { customFields: payload }).subscribe({
-      next: () => {
-        this.savingCustom.set(false);
-        this.customSaved.set(true);
-      },
-      error: () => {
-        this.savingCustom.set(false);
-        this.error.set('Could not save these details.');
-      },
-    });
+    this.agentDataService
+      .updatePortfolioLink(this.trademarkId, { customFields: payload })
+      .subscribe({
+        next: () => {
+          this.savingCustom.set(false);
+          this.customSaved.set(true);
+        },
+        error: () => {
+          this.savingCustom.set(false);
+          this.error.set('Could not save these details.');
+        },
+      });
   }
 
   // ── Documents ────────────────────────────────────────────────────────────
@@ -316,7 +381,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   loadDocuments(): void {
     this.documentsLoading.set(true);
     this.agentDataService.listDocuments(this.trademarkId).subscribe({
-      next: docs => {
+      next: (docs) => {
         this.documents.set(docs);
         this.documentsLoading.set(false);
       },
@@ -358,17 +423,25 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
         notes: this.uploadMeta.notes,
       })
       .subscribe({
-        next: result => {
+        next: (result) => {
           this.documents.set([...(result.uploaded ?? []), ...this.documents()]);
           this.uploadFailures.set(result.failures ?? []);
           this.uploading.set(false);
           this.selectedFiles = [];
           this.selectedFile = null;
-          this.uploadMeta = { documentType: 'OTHER', notes: '', documentDate: '' };
+          this.uploadMeta = {
+            documentType: 'OTHER',
+            notes: '',
+            documentDate: '',
+          };
         },
-        error: err => {
+        error: (err) => {
           this.uploading.set(false);
-          this.error.set(err?.error?.message || err?.error?.title || 'Could not upload those files.');
+          this.error.set(
+            err?.error?.message ||
+              err?.error?.title ||
+              'Could not upload those files.',
+          );
         },
       });
   }
@@ -381,7 +454,8 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
    */
   download(doc: AgentDocument): void {
     this.agentDataService.downloadDocument(doc.id).subscribe({
-      next: blob => saveBlob(blob, doc.originalFileName || `document-${doc.id}`),
+      next: (blob) =>
+        saveBlob(blob, doc.originalFileName || `document-${doc.id}`),
       error: () => this.error.set('Could not download that document.'),
     });
   }
@@ -390,7 +464,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     this.deletingDocId.set(doc.id);
     this.agentDataService.deleteDocument(doc.id).subscribe({
       next: () => {
-        this.documents.set(this.documents().filter(d => d.id !== doc.id));
+        this.documents.set(this.documents().filter((d) => d.id !== doc.id));
         this.deletingDocId.set(null);
       },
       error: () => {
@@ -401,7 +475,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   }
 
   documentTypeLabel(value: string | undefined): string {
-    return this.documentTypes.find(t => t.value === value)?.label ?? 'Other';
+    return this.documentTypes.find((t) => t.value === value)?.label ?? 'Other';
   }
 
   formatSize(bytes: number | undefined): string {
@@ -409,5 +483,17 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  /** Compact fallback for a mark without a visual specimen. */
+  trademarkInitials(name: string | undefined): string {
+    const words = (name ?? '').trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return 'TM';
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return words
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase();
   }
 }

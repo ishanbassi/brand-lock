@@ -268,6 +268,12 @@ export class AgentDataService {
     if (query.tmClass != null) {
       params = params.set('tmClass', query.tmClass);
     }
+    if (query.filingYear != null) {
+      params = params.set('filingYear', query.filingYear);
+    }
+    if (query.renewalDue) {
+      params = params.set('renewalDue', 'true');
+    }
     if (query.sort) {
       params = params.set('sort', `${query.sort.field},${query.sort.dir}`);
     }

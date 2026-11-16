@@ -1,249 +1,793 @@
-<div class="detail-page">
-  <a routerLink="/agent-portal/portfolio" class="back-link">&lsaquo; Back to portfolio</a>
-
+<main class="relative min-h-full w-full bg-surface px-gutter-desktop">
   @if (loading()) {
-    <div class="loading-state">Loading trademark…</div>
+    <div class="py-space-xl font-body-md text-body-md text-on-surface-variant">
+      Loading trademark…
+    </div>
   } @else if (!mark()) {
-    <div class="alert-error">{{ error() || 'Trademark not found.' }}</div>
+    <div
+      class="mt-space-lg rounded-xl bg-error-container p-space-md font-body-md text-body-md text-on-error-container"
+      role="alert"
+    >
+      {{ error() || "Trademark not found." }}
+    </div>
   } @else {
-
-    <header class="detail-header">
-      <div class="title-block">
-        <h1>{{ mark()!.name || 'Untitled mark' }}</h1>
-        <div class="title-meta">
-          @if (mark()!.applicationNo) { <span>Application {{ mark()!.applicationNo }}</span> }
-          @if (mark()!.tmClass) { <span>Class {{ mark()!.tmClass }}</span> }
-          <span class="status-chip">{{ mark()!.trademarkStatus || 'Unknown' }}</span>
+    <div class="flex w-full flex-col space-y-space-lg pb-16">
+      <div
+        class="flex flex-col justify-between gap-space-sm pt-space-xs sm:flex-row sm:items-center"
+      >
+        <div class="flex items-center gap-space-sm">
+          <a
+            routerLink="/agent-portal/portfolio"
+            class="group inline-flex items-center gap-1.5 rounded-lg bg-surface-container-low px-space-sm py-1 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+            ><span
+              class="material-symbols-outlined text-[16px] transition-transform group-hover:-translate-x-0.5"
+              >arrow_back</span
+            ><span>Back to Portfolio</span></a
+          >
+          <span class="font-label-md text-label-md text-outline-variant"
+            >/</span
+          >
+          <span class="font-label-md text-label-md text-on-surface-variant"
+            >Class {{ mark()!.tmClass || "—" }}</span
+          >
+          <span class="font-label-md text-label-md text-outline-variant"
+            >/</span
+          >
+          <span class="font-label-md text-label-md font-bold text-primary"
+            >#{{ mark()!.applicationNo || mark()!.id }}</span
+          >
+        </div>
+        <div
+          class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant"
+        >
+          <span class="relative flex h-2 w-2"
+            ><span
+              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75"
+            ></span
+            ><span
+              class="relative inline-flex h-2 w-2 rounded-full bg-secondary"
+            ></span></span
+          ><span
+            >CGPDTM Server:
+            <span class="font-bold text-on-surface"
+              >Online &amp; Connected</span
+            ></span
+          >
         </div>
       </div>
 
-      <!--
-        Every action for this mark lives here rather than in the list. Refresh and remove are
-        consequential enough that they need the surrounding context to decide on.
-      -->
-      <div class="detail-actions">
-        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
-        @if (mark()!.applicationNo) {
-          <button class="btn-ghost" (click)="refresh()" [disabled]="refreshing()">
-            @if (refreshing()) {
-              <span class="refresh-spinner" aria-hidden="true"></span> Searching register…
-            } @else {
-              <ap-icon name="refresh" [size]="15" /> Refresh from register
-            }
-          </button>
-        }
-        @if (editable()) {
-          <a [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']" class="btn-ghost"><ap-icon name="edit" [size]="16" />Edit</a>
-        }
-        <button class="btn-danger-ghost" (click)="confirmRemove.set(true)">Remove</button>
-      </div>
-    </header>
-
-    @if (refreshMessage()) {
-      <div class="refresh-status" role="status" aria-live="polite"
-        [class.success]="refreshState() === 'updated'"
-        [class.warning]="refreshState() === 'busy' || refreshState() === 'failed'">
-        @if (refreshing()) { <span class="refresh-spinner" aria-hidden="true"></span> }
-        @else if (refreshState() === 'updated') { <ap-icon name="check" [size]="16" /> }
-        @else { <ap-icon name="alert" [size]="16" /> }
-        <span>{{ refreshMessage() }}</span>
-      </div>
-    }
-
-    @if (notice()) {
-      <div class="alert-info">{{ notice() }}<button class="alert-dismiss" (click)="notice.set('')">&times;</button></div>
-    }
-    @if (error()) {
-      <div class="alert-error">{{ error() }}<button class="alert-dismiss" (click)="error.set('')">&times;</button></div>
-    }
-
-    <!--
-      "Remove from portfolio", never "delete". For a register-sourced mark this drops only this
-      agent's link — the record is public data and stays. Saying "delete" would misdescribe it.
-    -->
-    @if (confirmRemove()) {
-      <div class="confirm-panel">
-        <strong>Remove this mark from your portfolio?</strong>
-        <p>
-          @if (mark()!.editable) {
-            You added this mark yourself, so it will be removed entirely.
-          } @else {
-            This mark comes from the public register. Only your link to it is removed — the record
-            itself, and anything other firms hold, is unaffected.
-          }
-          Your notes and documents for it will no longer be shown.
-        </p>
-        <div class="confirm-actions">
-          <button class="btn-danger" (click)="removeFromPortfolio()" [disabled]="removing()">
-            {{ removing() ? 'Removing…' : 'Yes, remove' }}
-          </button>
-          <button class="btn-ghost" (click)="confirmRemove.set(false)">Cancel</button>
-        </div>
-      </div>
-    }
-
-    @if (!editable()) {
-      <div class="source-banner">
-        <ap-icon name="lock" [size]="16" /> Maintained from the IP India register
-        @if (mark()!.registrySyncedDate) {
-          — last confirmed {{ mark()!.registrySyncedDate | date:'dd MMM yyyy' }}
-        }
-      </div>
-    }
-
-    <!-- ── DETAILS ──────────────────────────────────────────────────── -->
-    <section class="card">
-      <h2>Details</h2>
-      <div class="details-layout" [class.has-artwork]="artworkState() !== 'none'">
-      @if (artworkState() !== 'none') {
-        <figure class="artwork">
-          @switch (artworkState()) {
-            @case ('ready') {
-              <img [src]="artworkUrl()" [alt]="'Artwork for ' + (mark()!.name || 'this mark')" />
-            }
-            @case ('loading') {
-              <span class="artwork-note">Loading image…</span>
-            }
-            @default {
-              <span class="artwork-note">The image for this mark could not be displayed.</span>
-            }
-          }
-        </figure>
-      }
-      <dl class="detail-grid">
-        <div><dt>Proprietor</dt><dd>{{ mark()!.proprietorName || '—' }}</dd></div>
-        <div><dt>Class</dt><dd>{{ mark()!.tmClass || '—' }}</dd></div>
-        <div><dt>Status</dt><dd>{{ mark()!.trademarkStatus || 'Unknown' }}</dd></div>
-        <div><dt>Type</dt><dd>{{ mark()!.type || '—' }}</dd></div>
-        <div><dt>Filed</dt><dd>{{ mark()!.applicationDate ? (mark()!.applicationDate | date:'dd MMM yyyy') : '—' }}</dd></div>
-        <div><dt>Renewal due</dt><dd>{{ mark()!.renewalDate ? (mark()!.renewalDate | date:'dd MMM yyyy') : '—' }}</dd></div>
-        <div><dt>State</dt><dd>{{ mark()!.state || '—' }}</dd></div>
-        <div><dt>Source</dt><dd>{{ mark()!.source || '—' }}</dd></div>
-      </dl>
-      </div>
-      @if (mark()!.details) {
-        <div class="goods"><dt>Goods / services</dt><p>{{ mark()!.details }}</p></div>
-      }
-    </section>
-
-    <!-- ── DOCUMENTS ────────────────────────────────────────────────── -->
-    <section class="card">
-      <h2>Documents</h2>
-      <p class="card-hint">
-        Examination reports, hearing notices, replies, client correspondence. Private to you — never
-        shown on the public register, and invisible to any other firm holding this mark.
-      </p>
-
-      @if (documentsLoading()) {
-        <div class="loading-inline">Loading documents…</div>
-      } @else if (documents().length === 0) {
-        <div class="empty-inline">Nothing attached to this mark yet.</div>
-      } @else {
-        <ul class="doc-list">
-          @for (doc of documents(); track doc.id) {
-            <li class="doc-row">
-              <div class="doc-main">
-                <span class="doc-name">{{ doc.originalFileName }}</span>
-                <span class="doc-meta">
-                  {{ documentTypeLabel(doc.documentType) }} · {{ formatSize(doc.fileSizeBytes) }}
-                  @if (doc.documentDate) { · dated {{ doc.documentDate | date:'dd MMM yyyy' }} }
-                </span>
-                @if (doc.notes) { <span class="doc-notes">{{ doc.notes }}</span> }
+      <section
+        class="relative rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+      >
+        <div
+          class="absolute left-0 right-0 top-0 h-1.5 bg-gradient-to-r from-primary via-primary-container to-secondary"
+        ></div>
+        <div
+          class="flex flex-col justify-between gap-space-md lg:flex-row lg:items-center"
+        >
+          <div class="flex flex-col gap-space-md sm:flex-row sm:items-center">
+            <div
+              class="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-container shadow-inner sm:h-20 sm:w-20"
+            >
+              @if (artworkState() === "ready") {
+                <img
+                  class="h-full w-full object-contain p-1"
+                  [src]="artworkUrl()"
+                  [alt]="'Artwork for ' + (mark()!.name || 'this mark')"
+                />
+              } @else if (artworkState() === "loading") {
+                <span
+                  class="material-symbols-outlined animate-spin text-[24px] text-primary"
+                  >progress_activity</span
+                >
+              } @else {
+                <span
+                  class="select-none font-display-lg text-display-lg tracking-tighter text-primary"
+                  >{{ trademarkInitials(mark()!.name) }}</span
+                >
+              }
+              <span
+                class="absolute bottom-1 right-1.5 font-label-sm text-label-sm text-outline-variant"
+                >TM</span
+              >
+            </div>
+            <div class="flex flex-col space-y-1">
+              <div
+                class="flex flex-wrap items-center gap-space-xs sm:gap-space-sm"
+              >
+                <h1
+                  class="font-display-lg text-display-lg tracking-tight text-on-surface"
+                >
+                  {{ mark()!.name || "Untitled mark" }}
+                </h1>
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-3 py-1 font-label-lg text-label-lg text-on-secondary-container shadow-sm"
+                  ><span
+                    class="material-symbols-outlined text-[16px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >check_circle</span
+                  >{{ mark()!.trademarkStatus || "Status pending" }}</span
+                >
+                <span
+                  class="rounded-full bg-surface-container-high px-2.5 py-0.5 font-label-sm text-label-sm text-on-surface"
+                  >Class {{ mark()!.tmClass || "—" }}</span
+                >
               </div>
-              <div class="doc-actions">
-                <button class="btn-ghost-xs" (click)="download(doc)">Download</button>
-                <button class="btn-danger-xs" (click)="deleteDocument(doc)" [disabled]="deletingDocId() === doc.id">
-                  {{ deletingDocId() === doc.id ? '…' : 'Delete' }}
+              <div
+                class="flex flex-wrap items-center gap-x-space-md gap-y-1 pt-0.5 font-body-sm text-body-sm text-on-surface-variant"
+              >
+                <span class="flex items-center gap-1"
+                  ><span
+                    class="material-symbols-outlined text-[15px] text-outline"
+                    >tag</span
+                  ><span
+                    >Application
+                    <strong>{{ mark()!.applicationNo || "—" }}</strong></span
+                  ></span
+                ><span>•</span>
+                <span class="flex items-center gap-1"
+                  ><span
+                    class="material-symbols-outlined text-[15px] text-outline"
+                    >category</span
+                  ><span>{{ mark()!.type || "Trademark record" }}</span></span
+                ><span>•</span>
+                <span class="flex items-center gap-1"
+                  ><span
+                    class="material-symbols-outlined text-[15px] text-outline"
+                    >location_on</span
+                  ><span>{{
+                    mark()!.state || "State not recorded"
+                  }}</span></span
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex shrink-0 flex-wrap items-center gap-space-xs sm:gap-space-sm"
+          >
+            @if (mark()!.applicationNo) {
+              <button
+                class="flex items-center gap-1.5 rounded-lg bg-surface-container-low px-space-md py-2.5 font-label-lg text-label-lg text-on-surface shadow-sm transition-all active:scale-95 hover:bg-surface-container"
+                type="button"
+                (click)="refresh()"
+                [disabled]="refreshing()"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] text-primary"
+                  [class.animate-spin]="refreshing()"
+                  >sync</span
+                ><span>{{
+                  refreshing() ? "Querying registry…" : "Refresh IP India"
+                }}</span>
+              </button>
+            }
+            <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
+            @if (editable()) {
+              <a
+                [routerLink]="['/agent-portal/portfolio', trademarkId, 'edit']"
+                class="flex items-center gap-1.5 rounded-lg bg-surface-container-low px-space-md py-2.5 font-label-lg text-label-lg text-on-surface shadow-sm transition-colors hover:bg-surface-container"
+                ><span
+                  class="material-symbols-outlined text-[18px] text-primary"
+                  >edit</span
+                >Edit</a
+              >
+            }
+            <button
+              class="rounded-lg bg-surface-container-low p-2.5 text-error transition-colors hover:bg-error-container hover:text-on-error-container"
+              type="button"
+              title="Remove from portfolio"
+              (click)="confirmRemove.set(true)"
+            >
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </div>
+        </div>
+        <div
+          class="mt-space-md flex flex-col justify-between gap-space-sm rounded-xl bg-surface-container-low/70 px-space-md py-2.5 pt-space-sm md:flex-row md:items-center"
+        >
+          <div class="flex items-center gap-2.5">
+            <div
+              class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary-fixed"
+            >
+              <span
+                class="material-symbols-outlined text-[16px] text-on-secondary-fixed"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >lock</span
+              >
+            </div>
+            <div class="font-body-sm text-body-sm text-on-surface">
+              <span class="font-bold text-secondary">Verified Record:</span>
+              {{
+                editable()
+                  ? "Your portfolio record."
+                  : "Maintained live from Official CGPDTM Registry (Govt. of India)."
+              }}
+              @if (mark()!.registrySyncedDate) {
+                Last confirmed
+                <span class="font-bold">{{
+                  mark()!.registrySyncedDate | date: "dd MMM yyyy"
+                }}</span>.
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      @if (refreshMessage()) {
+        <div
+          class="flex items-center justify-between rounded-xl bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-on-surface"
+        >
+          <span>{{ refreshMessage() }}</span
+          ><button
+            class="material-symbols-outlined text-[18px]"
+            type="button"
+            (click)="refreshMessage.set('')"
+          >
+            close
+          </button>
+        </div>
+      }
+      @if (error()) {
+        <div
+          class="rounded-xl bg-error-container px-space-md py-space-sm font-body-sm text-body-sm text-on-error-container"
+        >
+          {{ error() }}
+        </div>
+      }
+      @if (confirmRemove()) {
+        <div
+          class="flex flex-col justify-between gap-space-sm rounded-xl bg-error-container p-space-md font-body-sm text-on-error-container md:flex-row md:items-center"
+        >
+          <span
+            ><strong>Remove this mark from your portfolio?</strong> Only this
+            portfolio link and its private documents will be removed.</span
+          >
+          <div class="flex gap-space-sm">
+            <button
+              class="rounded-lg bg-error px-space-md py-2 font-label-md text-label-md text-on-error"
+              type="button"
+              (click)="removeFromPortfolio()"
+              [disabled]="removing()"
+            >
+              {{ removing() ? "Removing…" : "Remove" }}</button
+            ><button
+              class="rounded-lg bg-surface-container-lowest px-space-md py-2 font-label-md text-label-md text-on-surface"
+              type="button"
+              (click)="confirmRemove.set(false)"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+
+      <div class="grid grid-cols-1 gap-space-lg lg:grid-cols-12">
+        <div class="flex flex-col space-y-space-lg lg:col-span-8">
+          <section
+            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+          >
+            <div
+              class="mb-space-md flex items-center justify-between pb-space-sm"
+            >
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[22px] text-primary"
+                  >badge</span
+                >
+                <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                  Official Registered Information
+                </h2>
+              </div>
+              <span
+                class="font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                >Government Record</span
+              >
+            </div>
+            <div
+              class="grid grid-cols-1 items-start gap-space-lg md:grid-cols-12"
+            >
+              <div class="flex flex-col items-center md:col-span-5">
+                <div
+                  class="group relative flex aspect-square w-full flex-col items-center justify-center rounded-xl bg-surface-container-low p-6 text-center shadow-inner"
+                >
+                  @if (artworkState() === "ready") {
+                    <img
+                      class="max-h-full max-w-full object-contain"
+                      [src]="artworkUrl()"
+                      [alt]="'Artwork for ' + (mark()!.name || 'this mark')"
+                    />
+                  } @else {
+                    <div
+                      class="mark-specimen flex h-36 w-36 flex-col items-center justify-center rounded-2xl bg-surface-container-lowest p-4 shadow-md"
+                      [class.mark-specimen--long]="
+                        (mark()!.name || '').length > 15
+                      "
+                    >
+                      <span
+                        class="mark-specimen__name font-display-lg font-extrabold text-primary"
+                        >{{ mark()!.name || "TM" }}</span
+                      ><span
+                        class="mark-specimen__caption font-label-sm text-label-sm uppercase tracking-wider text-outline-variant"
+                      ></span>
+                      <div
+                        class="mt-2 h-1 w-12 shrink-0 rounded-full bg-secondary"
+                      ></div>
+                    </div>
+                  }
+                  <div
+                    class="mt-4 flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[16px] text-secondary"
+                      >image</span
+                    ><span></span>
+                  </div>
+                </div>
+                <div
+                  class="mt-space-sm flex w-full items-center justify-between px-space-xs font-body-sm text-body-sm text-on-surface-variant"
+                ></div>
+              </div>
+              <div
+                class="grid grid-cols-1 gap-x-space-lg gap-y-space-md md:col-span-7 sm:grid-cols-2"
+              >
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Proprietor / Registered Owner</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface"
+                    >{{ mark()!.proprietorName || "—" }}</span
+                  >
+                </div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Nice Classification</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-primary"
+                    >Class {{ mark()!.tmClass || "—" }}</span
+                  ><span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                  ></span>
+                </div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Filing / Priority Date</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface"
+                    >{{
+                      mark()!.applicationDate
+                        ? (mark()!.applicationDate | date: "dd MMM yyyy")
+                        : "—"
+                    }}</span
+                  ><span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                  ></span>
+                </div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Renewal Due Date</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-tertiary"
+                    >{{
+                      mark()!.renewalDate
+                        ? (mark()!.renewalDate | date: "dd MMM yyyy")
+                        : "—"
+                    }}</span
+                  ><span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                  ></span>
+                </div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Territory / Applicant State</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface"
+                    >{{ mark()!.state || "—" }}</span
+                  ><span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                  ></span>
+                </div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm">
+                  <span
+                    class="block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                    >Official Publication Source</span
+                  ><span
+                    class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface"
+                    >{{ mark()!.source || "—" }}</span
+                  ><span
+                    class="font-body-sm text-body-sm text-on-surface-variant"
+                  ></span>
+                </div>
+              </div>
+            </div>
+            @if (mark()!.details) {
+              <div
+                class="mt-space-lg rounded-xl bg-surface-container-low/40 p-space-md pt-space-md"
+              >
+                <div class="mb-2 flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-[20px] text-primary"
+                    >inventory_2</span
+                  >
+                  <h3
+                    class="font-label-lg text-label-lg uppercase tracking-wide text-on-surface"
+                  >
+                    Goods &amp; Services
+                  </h3>
+                </div>
+                <p
+                  class="mt-1 font-body-sm text-body-sm leading-relaxed text-on-surface-variant"
+                >
+                  {{ mark()!.details }}
+                </p>
+              </div>
+            }
+          </section>
+
+          <section
+            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+          >
+            <div
+              class="mb-space-sm flex flex-col justify-between gap-2 pb-space-sm sm:flex-row sm:items-center"
+            >
+              <div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-[22px] text-primary"
+                    >folder_managed</span
+                  >
+                  <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                    Chamber Documents &amp; Private Vault
+                  </h2>
+                </div>
+                <p
+                  class="mt-1 font-body-sm text-body-sm text-on-surface-variant"
+                >
+                  Private to your law practice — never shown on the public
+                  CGPDTM register, and completely confidential.
+                </p>
+              </div>
+              <span
+                class="flex items-center gap-1 self-start rounded-full bg-secondary-fixed px-2.5 py-1 font-label-sm text-label-sm text-on-secondary-fixed sm:self-auto"
+                ><span class="material-symbols-outlined text-[14px]"
+                  >shield</span
+                >Encrypted 256-bit</span
+              >
+            </div>
+            @if (documentsLoading()) {
+              <div
+                class="py-space-md font-body-sm text-body-sm text-on-surface-variant"
+              >
+                Loading documents…
+              </div>
+            } @else if (documents().length === 0) {
+              <div
+                class="py-space-md font-body-sm text-body-sm text-on-surface-variant"
+              >
+                No documents are attached to this mark yet.
+              </div>
+            } @else {
+              <div class="mb-space-md space-y-space-xs">
+                @for (doc of documents(); track doc.id) {
+                  <div
+                    class="group flex items-center justify-between rounded-lg bg-surface-container-low p-space-sm transition-colors hover:bg-surface-container"
+                  >
+                    <div class="flex min-w-0 items-center gap-space-sm">
+                      <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-lowest text-primary shadow-xs"
+                      >
+                        <span class="material-symbols-outlined text-[22px]"
+                          >description</span
+                        >
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span
+                            class="truncate font-label-lg text-label-lg text-on-surface"
+                            >{{ doc.originalFileName }}</span
+                          ><span
+                            class="shrink-0 rounded bg-surface-container-highest px-2 py-0.5 font-label-sm text-label-sm text-on-surface"
+                            >{{ documentTypeLabel(doc.documentType) }}</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"
+                        >
+                          <span>{{ formatSize(doc.fileSizeBytes) }}</span
+                          ><span>•</span>
+                          @if (doc.notes) {
+                            <span class="truncate">{{ doc.notes }}</span><span
+                              >•</span
+                            >
+                          }
+                          <span
+                            >Uploaded
+                            {{
+                              doc.uploadedDate
+                                ? (doc.uploadedDate | date: "dd MMM yyyy")
+                                : "recently"
+                            }}</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-1">
+                      <button
+                        class="rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container-lowest hover:text-primary"
+                        type="button"
+                        title="Download"
+                        (click)="download(doc)"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        ></button
+                      ><button
+                        class="rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-error-container hover:text-error"
+                        type="button"
+                        title="Delete"
+                        (click)="deleteDocument(doc)"
+                        [disabled]="deletingDocId() === doc.id"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            <div class="rounded-xl bg-surface-container-low/70 p-space-md">
+              <div
+                class="mb-2 flex items-center gap-1.5 font-label-md text-label-md text-on-surface"
+              >
+                <span class="material-symbols-outlined text-[16px] text-primary"
+                  >cloud_upload</span
+                ><span>Attach New Legal File to this Trademark</span>
+              </div>
+              <div
+                class="flex flex-col items-stretch gap-2 md:flex-row md:items-center"
+              >
+                <label
+                  class="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-surface-container-lowest px-space-md py-2 font-label-md text-label-md text-on-surface shadow-xs transition-colors hover:bg-surface-container"
+                  ><span
+                    class="material-symbols-outlined text-[18px] text-primary"
+                    >upload_file</span
+                  ><span>{{
+                    selectedFiles.length
+                      ? selectedFiles.length +
+                        " file" +
+                        (selectedFiles.length === 1 ? "" : "s") +
+                        " selected"
+                      : "Choose File"
+                  }}</span
+                  ><input
+                    class="hidden"
+                    type="file"
+                    multiple
+                    (change)="onFileSelected($event)" /></label
+                ><select
+                  class="shrink-0 rounded-lg bg-surface-container-lowest px-3 py-2 font-body-sm text-body-sm text-on-surface shadow-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                  [(ngModel)]="uploadMeta.documentType"
+                  name="documentType"
+                >
+                  @for (t of documentTypes; track t.value) {
+                    <option [value]="t.value">{{ t.label }}</option>
+                  }</select
+                ><input
+                  class="flex-1 rounded-lg bg-surface-container-lowest px-3 py-2 font-body-sm text-body-sm text-on-surface placeholder:text-outline shadow-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                  type="text"
+                  [(ngModel)]="uploadMeta.notes"
+                  name="docNotes"
+                  placeholder="Note (e.g. Received from client)"
+                /><button
+                  class="flex shrink-0 items-center justify-center gap-1 rounded-lg bg-primary px-space-md py-2 font-label-md text-label-md text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+                  type="button"
+                  (click)="upload()"
+                  [disabled]="selectedFiles.length === 0 || uploading()"
+                >
+                  <span class="material-symbols-outlined text-[16px]">add</span
+                  ><span>{{ uploading() ? "Uploading…" : "Attach File" }}</span>
                 </button>
               </div>
-            </li>
-          }
-        </ul>
-      }
+              <span
+                class="mt-2 block font-body-sm text-body-sm text-on-surface-variant"
+                >PDF, Word, Excel, scanned certificates, email receipts up to 25
+                MB.</span
+              >
+            </div>
+          </section>
+        </div>
 
-      <div class="upload-row">
-        <input type="file" multiple (change)="onFileSelected($event)" />
-        <select [(ngModel)]="uploadMeta.documentType" name="documentType">
-          @for (t of documentTypes; track t.value) {
-            <option [value]="t.value">{{ t.label }}</option>
-          }
-        </select>
-        <input type="text" [(ngModel)]="uploadMeta.notes" name="docNotes" placeholder="Note (optional)" />
-        <button class="btn-primary" (click)="upload()" [disabled]="selectedFiles.length === 0 || uploading()">
-          {{ uploading() ? 'Uploading…' : selectedFiles.length > 1 ? 'Attach ' + selectedFiles.length + ' files' : 'Attach' }}
-        </button>
+        <aside class="flex flex-col space-y-space-lg lg:col-span-4">
+          <section
+            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+          >
+            <div
+              class="mb-space-sm flex items-center justify-between pb-space-sm"
+            >
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[22px] text-primary"
+                  >person_pin</span
+                >
+                <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                  Client Details
+                </h2>
+              </div>
+              <span class="h-2 w-2 rounded-full bg-secondary"></span>
+            </div>
+            <div
+              class="mb-space-md flex items-center gap-space-sm rounded-xl bg-surface-container-low p-space-sm"
+            >
+              <div
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-fixed font-headline-sm text-headline-sm font-bold text-primary"
+              >
+                {{
+                  (mark()!.proprietorName || mark()!.name || "TM")
+                    .slice(0, 2)
+                    .toUpperCase()
+                }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <h3
+                  class="truncate font-headline-sm text-headline-sm text-on-surface"
+                >
+                  {{ mark()!.proprietorName || "No proprietor recorded" }}
+                </h3>
+                <span
+                  class="block font-body-sm text-body-sm text-on-surface-variant"
+                  >{{ mark()!.state || "Location not recorded" }} • Trademark
+                  proprietor</span
+                >
+              </div>
+            </div>
+            <div class="space-y-space-xs">
+              <button
+                class="group flex w-full items-center justify-between rounded-lg bg-surface-container-low p-2.5 text-left font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container"
+                type="button"
+                disabled
+              >
+                <span class="flex items-center gap-2.5"
+                  ><span
+                    class="material-symbols-outlined text-[20px] text-secondary"
+                    >chat</span
+                  ><span>Send WhatsApp Status Update</span></span
+                ><span
+                  class="material-symbols-outlined text-[16px] text-outline"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </section>
+          <section
+            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+          >
+            <div
+              class="mb-space-xs flex items-center justify-between pb-space-sm"
+            >
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[22px] text-primary"
+                  >table_chart</span
+                >
+                <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                  Custom Columns
+                </h2>
+              </div>
+            </div>
+            @if (customFields().length === 0) {
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                No custom columns have been created.
+              </p>
+            } @else {
+              <div class="space-y-space-sm">
+                @for (field of customFields(); track field.id) {
+                  <div>
+                    <label
+                      class="mb-1 block font-label-sm text-label-sm uppercase tracking-wider text-outline"
+                      >{{ field.label }}</label
+                    >
+                    @if (field.dataType === "DATE") {
+                      <input
+                        class="w-full rounded-lg bg-surface-container-low px-3 py-2 font-body-md text-body-md text-on-surface shadow-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                        type="date"
+                        [(ngModel)]="customValues[field.fieldKey]"
+                        [name]="'cf-' + field.fieldKey"
+                      />
+                    } @else {
+                      <input
+                        class="w-full rounded-lg bg-surface-container-low px-3 py-2 font-body-md text-body-md text-on-surface shadow-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                        [type]="field.dataType === 'NUMBER' ? 'number' : 'text'"
+                        [(ngModel)]="customValues[field.fieldKey]"
+                        [name]="'cf-' + field.fieldKey"
+                        [placeholder]="field.sourceHeader || field.label"
+                      />
+                    }
+                  </div>
+                }
+              </div>
+              <div
+                class="mt-space-md flex items-center justify-between pt-space-xs"
+              >
+                @if (customSaved()) {
+                  <span
+                    class="flex items-center gap-1 font-body-sm text-body-sm text-outline"
+                    ><span class="material-symbols-outlined text-[14px]"
+                      >done_all</span
+                    >All changes saved</span
+                  >
+                } @else {
+                  <span></span>
+                }
+                <button
+                  class="rounded-lg bg-primary px-space-md py-2 font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-container"
+                  type="button"
+                  (click)="saveCustomFields()"
+                  [disabled]="savingCustom()"
+                >
+                  {{ savingCustom() ? "Saving…" : "Save Details" }}
+                </button>
+              </div>
+            }
+          </section>
+          <section
+            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+          >
+            <div
+              class="mb-space-xs flex items-center justify-between pb-space-sm"
+            >
+              <div class="flex items-center gap-2">
+                <span
+                  class="material-symbols-outlined text-[22px] text-tertiary"
+                  >radar</span
+                >
+                <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                  Journal Watchdog
+                </h2>
+              </div>
+              <span
+                class="rounded-full bg-secondary-container px-2 py-0.5 font-label-sm text-label-sm text-on-secondary-container"
+                >Registry linked</span
+              >
+            </div>
+            <p
+              class="mb-space-md font-body-sm text-body-sm text-on-surface-variant"
+            >
+              Monitoring this portfolio record for
+              <span class="font-bold text-on-surface"
+                >“{{ mark()!.name || "this mark" }}”</span
+              >
+              in Class {{ mark()!.tmClass || "—" }}.
+            </p>
+            <div
+              class="flex items-start gap-space-sm rounded-xl bg-surface-container-low p-space-sm"
+            >
+              <div
+                class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary-fixed text-on-secondary-fixed"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >verified_user</span
+                >
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface">
+                <span class="block font-bold">{{
+                  mark()!.trademarkStatus || "Registry status awaiting update"
+                }}</span
+                ><span class="text-on-surface-variant">
+                  @if (mark()!.registrySyncedDate) {
+                    Last registry confirmation
+                    {{ mark()!.registrySyncedDate | date: "dd MMM yyyy" }}.
+                  } @else {
+                    Refresh the IP India record for the latest verification.
+                  }
+                </span>
+              </div>
+            </div>
+          </section>
+        </aside>
       </div>
-
-      @if (selectedFiles.length > 0) {
-        <ul class="staged-files">
-          @for (file of selectedFiles; track file.name + file.size; let i = $index) {
-            <li>
-              <span class="staged-name">{{ file.name }}</span>
-              <button type="button" class="staged-remove" (click)="removeSelected(i)" aria-label="Remove">×</button>
-            </li>
-          }
-        </ul>
-      }
-
-      <!-- Partial success is the normal outcome of dragging in a folder, so refusals are shown
-           beside what saved rather than replacing it with an error. -->
-      @if (uploadFailures().length > 0) {
-        <ul class="upload-failures">
-          @for (failure of uploadFailures(); track failure.fileName) {
-            <li><strong>{{ failure.fileName }}</strong> — {{ failure.reason }}</li>
-          }
-        </ul>
-      }
-
-      <p class="card-hint small">
-        PDF, Word, Excel, images, email files. Up to 25 MB each. Select several at once — they all
-        get the type you choose, and you can correct any of them later in
-        <a routerLink="/agent-portal/documents">Documents</a>.
-      </p>
-    </section>
-
-    <!-- ── YOUR OWN FIELDS ──────────────────────────────────────────────
-         The firm's spreadsheet columns that our trademark model has no home for. Always editable,
-         registry-verified or not: the register has no opinion on a firm's own receipt numbers. -->
-    <section class="card">
-      <h2>Imported spreadsheet details</h2>
-      <p class="card-hint">
-        Extra columns from your workbook, kept in spreadsheet order. These stay editable even when the mark itself is
-        locked.
-      </p>
-
-      @if (customFields().length === 0) {
-        <p class="empty-hint">
-          You have no custom fields yet. Import a portfolio spreadsheet or create a field from the portfolio listing.
-        </p>
-      } @else {
-        <div class="spreadsheet-fields" role="table" aria-label="Imported spreadsheet details">
-          <div class="spreadsheet-heading" role="row">
-            <span role="columnheader">Column</span>
-            <span role="columnheader">Value</span>
-          </div>
-          @for (field of customFields(); track field.id) {
-            <label class="spreadsheet-field-row" role="row">
-              <span class="spreadsheet-field-name" role="cell">
-                {{ field.label }}
-              </span>
-              @if (field.dataType === 'DATE') {
-                <input type="date" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey" />
-              } @else {
-                <input [type]="field.dataType === 'NUMBER' ? 'number' : 'text'" [(ngModel)]="customValues[field.fieldKey]" [name]="'cf-' + field.fieldKey"
-                       [placeholder]="field.sourceHeader || field.label" />
-              }
-            </label>
-          }
-        </div>
-        <div class="notes-actions">
-          <button class="btn-primary" (click)="saveCustomFields()" [disabled]="savingCustom()">
-            {{ savingCustom() ? 'Saving…' : 'Save details' }}
-          </button>
-          @if (customSaved()) { <span class="saved-flag">Saved</span> }
-        </div>
-      }
-
-    </section>
+    </div>
   }
-</div>
+</main>

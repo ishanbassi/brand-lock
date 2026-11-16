@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,7 +13,6 @@ import { ITrademark } from '../../../models/trademark.model';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 
 type JournalSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
-type SuggestionField = Exclude<JournalSearchField, 'applicationNo'>;
 
 /** Descriptions longer than this are clamped until the agent asks for the rest. */
 const DESCRIPTION_PREVIEW_CHARS = 160;
@@ -45,13 +44,11 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   ];
   searchField = signal<JournalSearchField>('name');
   searchTerm = '';
-  selectedFilters = signal<Record<SuggestionField, string[]>>({ name: [], agentName: [], proprietorName: [] });
-  suggestions = signal<string[]>([]);
-  suggestionsLoading = signal(false);
-  suggestionsOpen = signal(false);
   portfolioOnly = signal(false);
   portfolioLinks = signal<Record<string, number>>({});
   journalMarks = signal<ITrademark[]>([]);
+  artworkUrls = signal<Record<number, string>>({});
+  artworkFailures = signal<Set<number>>(new Set());
   browsing = signal(false);
   browseError = signal('');
   browsePage = signal(1);
@@ -76,6 +73,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   /** Cards whose goods/services text is shown in full. */
   private expanded = signal<Set<string>>(new Set());
   result = signal<AgentJournalWatchResult | null>(null);
+  showingConflicts = signal(false);
   error = signal('');
 
   /** The classes the shown result was actually run with — so the PDF matches the list on screen. */
@@ -94,7 +92,14 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+    this.clearArtwork();
     this.searchSubscription?.unsubscribe();
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeClassPickerOnOutsideClick(event: MouseEvent): void {
+    const target = event.target;
+    if (target instanceof Element && !target.closest('.class-control')) this.classPickerOpen.set(false);
   }
 
   ngOnInit(): void {
@@ -147,10 +152,6 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   searchPlaceholder = computed(() =>
     this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
   );
-  searchFieldLabel = computed(() =>
-    this.searchFields.find(field => field.value === this.searchField())?.label ?? 'value',
-  );
-
   browsePages = computed(() => Math.max(1, Math.ceil(this.browseTotal() / this.browsePageSize)));
 
   selectJournal(journalNo: number): void {
@@ -161,6 +162,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   private openJournalWorkspace(journalNo: number, runWatch = false): void {
     this.selectedJournal.set(journalNo);
     this.result.set(null);
+    this.showingConflicts.set(false);
     this.riskFilter.set('');
     this.browsePage.set(1);
     this.loadJournalEntries();
@@ -177,13 +179,14 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   setSearchField(field: JournalSearchField): void {
+    if (field === this.searchField()) return;
     this.searchField.set(field);
-    this.searchTerm = '';
-    this.suggestions.set([]);
-    this.suggestionsOpen.set(false);
-    this.portfolioOnly.set(false);
-    this.browsePage.set(1);
-    this.loadJournalEntries();
+    if (this.searchTerm.trim()) {
+      this.portfolioOnly.set(false);
+      this.browsePage.set(1);
+      this.showingConflicts.set(false);
+      this.loadJournalEntries();
+    }
   }
 
   onSearchChange(): void {
@@ -193,45 +196,15 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   findMyPublishedMarks(): void {
     this.portfolioOnly.set(true);
     this.searchTerm = '';
-    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
-    this.suggestions.set([]);
-    this.suggestionsOpen.set(false);
     this.browsePage.set(1);
+    this.showingConflicts.set(false);
     this.loadJournalEntries();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    this.suggestions.set([]);
-    this.suggestionsOpen.set(false);
     this.browsePage.set(1);
-    if (this.searchField() === 'applicationNo') this.loadJournalEntries();
-  }
-
-  selectedFilterEntries = computed(() => {
-    const selected = this.selectedFilters();
-    return (Object.keys(selected) as SuggestionField[]).flatMap(field =>
-      selected[field].map(value => ({ field, value, label: this.searchFields.find(item => item.value === field)?.label ?? field })),
-    );
-  });
-
-  isSuggestionSelected(value: string): boolean {
-    const field = this.searchField();
-    return field !== 'applicationNo' && this.selectedFilters()[field].includes(value);
-  }
-
-  toggleSuggestion(value: string): void {
-    const field = this.searchField();
-    if (field === 'applicationNo') return;
-    this.portfolioOnly.set(false);
-    this.selectedFilters.update(current => {
-      const values = current[field];
-      return {
-        ...current,
-        [field]: values.includes(value) ? values.filter(item => item !== value) : [...values, value],
-      };
-    });
-    this.browsePage.set(1);
+    this.showingConflicts.set(false);
     this.loadJournalEntries();
   }
 
@@ -242,20 +215,11 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       : ['/agent-portal/watch/journal/marks', mark.id!];
   }
 
-  removeFilter(field: SuggestionField, value: string): void {
-    this.portfolioOnly.set(false);
-    this.selectedFilters.update(current => ({ ...current, [field]: current[field].filter(item => item !== value) }));
-    this.browsePage.set(1);
-    this.loadJournalEntries();
-  }
-
   clearAllFilters(): void {
     this.portfolioOnly.set(false);
     this.searchTerm = '';
-    this.selectedFilters.set({ name: [], agentName: [], proprietorName: [] });
-    this.suggestions.set([]);
-    this.suggestionsOpen.set(false);
     this.browsePage.set(1);
+    this.showingConflicts.set(false);
     this.loadJournalEntries();
   }
 
@@ -274,7 +238,9 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       this.agentDataService.getPortfolioPublications(journalNo, this.browsePage() - 1, this.browsePageSize).subscribe({
         next: response => {
           const marks = response.body ?? [];
+          this.clearArtwork();
           this.journalMarks.set(marks);
+          this.loadArtwork(marks);
           this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
           this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
         },
@@ -292,10 +258,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
       size: this.browsePageSize,
       sort: 'applicationNo,desc',
     };
-    const selected = this.selectedFilters();
-    for (const field of Object.keys(selected) as SuggestionField[]) {
-      if (selected[field].length) req[`${field}.in`] = selected[field];
-    }
+    if (this.selectedClasses().length) req['tmClass.in'] = this.selectedClasses().map(String);
     const term = this.searchTerm.trim();
     if (term) {
       if (this.searchField() === 'applicationNo') {
@@ -308,13 +271,15 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
         }
         req['applicationNo.equals'] = term;
       } else {
-        // Text entry for name fields drives suggestions; only checked values filter the journal.
+        req[`${this.searchField()}.contains`] = term;
       }
     }
     this.trademarkService.queryByJournal(journalNo, req).subscribe({
       next: response => {
         const marks = response.body ?? [];
+        this.clearArtwork();
         this.journalMarks.set(marks);
+        this.loadArtwork(marks);
         this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
         this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
       },
@@ -345,45 +310,47 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  private handleSearchInput(): void {
-    const term = this.searchTerm.trim();
-    if (this.searchField() === 'applicationNo') {
-      this.portfolioOnly.set(false);
-      this.browsePage.set(1);
-      this.loadJournalEntries();
-      return;
-    }
-    if (term.length < 2) {
-      this.suggestions.set([]);
-      this.suggestionsOpen.set(false);
-      return;
-    }
-    this.loadSuggestions(term, this.searchField() as SuggestionField);
+  /** Uses the authenticated artwork endpoint; absent or failed images fall back to initials. */
+  artworkUrl(mark: ITrademark): string | null {
+    return mark.id == null ? null : this.artworkUrls()[mark.id] ?? null;
   }
 
-  private loadSuggestions(term: string, field: SuggestionField): void {
-    const journalNo = this.selectedJournal();
-    if (journalNo == null) return;
-    this.suggestionsLoading.set(true);
-    this.suggestionsOpen.set(true);
-    this.trademarkService.queryByJournal(journalNo, {
-      page: 0,
-      size: 30,
-      sort: `${field},asc`,
-      [`${field}.contains`]: term,
-    }).subscribe({
-      next: response => {
-        const values = (response.body ?? [])
-          .map(mark => String(mark[field] ?? '').trim())
-          .filter(Boolean);
-        this.suggestions.set([...new Set(values)].slice(0, 12));
-        this.suggestionsLoading.set(false);
-      },
-      error: () => {
-        this.suggestions.set([]);
-        this.suggestionsLoading.set(false);
-      },
-    });
+  artworkFailed(mark: ITrademark): boolean {
+    return mark.id != null && this.artworkFailures().has(mark.id);
+  }
+
+  markMonogram(value?: string | null): string {
+    const parts = (value ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'TM';
+    return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  private loadArtwork(marks: ITrademark[]): void {
+    for (const mark of marks) {
+      if (mark.id == null || !mark.imgUrl) continue;
+      const markId = mark.id;
+      this.agentDataService.getTrademarkArtwork(markId).subscribe({
+        next: blob => {
+          if (!this.journalMarks().some(current => current.id === markId && current.imgUrl)) return;
+          const url = URL.createObjectURL(blob);
+          this.artworkUrls.update(urls => ({ ...urls, [markId]: url }));
+        },
+        error: () => this.artworkFailures.update(failures => new Set(failures).add(markId)),
+      });
+    }
+  }
+
+  private clearArtwork(): void {
+    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+    this.artworkUrls.set({});
+    this.artworkFailures.set(new Set());
+  }
+
+  private handleSearchInput(): void {
+    if (this.searchTerm.trim()) this.portfolioOnly.set(false);
+    this.browsePage.set(1);
+    this.showingConflicts.set(false);
+    this.loadJournalEntries();
   }
 
   counts = computed(() => {
@@ -410,10 +377,18 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.selectedClasses.update(list =>
       list.includes(n) ? list.filter(c => c !== n) : [...list, n].sort((a, b) => a - b),
     );
+    this.portfolioOnly.set(false);
+    this.browsePage.set(1);
+    this.showingConflicts.set(false);
+    this.loadJournalEntries();
   }
 
   clearClasses(): void {
     this.selectedClasses.set([]);
+    this.portfolioOnly.set(false);
+    this.browsePage.set(1);
+    this.showingConflicts.set(false);
+    this.loadJournalEntries();
   }
 
   run(): void {
@@ -423,6 +398,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.classPickerOpen.set(false);
     this.error.set('');
     this.result.set(null);
+    this.riskFilter.set('');
     this.selectedConflicts.clear();
     const classes = [...this.selectedClasses()];
     this.ranWithClasses = classes;
@@ -443,6 +419,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.agentDataService.runJournalWatch(journal, this.ranWithClasses, page, this.watchPageSize, this.riskFilter() || undefined).subscribe({
       next: res => {
         this.result.set(res);
+        this.showingConflicts.set(true);
         this.running.set(false);
       },
       error: () => {
@@ -537,7 +514,19 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   setRiskFilter(level: '' | 'HIGH' | 'MEDIUM' | 'LOW'): void {
     if (level === this.riskFilter()) return;
     this.riskFilter.set(level);
-    if (this.result()) this.loadWatchPage(0);
+    if (this.result()) {
+      this.showingConflicts.set(true);
+      this.loadWatchPage(0);
+    }
+  }
+
+  toggleHighConflicts(): void {
+    this.setRiskFilter(this.riskFilter() === 'HIGH' ? '' : 'HIGH');
+  }
+
+  showJournalEntries(): void {
+    this.showingConflicts.set(false);
+    this.riskFilter.set('');
   }
 
   scorePercent(score: number): number {

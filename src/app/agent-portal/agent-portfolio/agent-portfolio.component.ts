@@ -66,6 +66,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   }
 
   trademarks = signal<AgentPortfolioTrademark[]>([]);
+  /** Browser-displayable artwork for the marks on the visible page. */
+  readonly artworkUrls = signal<Record<number, string>>({});
+  private readonly artworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
   error = signal('');
   dashboardStats = signal<AgentDashboardStats | null>(null);
@@ -83,6 +86,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   searchQuery = '';
   filterStatus = '';
   filterClass = '';
+  filterFilingYear = '';
+  filterRenewalDue = false;
+  quickFilter: 'all' | 'registered' | 'attention' | 'renewals' | 'closed' = 'all';
   private searchSubject = new Subject<string>();
 
   /**
@@ -94,6 +100,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     { value: 'NAME', label: 'Trademark', placeholder: 'Search by trademark name…' },
     { value: 'APPLICATION_NO', label: 'Application no.', placeholder: 'Search by application number…' },
     { value: 'PROPRIETOR', label: 'Proprietor', placeholder: 'Search by proprietor name…' },
+    { value: 'CLASS', label: 'Class number', placeholder: 'Search by Nice class number…' },
   ];
 
   // The query the table currently reflects. Tracked here rather than with distinctUntilChanged so
@@ -218,6 +225,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.horizontalTrackResizeObserver?.disconnect();
+    this.clearArtwork();
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
@@ -436,6 +444,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       && !this.searchQuery.trim()
       && !this.filterStatus
       && !this.filterClass
+      && !this.filterFilingYear
+      && !this.filterRenewalDue
       && this.sortField == null;
   }
 
@@ -821,6 +831,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       searchBy: this.searchBy,
       status: this.filterStatus,
       tmClass: this.filterClass === '' ? null : Number(this.filterClass),
+      filingYear: this.filterFilingYear === '' ? null : Number(this.filterFilingYear),
+      renewalDue: this.filterRenewalDue,
       sort: { field: this.sortField, dir: this.sortDir },
     };
   }
@@ -836,7 +848,10 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (requestId !== this.latestLoad) return;
-          this.trademarks.set(res.body || []);
+          const marks = res.body || [];
+          this.clearArtwork();
+          this.trademarks.set(marks);
+          this.loadArtwork(marks);
           const total = res.headers.get('X-Total-Count');
           // Counts the filtered set, so the pager shrinks with the filter rather than offering
           // pages that render empty.
@@ -858,7 +873,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   /** True whenever the table is showing a subset, so the header can say so. */
   get hasFilters(): boolean {
-    return !!(this.searchQuery.trim() || this.filterStatus || this.filterClass);
+    return !!(this.searchQuery.trim() || this.filterStatus || this.filterClass || this.filterFilingYear || this.filterRenewalDue);
   }
 
   get searchPlaceholder(): string {
@@ -890,8 +905,70 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.lastSearched = '';
     this.filterStatus = '';
     this.filterClass = '';
+    this.filterFilingYear = '';
+    this.filterRenewalDue = false;
+    this.quickFilter = 'all';
     this.page = 0;
     this.load();
+  }
+
+  /** Design-strip presets reuse server filters, so every page and export matches the chosen view. */
+  setQuickFilter(filter: 'all' | 'registered' | 'attention' | 'renewals' | 'closed'): void {
+    this.quickFilter = filter;
+    this.filterRenewalDue = filter === 'renewals';
+    this.filterStatus = ({
+      all: '',
+      registered: 'REGISTERED',
+      attention: 'OBJECTED_OR_OPPOSED',
+      renewals: '',
+      closed: 'ABANDONED_WITHDRAWN_REJECTED',
+    } as const)[filter];
+    this.onFilterChange();
+  }
+
+  statusCount(key: string): number {
+    return this.filterOptions()?.statuses.find(status => status.key === key)?.count ?? 0;
+  }
+
+  /** A compact, deterministic stand-in where a portfolio mark has no uploaded device artwork. */
+  markMonogram(value?: string): string {
+    const parts = (value ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'TM';
+    return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  /** The authenticated artwork endpoint supplies browser-ready images, including converted JPEG 2000 files. */
+  artworkUrl(mark: AgentPortfolioTrademark): string | null {
+    return mark.id == null ? null : this.artworkUrls()[mark.id] ?? null;
+  }
+
+  artworkFailed(mark: AgentPortfolioTrademark): boolean {
+    return mark.id != null && this.artworkFailures().has(mark.id);
+  }
+
+  private loadArtwork(marks: AgentPortfolioTrademark[]): void {
+    for (const mark of marks) {
+      if (mark.id == null || !mark.imgUrl) continue;
+      const markId = mark.id;
+      this.agentDataService.getTrademarkArtwork(markId).subscribe({
+        next: blob => {
+          // Ignore artwork returned after the table has moved to another page or filter result.
+          if (!this.trademarks().some(current => current.id === markId && current.imgUrl)) return;
+          const url = URL.createObjectURL(blob);
+          this.artworkUrls.update(urls => ({ ...urls, [markId]: url }));
+        },
+        error: () => {
+          if (!this.trademarks().some(current => current.id === markId && current.imgUrl)) return;
+          this.artworkFailures.update(failures => new Set(failures).add(markId));
+        },
+      });
+    }
+  }
+
+  private clearArtwork(): void {
+    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+    this.artworkUrls.set({});
+    this.artworkFailures.set(new Set());
   }
 
   /** First click sorts by the column, the next reverses it. Restarts at page one either way. */

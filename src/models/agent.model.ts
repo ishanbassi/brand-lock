@@ -211,10 +211,11 @@ export interface AgentPortfolioFilterOptions {
   total: number;
   statuses: AgentStatusCount[];
   classes: { tmClass: number; count: number }[];
+  filingYears?: { year: number; count: number }[];
 }
 
 /** The field the portfolio search box matches against. */
-export type PortfolioSearchField = 'NAME' | 'APPLICATION_NO' | 'PROPRIETOR';
+export type PortfolioSearchField = 'NAME' | 'APPLICATION_NO' | 'PROPRIETOR' | 'CLASS';
 
 /** Portfolio columns the server can sort by — the DTO property names, whitelisted server-side. */
 export type PortfolioSortField =
@@ -235,6 +236,8 @@ export interface AgentPortfolioQuery {
   /** A status bucket key, never a raw registry status. */
   status?: string;
   tmClass?: number | null;
+  filingYear?: number | null;
+  renewalDue?: boolean;
   /** Unset keeps the default order: most recently added to the portfolio first. */
   sort?: { field: PortfolioSortField; dir: 'asc' | 'desc' } | null;
 }

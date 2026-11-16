@@ -1,82 +1,108 @@
-<div class="detail-page">
-  <a routerLink="/agent-portal/watch/journal" class="back-link">&lsaquo; Back to Journal Watch</a>
-
+<main class="relative min-h-full w-full bg-surface px-gutter-desktop">
   @if (loading()) {
-    <div class="loading-state">Loading trademark…</div>
+    <div class="py-space-xl font-body-md text-body-md text-on-surface-variant">Loading trademark…</div>
   } @else if (!trademark()) {
-    <div class="alert-error">{{ error() || 'Trademark not found.' }}</div>
+    <div class="mt-space-lg rounded-xl bg-error-container p-space-md font-body-md text-body-md text-on-error-container" role="alert">
+      {{ error() || "Trademark not found." }}
+    </div>
   } @else {
-    <header class="detail-header">
-      <div class="title-block">
-        <h1>{{ trademark()!.name || 'Application ' + trademark()!.applicationNo }}</h1>
-        <div class="title-meta">
-          @if (trademark()!.applicationNo) { <span>Application {{ trademark()!.applicationNo }}</span> }
-          @if (trademark()!.tmClass) { <span>Class {{ trademark()!.tmClass }}</span> }
-          <span class="status-chip">{{ trademark()!.trademarkStatus || 'Unknown' }}</span>
+    <div class="flex w-full flex-col space-y-space-lg pb-16">
+      <div class="flex flex-col justify-between gap-space-sm pt-space-xs sm:flex-row sm:items-center">
+        <div class="flex items-center gap-space-sm">
+          <a routerLink="/agent-portal/watch/journal" class="group inline-flex items-center gap-1.5 rounded-lg bg-surface-container-low px-space-sm py-1 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface">
+            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:-translate-x-0.5">arrow_back</span><span>Back to Journal Watch</span>
+          </a>
+          <span class="font-label-md text-label-md text-outline-variant">/</span>
+          <span class="font-label-md text-label-md text-on-surface-variant">Journal {{ trademark()!.journalNo || "—" }}</span>
+          <span class="font-label-md text-label-md text-outline-variant">/</span>
+          <span class="font-label-md text-label-md font-bold text-primary">#{{ trademark()!.applicationNo || trademark()!.id }}</span>
+        </div>
+        <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+          <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-secondary"></span></span>
+          <span>Trade Marks Journal: <span class="font-bold text-on-surface">Published record</span></span>
         </div>
       </div>
 
-      <div class="detail-actions">
-        <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
-        @if (trademark()!.applicationNo) {
-          <button class="btn-ghost" type="button" (click)="refresh()" [disabled]="refreshState() === 'fetching'">
-            @if (refreshState() === 'fetching') {
-              <span class="refresh-spinner" aria-hidden="true"></span> Searching register…
-            } @else {
-              <ap-icon name="refresh" [size]="15" /> Refresh from register
+      <section class="relative rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg">
+        <div class="absolute left-0 right-0 top-0 h-1.5 bg-gradient-to-r from-primary via-primary-container to-secondary"></div>
+        <div class="flex flex-col justify-between gap-space-md lg:flex-row lg:items-center">
+          <div class="flex flex-col gap-space-md sm:flex-row sm:items-center">
+            <div class="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-container shadow-inner sm:h-20 sm:w-20">
+              <img class="h-full w-full object-contain p-1" [src]="imageUrl()" [alt]="'Artwork for ' + (trademark()!.name || 'this mark')" />
+              <span class="absolute bottom-1 right-1.5 font-label-sm text-label-sm text-outline-variant">TM</span>
+            </div>
+            <div class="flex flex-col space-y-1">
+              <div class="flex flex-wrap items-center gap-space-xs sm:gap-space-sm">
+                <h1 class="font-display-lg text-display-lg tracking-tight text-on-surface">{{ trademark()!.name || "Untitled mark" }}</h1>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-3 py-1 font-label-lg text-label-lg text-on-secondary-container shadow-sm"><span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1">check_circle</span>{{ trademark()!.trademarkStatus || "Status pending" }}</span>
+                <span class="rounded-full bg-surface-container-high px-2.5 py-0.5 font-label-sm text-label-sm text-on-surface">Class {{ trademark()!.tmClass || "—" }}</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-x-space-md gap-y-1 pt-0.5 font-body-sm text-body-sm text-on-surface-variant">
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">tag</span><span>Application <strong>{{ trademark()!.applicationNo || "—" }}</strong></span></span><span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">category</span><span>{{ trademark()!.type === "IMAGEMARK" ? "Image (Device)" : (trademark()!.type || "Wordmark") }}</span></span><span>•</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">menu_book</span><span>Journal {{ trademark()!.journalNo || "—" }}</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="flex shrink-0 flex-wrap items-center gap-space-xs sm:gap-space-sm">
+            <ap-export-menu [busy]="exporting()" (selected)="export($event)" />
+            @if (trademark()!.applicationNo) {
+              <button class="flex items-center gap-1.5 rounded-lg bg-surface-container-low px-space-md py-2.5 font-label-lg text-label-lg text-on-surface shadow-sm transition-all active:scale-95 hover:bg-surface-container" type="button" (click)="refresh()" [disabled]="refreshState() === 'fetching'">
+                <span class="material-symbols-outlined text-[18px] text-primary" [class.animate-spin]="refreshState() === 'fetching'">sync</span><span>{{ refreshState() === "fetching" ? "Querying registry…" : "Refresh IP India" }}</span>
+              </button>
             }
-          </button>
-        }
-      </div>
-    </header>
+          </div>
+        </div>
+        <div class="mt-space-md flex flex-col justify-between gap-space-sm rounded-xl bg-surface-container-low/70 px-space-md py-2.5 pt-space-sm md:flex-row md:items-center">
+          <div class="flex items-center gap-2.5"><div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary-fixed"><span class="material-symbols-outlined text-[16px] text-on-secondary-fixed" style="font-variation-settings: 'FILL' 1">lock</span></div><div class="font-body-sm text-body-sm text-on-surface"><span class="font-bold text-secondary">Journal Record:</span> Published in Trade Marks Journal {{ trademark()!.journalNo || "—" }}.</div></div>
+        </div>
+      </section>
 
-    @if (refreshMessage()) {
-      <div class="refresh-status" role="status" aria-live="polite"
-        [class.success]="refreshState() === 'updated' || refreshState() === 'fresh'"
-        [class.warning]="refreshState() === 'busy' || refreshState() === 'failed'">
-        @if (refreshState() === 'fetching') { <span class="refresh-spinner" aria-hidden="true"></span> }
-        @else if (refreshState() === 'updated' || refreshState() === 'fresh') { <ap-icon name="check" [size]="16" /> }
-        @else { <ap-icon name="alert" [size]="16" /> }
-        <span>{{ refreshMessage() }}</span>
-      </div>
-    }
-
-    @if (error()) {
-      <div class="alert-error">{{ error() }}</div>
-    }
-
-    <div class="source-banner">
-      <ap-icon name="journal" [size]="16" />
-      <span>Published in Trade Marks Journal {{ trademark()!.journalNo || '—' }}.</span>
-    </div>
-
-    <section class="card">
-      <h2>Details</h2>
-      <div class="details-layout has-artwork">
-        <figure class="artwork">
-          <img [src]="imageUrl()" [alt]="'Artwork for ' + (trademark()!.name || 'this mark')" />
-        </figure>
-        <dl class="detail-grid">
-          <div><dt>Party</dt><dd>{{ trademark()!.proprietorName || '—' }}</dd></div>
-          <div><dt>Class</dt><dd>{{ trademark()!.tmClass || '—' }}</dd></div>
-          <div><dt>Status</dt><dd>{{ trademark()!.trademarkStatus || 'Unknown' }}</dd></div>
-          <div><dt>Type</dt><dd>{{ trademark()!.type === 'IMAGEMARK' ? 'Image (Device)' : (trademark()!.type || 'Wordmark') }}</dd></div>
-          <div><dt>Filed</dt><dd>{{ trademark()!.applicationDate?.format('DD MMM YYYY') || '—' }}</dd></div>
-          <div><dt>Journal</dt><dd>{{ trademark()!.journalNo || '—' }}</dd></div>
-          <div><dt>Jurisdiction</dt><dd>{{ trademark()!.headOffice || '—' }}</dd></div>
-          <div><dt>Agent</dt><dd>{{ trademark()!.agentName || '—' }}</dd></div>
-        </dl>
-      </div>
-      @if (trademark()!.proprietorAddress || trademark()!.agentAddress) {
-        <dl class="detail-grid address-grid">
-          @if (trademark()!.proprietorAddress) { <div><dt>Party address</dt><dd>{{ trademark()!.proprietorAddress }}</dd></div> }
-          @if (trademark()!.agentAddress) { <div><dt>Agent address</dt><dd>{{ trademark()!.agentAddress }}</dd></div> }
-        </dl>
+      @if (refreshMessage()) {
+        <div class="flex items-center justify-between rounded-xl px-space-md py-space-sm font-body-sm text-body-sm" [class]="refreshState() === 'updated' || refreshState() === 'fresh' ? 'bg-secondary-container text-on-secondary-container' : refreshState() === 'fetching' ? 'bg-surface-container-low text-on-surface' : 'bg-error-container text-on-error-container'" role="status" aria-live="polite">
+          <span class="flex items-center gap-2">
+            @if (refreshState() === "fetching") { <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> }
+            @else if (refreshState() === "updated" || refreshState() === "fresh") { <span class="material-symbols-outlined text-[18px]">check_circle</span> }
+            @else { <span class="material-symbols-outlined text-[18px]">error</span> }
+            {{ refreshMessage() }}
+          </span>
+        </div>
       }
-      <div class="goods">
-        <dt>Goods / services</dt>
-        <p>{{ trademark()!.details || 'No description on record.' }}</p>
+      @if (error()) { <div class="rounded-xl bg-error-container px-space-md py-space-sm font-body-sm text-body-sm text-on-error-container" role="alert">{{ error() }}</div> }
+
+      <div class="grid grid-cols-1 gap-space-lg lg:grid-cols-12">
+        <div class="flex flex-col space-y-space-lg lg:col-span-8">
+          <section class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg">
+            <div class="mb-space-md flex items-center justify-between pb-space-sm"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[22px] text-primary">badge</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Official Journal Information</h2></div><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Published record</span></div>
+            <div class="grid grid-cols-1 items-start gap-space-lg md:grid-cols-12">
+              <div class="flex flex-col items-center md:col-span-5"><div class="group relative flex aspect-square w-full flex-col items-center justify-center rounded-xl bg-surface-container-low p-6 text-center shadow-inner"><img class="max-h-full max-w-full object-contain" [src]="imageUrl()" [alt]="'Artwork for ' + (trademark()!.name || 'this mark')" /><div class="mt-4 flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-secondary">image</span><span>Journal artwork</span></div></div></div>
+              <div class="grid grid-cols-1 gap-x-space-lg gap-y-space-md md:col-span-7 sm:grid-cols-2">
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Party</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface">{{ trademark()!.proprietorName || "—" }}</span></div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Nice Classification</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-primary">Class {{ trademark()!.tmClass || "—" }}</span></div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Filing Date</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface">{{ trademark()!.applicationDate?.format("DD MMM YYYY") || "—" }}</span></div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Journal Number</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-tertiary">{{ trademark()!.journalNo || "—" }}</span></div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Jurisdiction</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface">{{ trademark()!.headOffice || "—" }}</span></div>
+                <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Mark Type</span><span class="mt-0.5 block font-headline-sm text-headline-sm text-on-surface">{{ trademark()!.type === "IMAGEMARK" ? "Image (Device)" : (trademark()!.type || "Wordmark") }}</span></div>
+              </div>
+            </div>
+            <div class="mt-space-lg rounded-xl bg-surface-container-low/40 p-space-md"><div class="mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-primary">inventory_2</span><h3 class="font-label-lg text-label-lg uppercase tracking-wide text-on-surface">Goods &amp; Services</h3></div><p class="mt-1 font-body-sm text-body-sm leading-relaxed text-on-surface-variant">{{ trademark()!.details || "No description on record." }}</p></div>
+          </section>
+        </div>
+
+        <aside class="flex flex-col space-y-space-lg lg:col-span-4">
+          <section class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg">
+            <div class="mb-space-md flex items-center gap-2"><span class="material-symbols-outlined text-[22px] text-primary">contact_page</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Publication Contacts</h2></div>
+            <div class="flex flex-col gap-space-md">
+              <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Party address</span><span class="mt-1 block font-body-sm text-body-sm leading-relaxed text-on-surface">{{ trademark()!.proprietorAddress || "Not published" }}</span></div>
+              <div class="rounded-lg bg-surface-container-low/50 p-space-sm"><span class="block font-label-sm text-label-sm uppercase tracking-wider text-outline">Agent</span><span class="mt-1 block font-body-sm text-body-sm text-on-surface">{{ trademark()!.agentName || "Not published" }}</span>@if (trademark()!.agentAddress) { <span class="mt-1 block font-body-sm text-body-sm leading-relaxed text-on-surface-variant">{{ trademark()!.agentAddress }}</span> }</div>
+            </div>
+          </section>
+          <section class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg">
+            <div class="mb-space-md flex items-center gap-2"><span class="material-symbols-outlined text-[22px] text-primary">menu_book</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Journal Reference</h2></div>
+            <dl class="flex flex-col gap-space-sm font-body-sm text-body-sm"><div class="flex items-center justify-between gap-space-sm"><dt class="text-on-surface-variant">Journal number</dt><dd class="font-bold text-on-surface">{{ trademark()!.journalNo || "—" }}</dd></div><div class="flex items-center justify-between gap-space-sm"><dt class="text-on-surface-variant">Page number</dt><dd class="font-bold text-on-surface">{{ trademark()!.pageNo || "—" }}</dd></div><div class="flex items-center justify-between gap-space-sm"><dt class="text-on-surface-variant">Source</dt><dd class="font-bold text-on-surface">{{ trademark()!.source || "Trade Marks Journal" }}</dd></div></dl>
+          </section>
+        </aside>
       </div>
-    </section>
+    </div>
   }
-</div>
+</main>

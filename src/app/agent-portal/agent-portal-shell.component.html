@@ -3,9 +3,10 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <a routerLink="/" class="sidebar-brand">
+      <a routerLink="/" class="sidebar-brand" aria-label="Trademarx Agent Portal">
         @if (!sidebarCollapsed()) {
-          <span class="brand-tm">TM</span><span class="brand-arx">arx</span>
+          <img src="/assets/images/trademarx.png" alt="" />
+          <span class="brand-product">Agent Portal</span>
         }
       </a>
       <button type="button"
