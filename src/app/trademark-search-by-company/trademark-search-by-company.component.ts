@@ -9,7 +9,6 @@ import { SeoService } from '../shared/services/seo.service';
 import { ITrademark } from '../../models/trademark.model';
 import { environment } from '../../environments/environment';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
-import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 
 interface Faq {
@@ -19,7 +18,7 @@ interface Faq {
 
 @Component({
   selector: 'app-trademark-search-by-company',
-  imports: [SharedModule, ReactiveFormsModule, MobileBottomNavbarComponent, TrademarkPulseComponent],
+  imports: [SharedModule, ReactiveFormsModule, MobileBottomNavbarComponent],
   templateUrl: './trademark-search-by-company.component.html',
   styleUrl: './trademark-search-by-company.component.scss',
 })

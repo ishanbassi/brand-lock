@@ -8,7 +8,6 @@ import { LiveSearchComponent } from '../live-search/live-search.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
 import { RatingReviewComponent } from '../rating-review/rating-review.component';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
-import { TrademarkPulseComponent } from '../trademark-pulse/trademark-pulse.component';
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
 import { SeoService } from '../shared/services/seo.service';
 
@@ -39,7 +38,7 @@ export interface Statistic {
 
 @Component({
   selector: 'app-trademark-search',
-  imports: [LiveSearchComponent, CommonModule, RouterModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent,TrademarkPulseComponent,RatingReviewComponent],
+  imports: [LiveSearchComponent, CommonModule, RouterModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, RatingReviewComponent],
   templateUrl: './trademark-search.component.html',
   styleUrl: './trademark-search.component.scss'
 })
