@@ -183,6 +183,63 @@
    Every rule here is written to wrap rather than push the row wider — an overflowing
    status cell was what broke the quick-info panel on narrow phones. */
 
+/* Registration certificate callout, intentionally available only on registered marks. */
+.certificate-download-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  border-radius: 12px;
+  background: #effbf4;
+  color: #123524;
+}
+
+.certificate-download-copy {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #356147;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.certificate-download-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #16703a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #0f5a2d;
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgb(22 112 58 / 0.35);
+    outline-offset: 3px;
+  }
+}
+
 /* Left-aligned by default (details table); the quick-info panel flips it right below. */
 .status-cell {
   display: flex;
@@ -328,5 +385,11 @@
   .content-grid {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+
+  .certificate-download-section {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
   }
 }

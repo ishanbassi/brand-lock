@@ -218,5 +218,9 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
     this.trademark!.faqs![index].opened = !this.trademark!.faqs![index].opened;
   }
 
+  isRegisteredTrademark(): boolean {
+    return this.trademark?.trademarkStatus?.trim().toLowerCase() === 'registered';
+  }
+
 
 }

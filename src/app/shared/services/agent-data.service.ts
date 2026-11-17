@@ -914,6 +914,37 @@ export class AgentDataService {
     );
   }
 
+  /** Queues the expensive comparison and returns immediately with a durable run id. */
+  startJournalWatchRun(
+    journalNo: number,
+    tmClasses?: number[] | null,
+  ): Observable<AgentJournalWatchResult> {
+    return this.http.post<AgentJournalWatchResult>(
+      `${this.base}/agent-portal/watch/journals/${journalNo}/runs`,
+      {},
+      { params: this.tmClassParams(tmClasses) },
+    );
+  }
+
+  /** Reads persisted matches only; this is inexpensive even while the worker is still scanning. */
+  getJournalWatchRun(
+    runId: number,
+    page = 0,
+    size = 20,
+    riskLevel?: 'HIGH' | 'MEDIUM' | 'LOW',
+  ): Observable<AgentJournalWatchResult> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (riskLevel) params = params.set('riskLevel', riskLevel);
+    return this.http.get<AgentJournalWatchResult>(
+      `${this.base}/agent-portal/watch/runs/${runId}`,
+      { params },
+    );
+  }
+
+  retryJournalWatchRun(runId: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/agent-portal/watch/runs/${runId}/retry`, {});
+  }
+
   /** Repeated `tmClasses` params — what Spring binds to a `List<Integer>`. No param means all classes. */
   private tmClassParams(tmClasses?: number[] | null): HttpParams {
     let params = new HttpParams();
