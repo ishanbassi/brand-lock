@@ -564,6 +564,11 @@ export interface AgentJournalConflict {
 }
 
 export interface AgentJournalWatchResult {
+  /** Persisted run id. Present for asynchronous journal watches. */
+  runId?: number;
+  /** QUEUED, RUNNING, COMPLETED or FAILED. */
+  status?: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  errorMessage?: string;
   journalNo: number;
   /** Candidate pairs actually scored — distinguishes "no conflicts" from "nothing comparable". */
   pairsScored: number;

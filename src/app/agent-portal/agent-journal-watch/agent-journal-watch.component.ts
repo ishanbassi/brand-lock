@@ -56,6 +56,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   readonly browsePageSize = 20;
   private readonly searchChanges = new Subject<void>();
   private searchSubscription?: Subscription;
+  private watchPollTimer?: ReturnType<typeof setTimeout>;
 
   /** All 45 Nice classes. None selected means every class — the default. */
   readonly allClasses = Array.from({ length: 45 }, (_, i) => i + 1);
@@ -91,6 +92,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
+    this.clearWatchPolling();
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     this.clearArtwork();
     this.searchSubscription?.unsubscribe();
@@ -148,6 +150,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   visibleConflicts = computed<AgentJournalConflict[]>(() => {
     return this.result()?.conflicts ?? [];
   });
+  watchProcessing = computed(() => ['QUEUED', 'RUNNING'].includes(this.result()?.status ?? ''));
 
   searchPlaceholder = computed(() =>
     this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
@@ -160,6 +163,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   private openJournalWorkspace(journalNo: number, runWatch = false): void {
+    this.clearWatchPolling();
     this.selectedJournal.set(journalNo);
     this.result.set(null);
     this.showingConflicts.set(false);
@@ -394,6 +398,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   run(): void {
     const journal = this.selectedJournal();
     if (journal == null || this.running()) return;
+    this.clearWatchPolling();
     this.running.set(true);
     this.classPickerOpen.set(false);
     this.error.set('');
@@ -402,7 +407,13 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.selectedConflicts.clear();
     const classes = [...this.selectedClasses()];
     this.ranWithClasses = classes;
-    this.loadWatchPage(0);
+    this.agentDataService.startJournalWatchRun(journal, classes).subscribe({
+      next: result => this.receiveWatchResult(result),
+      error: () => {
+        this.error.set('The check could not be started. Please try again.');
+        this.running.set(false);
+      },
+    });
   }
 
   goToWatchPage(page: number): void {
@@ -412,27 +423,81 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   private loadWatchPage(page: number): void {
-    const journal = this.selectedJournal();
-    if (journal == null) return;
+    const runId = this.result()?.runId;
+    if (runId == null) return;
     this.running.set(true);
     this.error.set('');
-    this.agentDataService.runJournalWatch(journal, this.ranWithClasses, page, this.watchPageSize, this.riskFilter() || undefined).subscribe({
-      next: res => {
-        this.result.set(res);
-        this.showingConflicts.set(true);
-        this.running.set(false);
-      },
+    this.agentDataService.getJournalWatchRun(runId, page, this.watchPageSize, this.riskFilter() || undefined).subscribe({
+      next: result => this.receiveWatchResult(result),
       error: () => {
-        this.error.set('The check could not be completed. Please try again.');
+        this.error.set('Could not load this page of watch results. Please try again.');
         this.running.set(false);
       },
     });
+  }
+
+  private receiveWatchResult(result: AgentJournalWatchResult): void {
+    this.result.set(result);
+    this.showingConflicts.set(true);
+    this.running.set(false);
+    this.clearWatchPolling();
+    if (result.status === 'QUEUED' || result.status === 'RUNNING') {
+      this.watchPollTimer = setTimeout(() => this.refreshWatchProgress(), 1500);
+    }
+  }
+
+  private refreshWatchProgress(): void {
+    const current = this.result();
+    if (current?.runId == null || !this.watchProcessing()) return;
+    this.agentDataService.getJournalWatchRun(
+      current.runId,
+      current.page,
+      this.watchPageSize,
+      this.riskFilter() || undefined,
+    ).subscribe({
+      next: result => this.receiveWatchResult(result),
+      error: () => {
+        this.error.set('Could not refresh watch progress. Retrying shortly.');
+        this.watchPollTimer = setTimeout(() => this.refreshWatchProgress(), 3000);
+      },
+    });
+  }
+
+  retryWatchRun(): void {
+    const runId = this.result()?.runId;
+    if (runId == null) return;
+    this.error.set('');
+    this.running.set(true);
+    this.agentDataService.retryJournalWatchRun(runId).subscribe({
+      next: () => this.agentDataService.getJournalWatchRun(runId, 0, this.watchPageSize, this.riskFilter() || undefined).subscribe({
+        next: result => this.receiveWatchResult(result),
+        error: () => {
+          this.error.set('The watch restarted, but its progress could not be loaded yet.');
+          this.running.set(false);
+        },
+      }),
+      error: () => {
+        this.error.set('Could not restart the watch. Please start a new check.');
+        this.running.set(false);
+      },
+    });
+  }
+
+  private clearWatchPolling(): void {
+    if (this.watchPollTimer !== undefined) {
+      clearTimeout(this.watchPollTimer);
+      this.watchPollTimer = undefined;
+    }
   }
 
   /** Downloads the run on screen — same issue, same classes — as Excel or PDF. */
   export(format: ExportFormat): void {
     const journal = this.result()?.journalNo;
     if (journal == null || this.exporting() || this.printing()) return;
+    if (this.watchProcessing()) {
+      this.error.set('Wait for the watch to finish before exporting its complete results.');
+      return;
+    }
     if (format === 'pdf') {
       const selected = [...this.selectedConflicts.values()];
       if (!selected.length) {

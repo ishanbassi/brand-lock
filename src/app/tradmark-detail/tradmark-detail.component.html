@@ -84,6 +84,16 @@
 
 
 
+      <section class="certificate-download-section" *ngIf="isRegisteredTrademark()" aria-labelledby="certificate-download-heading">
+        <div class="certificate-download-copy">
+          <h2 id="certificate-download-heading">Download this trademark certificate</h2>
+          <p>This trademark is registered. Use application no. {{ trademark?.applicationNo }} to get the official registration certificate.</p>
+        </div>
+        <a class="certificate-download-link" routerLink="/trademark-certificate-download">
+          Download certificate
+        </a>
+      </section>
+
       <!-- <app-trademark-status-action [trademark]="trademark"></app-trademark-status-action> -->
 
       <app-status-watch-signup [trademark]="trademark"></app-status-watch-signup>
