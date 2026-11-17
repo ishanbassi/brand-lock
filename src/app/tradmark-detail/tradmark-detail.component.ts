@@ -16,13 +16,14 @@ import { DataUtils } from '../shared/services/data-util.service';
 import { proprietorUrl } from '../shared/utils/proprietor-slug.util';
 import { SkeletonComponent } from '../shared/skeleton/skeleton.component';
 import { EmbedWidgetComponent } from '../embed-widget/embed-widget.component';
+import { TrademarkCertificateDownloadComponent } from '../trademark-certificate-download/trademark-certificate-download.component';
 
 /** What the "Fetch Latest Status" button is currently reporting. */
 export type RefreshUiState = 'idle' | 'fetching' | 'updated' | 'fresh' | 'busy' | 'failed';
 
 @Component({
   selector: 'app-tradmark-detail',
-  imports: [SharedModule,MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent, SkeletonComponent, EmbedWidgetComponent],
+  imports: [SharedModule, MobileBottomNavbarComponent, SearchCtaSectionComponent, TrademarkStatusActionComponent, StatusWatchSignupComponent, SkeletonComponent, EmbedWidgetComponent, TrademarkCertificateDownloadComponent],
   templateUrl: './tradmark-detail.component.html',
   styleUrl: './tradmark-detail.component.scss'
 })
@@ -46,6 +47,7 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
   /** Registry refresh is visitor-initiated: nothing is fetched until the button is pressed. */
   refreshState: RefreshUiState = 'idle';
   refreshMessage = '';
+  certificatePreviewTrademark: ITrademark | null = null;
 
   private faqSchemaScript!: HTMLScriptElement;
   private refreshPollSub?: Subscription;
@@ -218,8 +220,12 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
     this.trademark!.faqs![index].opened = !this.trademark!.faqs![index].opened;
   }
 
-  isRegisteredTrademark(): boolean {
+    isRegisteredTrademark(): boolean {
     return this.trademark?.trademarkStatus?.trim().toLowerCase() === 'registered';
+  }
+
+  openCertificatePreview(): void {
+    if (this.isRegisteredTrademark()) this.certificatePreviewTrademark = this.trademark ?? null;
   }
 
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
@@ -23,6 +24,7 @@ type SearchMode = 'application' | 'name';
 
 interface CertificateRequestSnapshot {
   applicationNo: number;
+  requestId?: string | null;
   name?: string | null;
   tmClass?: number | null;
   trademarkStatus?: string | null;
@@ -50,6 +52,7 @@ const CERTIFICATE_PAYMENT_REQUIRED = true;
 
 @Component({
   selector: 'app-trademark-certificate-download',
+  host: { class: 'certificate-page' },
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './trademark-certificate-download.component.html',
   styleUrl: './trademark-certificate-download.component.scss',
@@ -57,6 +60,32 @@ const CERTIFICATE_PAYMENT_REQUIRED = true;
 export class TrademarkCertificateDownloadComponent
   implements OnInit, OnDestroy
 {
+  /** Renders only the existing modal flow, for use on a trademark detail page. */
+  private embeddedModalMode = false;
+  private embeddedModalTrademark: ITrademark | null = null;
+
+  @Input()
+  set modalMode(value: boolean) {
+    this.embeddedModalMode = value;
+    this.syncEmbeddedPreview();
+  }
+
+  get modalMode(): boolean {
+    return this.embeddedModalMode;
+  }
+
+  @Input()
+  set modalTrademark(value: ITrademark | null) {
+    this.embeddedModalTrademark = value;
+    this.syncEmbeddedPreview();
+  }
+
+  get modalTrademark(): ITrademark | null {
+    return this.embeddedModalTrademark;
+  }
+
+  @Output() modalClosed = new EventEmitter<void>();
+
   readonly officialRegistryUrl =
     'https://ipindiaonline.gov.in/tmrpublicsearch/frmmain.aspx';
 
@@ -80,10 +109,15 @@ export class TrademarkCertificateDownloadComponent
   certificateErrorMessage = '';
   certificateProgress = 0;
   certificateStep = 0;
+  manualDeliveryPhone = '';
+  manualDeliveryError = '';
+  isManualDeliverySubmitting = false;
+  isManualDeliveryRequested = false;
   private certificatePollTimer?: number;
   private certificateProgressTimer?: number;
   private certificateTimeoutTimer?: number;
   private certificateReadyApplicationNo?: number;
+  private certificateRequestId?: string;
 
   readonly faqs = [
     {
@@ -115,9 +149,12 @@ export class TrademarkCertificateDownloadComponent
     private readonly toastService: ToastrService,
     private readonly ngZone: NgZone,
     private readonly router: Router,
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    if (this.modalMode) return;
+
     this.title.setTitle(PAGE_TITLE);
     this.meta.updateTag({ name: 'description', content: PAGE_DESCRIPTION });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });
@@ -178,7 +215,9 @@ export class TrademarkCertificateDownloadComponent
 
   ngOnDestroy(): void {
     this.clearCertificateRequest();
-    this.seo.removeJsonLd('trademark-certificate-download');
+    if (!this.modalMode) {
+      this.seo.removeJsonLd('trademark-certificate-download');
+    }
   }
 
   setMode(mode: SearchMode): void {
@@ -277,6 +316,13 @@ export class TrademarkCertificateDownloadComponent
     );
   }
 
+  get isCertificatePreviewOpen(): boolean {
+    return (
+      this.isCertificateUnlockOpen ||
+      (this.modalMode && this.isRegistered(this.modalTrademark))
+    );
+  }
+
   openOfficialRegistry(): void {
     window.open(this.officialRegistryUrl, '_blank', 'noopener,noreferrer');
   }
@@ -301,6 +347,15 @@ export class TrademarkCertificateDownloadComponent
   closeCertificateUnlockModal(): void {
     if (this.isCertificatePaymentStarting) return;
     this.isCertificateUnlockOpen = false;
+    if (this.modalMode) this.modalClosed.emit();
+  }
+
+  private syncEmbeddedPreview(): void {
+    if (!this.modalMode || !this.modalTrademark || !this.isRegistered(this.modalTrademark)) return;
+
+    this.selectedTrademark = this.modalTrademark;
+    this.isCertificateUnlockOpen = true;
+    queueMicrotask(() => this.changeDetectorRef.detectChanges());
   }
 
   startCertificatePayment(): void {
@@ -412,9 +467,13 @@ export class TrademarkCertificateDownloadComponent
       return;
 
     this.clearCertificateRequest();
+    this.certificateRequestId = undefined;
     this.persistCertificateRequest(applicationNo);
     this.isCertificateErrorOpen = false;
     this.certificateErrorMessage = '';
+    this.manualDeliveryPhone = '';
+    this.manualDeliveryError = '';
+    this.isManualDeliveryRequested = false;
     this.isCertificateLoading = true;
     this.startCertificateProgress();
     this.startCertificateTimeout();
@@ -423,11 +482,18 @@ export class TrademarkCertificateDownloadComponent
     this.trademarkService
       .requestRegistrationCertificate(applicationNo)
       .subscribe({
-        next: (status) => this.handleCertificateStatus(applicationNo, status),
-        error: () =>
+        next: (status) => {
+          this.certificateRequestId = status.requestId ?? undefined;
+          this.persistCertificateRequest(applicationNo, this.certificateRequestId);
+          this.handleCertificateStatus(applicationNo, status);
+        },
+        error: (error: HttpErrorResponse) => {
+          const status = error.error as ICertificateDownloadStatus | null;
+          this.certificateRequestId = status?.requestId ?? undefined;
           this.finishCertificateRequest(
-            'We could not start the certificate download. Please try again in a moment.',
-          ),
+            status?.message ?? 'We could not start the certificate download. Please try again in a moment.',
+          );
+        },
       });
   }
 
@@ -465,6 +531,7 @@ export class TrademarkCertificateDownloadComponent
     applicationNo: number,
     status: ICertificateDownloadStatus,
   ): void {
+    this.certificateRequestId = status.requestId ?? this.certificateRequestId;
     this.certificateMessage = status.message ?? '';
     if (status.state === 'READY') {
       this.completeCertificateProgress(applicationNo);
@@ -485,7 +552,7 @@ export class TrademarkCertificateDownloadComponent
 
   private pollCertificateStatus(applicationNo: number): void {
     this.trademarkService
-      .getRegistrationCertificateStatus(applicationNo)
+      .getRegistrationCertificateStatus(applicationNo, this.certificateRequestId)
       .subscribe({
         next: (status) => this.handleCertificateStatus(applicationNo, status),
         error: () =>
@@ -498,7 +565,7 @@ export class TrademarkCertificateDownloadComponent
   private downloadCertificateFile(applicationNo: number): void {
     this.certificateMessage = 'Downloading your official certificate.';
     this.trademarkService
-      .downloadRegistrationCertificate(applicationNo)
+      .downloadRegistrationCertificate(applicationNo, this.certificateRequestId)
       .subscribe({
         next: (response) => {
           const url = URL.createObjectURL(response.body!);
@@ -545,15 +612,31 @@ export class TrademarkCertificateDownloadComponent
     this.beginCertificateDownload();
   }
 
-  emailCertificateSupport(): void {
-    const applicationNo = this.selectedTrademark?.applicationNo ?? '';
-    const subject = encodeURIComponent(
-      `Certificate download assistance — Application No. ${applicationNo}`,
-    );
-    const body = encodeURIComponent(
-      `Please help me obtain the trademark registration certificate for application number ${applicationNo}.`,
-    );
-    window.location.href = `mailto:support@trademarx.in?subject=${subject}&body=${body}`;
+  requestManualCertificateDelivery(): void {
+    const applicationNo = this.selectedTrademark?.applicationNo;
+    const phoneNumber = this.manualDeliveryPhone.trim();
+    if (!applicationNo || this.isManualDeliverySubmitting) return;
+    if (!/^(?:\+91[\s-]?)?[6-9]\d{9}$/.test(phoneNumber.replace(/[\s-]/g, ''))) {
+      this.manualDeliveryError = 'Enter a valid 10-digit Indian mobile number.';
+      return;
+    }
+
+    this.manualDeliveryError = '';
+    this.isManualDeliverySubmitting = true;
+    this.trademarkService
+      .requestCertificateManualDelivery(applicationNo, phoneNumber, this.certificateRequestId)
+      .subscribe({
+        next: response => {
+          this.certificateRequestId = response.requestId;
+          this.isManualDeliverySubmitting = false;
+          this.isManualDeliveryRequested = true;
+          this.certificateMessage = 'Your request has been sent to our support team.';
+        },
+        error: () => {
+          this.isManualDeliverySubmitting = false;
+          this.manualDeliveryError = 'We could not save your request. Please try again.';
+        },
+      });
   }
 
   private clearCertificateRequest(): void {
@@ -596,9 +679,10 @@ export class TrademarkCertificateDownloadComponent
     this.startCertificateTimeout();
 
     this.trademarkService
-      .getRegistrationCertificateStatus(snapshot.applicationNo)
+      .getRegistrationCertificateStatus(snapshot.applicationNo, snapshot.requestId ?? undefined)
       .subscribe({
         next: status => {
+          this.certificateRequestId = status.requestId ?? snapshot.requestId ?? undefined;
           if (status.state === 'NONE') {
             this.clearCertificateRequest();
             this.beginCertificateDownload();
@@ -625,11 +709,12 @@ export class TrademarkCertificateDownloadComponent
     );
   }
 
-  private persistCertificateRequest(applicationNo: number): void {
+  private persistCertificateRequest(applicationNo: number, requestId?: string): void {
     const trademark = this.selectedTrademark;
     if (!trademark) return;
     const snapshot: CertificateRequestSnapshot = {
       applicationNo,
+      requestId: requestId ?? this.certificateRequestId,
       name: trademark.name,
       tmClass: trademark.tmClass,
       trademarkStatus: trademark.trademarkStatus,
@@ -675,6 +760,7 @@ export class TrademarkCertificateDownloadComponent
     if (!trademark) return;
     const snapshot: CompletedCertificateSnapshot = {
       applicationNo,
+      requestId: this.certificateRequestId,
       name: trademark.name,
       tmClass: trademark.tmClass,
       trademarkStatus: trademark.trademarkStatus,

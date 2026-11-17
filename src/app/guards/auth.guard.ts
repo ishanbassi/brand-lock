@@ -40,12 +40,20 @@ export class PermissionsService {
       this.router.navigate(['403']);
       return false;
     }
-    // Every route still guarded here is one of the four portal shells, and those are
-    // role-exclusive. The seeded admin also carries ROLE_USER (liquibase
-    // data/user_authority.csv), so the check above would otherwise wave it into the
-    // customer portal — where each endpoint resolves a UserProfile row that admin,
-    // agent and partner accounts don't have, so the dashboard 403s and the account
-    // chip renders blank. Send them to the portal that matches their highest role.
+    // The public member, admin, and partner portals are role-exclusive. The seeded admin also
+    // carries ROLE_USER (liquibase data/user_authority.csv), so the check above would otherwise
+    // wave it into the customer portal — where each endpoint resolves a UserProfile row that
+    // admin and partner accounts do not have. Send those users to the portal matching their
+    // highest role.
+    //
+    // Agent access is intentionally additive, though: a staff account can have ROLE_ADMIN,
+    // ROLE_USER, and ROLE_AGENT. Once that account has passed the ROLE_AGENT route check, keep it
+    // in the agent portal instead of sending it to the admin dashboard merely because admin is
+    // its highest role.
+    if (state.url.startsWith('/agent-portal')) {
+      return true;
+    }
+
     const home = this.homeRouteForCurrentUser();
     if (!state.url.startsWith(`/${home.split('/')[0]}`)) {
       this.router.navigate([home]);

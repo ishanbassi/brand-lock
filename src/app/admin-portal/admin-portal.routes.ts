@@ -47,6 +47,11 @@ export const adminPortalRoutes: Routes = [
     title: 'Payments | Admin',
   },
   {
+    path: 'certificate-downloads',
+    loadComponent: () => import('./certificate-downloads/admin-certificate-downloads.component').then(m => m.AdminCertificateDownloadsComponent),
+    title: 'Certificate Delivery | Admin',
+  },
+  {
     path: 'agents',
     loadComponent: () => import('./agents/admin-agents.component').then(m => m.AdminAgentsComponent),
     title: 'Agents | Admin',

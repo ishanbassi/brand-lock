@@ -7,6 +7,7 @@ import { TrademarkService } from '../shared/services/trademark.service';
 
 interface CompletedCertificateSnapshot {
   applicationNo: number;
+  requestId?: string | null;
   name?: string | null;
   tmClass?: number | null;
   trademarkStatus?: string | null;
@@ -26,9 +27,12 @@ const COMPLETED_CERTIFICATE_RETENTION_MS = 30 * 60_000;
 })
 export class TrademarkCertificateDownloadCompleteComponent implements OnInit {
   certificate: CompletedCertificateSnapshot | null = null;
-  email = '';
+  phoneNumber = '';
   isDownloading = false;
   downloadMessage = '';
+  manualDeliveryMessage = '';
+  manualDeliveryError = '';
+  isManualDeliverySubmitting = false;
 
   constructor(private readonly trademarkService: TrademarkService) {}
 
@@ -56,7 +60,7 @@ export class TrademarkCertificateDownloadCompleteComponent implements OnInit {
     this.isDownloading = true;
     this.downloadMessage = 'Preparing your certificate download.';
     this.trademarkService
-      .downloadRegistrationCertificate(this.certificate.applicationNo)
+      .downloadRegistrationCertificate(this.certificate.applicationNo, this.certificate.requestId ?? undefined)
       .subscribe({
         next: response => {
           const url = URL.createObjectURL(response.body!);
@@ -76,17 +80,30 @@ export class TrademarkCertificateDownloadCompleteComponent implements OnInit {
       });
   }
 
-  requestEmailCopy(): void {
+  requestManualCopy(): void {
     if (!this.certificate) return;
+    const phoneNumber = this.phoneNumber.trim();
+    if (!/^(?:\+91[\s-]?)?[6-9]\d{9}$/.test(phoneNumber.replace(/[\s-]/g, ''))) {
+      this.manualDeliveryError = 'Enter a valid 10-digit Indian mobile number.';
+      return;
+    }
 
-    const subject = encodeURIComponent(
-      `Certificate copy request — Application No. ${this.certificate.applicationNo}`,
-    );
-    const recipient = this.email.trim() || 'the email address entered on this page';
-    const body = encodeURIComponent(
-      `Please send a copy of the trademark registration certificate for application number ${this.certificate.applicationNo} to ${recipient}.`,
-    );
-    window.location.href = `mailto:support@trademarx.in?subject=${subject}&body=${body}`;
+    this.manualDeliveryError = '';
+    this.manualDeliveryMessage = '';
+    this.isManualDeliverySubmitting = true;
+    this.trademarkService
+      .requestCertificateManualDelivery(this.certificate.applicationNo, phoneNumber, this.certificate.requestId ?? undefined)
+      .subscribe({
+        next: response => {
+          if (this.certificate) this.certificate.requestId = response.requestId;
+          this.isManualDeliverySubmitting = false;
+          this.manualDeliveryMessage = 'Your manual-delivery request has been saved. Our team will contact you.';
+        },
+        error: () => {
+          this.isManualDeliverySubmitting = false;
+          this.manualDeliveryError = 'We could not save your request. Please try again.';
+        },
+      });
   }
 
   private readCertificate(): CompletedCertificateSnapshot | null {

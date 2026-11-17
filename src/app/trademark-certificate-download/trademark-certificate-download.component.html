@@ -1,4 +1,5 @@
 <main
+  *ngIf="!modalMode"
   class="certificate-page w-full bg-surface min-h-screen font-body-md text-on-surface antialiased"
 >
   <div class="flex flex-col w-full">
@@ -782,8 +783,10 @@
     </section>
   </div>
 
+  </main>
+
   <div
-    *ngIf="isCertificateUnlockOpen"
+    *ngIf="isCertificatePreviewOpen"
     class="fixed inset-0 z-[2001] flex items-center justify-center p-4 bg-tertiary/60 backdrop-blur-sm"
     role="dialog"
     aria-modal="true"
@@ -932,9 +935,9 @@
         </div>
         <a
           class="text-primary hover:underline flex items-center gap-1 font-semibold"
-          href="mailto:support@trademarx.in"
+          href="tel:18008646342"
         >
-          <span>Need assistance? Contact IP Helpdesk</span>
+          <span>Need assistance? Call IP Helpdesk</span>
           <span class="material-symbols-outlined text-[14px]">headset_mic</span>
         </a>
       </div>
@@ -1283,7 +1286,41 @@
           <span>Transaction Protected &bull; Reference: Application No. {{ selectedTrademark?.applicationNo }}</span>
         </div>
 
-        <div class="w-full max-w-md flex flex-col sm:flex-row gap-2 mb-4">
+        <div *ngIf="!isManualDeliveryRequested" class="w-full max-w-md">
+          <label for="manual-delivery-phone" class="mb-2 block text-left font-label-md text-label-md font-semibold text-on-surface">
+            Mobile number for manual delivery
+          </label>
+          <div class="flex flex-col gap-2 sm:flex-row">
+            <input
+              id="manual-delivery-phone"
+              [(ngModel)]="manualDeliveryPhone"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel"
+              maxlength="16"
+              placeholder="10-digit mobile number"
+              class="h-11 flex-1 rounded-lg border border-subtle bg-surface-container-lowest px-3 text-body-md text-on-surface outline-none transition-colors placeholder:text-on-surface-variant focus:border-primary focus:ring-2 focus:ring-primary/20"
+              [attr.aria-describedby]="manualDeliveryError ? 'manual-delivery-phone-error' : null"
+            />
+            <button
+              type="button"
+              class="h-11 px-4 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
+              [disabled]="isManualDeliverySubmitting"
+              (click)="requestManualCertificateDelivery()"
+            >
+              <span class="material-symbols-outlined text-[18px]">support_agent</span>
+              <span>{{ isManualDeliverySubmitting ? 'Sending…' : 'Request manual delivery' }}</span>
+            </button>
+          </div>
+          <p id="manual-delivery-phone-error" *ngIf="manualDeliveryError" class="mt-2 text-left font-body-sm text-body-sm text-status-objected" role="alert">{{ manualDeliveryError }}</p>
+          <p class="mt-2 text-left font-body-sm text-body-sm text-on-surface-variant">We’ll use this number only to coordinate delivery of this certificate.</p>
+        </div>
+
+        <div *ngIf="isManualDeliveryRequested" class="w-full max-w-md rounded-xl bg-status-registered-bg p-4 text-left text-status-registered">
+          <div class="flex items-start gap-2"><span class="material-symbols-outlined text-[20px]">check_circle</span><div><p class="font-label-md font-semibold">Manual delivery requested</p><p class="mt-1 font-body-sm text-body-sm">Our support team has your number and will contact you about this certificate.</p></div></div>
+        </div>
+
+        <div class="w-full max-w-md flex flex-col sm:flex-row gap-2 my-4">
           <button
             type="button"
             class="flex-1 h-11 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
@@ -1292,23 +1329,13 @@
             <span class="material-symbols-outlined text-[18px]">refresh</span
             ><span>Try Again</span>
           </button>
-          <button
-            type="button"
-            class="flex-1 h-11 px-4 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 transition-colors"
-            (click)="emailCertificateSupport()"
-          >
-            <span class="material-symbols-outlined text-[18px]">forward_to_inbox</span
-            ><span>Email Me the Certificate</span>
-          </button>
         </div>
 
         <p class="font-body-sm text-body-sm text-on-surface-variant max-w-md text-center pt-2 border-t border-subtle">
           If this continues, our legal support team is ready to assist at
           <a href="tel:18008646342" class="font-legal-mono text-primary font-semibold hover:underline">1800-864-6342</a>
-          or
-          <a href="mailto:support@trademarx.in" class="font-legal-mono text-secondary hover:underline">support&#64;trademarx.in</a>.
+          . You can also request manual delivery above.
         </p>
       </div>
     </div>
   </div>
-</main>

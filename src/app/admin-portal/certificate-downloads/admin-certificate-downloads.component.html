@@ -1,0 +1,78 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Certificate delivery</h1>
+      <p class="page-sub">{{ totalItems() }} certificate request{{ totalItems() === 1 ? '' : 's' }} recorded</p>
+    </div>
+  </div>
+
+  <div class="filter-bar" aria-label="Certificate delivery filters">
+    <input class="filter-input" type="search" placeholder="Status (e.g. FAILED)" [(ngModel)]="statusFilter" (keyup.enter)="applyFilters()" />
+    <label class="manual-filter"><input type="checkbox" [(ngModel)]="manualOnly" (ngModelChange)="applyFilters()" /> Manual delivery requested</label>
+    <button type="button" class="btn-primary" (click)="applyFilters()">Apply filters</button>
+    <button type="button" class="btn-ghost" (click)="clearFilters()">Clear</button>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Requested</th>
+          <th>Trademark</th>
+          <th>Status</th>
+          <th>Delivery</th>
+          <th>Callback</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (row of [1, 2, 3, 4, 5, 6]; track row) {
+            <tr class="skeleton-row"><td colspan="6"><div class="skeleton-line"></div></td></tr>
+          }
+        } @else if (requests().length === 0) {
+          <tr><td colspan="6" class="empty-cell">No certificate requests match these filters.</td></tr>
+        } @else {
+          @for (request of requests(); track request.id) {
+            <tr>
+              <td class="muted">{{ request.requestedAt | date:'dd MMM yyyy, HH:mm' }}</td>
+              <td>
+                <div class="stacked"><strong>{{ request.trademarkName || 'Trademark registration' }}</strong><span class="muted">App. {{ request.applicationNo }} · Class {{ request.tmClass ?? '—' }}</span></div>
+              </td>
+              <td><span class="badge" [class]="statusBadgeClass(request.status)">{{ readableStatus(request.status) }}</span><div *ngIf="request.statusMessage" class="status-message">{{ request.statusMessage }}</div></td>
+              <td><span *ngIf="request.downloadStartedAt; else notDelivered" class="delivery-complete">Downloaded {{ request.downloadStartedAt | date:'dd MMM, HH:mm' }}</span><ng-template #notDelivered><span class="muted">Not confirmed</span></ng-template></td>
+              <td><a *ngIf="request.manualDeliveryPhone; else noPhone" class="phone-link" [href]="'tel:' + request.manualDeliveryPhone">{{ request.manualDeliveryPhone }}</a><ng-template #noPhone><span class="muted">—</span></ng-template></td>
+              <td><button type="button" class="btn-ghost details-button" (click)="toggleDetails(request.id)" [attr.aria-expanded]="expandedRequestId() === request.id">{{ expandedRequestId() === request.id ? 'Hide' : 'Details' }}</button></td>
+            </tr>
+            @if (expandedRequestId() === request.id) {
+              <tr class="detail-row">
+                <td colspan="6">
+                  <div class="request-detail-grid">
+                    <div><span>Proprietor</span><strong>{{ request.proprietorName || 'Not available' }}</strong></div>
+                    <div><span>Registry status</span><strong>{{ request.trademarkStatus || 'Not available' }}</strong></div>
+                    <div><span>Last updated</span><strong>{{ request.statusUpdatedAt | date:'dd MMM yyyy, HH:mm' }}</strong></div>
+                    <div><span>Manual request</span><strong>{{ request.manualDeliveryRequestedAt ? (request.manualDeliveryRequestedAt | date:'dd MMM yyyy, HH:mm') : 'Not requested' }}</strong></div>
+                    <div><span>Application</span><a *ngIf="request.trademarkId; else noApplication" [routerLink]="['/admin-portal/trademarks', request.trademarkId]">Open application</a><ng-template #noApplication><strong>Not linked</strong></ng-template></div>
+                    <div><span>Request reference</span><strong class="reference">{{ request.requestId }}</strong></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!loading() && totalItems() > pageSize) {
+    <div class="pagination">
+      <button type="button" class="btn-ghost" [disabled]="page() === 0" (click)="prevPage()">Previous</button>
+      <span class="page-info">Page {{ page() + 1 }} of {{ totalPages }}</span>
+      <button type="button" class="btn-ghost" [disabled]="page() >= totalPages - 1" (click)="nextPage()">Next</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,15 @@
+.manual-filter { align-items: center; color: #475569; cursor: pointer; display: inline-flex; font-size: .85rem; font-weight: 600; gap: .45rem; min-height: 38px; }
+.manual-filter input { accent-color: #0ea5e9; height: 16px; width: 16px; }
+.details-button { height: 32px; padding: 0 .65rem; }
+.status-message { color: #64748b; font-size: .72rem; margin-top: .28rem; max-width: 18rem; }
+.delivery-complete { color: #047857; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+.phone-link { color: #0284c7; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.phone-link:hover { text-decoration: underline; }
+.request-detail-grid { display: grid; gap: 1rem 1.5rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.request-detail-grid > div { display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+.request-detail-grid span { color: #64748b; font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.request-detail-grid strong, .request-detail-grid a { color: #1e293b; font-size: .85rem; overflow-wrap: anywhere; }
+.request-detail-grid a { color: #0284c7; font-weight: 700; text-decoration: none; }
+.request-detail-grid a:hover { text-decoration: underline; }
+.request-detail-grid .reference { color: #475569; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; }
+@media (max-width: 760px) { .request-detail-grid { grid-template-columns: 1fr; } }

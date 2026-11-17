@@ -50,6 +50,11 @@ export interface ILiveRefreshStatus {
 export interface ICertificateDownloadStatus {
   state: CertificateDownloadState;
   message?: string | null;
+  requestId?: string | null;
+}
+
+export interface ICertificateManualDeliveryResponse {
+  requestId: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -172,15 +177,29 @@ export class TrademarkService {
     return this.http.post<ICertificateDownloadStatus>(`${this.resourceUrl}/${applicationNo}/registration-certificate`, null);
   }
 
-  getRegistrationCertificateStatus(applicationNo: number): Observable<ICertificateDownloadStatus> {
-    return this.http.get<ICertificateDownloadStatus>(`${this.resourceUrl}/${applicationNo}/registration-certificate/status`);
+  getRegistrationCertificateStatus(applicationNo: number, requestId?: string): Observable<ICertificateDownloadStatus> {
+    const options = requestId ? { params: { requestId } } : undefined;
+    return this.http.get<ICertificateDownloadStatus>(`${this.resourceUrl}/${applicationNo}/registration-certificate/status`, options);
   }
 
-  downloadRegistrationCertificate(applicationNo: number): Observable<HttpResponse<Blob>> {
+  downloadRegistrationCertificate(applicationNo: number, requestId?: string): Observable<HttpResponse<Blob>> {
+    const options = requestId ? { params: { requestId } } : undefined;
     return this.http.get(`${this.resourceUrl}/${applicationNo}/registration-certificate`, {
       observe: 'response',
       responseType: 'blob',
+      ...options,
     });
+  }
+
+  requestCertificateManualDelivery(
+    applicationNo: number,
+    phoneNumber: string,
+    requestId?: string,
+  ): Observable<ICertificateManualDeliveryResponse> {
+    return this.http.post<ICertificateManualDeliveryResponse>(
+      `${this.resourceUrl}/${applicationNo}/registration-certificate/manual-delivery`,
+      { phoneNumber, requestId: requestId ?? null },
+    );
   }
 
   findBySlug(slug: string): Observable<EntityResponseType> {

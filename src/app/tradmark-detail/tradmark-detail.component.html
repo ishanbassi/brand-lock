@@ -89,9 +89,9 @@
           <h2 id="certificate-download-heading">Download this trademark certificate</h2>
           <p>This trademark is registered. Use application no. {{ trademark?.applicationNo }} to get the official registration certificate.</p>
         </div>
-        <a class="certificate-download-link" routerLink="/trademark-certificate-download">
+        <button type="button" class="certificate-download-link" (click)="openCertificatePreview()">
           Download certificate
-        </a>
+        </button>
       </section>
 
       <!-- <app-trademark-status-action [trademark]="trademark"></app-trademark-status-action> -->
@@ -227,3 +227,5 @@
   </ng-template>
 </div>
 <app-mobile-bottom-navbar [showReportButton]="true"></app-mobile-bottom-navbar>
+<app-trademark-certificate-download ngSkipHydration [modalMode]="true" [modalTrademark]="certificatePreviewTrademark"
+  (modalClosed)="certificatePreviewTrademark = null"></app-trademark-certificate-download>
