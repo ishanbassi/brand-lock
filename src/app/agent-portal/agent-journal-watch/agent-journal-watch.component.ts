@@ -170,6 +170,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.riskFilter.set('');
     this.browsePage.set(1);
     this.loadJournalEntries();
+    this.loadSavedWatch(journalNo);
     if (runWatch) this.run();
   }
 
@@ -292,6 +293,36 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
         this.browseError.set('Could not load this journal. Please try again.');
         this.browsing.set(false);
       },
+    });
+  }
+
+  /** Restores the scheduler/manual-run read model without starting another expensive comparison. */
+  private loadSavedWatch(journalNo: number): void {
+    this.agentDataService.getJournalWatchHistory(journalNo).subscribe({
+      next: conflicts => {
+        // Navigation or a manual run may have changed the visible issue while this request was in flight.
+        if (this.selectedJournal() !== journalNo || this.running() || conflicts.length === 0) return;
+        this.result.set({
+          status: 'COMPLETED',
+          journalNo,
+          pairsScored: 0,
+          conflicts,
+          totalConflicts: conflicts.length,
+          page: 0,
+          size: conflicts.length,
+          totalPages: 1,
+          countsByRisk: {
+            HIGH: conflicts.filter(conflict => conflict.riskLevel === 'HIGH').length,
+            MEDIUM: conflicts.filter(conflict => conflict.riskLevel === 'MEDIUM').length,
+            LOW: conflicts.filter(conflict => conflict.riskLevel === 'LOW').length,
+          },
+          truncated: false,
+          durationMs: 0,
+        });
+        this.showingConflicts.set(true);
+      },
+      // A journal with no saved run is a normal first-use state; retain the journal browser.
+      error: () => undefined,
     });
   }
 

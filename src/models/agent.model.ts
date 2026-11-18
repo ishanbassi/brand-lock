@@ -275,7 +275,10 @@ export interface WatchConflictHistory {
    */
   journalNo?: number;
   conflictingApplicationNo?: number;
+  /** Registry application date of the conflicting mark; used for filing chronology. */
+  conflictingApplicationDate?: string;
   conflictingTmClass?: number;
+  conflictingAgentName?: string;
   conflictingProprietorName?: string;
   /** The conflicting mark's current registry status — an abandoned/refused mark is a weak threat. */
   conflictingStatus?: string;
@@ -518,6 +521,14 @@ export interface Deadline {
   tmClass?: number | null;
   /** Same-day Registry virtual hearing room. Omitted until the Registry publishes it. */
   hearingUrl?: string | null;
+  /** Registry hearing stream, e.g. TLA or OPPOSITION_RECTIFICATION. */
+  hearingCategory?: string | null;
+  /** Registry-specific case reference where the published board supplies one. */
+  registryCaseNo?: string | null;
+  hearingSlot?: string | null;
+  hearingRoom?: string | null;
+  agentName?: string | null;
+  applicantName?: string | null;
   /** Negative when overdue. Computed server-side so every client agrees on "today". */
   daysUntilDue: number;
 }
@@ -542,6 +553,8 @@ export interface AgentJournalConflict {
   journalNo: number;
   score: number;
   riskLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+  /** Last completed watch that confirmed this saved conflict. */
+  checkDate?: string;
 
   portfolioTrademarkId: number;
   portfolioTrademarkName?: string;

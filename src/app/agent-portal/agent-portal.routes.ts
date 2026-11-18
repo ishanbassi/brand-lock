@@ -73,30 +73,30 @@ title: 'ISO Certificates | Agent Portal',
     loadComponent: () => import('./agent-search-report/agent-search-report.component').then(m => m.AgentSearchReportComponent),
     title: 'Search Report | Agent Portal',
   },
+  // Renewals are a statutory filing docket. They deliberately have a dedicated component rather
+  // than sharing the hearing calendar: filters, fees and statutory windows are renewal-only facts.
   {
-    path: 'deadlines',
-    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
-    title: 'Deadlines | Agent Portal',
+    path: 'deadlines/renewals',
+    loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
+    data: { scope: 'renewals' },
+    title: 'Trademark Renewals | Agent Portal',
   },
-  // Focused worklists over the same calendar data. One component with a scope rather than three
-  // copies of the row markup, so a fix to how a renewal row reads lands on every screen at once.
   {
     path: 'deadlines/renewals/upcoming',
-    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
     data: { scope: 'renewals-upcoming' },
     title: 'Upcoming Renewals | Agent Portal',
   },
   {
     path: 'deadlines/renewals/overdue',
-    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
+    loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
     data: { scope: 'renewals-overdue' },
     title: 'Overdue Renewals | Agent Portal',
   },
   {
     path: 'deadlines/hearings',
-    loadComponent: () => import('./agent-deadlines/agent-deadlines.component').then(m => m.AgentDeadlinesComponent),
-    data: { scope: 'hearings-upcoming' },
-    title: 'Upcoming Hearings | Agent Portal',
+    loadComponent: () => import('./agent-hearings/agent-hearings.component').then(m => m.AgentHearingsComponent),
+    title: 'Hearings | Agent Portal',
   },
   {
     path: 'documents',

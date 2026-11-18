@@ -74,7 +74,6 @@
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'renewals'" (click)="setQuickFilter('renewals')">Renewals Due ({{ dashboardStats()?.expiringIn90Days ?? 0 }})</button>
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'closed'" (click)="setQuickFilter('closed')">Abandoned / Refused ({{ statusCount('ABANDONED_WITHDRAWN_REJECTED') }})</button>
       </div>
-      <span class="filter-note"><ap-icon name="check" [size]="15" /> Filters apply to every page and export.</span>
     </div>
 
     @if (hasFilters) {
@@ -306,7 +305,6 @@
                          [attr.aria-label]="'Application number for ' + (tm.name || 'trademark')" (input)="onTrademarkFieldInput(tm, 'applicationNo', numberOrUndefined($any($event.target).value))" />
                 } @else {
                   <span class="app-number">{{ tm.applicationNo || '—' }}</span>
-                  @if (tm.source) { <span class="app-source">{{ tm.source }}</span> }
                 }
               </td>
 

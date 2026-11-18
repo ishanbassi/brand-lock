@@ -79,7 +79,6 @@ export class AgentPortalShellComponent {
     journal: 'visibility',
     alert: 'crisis_alert',
     building: 'troubleshoot',
-    calendar: 'event',
     refresh: 'update',
     clock: 'schedule',
     scales: 'gavel',
@@ -134,22 +133,13 @@ export class AgentPortalShellComponent {
       ],
     },
     {
-      // Sits under Watch: both answer "what needs me, and when". The calendar is everything at
-      // once; the entries below it are worklists cut from the same data, one job each.
+      // Sits under Watch: both answer "what needs me, and when". Renewals have one statutory
+      // worklist; its filters separate upcoming and overdue records without nested navigation.
       heading: 'Deadlines',
       items: [
-        { label: 'Calendar', icon: 'calendar', route: '/agent-portal/deadlines' },
-        {
-          label: 'Renewals',
-          icon: 'refresh',
-          id: 'renewals',
-          children: [
-            { label: 'Upcoming', icon: 'clock', route: '/agent-portal/deadlines/renewals/upcoming' },
-            { label: 'Overdue', icon: 'alert', route: '/agent-portal/deadlines/renewals/overdue', badge: 'overdueRenewals' },
-          ],
-        },
+        { label: 'Renewals', icon: 'refresh', route: '/agent-portal/deadlines/renewals', alsoMatches: ['/agent-portal/deadlines/renewals/upcoming', '/agent-portal/deadlines/renewals/overdue'], badge: 'overdueRenewals' },
         // No "overdue" twin: a hearing is a listing, not a task, so it is never late.
-        { label: 'Upcoming hearings', icon: 'scales', route: '/agent-portal/deadlines/hearings', badge: 'hearingsThisWeek' },
+        { label: 'Hearings', icon: 'scales', route: '/agent-portal/deadlines/hearings', badge: 'hearingsThisWeek' },
       ],
     },
     {
@@ -179,8 +169,8 @@ export class AgentPortalShellComponent {
    * The one route to highlight: the most specific nav destination the URL matches.
    *
    * A plain startsWith lights up All Trademarks as well as Add Trademark whenever the URL is
-   * /portfolio/add, because one route is a prefix of the other - and the same holds for Calendar
-   * under every /deadlines/... worklist. Specificity is judged on the path that matched, so an
+   * /portfolio/add, because one route is a prefix of the other. Specificity is judged on the path
+   * that matched, so an
    * alsoMatches route beats its parent the same way a route does.
    */
   private readonly bestMatch = computed(() => {

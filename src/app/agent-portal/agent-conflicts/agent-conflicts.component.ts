@@ -1,158 +1,202 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { WatchConflictHistory } from '../../../models/agent.model';
+import { IconComponent } from '../ui/icon.component';
 
-type RiskFilter = 'ALL' | 'HIGH' | 'MEDIUM' | 'LOW';
+type RiskFilter = '' | 'HIGH' | 'MEDIUM' | 'LOW';
 type StatusFilter = 'OPEN' | 'OPPOSING' | 'DISMISSED';
+type SourceFilter = 'NEW' | 'JOURNAL' | 'ALL';
+type ConflictSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
 
-/**
- * The portfolio-wide conflicts screen — the "see all" target of the watch digest email.
- *
- * <p>It now shows hits from two watches: marks advertised in a journal issue (`journalNo` set,
- * open to opposition for four months from that issue) and newly filed applications the register
- * has just published (`journalNo` null — early awareness, no deadline yet). Only a journal hit can
- * be turned into an opposition deadline.
- */
+/** The portfolio-wide worklist, deliberately sharing the Journal Watch interaction model. */
 @Component({
   selector: 'app-agent-conflicts',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, IconComponent],
   templateUrl: './agent-conflicts.component.html',
   styleUrl: './agent-conflicts.component.scss',
 })
 export class AgentConflictsComponent implements OnInit {
+  readonly allClasses = Array.from({ length: 45 }, (_, index) => index + 1);
+  readonly searchFields: { value: ConflictSearchField; label: string; placeholder: string }[] = [
+    { value: 'name', label: 'Trademark', placeholder: 'Search trademark name' },
+    { value: 'agentName', label: 'Agent', placeholder: 'Search agent name' },
+    { value: 'proprietorName', label: 'Party', placeholder: 'Search party name' },
+    { value: 'applicationNo', label: 'Application No.', placeholder: 'Enter application number' },
+  ];
+  readonly pageSize = 20;
+
   conflicts = signal<WatchConflictHistory[]>([]);
   loading = signal(true);
+  running = signal(false);
   error = signal('');
-  riskFilter = signal<RiskFilter>('ALL');
-  statusFilter = signal<StatusFilter>('OPEN');
-
-  /** Row currently being acted on, so its buttons can be disabled. */
-  busyId = signal<number | null>(null);
   actionMsg = signal('');
-  /**
-   * Kept apart from {@link error}, which means "the page could not load" and hides the table.
-   * A failed dismiss must not blank the list the agent is working through.
-   */
   actionError = signal('');
+  busyId = signal<number | null>(null);
+  searchField = signal<ConflictSearchField>('name');
+  searchTerm = '';
+  sourceFilter = signal<SourceFilter>('NEW');
+  classFilter = signal<number | null>(null);
+  riskFilter = signal<RiskFilter>('');
+  portfolioOnly = signal(false);
+  page = signal(1);
 
-  private readonly statusOf = (c: WatchConflictHistory): StatusFilter => {
-    const s = (c.status ?? 'OPEN').toUpperCase();
-    return s === 'OPPOSING' || s === 'DISMISSED' ? (s as StatusFilter) : 'OPEN';
+  readonly statusOf = (conflict: WatchConflictHistory): StatusFilter => {
+    const status = (conflict.status ?? 'OPEN').toUpperCase();
+    return status === 'OPPOSING' || status === 'DISMISSED' ? status : 'OPEN';
   };
 
-  /** Rows at the selected triage status — the population the risk chips then filter. */
-  private atStatus = computed(() => this.conflicts().filter(c => this.statusOf(c) === this.statusFilter()));
-
-  visible = computed(() => {
+  readonly searchPlaceholder = computed(() =>
+    this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search conflicts',
+  );
+  readonly scopedConflicts = computed(() => this.conflicts()
+    .filter(conflict => {
+      if (this.sourceFilter() === 'NEW' && !this.isNewFiling(conflict)) return false;
+      if (this.sourceFilter() === 'JOURNAL' && this.isNewFiling(conflict)) return false;
+      if (this.classFilter() !== null && conflict.conflictingTmClass !== this.classFilter()) return false;
+      if (this.portfolioOnly() && !conflict.trademarkId) return false;
+      return this.matchesSearch(conflict);
+    })
+    // Application date and number are the registry's filing chronology. Watch check time can be
+    // much later for a backfill, so it must not determine the default new-filings order.
+    .sort((left, right) => this.compareByFilingOrder(left, right)));
+  readonly filtered = computed(() => {
     const risk = this.riskFilter();
-    const rows = this.atStatus();
-    return risk === 'ALL' ? rows : rows.filter(c => c.riskLevel === risk);
+    const conflicts = this.scopedConflicts();
+    return risk === '' ? conflicts : conflicts.filter(conflict => conflict.riskLevel === risk);
   });
-
-  openCount = computed(() => this.conflicts().filter(c => this.statusOf(c) === 'OPEN').length);
-  opposingCount = computed(() => this.conflicts().filter(c => this.statusOf(c) === 'OPPOSING').length);
-  dismissedCount = computed(() => this.conflicts().filter(c => this.statusOf(c) === 'DISMISSED').length);
-
-  atStatusLength = computed(() => this.atStatus().length);
-  highRiskCount = computed(() => this.atStatus().filter(c => c.riskLevel === 'HIGH').length);
-  mediumRiskCount = computed(() => this.atStatus().filter(c => c.riskLevel === 'MEDIUM').length);
-  lowRiskCount = computed(() => this.atStatus().filter(c => c.riskLevel === 'LOW').length);
+  readonly filteredCount = computed(() => this.filtered().length);
+  readonly pagedConflicts = computed(() => this.filtered().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredCount() / this.pageSize)));
+  readonly pageStart = computed(() => this.filteredCount() ? (this.page() - 1) * this.pageSize + 1 : 0);
+  readonly pageEnd = computed(() => Math.min(this.page() * this.pageSize, this.filteredCount()));
+  readonly scopedCount = computed(() => this.scopedConflicts().length);
+  readonly highRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'HIGH').length);
+  readonly mediumRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'MEDIUM').length);
+  readonly lowRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'LOW').length);
+  readonly sourceLabel = computed(() => this.sourceFilter() === 'NEW' ? 'New filings' : this.sourceFilter() === 'JOURNAL' ? 'Journal advertisements' : 'All sources');
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
-  ngOnInit(): void {
-    this.load();
-  }
+  ngOnInit(): void { this.load(); }
 
-  load(): void {
-    this.loading.set(true);
+  load(showLoading = true): void {
+    if (showLoading) this.loading.set(true);
+    this.error.set('');
     this.agentDataService.getAllConflicts().subscribe({
-      next: (data) => {
-        this.conflicts.set(data);
+      next: conflicts => {
+        this.conflicts.set(conflicts);
+        this.ensurePageInRange();
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load conflicts.');
+        this.error.set('Failed to load conflicts. Please try again.');
         this.loading.set(false);
       },
     });
   }
 
-  setRiskFilter(f: RiskFilter): void {
-    this.riskFilter.set(f);
+  setSearchField(field: ConflictSearchField): void { this.searchField.set(field); this.resetPage(); }
+  onSearchChange(): void { this.resetPage(); }
+  clearSearch(): void { this.searchTerm = ''; this.resetPage(); }
+  setSourceFilter(source: SourceFilter): void { this.sourceFilter.set(source); this.resetPage(); }
+  setClassFilter(classNo: number | null): void { this.classFilter.set(classNo); this.resetPage(); }
+  setRiskFilter(risk: RiskFilter): void { this.riskFilter.set(risk); this.resetPage(); }
+  togglePortfolioOnly(): void { this.portfolioOnly.update(value => !value); this.resetPage(); }
+  toggleHighConflicts(): void { this.setRiskFilter(this.riskFilter() === 'HIGH' ? '' : 'HIGH'); }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages() || page === this.page()) return;
+    this.page.set(page);
   }
 
-  setStatusFilter(f: StatusFilter): void {
-    this.statusFilter.set(f);
-    this.riskFilter.set('ALL');
+  isNewFiling(conflict: WatchConflictHistory): boolean { return conflict.journalNo == null; }
+  scorePercent(score?: number): number { return Math.round((score ?? 0) * 100); }
+
+  run(): void {
+    if (this.running()) return;
+    this.running.set(true);
+    this.actionMsg.set('');
+    this.actionError.set('');
+    this.agentDataService.runNewFilingConflictWatch().subscribe({
+      next: () => {
+        this.actionMsg.set('Conflict watch completed. Your new filing matches are up to date.');
+        this.running.set(false);
+        this.load(false);
+      },
+      error: error => {
+        this.running.set(false);
+        this.actionError.set(error?.error?.detail || 'The conflict watch could not be run. Please try again.');
+      },
+    });
   }
 
-  isNewFiling(c: WatchConflictHistory): boolean {
-    return c.journalNo == null;
-  }
-
-  scorePercent(score?: number): number {
-    return Math.round((score ?? 0) * 100);
-  }
-
-  riskClass(level?: string): string {
-    return level === 'HIGH' ? 'risk-high' : level === 'MEDIUM' ? 'risk-medium' : 'risk-low';
-  }
-
-  // ── Actions ──────────────────────────────────────────────────────────────
-
-  dismiss(c: WatchConflictHistory): void {
-    this.mutate(c, () => this.agentDataService.setConflictStatus(c.id!, 'DISMISSED'), () => {
-      c.status = 'DISMISSED';
+  dismiss(conflict: WatchConflictHistory): void {
+    this.mutate(conflict, () => this.agentDataService.setConflictStatus(conflict.id!, 'DISMISSED'), () => {
+      conflict.status = 'DISMISSED';
       this.actionMsg.set('Conflict dismissed.');
     });
   }
 
-  restore(c: WatchConflictHistory): void {
-    this.mutate(c, () => this.agentDataService.setConflictStatus(c.id!, 'OPEN'), () => {
-      c.status = 'OPEN';
+  restore(conflict: WatchConflictHistory): void {
+    this.mutate(conflict, () => this.agentDataService.setConflictStatus(conflict.id!, 'OPEN'), () => {
+      conflict.status = 'OPEN';
       this.actionMsg.set('Conflict reopened.');
     });
   }
 
-  oppose(c: WatchConflictHistory): void {
-    if (c.journalNo == null || this.busyId() != null) {
-      return;
-    }
-    this.busyId.set(c.id!);
+  oppose(conflict: WatchConflictHistory): void {
+    if (this.isNewFiling(conflict) || this.busyId() !== null) return;
+    this.busyId.set(conflict.id!);
     this.actionMsg.set('');
     this.actionError.set('');
-    this.agentDataService.opposeConflict(c.id!).subscribe({
-      next: (deadline) => {
-        c.status = 'OPPOSING';
+    this.agentDataService.opposeConflict(conflict.id!).subscribe({
+      next: deadline => {
+        conflict.status = 'OPPOSING';
         this.busyId.set(null);
         this.conflicts.set([...this.conflicts()]);
-        this.actionMsg.set(
-          `Opposition deadline added${deadline?.dueDate ? ` — due ${deadline.dueDate}` : ''}. See it on your Deadlines calendar.`,
-        );
+        this.actionMsg.set(`Opposition deadline added${deadline?.dueDate ? ` — due ${deadline.dueDate}` : ''}. See it on your Deadlines calendar.`);
       },
-      error: (err) => {
+      error: error => {
         this.busyId.set(null);
-        // The server explains why a hit cannot be opposed — no journal advertisement yet, or the
-        // issue's publication date has not been ingested. Both are worth showing verbatim.
-        this.actionError.set(err?.error?.detail || err?.error?.title || 'Could not raise the opposition deadline.');
+        this.actionError.set(error?.error?.detail || error?.error?.title || 'Could not raise the opposition deadline.');
       },
     });
   }
 
-  private mutate(
-    c: WatchConflictHistory,
-    call: () => Observable<unknown>,
-    onOk: () => void,
-  ): void {
-    if (this.busyId() != null) {
-      return;
+  private matchesSearch(conflict: WatchConflictHistory): boolean {
+    const term = this.searchTerm.trim().toLocaleLowerCase();
+    if (!term) return true;
+    switch (this.searchField()) {
+      case 'agentName': return (conflict.conflictingAgentName ?? '').toLocaleLowerCase().includes(term);
+      case 'applicationNo': return String(conflict.conflictingApplicationNo ?? '').includes(term);
+      case 'proprietorName': return (conflict.conflictingProprietorName ?? '').toLocaleLowerCase().includes(term);
+      default: return (conflict.conflictingTrademarkName ?? '').toLocaleLowerCase().includes(term);
     }
-    this.busyId.set(c.id!);
+  }
+
+  private compareByFilingOrder(left: WatchConflictHistory, right: WatchConflictHistory): number {
+    const dateOrder = this.dateValue(right.conflictingApplicationDate) - this.dateValue(left.conflictingApplicationDate);
+    if (dateOrder !== 0) return dateOrder;
+
+    const applicationOrder = (right.conflictingApplicationNo ?? -1) - (left.conflictingApplicationNo ?? -1);
+    if (applicationOrder !== 0) return applicationOrder;
+
+    return this.dateValue(right.checkDate) - this.dateValue(left.checkDate);
+  }
+
+  private dateValue(date?: string): number { return date ? Date.parse(date) || 0 : 0; }
+
+  private resetPage(): void { this.page.set(1); }
+  private ensurePageInRange(): void { if (this.page() > this.totalPages()) this.page.set(this.totalPages()); }
+
+  private mutate(conflict: WatchConflictHistory, call: () => Observable<unknown>, onOk: () => void): void {
+    if (this.busyId() !== null) return;
+    this.busyId.set(conflict.id!);
     this.actionMsg.set('');
     this.actionError.set('');
     call().subscribe({
@@ -161,9 +205,9 @@ export class AgentConflictsComponent implements OnInit {
         this.busyId.set(null);
         this.conflicts.set([...this.conflicts()]);
       },
-      error: (err) => {
+      error: error => {
         this.busyId.set(null);
-        this.actionError.set(err?.error?.detail || 'That action did not go through. Try again.');
+        this.actionError.set(error?.error?.detail || 'That action did not go through. Try again.');
       },
     });
   }

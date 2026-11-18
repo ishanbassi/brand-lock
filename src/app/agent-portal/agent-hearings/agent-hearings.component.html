@@ -1,0 +1,101 @@
+<main class="hearing-docket">
+  <header class="docket-header">
+    <div>
+      <div class="title-line">
+        <h1>Hearing Docket &amp; Daily Cause Lists</h1>
+        <span class="sync-status"><i></i>CGPDTM Auto-Sync Active</span>
+      </div>
+      <p>Official IP India Trade Marks Registry hearing board feed. Virtual courtroom Webex links unlock on the hearing day when the Registry publishes its daily cause list.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="export" (click)="exportCauseList()"><span class="material-symbols-outlined">sim_card_download</span>Export Cause List</button>
+      <button type="button" class="refresh" (click)="load()" [disabled]="loading()"><span class="material-symbols-outlined">sync</span>{{ loading() ? 'Refreshing' : 'Refresh Board' }}</button>
+    </div>
+  </header>
+
+  @if (!loading()) {
+    <section class="overview" aria-label="Hearing overview">
+      <article class="metric metric--live">
+        <div><span>Today's Docket</span><strong>{{ liveHearings().length }} <em>Hearing{{ liveHearings().length === 1 ? '' : 's' }}</em></strong></div>
+        <span class="material-symbols-outlined">videocam</span>
+        <p><i></i>{{ hasUnlockedLiveHearing() ? 'Webex room live on the cause list' : 'Cause list pending publication' }}</p>
+      </article>
+      <article class="metric metric--next">
+        <div><span>Next 7 Days</span><strong>{{ nextSeven }} <em>Scheduled</em></strong></div>
+        <span class="material-symbols-outlined">date_range</span>
+        <p>Board listed • Cause list awaited</p>
+      </article>
+      <article class="metric metric--pipeline">
+        <div><span>Board Pipeline</span><strong>{{ boardPipeline }} <em>Total</em></strong></div>
+        <span class="material-symbols-outlined">gavel</span>
+        <p>Across all active Registry categories</p>
+      </article>
+      <article class="metric metric--categories">
+        <div><span>Hearing Streams</span><strong>{{ categories().length }} <em>Active</em></strong></div>
+        <span class="material-symbols-outlined">account_tree</span>
+        <p>TLA, opposition, post-registration and more</p>
+      </article>
+    </section>
+  }
+
+  <section class="notice" aria-label="Cause list notification">
+    <span class="material-symbols-outlined">chat</span>
+    <div><strong>Automatic Morning Cause List &amp; Webex Ping</strong><p>Daily cause-list serials and live courtroom links become available here as soon as the Registry publishes them.</p></div>
+  </section>
+
+  @if (error()) { <div class="error" role="alert"><span class="material-symbols-outlined">error</span>{{ error() }}<button type="button" (click)="load()">Retry</button></div> }
+
+  @if (loading()) {
+    <div class="loading" role="status"><span></span><span></span><span></span>Loading Registry hearing board…</div>
+  } @else {
+    @if (liveHearings().length > 0) {
+      <section class="today-section" aria-labelledby="todayHearings">
+        <header class="section-head"><div><i></i><h2 id="todayHearings">Today's Hearings • {{ now().format('DD MMM YYYY') }}</h2><b>Cause List Live</b></div></header>
+        <div class="live-grid">
+          @for (item of liveHearings(); track keyOf(item)) {
+            <article class="live-card">
+              <span class="cause-item">Cause list active</span>
+              <div class="card-body">
+                <div class="chips"><span>HEARING TODAY</span><b>{{ sourceLabel(item) }}</b><small>• {{ item.hearingRoom || 'Room assigned on cause list' }}</small></div>
+                <h3>{{ item.trademarkName || item.applicantName || 'Trademark hearing record' }}</h3>
+                <p class="identity">App No: <strong>{{ item.applicationNo || '—' }}</strong>@if (item.tmClass) {<i>•</i>Class <strong>{{ item.tmClass }}</strong>}@if (item.registryCaseNo) {<i>•</i>{{ item.registryCaseNo }}}</p>
+                <dl>
+                  <div><dt>Scheduled Slot:</dt><dd>{{ item.hearingSlot || 'As published in the cause list' }}</dd></div>
+                  <div><dt>Hearing Type:</dt><dd class="danger">{{ categoryLabel(item) }}</dd></div>
+                </dl>
+              </div>
+              <footer>
+                @if (unlocked(item)) {
+                  <a [href]="item.hearingUrl" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined">videocam</span>Join Webex Hearing Room<span class="material-symbols-outlined">open_in_new</span></a>
+                } @else { <span class="locked"><span class="material-symbols-outlined">lock_clock</span>Webex room not yet published</span> }
+                <button type="button" (click)="share(item)" aria-label="Share hearing details"><span class="material-symbols-outlined">share</span></button>
+              </footer>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="upcoming-section" aria-labelledby="upcomingHearings">
+      <header class="section-head section-head--split"><div><h2 id="upcomingHearings">Upcoming Hearings Board</h2><p>Forward hearings on your marks. A room and running slot appear only when the daily cause list is published.</p></div><div class="quick-filters"><button type="button" [class.active]="state() === 'upcoming'" (click)="selectQuickState('upcoming')">{{ nextSeven }} in next 7 days</button><button type="button" [class.active]="state() === 'all'" (click)="selectQuickState('all')">{{ filtered().length }} shown</button><button type="button" [class.active]="state() === 'live'" (click)="selectQuickState('live')">Today's live</button></div></header>
+      @if (upcomingHearings().length === 0) { <div class="empty compact"><span class="material-symbols-outlined">event_busy</span><p>No upcoming hearings match the active filters.</p></div> }
+      <div class="timeline">
+        @for (item of upcomingHearings().slice(0, 4); track keyOf(item)) {
+          <article class="timeline-card">
+            <div class="date-block"><strong>{{ dateDay(item.dueDate) }}</strong><span>{{ dateMonthDay(item.dueDate) }}</span><b>{{ relative(item) }}</b></div>
+            <div class="timeline-content"><div class="chips"><span>HEARING</span><b>Listed</b><small>• {{ categoryLabel(item) }}</small></div><h3>{{ item.trademarkName || item.applicantName || 'Trademark hearing record' }}</h3><p>Application No: <strong>{{ item.applicationNo || '—' }}</strong>@if (item.tmClass) {<i>•</i> Class <strong>{{ item.tmClass }}</strong>}@if (item.applicantName) {<i>•</i> Applicant: <strong>{{ item.applicantName }}</strong>}</p><small>From the Registry hearing board. Room and time slot appear on the cause list on the day.</small><footer><span><span class="material-symbols-outlined">lock_clock</span>Webex link unlocks on {{ dateLabel(item.dueDate) }}</span><button type="button" (click)="openMark(item)">View Mark Details</button></footer></div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="registry-register" aria-labelledby="registryRegister">
+      <header><div><span class="material-symbols-outlined">table_chart</span><div><h2 id="registryRegister">Official Registry Cause List Register</h2><p>Searchable mirror of the Trade Marks Registry hearing docket for your portfolio.</p></div></div><div class="head-filters"><label><span class="material-symbols-outlined">filter_list</span><select [value]="category()" (change)="setCategory($any($event.target).value)"><option value="all">All hearing types</option>@for (type of categories(); track type) {<option [value]="type">{{ categoryName(type) }}</option>}</select></label><label><select [value]="slot()" (change)="setSlot($any($event.target).value)"><option value="all">All hearing slots</option>@for (value of slots(); track value) {<option [value]="value">{{ value }}</option>}</select></label></div></header>
+      <div class="register-controls"><div class="search-box"><span class="material-symbols-outlined">search</span><input type="search" [value]="search()" (input)="search.set($any($event.target).value); resetPage()" placeholder="Search trademark, application no., case reference or hearing type" /><button type="button" (click)="clearSearch()">ESC</button></div><label>Sort <select [value]="sort()" (change)="setSort($any($event.target).value)"><option value="date">Hearing date</option><option value="application">Application number</option><option value="category">Hearing type</option></select></label></div>
+      @if (paged().length === 0) { <div class="empty"><span class="material-symbols-outlined">manage_search</span><h3>No hearing records match</h3><p>Adjust search or Registry filters to see a different set of matters.</p></div> } @else {
+        <div class="table-wrap"><table><thead><tr><th>Application Number</th><th>Hearing Room</th><th>Agent Name</th><th>Applicant / Mark</th><th>Hearing Date</th><th>Hearing Slot</th><th>Type / Status</th><th class="right">VC Action</th></tr></thead><tbody>@for (item of paged(); track keyOf(item)) {<tr [class.live-row]="item.dueDate === today()"><td><button type="button" (click)="openMark(item)">{{ item.applicationNo || '—' }}<span class="material-symbols-outlined">open_in_new</span></button></td><td>@if (item.hearingRoom) {<span class="room"><i></i>{{ item.hearingRoom }}</span>} @else {<span class="muted">Assigned on cause list</span>}</td><td>{{ item.agentName || '—' }}</td><td class="mark">{{ item.applicantName || item.trademarkName || '—' }}</td><td><strong>{{ dateLabel(item.dueDate) }}</strong>@if (item.dueDate === today()) {<b class="today-label">Today</b>}</td><td class="muted">{{ item.hearingSlot || 'Awaiting cause list' }}</td><td><span class="type">{{ categoryLabel(item) }}</span></td><td class="right">@if (unlocked(item)) {<a [href]="item.hearingUrl" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined">videocam</span>Join Webex</a>} @else {<span class="unlock"><span class="material-symbols-outlined">lock</span>Unlocks {{ dayjs(item.dueDate).format('DD MMM') }}</span>}</td></tr>}</tbody></table></div>
+        <footer class="pagination"><p>Showing <strong>{{ displayedRange() }}</strong> of <strong>{{ filtered().length }}</strong> listed hearing{{ filtered().length === 1 ? '' : 's' }}</p><div><button type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">Previous</button>@for (number of pageNumbers(); track number) {<button type="button" [class.active]="page() === number" (click)="goToPage(number)">{{ number }}</button>}<button type="button" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">Next</button></div></footer>
+      }
+    </section>
+  }
+</main>

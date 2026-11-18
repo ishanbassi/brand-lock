@@ -749,7 +749,7 @@
               </div>
               <span
                 class="rounded-full bg-secondary-container px-2 py-0.5 font-label-sm text-label-sm text-on-secondary-container"
-                >Registry linked</span
+                >{{ latestJournalNo() ? "TMJ " + latestJournalNo() : "Registry linked" }}</span
               >
             </div>
             <p
@@ -761,30 +761,40 @@
               >
               in Class {{ mark()!.tmClass || "—" }}.
             </p>
-            <div
-              class="flex items-start gap-space-sm rounded-xl bg-surface-container-low p-space-sm"
-            >
-              <div
-                class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary-fixed text-on-secondary-fixed"
-              >
-                <span class="material-symbols-outlined text-[18px]"
-                  >verified_user</span
-                >
+            @if (journalConflictsLoading()) {
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Loading saved journal-watch results…</p>
+            } @else if (latestJournalConflicts().length) {
+              <div class="space-y-2">
+                @for (conflict of latestJournalConflicts(); track conflict.id) {
+                  <a
+                    class="block rounded-xl bg-surface-container-low p-space-sm transition-colors hover:bg-surface-container"
+                    [routerLink]="['/agent-portal/watch/journal/marks', conflict.conflictingTrademarkId]"
+                  >
+                    <div class="flex items-start justify-between gap-space-sm">
+                      <div class="min-w-0 font-body-sm text-body-sm text-on-surface">
+                        <span class="block truncate font-bold">{{ conflict.conflictingTrademarkName || "Unnamed conflicting mark" }}</span>
+                        <span class="text-on-surface-variant">Class {{ conflict.conflictingTmClass || "—" }} · {{ conflict.riskLevel || "Unrated" }} match</span>
+                      </div>
+                      <span class="shrink-0 font-label-sm text-label-sm text-primary">{{ ((conflict.similarityScore || 0) * 100).toFixed(0) }}%</span>
+                    </div>
+                  </a>
+                }
               </div>
-              <div class="font-body-sm text-body-sm text-on-surface">
-                <span class="block font-bold">{{
-                  mark()!.trademarkStatus || "Registry status awaiting update"
-                }}</span
-                ><span class="text-on-surface-variant">
-                  @if (mark()!.registrySyncedDate) {
-                    Last registry confirmation
-                    {{ mark()!.registrySyncedDate | date: "dd MMM yyyy" }}.
-                  } @else {
-                    Refresh the IP India record for the latest verification.
-                  }
-                </span>
+              <a
+                class="mt-space-sm inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline"
+                [routerLink]="['/agent-portal/watch/journal', latestJournalNo()]"
+              >View all Journal Watch conflicts <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
+            } @else {
+              <div class="flex items-start gap-space-sm rounded-xl bg-surface-container-low p-space-sm">
+                <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary-fixed text-on-secondary-fixed">
+                  <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                </div>
+                <div class="font-body-sm text-body-sm text-on-surface">
+                  <span class="block font-bold">No saved journal conflicts</span>
+                  <span class="text-on-surface-variant">Run Journal Watch after adding this mark to refresh its coverage.</span>
+                </div>
               </div>
-            </div>
+            }
           </section>
         </aside>
       </div>

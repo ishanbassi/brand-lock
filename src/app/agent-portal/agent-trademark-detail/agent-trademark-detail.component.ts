@@ -13,6 +13,7 @@ import {
   AgentCustomField,
   AgentDocument,
   AgentPortfolioTrademark,
+  WatchConflictHistory,
 } from '../../../models/agent.model';
 
 /**
@@ -44,6 +45,18 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   loading = signal(true);
   error = signal('');
   notice = signal('');
+  journalConflicts = signal<WatchConflictHistory[]>([]);
+  journalConflictsLoading = signal(false);
+  latestJournalNo = computed(() =>
+    this.journalConflicts().reduce<number | null>(
+      (latest, conflict) => conflict.journalNo != null && (latest == null || conflict.journalNo > latest) ? conflict.journalNo : latest,
+      null,
+    ),
+  );
+  latestJournalConflicts = computed(() => {
+    const journalNo = this.latestJournalNo();
+    return journalNo == null ? [] : this.journalConflicts().filter(conflict => conflict.journalNo === journalNo);
+  });
 
   // Actions
   refreshing = signal(false);
@@ -112,6 +125,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     }
     this.trademarkId = id;
     this.load();
+    this.loadJournalConflicts();
     this.loadDocuments();
     this.loadCustomFields();
   }
@@ -121,6 +135,24 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
       // A firm with no imported spreadsheet has none, which is a normal empty state, not an error.
       next: (fields) => this.customFields.set(fields),
       error: () => this.customFields.set([]),
+    });
+  }
+
+  private loadJournalConflicts(): void {
+    this.journalConflictsLoading.set(true);
+    this.agentDataService.getConflictHistory(this.trademarkId).subscribe({
+      next: conflicts => {
+        this.journalConflicts.set(
+          conflicts
+            .filter(conflict => conflict.journalNo != null)
+            .sort((left, right) => (right.similarityScore ?? 0) - (left.similarityScore ?? 0)),
+        );
+        this.journalConflictsLoading.set(false);
+      },
+      error: () => {
+        this.journalConflicts.set([]);
+        this.journalConflictsLoading.set(false);
+      },
     });
   }
 

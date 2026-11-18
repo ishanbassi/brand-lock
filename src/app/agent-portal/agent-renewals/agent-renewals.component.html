@@ -1,0 +1,59 @@
+<main class="renewal-docket">
+  <header class="docket-header">
+    <div>
+      <nav aria-label="Breadcrumb"><span>Deadlines &amp; Hearings</span><span class="material-symbols-outlined">chevron_right</span><strong>Trademark Renewals</strong></nav>
+      <div class="title-line"><h1>Trademark Renewals Docket</h1><span>SEC 25 • CGPDTM</span></div>
+      <p>Monitor 10-year statutory validity cycles, grace periods under Section 25(3), surcharge windows, and execute Form TM-R filings directly with CGPDTM.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="sync" (click)="load()" [disabled]="loading()"><span class="material-symbols-outlined">sync</span>{{ loading() ? 'Syncing' : 'Sync CGPDTM' }}</button>
+      <button type="button" class="export" (click)="exportSchedule()"><span class="material-symbols-outlined">description</span>Export Schedule</button>
+    </div>
+  </header>
+
+  <section class="filters" aria-label="Filter renewal docket">
+    <div class="search-filter">
+      <div class="search-input"><span class="material-symbols-outlined">search</span><input id="docketSearch" type="search" [value]="search()" (input)="search.set($any($event.target).value); resetPage()" placeholder="Search mark name, application no., client, Class (1-45), or registered proprietor..." /><button type="button" (click)="clearSearch()">ESC</button></div>
+      <div class="pills" role="group" aria-label="Milestone">
+        <button type="button" [class.active]="milestone() === 'all'" (click)="setMilestone('all')">All Milestones</button>
+        <button type="button" class="overdue" [class.active]="milestone() === 'overdue'" (click)="setMilestone('overdue')"><i aria-hidden="true"></i>Overdue</button>
+        <button type="button" class="urgent" [class.active]="milestone() === 'urgent'" (click)="setMilestone('urgent')"><i aria-hidden="true"></i>Urgent</button>
+        <button type="button" class="upcoming" [class.active]="milestone() === 'upcoming'" (click)="setMilestone('upcoming')"><i aria-hidden="true"></i>Upcoming</button>
+      </div>
+    </div>
+    <div class="selectors">
+      <label>NICE Classification<select [value]="classFilter()" (change)="setClass($any($event.target).value)"><option value="all">All Classes (1 to 45)</option>@for (tmClass of classes(); track tmClass) {<option [value]="tmClass">Class {{ tmClass }}</option>}</select></label>
+      <div class="window"><label>Renewal Window <button type="button" (click)="useNextNinetyDays()">Next 90 Days</button></label><div><span class="material-symbols-outlined">date_range</span><input type="date" [value]="dateFrom()" (change)="dateFrom.set($any($event.target).value)" aria-label="Renewal window start" /><span class="to">–</span><input type="date" [value]="dateTo()" (change)="dateTo.set($any($event.target).value)" aria-label="Renewal window end" /><button type="button" class="apply" (click)="applyDateFilter()"><span class="material-symbols-outlined">filter_alt</span>Filter</button></div></div>
+      <label>Client / Entity<select [value]="clientFilter()" (change)="setClient($any($event.target).value)"><option value="all">All Clients &amp; Proprietors</option>@for (client of clients(); track client) {<option [value]="client">{{ client }}</option>}</select></label>
+      <label>Sort Hierarchy<select [value]="sort()" (change)="setSort($any($event.target).value)"><option value="due">Expiry Date (Earliest First)</option><option value="grace">Grace Period Countdown</option><option value="application">Application Number</option><option value="fee">Total Fee (High to Low)</option></select></label>
+    </div>
+  </section>
+
+  @if (error()) { <div class="error" role="alert"><span class="material-symbols-outlined">error</span>{{ error() }}<button type="button" (click)="load()">Retry</button></div> }
+
+  <section class="docket-list" aria-label="Trademark renewal records">
+    <header class="list-head"><div><input id="selectAllCheckbox" type="checkbox" [checked]="allPageSelected()" (change)="toggleAll()" /><label for="selectAllCheckbox">{{ filtered().length }} Trademark{{ filtered().length === 1 ? '' : 's' }} Displayed</label></div><div>CGPDTM Live Feed Active <i></i></div></header>
+    @if (loading()) {
+      <div class="loading" role="status"><span></span><span></span><span></span>Loading renewal docket…</div>
+    } @else if (paged().length === 0) {
+      <div class="empty"><span class="material-symbols-outlined">event_busy</span><h2>No renewals match these filters</h2><p>Adjust the search, milestone, or date window to see renewal records.</p></div>
+    } @else {
+      <div class="records">
+        @for (item of paged(); track keyOf(item)) {
+          <article class="record" [class]="'record ' + stageClass(item)">
+            <div class="record-info"><input type="checkbox" [checked]="isSelected(item)" (change)="toggleRow(item)" [attr.aria-label]="'Select ' + (item.trademarkName || 'trademark')" />
+              <div class="mark-badge">{{ initials(item) }}</div>
+              <div class="mark-content"><div class="mark-title"><h2>{{ item.trademarkName || 'Trademark record' }}</h2><span>Word Mark</span>@if (item.tmClass) {<b>Class {{ item.tmClass }}</b>}<em [class]="stageClass(item)"><span class="material-symbols-outlined">{{ stageIcon(item) }}</span>{{ stageLabel(item) }}</em></div>
+                <p class="metadata">App No: <strong>{{ item.applicationNo || '—' }}</strong><i>•</i> Proprietor: <strong>{{ item.proprietorName || 'Not recorded' }}</strong><i>•</i> Registry: <strong>CGPDTM</strong></p>
+                <div class="statutory"><div><span class="material-symbols-outlined">{{ item.daysUntilDue < 0 ? 'event_busy' : 'event' }}</span>{{ item.daysUntilDue < 0 ? 'Expired' : 'Valid Until' }}: <strong>{{ dateLabel(item.dueDate) }}</strong> ({{ daysLabel(item) }})</div>
+                  @if (item.daysUntilDue < -180) {<div><span class="material-symbols-outlined">schedule</span>1-Year Restoration Window Ends: <strong>{{ dateLabel(restorationEnds(item)) }}</strong></div>} @else if (item.daysUntilDue < 0) {<div><span class="material-symbols-outlined">hourglass_bottom</span>Grace Closes: <strong>{{ dateLabel(graceEnds(item)) }}</strong></div>}</div>
+              </div>
+            </div>
+            <div class="record-actions"><div><small>{{ item.daysUntilDue < -180 ? 'Restoration Fee' : item.daysUntilDue < 0 ? 'Fee Computation' : 'Standard Renewal' }}</small><strong [class.overdue-fee]="item.daysUntilDue < 0">{{ feeLabel(item) }}</strong><span>{{ feeDescription(item) }}</span></div><button type="button" (click)="openMark(item)"><span class="material-symbols-outlined">visibility</span>View Trademark Details →</button></div>
+          </article>
+        }
+      </div>
+    }
+    <footer class="pagination"><p>Showing <strong>{{ displayedRange() }}</strong> of <strong>{{ filtered().length }}</strong> statutory trademark renewal dockets</p><div><button type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">Previous</button>@for (number of pageNumbers(); track number) {<button type="button" [class.active]="page() === number" (click)="goToPage(number)">{{ number }}</button>}<button type="button" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">Next</button></div></footer>
+  </section>
+</main>

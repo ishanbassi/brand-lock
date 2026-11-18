@@ -32,6 +32,7 @@ import {
   IsoCertificateDocument,
   IsoCustomField,
   IsoPartySuggestion,
+  AgentJournalConflict,
   AgentJournalWatchResult,
   AgentImportResult,
   AgentPortfolioFilterOptions,
@@ -372,6 +373,21 @@ export class AgentDataService {
   getAllConflicts(): Observable<WatchConflictHistory[]> {
     return this.http.get<WatchConflictHistory[]>(
       `${this.base}/agent-portal/watch/conflicts`,
+    );
+  }
+
+  /** Runs an on-demand new-filing comparison for the caller's portfolio only. */
+  runNewFilingConflictWatch(): Observable<void> {
+    return this.http.post<void>(
+      `${this.base}/agent-portal/watch/conflicts/run`,
+      {},
+    );
+  }
+
+  /** Saved conflicts for one portfolio mark, including the journal issue that produced each hit. */
+  getConflictHistory(trademarkId: number): Observable<WatchConflictHistory[]> {
+    return this.http.get<WatchConflictHistory[]>(
+      `${this.base}/agent-portal/portfolio/${trademarkId}/conflict-history`,
     );
   }
 
@@ -875,6 +891,13 @@ export class AgentDataService {
     return this.http.get<Record<string, number>>(
       `${this.base}/agent-portal/watch/portfolio-links`,
       { params },
+    );
+  }
+
+  /** Saved journal-watch results. This reads the shared conflict history and never recomputes. */
+  getJournalWatchHistory(journalNo: number): Observable<AgentJournalConflict[]> {
+    return this.http.get<AgentJournalConflict[]>(
+      `${this.base}/agent-portal/watch/journals/${journalNo}/conflicts`,
     );
   }
 
