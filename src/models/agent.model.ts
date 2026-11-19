@@ -280,8 +280,23 @@ export interface WatchConflictHistory {
   conflictingTmClass?: number;
   conflictingAgentName?: string;
   conflictingProprietorName?: string;
+  /** Stored artwork filename for the conflicting mark, when one is available. */
+  conflictingImgUrl?: string | null;
   /** The conflicting mark's current registry status — an abandoned/refused mark is a weak threat. */
   conflictingStatus?: string;
+}
+
+/** One recent registry filing shown before a conflict watch is run. */
+export interface AgentNewFiling {
+  id: number;
+  name?: string;
+  applicationNo?: number;
+  applicationDate?: string;
+  tmClass?: number;
+  proprietorName?: string;
+  trademarkStatus?: string;
+  /** Stored artwork filename; use the authenticated artwork endpoint to render it. */
+  imgUrl?: string | null;
 }
 
 export interface AgentPublicProfile {

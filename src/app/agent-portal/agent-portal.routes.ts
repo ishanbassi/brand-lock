@@ -20,7 +20,7 @@ title: 'ISO Certificates | Agent Portal',
     // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
     path: 'watch/conflicts',
     loadComponent: () => import('./agent-conflicts/agent-conflicts.component').then(m => m.AgentConflictsComponent),
-    title: 'New Filing Conflicts | Agent Portal',
+    title: 'New Filings | Agent Portal',
   },
   {
     path: 'watch/journal',

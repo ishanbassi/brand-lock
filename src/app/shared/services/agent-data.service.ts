@@ -42,6 +42,7 @@ import {
   AgentProfile,
   AgentPublicProfile,
   AgentRegistration,
+  AgentNewFiling,
   ProprietorDirectoryEntry,
   WatchConflictHistory,
 } from '../../../models/agent.model';
@@ -374,6 +375,11 @@ export class AgentDataService {
     return this.http.get<WatchConflictHistory[]>(
       `${this.base}/agent-portal/watch/conflicts`,
     );
+  }
+
+  /** The current 180-day filing window, newest filing first. */
+  getLatestNewFilings(): Observable<AgentNewFiling[]> {
+    return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`);
   }
 
   /** Runs an on-demand new-filing comparison for the caller's portfolio only. */

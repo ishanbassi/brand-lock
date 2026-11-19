@@ -1,15 +1,14 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { WatchConflictHistory } from '../../../models/agent.model';
+import { AgentNewFiling, WatchConflictHistory } from '../../../models/agent.model';
 import { IconComponent } from '../ui/icon.component';
 
 type RiskFilter = '' | 'HIGH' | 'MEDIUM' | 'LOW';
 type StatusFilter = 'OPEN' | 'OPPOSING' | 'DISMISSED';
-type SourceFilter = 'NEW' | 'JOURNAL' | 'ALL';
 type ConflictSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
 
 /** The portfolio-wide worklist, deliberately sharing the Journal Watch interaction model. */
@@ -20,7 +19,7 @@ type ConflictSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicatio
   templateUrl: './agent-conflicts.component.html',
   styleUrl: './agent-conflicts.component.scss',
 })
-export class AgentConflictsComponent implements OnInit {
+export class AgentConflictsComponent implements OnInit, OnDestroy {
   readonly allClasses = Array.from({ length: 45 }, (_, index) => index + 1);
   readonly searchFields: { value: ConflictSearchField; label: string; placeholder: string }[] = [
     { value: 'name', label: 'Trademark', placeholder: 'Search trademark name' },
@@ -31,6 +30,10 @@ export class AgentConflictsComponent implements OnInit {
   readonly pageSize = 20;
 
   conflicts = signal<WatchConflictHistory[]>([]);
+  filings = signal<AgentNewFiling[]>([]);
+  view = signal<'FILINGS' | 'CONFLICTS'>('FILINGS');
+  readonly artworkUrls = signal<Record<number, string>>({});
+  readonly artworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
   running = signal(false);
   error = signal('');
@@ -39,7 +42,6 @@ export class AgentConflictsComponent implements OnInit {
   busyId = signal<number | null>(null);
   searchField = signal<ConflictSearchField>('name');
   searchTerm = '';
-  sourceFilter = signal<SourceFilter>('NEW');
   classFilter = signal<number | null>(null);
   riskFilter = signal<RiskFilter>('');
   portfolioOnly = signal(false);
@@ -55,8 +57,7 @@ export class AgentConflictsComponent implements OnInit {
   );
   readonly scopedConflicts = computed(() => this.conflicts()
     .filter(conflict => {
-      if (this.sourceFilter() === 'NEW' && !this.isNewFiling(conflict)) return false;
-      if (this.sourceFilter() === 'JOURNAL' && this.isNewFiling(conflict)) return false;
+      if (!this.isNewFiling(conflict)) return false;
       if (this.classFilter() !== null && conflict.conflictingTmClass !== this.classFilter()) return false;
       if (this.portfolioOnly() && !conflict.trademarkId) return false;
       return this.matchesSearch(conflict);
@@ -78,18 +79,33 @@ export class AgentConflictsComponent implements OnInit {
   readonly highRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'HIGH').length);
   readonly mediumRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'MEDIUM').length);
   readonly lowRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'LOW').length);
-  readonly sourceLabel = computed(() => this.sourceFilter() === 'NEW' ? 'New filings' : this.sourceFilter() === 'JOURNAL' ? 'Journal advertisements' : 'All sources');
+  readonly filteredFilings = computed(() => this.filings().filter(filing =>
+    (this.classFilter() === null || filing.tmClass === this.classFilter()) && this.matchesFiling(filing),
+  ));
+  readonly pagedFilings = computed(() => this.filteredFilings().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize));
+  readonly activeCount = computed(() => this.view() === 'FILINGS' ? this.filteredFilings().length : this.filteredCount());
+  readonly activeTotalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / this.pageSize)));
+  readonly activePageStart = computed(() => this.activeCount() ? (this.page() - 1) * this.pageSize + 1 : 0);
+  readonly activePageEnd = computed(() => Math.min(this.page() * this.pageSize, this.activeCount()));
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
   ngOnInit(): void { this.load(); }
 
+  ngOnDestroy(): void { Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url)); }
+
   load(showLoading = true): void {
     if (showLoading) this.loading.set(true);
     this.error.set('');
-    this.agentDataService.getAllConflicts().subscribe({
-      next: conflicts => {
+    forkJoin({
+      conflicts: this.agentDataService.getAllConflicts(),
+      filings: this.agentDataService.getLatestNewFilings(),
+    }).subscribe({
+      next: ({ conflicts, filings }) => {
         this.conflicts.set(conflicts);
+        this.filings.set(filings);
+        conflicts.forEach(conflict => this.loadArtwork(conflict.conflictingTrademarkId, conflict.conflictingImgUrl));
+        filings.forEach(filing => this.loadArtwork(filing.id, filing.imgUrl));
         this.ensurePageInRange();
         this.loading.set(false);
       },
@@ -103,14 +119,12 @@ export class AgentConflictsComponent implements OnInit {
   setSearchField(field: ConflictSearchField): void { this.searchField.set(field); this.resetPage(); }
   onSearchChange(): void { this.resetPage(); }
   clearSearch(): void { this.searchTerm = ''; this.resetPage(); }
-  setSourceFilter(source: SourceFilter): void { this.sourceFilter.set(source); this.resetPage(); }
   setClassFilter(classNo: number | null): void { this.classFilter.set(classNo); this.resetPage(); }
   setRiskFilter(risk: RiskFilter): void { this.riskFilter.set(risk); this.resetPage(); }
   togglePortfolioOnly(): void { this.portfolioOnly.update(value => !value); this.resetPage(); }
-  toggleHighConflicts(): void { this.setRiskFilter(this.riskFilter() === 'HIGH' ? '' : 'HIGH'); }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages() || page === this.page()) return;
+    if (page < 1 || page > this.activeTotalPages() || page === this.page()) return;
     this.page.set(page);
   }
 
@@ -125,6 +139,7 @@ export class AgentConflictsComponent implements OnInit {
     this.agentDataService.runNewFilingConflictWatch().subscribe({
       next: () => {
         this.actionMsg.set('Conflict watch completed. Your new filing matches are up to date.');
+        this.view.set('CONFLICTS');
         this.running.set(false);
         this.load(false);
       },
@@ -179,6 +194,36 @@ export class AgentConflictsComponent implements OnInit {
     }
   }
 
+  private matchesFiling(filing: AgentNewFiling): boolean {
+    const term = this.searchTerm.trim().toLocaleLowerCase();
+    if (!term) return true;
+    switch (this.searchField()) {
+      case 'applicationNo': return String(filing.applicationNo ?? '').includes(term);
+      case 'proprietorName': return (filing.proprietorName ?? '').toLocaleLowerCase().includes(term);
+      case 'agentName': return false;
+      default: return (filing.name ?? '').toLocaleLowerCase().includes(term);
+    }
+  }
+
+  markMonogram(value?: string | null): string {
+    const parts = (value ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'TM';
+    return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  artworkUrl(id?: number): string | null { return id == null ? null : this.artworkUrls()[id] ?? null; }
+
+  private loadArtwork(id?: number, imgUrl?: string | null): void {
+    if (id == null || !imgUrl || this.artworkUrls()[id] || this.artworkFailures().has(id)) return;
+    this.agentDataService.getTrademarkArtwork(id).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        this.artworkUrls.update(urls => ({ ...urls, [id]: url }));
+      },
+      error: () => this.artworkFailures.update(failures => new Set(failures).add(id)),
+    });
+  }
+
   private compareByFilingOrder(left: WatchConflictHistory, right: WatchConflictHistory): number {
     const dateOrder = this.dateValue(right.conflictingApplicationDate) - this.dateValue(left.conflictingApplicationDate);
     if (dateOrder !== 0) return dateOrder;
@@ -192,7 +237,7 @@ export class AgentConflictsComponent implements OnInit {
   private dateValue(date?: string): number { return date ? Date.parse(date) || 0 : 0; }
 
   private resetPage(): void { this.page.set(1); }
-  private ensurePageInRange(): void { if (this.page() > this.totalPages()) this.page.set(this.totalPages()); }
+  private ensurePageInRange(): void { if (this.page() > this.activeTotalPages()) this.page.set(this.activeTotalPages()); }
 
   private mutate(conflict: WatchConflictHistory, call: () => Observable<unknown>, onOk: () => void): void {
     if (this.busyId() !== null) return;

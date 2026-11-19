@@ -31,7 +31,6 @@ export class AgentSearchReportComponent {
   private logoUrl: string | null = null;
 
   query = '';
-  clientName = '';
   searchType: SearchReportType = 'startswith';
   statusBucket = '';
   readonly statusBuckets = [
@@ -297,8 +296,6 @@ export class AgentSearchReportComponent {
       ? `Class${current.tmClasses.length === 1 ? '' : 'es'} ${current.tmClasses.join(', ')}`
       : 'All classes';
     const rows = this.printableResults(selectedRows);
-    const client = this.clientName.trim();
-
     doc.open();
     doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>Search report — ${this.escapeHtml(current.query)}</title>
       <style>
@@ -326,7 +323,7 @@ export class AgentSearchReportComponent {
         footer { margin-top:12px; padding-top:7px; border-top:1px solid #d8dde4; color:#596575; font-size:8pt; }
         @media screen { body { padding:24px; } }
       </style></head><body>
-      <header><div><h1 class="title">Trademark Search Report</h1><div class="meta">${this.escapeHtml(current.query)} · ${this.escapeHtml(this.reportSearchType)} search · ${this.escapeHtml(classes)}${client ? ` · For ${this.escapeHtml(client)}` : ''}</div></div>
+      <header><div><h1 class="title">Trademark Search Report</h1><div class="meta">${this.escapeHtml(current.query)} · ${this.escapeHtml(this.reportSearchType)} search · ${this.escapeHtml(classes)}</div></div>
       <div class="firm">${this.logoUrl ? `<img class="logo" src="${this.escapeAttribute(this.logoUrl)}" alt="">` : ''}${this.escapeHtml(firmName)}</div></header>
       <main>${rows}</main>
       <footer>${selectedRows.length} selected result${selectedRows.length === 1 ? '' : 's'} · Generated ${this.escapeHtml(new Date().toLocaleDateString('en-IN'))}. This search is not an opinion on registrability. Verify status against the Registry before relying on it.</footer>
@@ -419,6 +416,15 @@ export class AgentSearchReportComponent {
   statusLabel(row: SearchReportRow): string {
     const status = row.trademarkStatus;
     return !status || status.toUpperCase() === 'UNKNOWN' ? 'Not recorded' : status;
+  }
+
+  statusClass(row: SearchReportRow): string {
+    const status = row.trademarkStatus?.toUpperCase() ?? '';
+    if (status.includes('REGISTERED')) return 'status-registered';
+    if (status.includes('OBJECTED') || status.includes('OPPOSED')) return 'status-contested';
+    if (status.includes('EXAMINATION') || status.includes('ADVERTISED')) return 'status-pending';
+    if (status.includes('ABANDONED') || status.includes('WITHDRAWN') || status.includes('REJECTED')) return 'status-closed';
+    return 'status-unknown';
   }
 
   formatDate(iso?: string): string {

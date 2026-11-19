@@ -47,10 +47,6 @@
         </div>
       }
     </div>
-    <div class="field">
-      <label for="clientName">Client (optional)</label>
-      <input id="clientName" type="text" [(ngModel)]="clientName" name="clientName" placeholder="Shown on the report" />
-    </div>
     <button type="submit" class="btn-primary" [disabled]="!query.trim() || selectedClasses().length === 0 || loading()">{{ loading() ? 'Searching…' : 'Search' }}</button>
   </form>
   <p class="disclaimer">Lists marks on the Register matching the selected rule. It is not an opinion on registrability and does not constitute legal advice.</p>
@@ -96,7 +92,7 @@
                   </td>
                   <td class="cell-name">{{ row.name || '—' }}</td><td>{{ row.applicationNo || '—' }}</td><td>{{ row.tmClass || '—' }}</td>
                   <td class="cell-prop">{{ row.proprietorName || '—' }}</td><td class="cell-address">{{ row.proprietorAddress || '—' }}</td>
-                  <td>{{ statusLabel(row) }}</td><td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
+                  <td><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span></td><td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
                   <td>{{ row.journalNo || '—' }}</td><td class="cell-details">{{ row.details || '—' }}</td>
                   @if (reportSearchType === 'phonetic') {
                     <td><span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">{{ bandLabel(row.riskBand) }}</span></td>

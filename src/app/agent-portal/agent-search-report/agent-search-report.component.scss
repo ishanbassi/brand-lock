@@ -404,6 +404,43 @@ $low: var(--ap-done);
   max-width: 220px;
 }
 
+.status-badge {
+  display: inline-block;
+  max-width: 180px;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+
+  &.status-registered {
+    background: var(--ap-done-soft);
+    color: $low;
+  }
+
+  &.status-contested {
+    background: var(--ap-overdue-soft);
+    color: $high;
+  }
+
+  &.status-pending {
+    background: var(--ap-due-soft);
+    color: $medium;
+  }
+
+  &.status-closed {
+    background: #e2e8f0;
+    color: #475569;
+  }
+
+  &.status-unknown {
+    background: var(--ap-paper);
+    color: $muted;
+  }
+}
+
 .cell-address,
 .cell-details {
   min-width: 220px;

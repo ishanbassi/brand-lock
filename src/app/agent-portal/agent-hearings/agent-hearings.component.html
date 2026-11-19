@@ -21,12 +21,12 @@
         <p><i></i>{{ hasUnlockedLiveHearing() ? 'Webex room live on the cause list' : 'Cause list pending publication' }}</p>
       </article>
       <article class="metric metric--next">
-        <div><span>Next 7 Days</span><strong>{{ nextSeven }} <em>Scheduled</em></strong></div>
+        <div><span>Next 7 Days</span><strong>{{ nextSeven() }} <em>Scheduled</em></strong></div>
         <span class="material-symbols-outlined">date_range</span>
         <p>Board listed • Cause list awaited</p>
       </article>
       <article class="metric metric--pipeline">
-        <div><span>Board Pipeline</span><strong>{{ boardPipeline }} <em>Total</em></strong></div>
+        <div><span>Board Pipeline</span><strong>{{ boardPipeline() }} <em>Total</em></strong></div>
         <span class="material-symbols-outlined">gavel</span>
         <p>Across all active Registry categories</p>
       </article>
@@ -77,7 +77,7 @@
     }
 
     <section class="upcoming-section" aria-labelledby="upcomingHearings">
-      <header class="section-head section-head--split"><div><h2 id="upcomingHearings">Upcoming Hearings Board</h2><p>Forward hearings on your marks. A room and running slot appear only when the daily cause list is published.</p></div><div class="quick-filters"><button type="button" [class.active]="state() === 'upcoming'" (click)="selectQuickState('upcoming')">{{ nextSeven }} in next 7 days</button><button type="button" [class.active]="state() === 'all'" (click)="selectQuickState('all')">{{ filtered().length }} shown</button><button type="button" [class.active]="state() === 'live'" (click)="selectQuickState('live')">Today's live</button></div></header>
+      <header class="section-head section-head--split"><div><h2 id="upcomingHearings">Upcoming Hearings Board</h2><p>Forward hearings on your marks. A room and running slot appear only when the daily cause list is published.</p></div><div class="quick-filters"><button type="button" [class.active]="state() === 'upcoming'" (click)="selectQuickState('upcoming')">{{ nextSeven() }} in next 7 days</button><button type="button" [class.active]="state() === 'all'" (click)="selectQuickState('all')">{{ filtered().length }} shown</button><button type="button" [class.active]="state() === 'live'" (click)="selectQuickState('live')">Today's live</button></div></header>
       @if (upcomingHearings().length === 0) { <div class="empty compact"><span class="material-symbols-outlined">event_busy</span><p>No upcoming hearings match the active filters.</p></div> }
       <div class="timeline">
         @for (item of upcomingHearings().slice(0, 4); track keyOf(item)) {

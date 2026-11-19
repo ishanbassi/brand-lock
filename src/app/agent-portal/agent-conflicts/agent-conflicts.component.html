@@ -1,89 +1,61 @@
 <div class="watch-page conflicts-page">
   @if (error()) { <div class="alert-error" role="alert">{{ error() }}</div> }
 
-  <section class="watch-hero" aria-labelledby="conflict-watch-title">
+  <section class="watch-hero" aria-labelledby="new-filings-title">
     <div class="hero-orb hero-orb-one"></div><div class="hero-orb hero-orb-two"></div>
     <div class="hero-content">
       <div>
-        <div class="hero-meta"><span class="issue-chip"><span></span> Continuous portfolio watch</span><span class="registry-label">IP India Registry</span></div>
-        <h1 id="conflict-watch-title" class="watch-hero-title">New Filing Conflict Watch</h1>
-        <div class="hero-facts">
-          <span><ap-icon name="portfolio" [size]="16" /> {{ conflicts().length }} portfolio conflict{{ conflicts().length === 1 ? '' : 's' }} recorded</span>
-          <span><ap-icon name="watch" [size]="16" /> New filings are shown first</span>
-        </div>
+        <div class="hero-meta"><span class="issue-chip"><span></span> Registry monitor</span><span class="registry-label">IP India Registry</span></div>
+        <h1 id="new-filings-title" class="watch-hero-title">New Filings</h1>
+        <div class="hero-facts"><span><ap-icon name="watch" [size]="16" /> Reviews filings made in the last 180 days</span><span><ap-icon name="portfolio" [size]="16" /> {{ filings().length }} latest filings available</span></div>
       </div>
       <button type="button" class="run-hero-button" [disabled]="running()" (click)="run()"><ap-icon name="watch" [size]="19" />{{ running() ? 'Checking portfolio…' : 'Run Conflict Watch' }}</button>
     </div>
   </section>
 
   @if (loading()) {
-    <div class="status-panel" role="status"><span class="spinner"></span>Loading conflict watch…</div>
+    <div class="status-panel" role="status"><span class="spinner"></span>Loading the latest filings…</div>
   } @else {
     @if (actionMsg()) { <div class="alert-ok" role="status">{{ actionMsg() }}</div> }
     @if (actionError()) { <div class="alert-error" role="alert">{{ actionError() }}</div> }
 
-    <section class="filter-plane" role="search" aria-label="Filter conflict watch">
+    <section class="filter-plane" role="search" aria-label="Filter new filings">
       <div class="search-row">
         <div class="search-shell">
           <ap-icon class="search-icon" name="search" [size]="20" />
-          <select class="search-field" aria-label="Search by" [ngModel]="searchField()" (ngModelChange)="setSearchField($event)">
-            @for (field of searchFields; track field.value) { <option [value]="field.value">{{ field.label }}</option> }
-          </select>
-          <div class="search-wrap">
-            <input type="search" class="search-input" [attr.aria-label]="searchPlaceholder()" [attr.inputmode]="searchField() === 'applicationNo' ? 'numeric' : null" [placeholder]="searchPlaceholder()" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" autocomplete="off" />
-            @if (searchTerm) { <button type="button" class="search-clear" (click)="clearSearch()" aria-label="Clear search"><ap-icon name="close" [size]="16" /></button> }
+          <select class="search-field" aria-label="Search by" [ngModel]="searchField()" (ngModelChange)="setSearchField($event)">@for (field of searchFields; track field.value) { <option [value]="field.value">{{ field.label }}</option> }</select>
+          <div class="search-wrap"><input type="search" class="search-input" [attr.aria-label]="searchPlaceholder()" [attr.inputmode]="searchField() === 'applicationNo' ? 'numeric' : null" [placeholder]="searchPlaceholder()" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" autocomplete="off" />@if (searchTerm) { <button type="button" class="search-clear" (click)="clearSearch()" aria-label="Clear search"><ap-icon name="close" [size]="16" /></button> }</div>
+        </div>
+        <div class="quick-actions"><button type="button" class="our-marks-button" [class.active]="portfolioOnly()" (click)="togglePortfolioOnly()" [disabled]="view() === 'FILINGS'"><ap-icon name="portfolio" [size]="18" /><span>Our Portfolio Marks</span></button><button type="button" class="reset-button" [disabled]="running()" (click)="run()" aria-label="Run conflict watch" title="Run conflict watch"><ap-icon name="refresh" [size]="18" /></button></div>
+      </div>
+      <div class="filter-grid" [class.filter-grid--filings]="view() === 'FILINGS'"><label class="filter-control"><span>Nice Class</span><select [ngModel]="classFilter()" (ngModelChange)="setClassFilter($event)"><option [ngValue]="null">All classes</option>@for (classNo of allClasses; track classNo) { <option [ngValue]="classNo">Class {{ classNo }}</option> }</select></label>@if (view() === 'CONFLICTS') { <label class="filter-control"><span>Watch Risk Level</span><select [ngModel]="riskFilter()" (ngModelChange)="setRiskFilter($event)"><option value="">All risk tiers</option><option value="HIGH">High conflict</option><option value="MEDIUM">Moderate match</option><option value="LOW">Low match</option></select></label> }</div>
+      <div class="scope-bar"><div class="active-scope"><span>Active scope:</span><span class="scope-token">{{ view() === 'FILINGS' ? 'Latest filings' : 'New-filing conflicts' }}</span><span class="scope-token">{{ classFilter() === null ? 'All classes' : 'Class ' + classFilter() }}</span>@if (portfolioOnly()) { <span class="scope-token portfolio-token"><ap-icon name="portfolio" [size]="13" /> Our marks</span> }</div><span>Showing <strong>{{ activeCount() }}</strong> {{ view() === 'FILINGS' ? 'filing' : 'conflict' }}{{ activeCount() === 1 ? '' : 's' }}</span></div>
+    </section>
+
+    @if (view() === 'FILINGS') {
+      <section class="results" aria-labelledby="latest-filings-heading">
+        <div class="results-header"><div><h2 id="latest-filings-heading">Latest filings</h2><p>Review new registry activity, then run a Conflict Watch to compare it against your portfolio.</p></div></div>
+        @if (pagedFilings().length === 0) { <div class="empty-note">No filings match this scope in the current 180-day review window.</div> } @else {
+          <div class="conflict-list filing-list">
+            @for (filing of pagedFilings(); track filing.id) {
+              <article class="conflict-card filing-card"><div class="mark-tile" [class.mark-artwork]="artworkUrl(filing.id)">@if (artworkUrl(filing.id); as artwork) { <img src="{{ artwork }}" [alt]="'Artwork for ' + (filing.name || 'this trademark')" /> } @else { <span class="mark-initials">{{ markMonogram(filing.name) }}</span> }</div><div class="conflict-content"><div class="conflict-badges"><span class="filing-badge">New filing</span><span>Class {{ filing.tmClass || '—' }}</span>@if (filing.trademarkStatus) { <span class="source-badge">{{ filing.trademarkStatus }}</span> }</div><h3>{{ filing.name || 'Untitled mark' }} <small>Application No. {{ filing.applicationNo || '—' }}</small></h3><p>@if (filing.proprietorName) { {{ filing.proprietorName }} · } Filed {{ filing.applicationDate | date: 'dd MMM yyyy' }}</p><div class="conflict-actions"><a class="view-mark-button" [routerLink]="['/agent-portal/watch/journal/marks', filing.id]">View trademark details <ap-icon name="chevron" [size]="14" /></a></div></div></article>
+            }
           </div>
-        </div>
-        <div class="quick-actions">
-          <button type="button" class="our-marks-button" [class.active]="portfolioOnly()" (click)="togglePortfolioOnly()"><ap-icon name="portfolio" [size]="18" /><span>{{ portfolioOnly() ? 'Our portfolio marks' : 'Our Portfolio Marks' }}</span></button>
-          <button type="button" class="high-risk-button" [class.active]="riskFilter() === 'HIGH'" (click)="toggleHighConflicts()">High conflicts ({{ highRiskCount() }})</button>
-          <button type="button" class="reset-button" [disabled]="running()" (click)="run()" aria-label="Run conflict watch again" title="Run watch again"><ap-icon name="refresh" [size]="18" /></button>
-        </div>
-      </div>
-
-      <div class="filter-grid">
-        <label class="filter-control"><span>Source</span><select [ngModel]="sourceFilter()" (ngModelChange)="setSourceFilter($event)"><option value="NEW">New filings</option><option value="JOURNAL">Journal advertisements</option><option value="ALL">All sources</option></select></label>
-        <label class="filter-control"><span>Nice Class</span><select [ngModel]="classFilter()" (ngModelChange)="setClassFilter($event)"><option [ngValue]="null">All classes</option>@for (classNo of allClasses; track classNo) { <option [ngValue]="classNo">Class {{ classNo }}</option> }</select></label>
-        <label class="filter-control"><span>Watch Risk Level</span><select [ngModel]="riskFilter()" (ngModelChange)="setRiskFilter($event)"><option value="">All risk tiers</option><option value="HIGH">High conflict</option><option value="MEDIUM">Moderate match</option><option value="LOW">Low match</option></select></label>
-      </div>
-
-      <div class="scope-bar"><div class="active-scope"><span>Active scope:</span><span class="scope-token">{{ sourceLabel() }}</span><span class="scope-token">{{ classFilter() === null ? 'All classes' : 'Class ' + classFilter() }}</span>@if (portfolioOnly()) { <span class="scope-token portfolio-token"><ap-icon name="portfolio" [size]="13" /> Our marks</span> }</div><span>Showing <strong>{{ filteredCount() }}</strong> conflict{{ filteredCount() === 1 ? '' : 's' }}</span></div>
-    </section>
-
-    <section class="results" aria-labelledby="results-heading">
-      @if (pagedConflicts().length === 0) {
-        <div class="empty-note">No conflicts match this scope. Run the conflict watch to check the latest filings against your portfolio.</div>
-      } @else {
-        <div class="results-header"><div><h2 id="results-heading">{{ filteredCount() }} conflict{{ filteredCount() === 1 ? '' : 's' }} to review</h2><p>New filing matches are early awareness only; opposition deadlines begin after journal advertisement.</p></div></div>
-        <div class="risk-tabs" aria-label="Filter by risk"><button type="button" [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">All ({{ scopedCount() }})</button><button type="button" class="high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">High ({{ highRiskCount() }})</button><button type="button" class="medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">Medium ({{ mediumRiskCount() }})</button><button type="button" [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">Low ({{ lowRiskCount() }})</button></div>
-        <div class="conflict-list">
-          @for (c of pagedConflicts(); track c.id) {
-            <article class="conflict-card" [class]="'risk-' + (c.riskLevel || 'LOW').toLowerCase()">
-              <div class="score"><strong>{{ scorePercent(c.similarityScore) }}%</strong><span>{{ c.riskLevel || 'LOW' }} match</span></div>
-              <div class="conflict-content">
-                <div class="conflict-badges"><span>{{ c.riskLevel || 'LOW' }} similarity</span><span>Class {{ c.conflictingTmClass || '—' }}</span><span class="source-badge" [class.journal-source]="!isNewFiling(c)">{{ isNewFiling(c) ? 'New filing' : 'Journal ' + c.journalNo }}</span></div>
-                <h3>{{ c.conflictingTrademarkName || 'Untitled mark' }} <small>Application No. {{ c.conflictingApplicationNo || '—' }}</small></h3>
-                <p><strong>Potential conflict with your mark:</strong> {{ c.trademarkName || '—' }} @if (c.conflictingProprietorName) { · {{ c.conflictingProprietorName }} }</p>
-                <div class="conflict-details"><div><small>Your portfolio mark</small><p>@if (c.trademarkId) { <a class="view-mark" [routerLink]="['/agent-portal/portfolio', c.trademarkId]">{{ c.trademarkName || 'Open portfolio mark' }} <ap-icon name="chevron" [size]="14" /></a> } @else { {{ c.trademarkName || 'Not recorded' }} }</p></div><div><small>Watch record</small><p>{{ isNewFiling(c) ? 'New filing — no opposition deadline yet.' : 'Advertised in Journal ' + c.journalNo + '.' }} @if (c.checkDate) { First seen {{ c.checkDate | date: 'dd MMM yyyy' }}. }</p></div></div>
-                <div class="conflict-actions">
-                  @if (c.conflictingTrademarkId) { <a class="view-mark" [routerLink]="['/agent-portal/watch/journal/marks', c.conflictingTrademarkId]">View trademark details <ap-icon name="chevron" [size]="14" /></a> }
-                  <div class="triage-actions">
-                    @switch (statusOf(c)) {
-                      @case ('DISMISSED') { <button type="button" class="action-link" [disabled]="busyId() === c.id" (click)="restore(c)">Restore</button> }
-                      @case ('OPPOSING') { <span class="action-link">Opposition underway</span> }
-                      @default {
-                        @if (!isNewFiling(c)) { <button type="button" class="opposition-button" [disabled]="busyId() === c.id" (click)="oppose(c)">Oppose</button> }
-                        <button type="button" class="action-link" [disabled]="busyId() === c.id" (click)="dismiss(c)">Dismiss</button>
-                      }
-                    }
-                  </div>
-                </div>
-              </div>
-            </article>
-          }
-        </div>
-        @if (totalPages() > 1) { <div class="feed-footer result-pagination"><span>Showing {{ pageStart() }}–{{ pageEnd() }} of {{ filteredCount() }}</span><div class="pager"><button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 1">Previous</button><span>Page {{ page() }} of {{ totalPages() }}</span><button type="button" (click)="goToPage(page() + 1)" [disabled]="page() === totalPages()">Next</button></div></div> }
-      }
-    </section>
+        }
+      </section>
+    } @else {
+      <section class="results" aria-labelledby="results-heading">
+        @if (pagedConflicts().length === 0) { <div class="empty-note">No conflicts found in the current new-filings review window.</div> } @else {
+          <div class="results-header"><div><h2 id="results-heading">{{ filteredCount() }} new-filing conflict{{ filteredCount() === 1 ? '' : 's' }} to review</h2><p>Early awareness only — the opposition clock begins after journal advertisement.</p></div></div>
+          <div class="risk-tabs" aria-label="Filter by risk"><button type="button" [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">All ({{ scopedCount() }})</button><button type="button" class="high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">High ({{ highRiskCount() }})</button><button type="button" class="medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">Medium ({{ mediumRiskCount() }})</button><button type="button" class="low" [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">Low ({{ lowRiskCount() }})</button></div>
+          <div class="conflict-list">
+            @for (c of pagedConflicts(); track c.id) {
+              <article class="conflict-card" [class]="'risk-' + (c.riskLevel || 'LOW').toLowerCase()"><div class="mark-tile" [class.mark-artwork]="artworkUrl(c.conflictingTrademarkId)">@if (artworkUrl(c.conflictingTrademarkId); as artwork) { <img src="{{ artwork }}" [alt]="'Artwork for ' + (c.conflictingTrademarkName || 'this trademark')" /> } @else { <span class="mark-initials">{{ markMonogram(c.conflictingTrademarkName) }}</span> }</div><div class="conflict-content"><div class="conflict-badges"><span>{{ c.riskLevel || 'LOW' }} similarity</span><span>Class {{ c.conflictingTmClass || '—' }}</span><span class="source-badge">New filing</span></div><h3>{{ c.conflictingTrademarkName || 'Untitled mark' }} <small>Application No. {{ c.conflictingApplicationNo || '—' }}</small></h3><p><strong>Potential conflict with your mark:</strong> {{ c.trademarkName || '—' }} @if (c.conflictingProprietorName) { · {{ c.conflictingProprietorName }} }</p><div class="conflict-details"><div><small>Your portfolio mark</small><p>@if (c.trademarkId) { <a class="view-mark" [routerLink]="['/agent-portal/portfolio', c.trademarkId]">{{ c.trademarkName || 'Open portfolio mark' }} <ap-icon name="chevron" [size]="14" /></a> } @else { {{ c.trademarkName || 'Not recorded' }} }</p></div><div><small>Watch record</small><p>New filing — no opposition deadline yet. @if (c.checkDate) { First seen {{ c.checkDate | date: 'dd MMM yyyy' }}. }</p></div></div><div class="conflict-actions">@if (c.conflictingTrademarkId) { <a class="view-mark-button" [routerLink]="['/agent-portal/watch/journal/marks', c.conflictingTrademarkId]">View trademark details <ap-icon name="chevron" [size]="14" /></a> }</div></div></article>
+            }
+          </div>
+        }
+      </section>
+    }
+    @if (activeTotalPages() > 1) { <div class="feed-footer result-pagination"><span>Showing {{ activePageStart() }}–{{ activePageEnd() }} of {{ activeCount() }}</span><div class="pager"><button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 1">Previous</button><span>Page {{ page() }} of {{ activeTotalPages() }}</span><button type="button" (click)="goToPage(page() + 1)" [disabled]="page() === activeTotalPages()">Next</button></div></div> }
   }
 </div>
