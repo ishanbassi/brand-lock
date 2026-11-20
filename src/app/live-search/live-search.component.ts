@@ -6,6 +6,8 @@ import {
   ElementRef,
   ViewChild,
   Input,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -48,6 +50,9 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
 
   @Input() query?:string;
   @Input() tmClass?: number | null;
+  @Input() showSearchType = false;
+  @Input() searchType: 'startswith' | 'contains' | 'phonetic' = 'contains';
+  @Output() searchTypeChange = new EventEmitter<'startswith' | 'contains' | 'phonetic'>();
 
   readonly trademarkClasses = TRADEMARK_CLASSES;
 
@@ -74,7 +79,9 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchControl.setValue(this.query || null);
-    this.classControl.setValue(this.tmClass ?? null);
+    // A focused starting point is more useful than an unbounded registry search. The results
+    // page keeps this same default when somebody arrives there directly.
+    this.classControl.setValue(this.tmClass ?? 1);
   this.searchControl.valueChanges
     .pipe(
       debounceTime(300),
@@ -227,8 +234,22 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   }
 
   onSearchClick() {
-    this.router.navigate(['/search/results'], {queryParams:{trademark:this.query, tmClass: this.classControl.value ?? null}})
+    const query = this.searchControl.value?.trim();
+    if (!query) return;
+    this.query = query;
+    this.router.navigate(['/search/results'], {queryParams:{
+      trademark: query,
+      tmClass: this.classControl.value ?? 1,
+      ...(this.showSearchType ? { searchType: this.searchType } : {})
+    }})
     this.isOpen  = false;
 
+  }
+
+  onSearchTypeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === 'contains' || value === 'startswith' || value === 'phonetic') {
+      this.searchTypeChange.emit(value);
+    }
   }
 }

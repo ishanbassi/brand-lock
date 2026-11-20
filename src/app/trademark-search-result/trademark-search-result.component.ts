@@ -5,9 +5,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TrademarkPlanCardsComponent } from '../trademark-plan-cards/trademark-plan-cards.component';
 import { TrademarkSearchContentComponent } from '../trademark-search-content/trademark-search-content.component';
 import { MobileBottomNavbarComponent } from '../mobile-bottom-navbar/mobile-bottom-navbar.component';
-import { SearchCtaSectionComponent } from '../search-cta-section/search-cta-section.component';
-import { SearchExpertOpinionComponent } from '../search-expert-opinion/search-expert-opinion.component';
-import { FirmBannerComponent } from '../firm-banner/firm-banner.component';
 import { ITrademark } from '../../models/trademark.model';
 import { SimilarityMatchType } from '../enumerations/similarity-match-type.model';
 import { environment } from '../../environments/environment';
@@ -19,7 +16,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-trademark-search-result',
-  imports: [LiveSearchComponent, SharedModule, ReactiveFormsModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent, SearchCtaSectionComponent, SearchExpertOpinionComponent, FirmBannerComponent],
+  imports: [LiveSearchComponent, SharedModule, ReactiveFormsModule, TrademarkPlanCardsComponent, TrademarkSearchContentComponent, MobileBottomNavbarComponent],
   templateUrl: './trademark-search-result.component.html',
   styleUrl: './trademark-search-result.component.scss'
 })
@@ -36,7 +33,9 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
     this.route.queryParamMap.subscribe(params => {
       const q = params.get('trademark');
       const tmClassParam = params.get('tmClass');
-      this.tmClass = tmClassParam ? Number(tmClassParam) : null;
+      this.tmClass = tmClassParam ? Number(tmClassParam) : 1;
+      const searchTypeParam = params.get('searchType');
+      this.searchType = searchTypeParam === 'startswith' || searchTypeParam === 'phonetic' ? searchTypeParam : 'contains';
       if (q) {
         this.query = q;
         this.currentPage = 0;
@@ -56,7 +55,7 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
       this.loadingService.show();
     }
     this.isLoading = true;
-    this.trademarkService.quickSearch(this.query, this.tmClass, { page, size: this.pageSize })
+    this.trademarkService.quickSearch(this.query, this.tmClass, { page, size: this.pageSize, searchType: this.searchType })
           .pipe(
             finalize(() => {
               if (this.isBrowser) {
@@ -82,6 +81,8 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   totalResults = 0;
   readonly pageSize = 20;
   currentPage = 0;
+  searchType: 'startswith' | 'contains' | 'phonetic' = 'contains';
+  viewMode: 'grid' | 'list' = 'grid';
   get totalPages(): number {
     return Math.ceil(this.totalResults / this.pageSize);
   }
@@ -108,6 +109,32 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
 
   nextPage(): void {
     this.loadPage(this.currentPage + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page !== this.currentPage) this.loadPage(page);
+  }
+
+  setSearchType(value: 'startswith' | 'contains' | 'phonetic'): void {
+    this.searchType = value;
+    this.loadPage(0);
+  }
+
+  pageNumbers(): number[] {
+    const pages = this.totalPages;
+    if (pages <= 1) return [];
+    const start = Math.max(0, Math.min(this.currentPage - 2, pages - 5));
+    return Array.from({ length: Math.min(5, pages - start) }, (_, index) => start + index);
+  }
+
+  isWordmark(trademark: ITrademark): boolean {
+    return String(trademark.type ?? '').toUpperCase().includes('WORD');
+  }
+
+  wordmarkInitials(name?: string | null): string {
+    const words = (name ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return 'TM';
+    return words.length === 1 ? words[0].slice(0, 2).toUpperCase() : words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
   }
 
   highlight(text?: string | null): string {
@@ -138,16 +165,11 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   }
 
   getStatusClass(status?: string): string {
-    switch (status) {
-      case 'Active':
-        return 'status-active';
-      case 'Pending':
-        return 'status-pending';
-      case 'Expired':
-        return 'status-expired';
-      default:
-        return '';
-    }
+    const normalized = (status ?? '').toLowerCase();
+    if (/(registered|active|accepted)/.test(normalized)) return 'status-active';
+    if (/(objected|opposed|expired|withdrawn|refused)/.test(normalized)) return 'status-warning';
+    if (/(pending|process|exam)/.test(normalized)) return 'status-pending';
+    return 'status-neutral';
   }
 
   ngOnDestroy(): void {

@@ -34,8 +34,13 @@
 
     <!-- Class filter (optional) -->
     <select class="class-select" aria-label="Filter by trademark class" [formControl]="classControl">
-      <option [ngValue]="null">All classes</option>
       <option *ngFor="let c of trademarkClasses" [ngValue]="c.num">Class {{ c.num }} &ndash; {{ c.name }}</option>
+    </select>
+
+    <select *ngIf="showSearchType" class="search-type-select" aria-label="Select search type" [value]="searchType" (change)="onSearchTypeChange($event)">
+      <option value="contains">Contain search</option>
+      <option value="startswith">Starts with</option>
+      <option value="phonetic">Phonetic</option>
     </select>
 
     <!-- Search button -->
@@ -58,7 +63,7 @@
         [class.is-active]="activeIndex === i" (mouseenter)="activeIndex = i" (click)="selectResult(result)">
         <a [routerLink]="result.url" class="result-item">
           <span class="result-icon">
-            <img loading="lazy" [src]="result.imgUrl ? baseUrl + 'files/' + result.imgUrl : '/assets/images/trademark.png'"
+            <img loading="lazy" src="/assets/images/trademark.png" [src]="result.imgUrl ? baseUrl + 'files/' + result.imgUrl : '/assets/images/trademark.png'"
               [alt]="result.imgUrl ? result.name + ' trademark logo' : ''">
           </span>
 

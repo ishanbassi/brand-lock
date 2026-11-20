@@ -1,251 +1,81 @@
 <div class="results-page">
+  <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+    <div class="results-shell breadcrumb-list">
+      <a routerLink="/">Home</a><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+      <a routerLink="/trademark-search">Trademark Search</a><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+      <span>Results for <ng-container *ngIf="query">&quot;{{ query }}&quot;</ng-container></span>
+    </div>
+  </nav>
 
-  <!-- Results Header -->
-  <div class="results-header">
-    <div class="container">
-      <div class="results-meta">
-        <h1 class="results-title">
-          Search Results for:
-          <span class="query-highlight" *ngIf="query">"{{ query }}"</span>
-        </h1>
-        <p class="results-count" *ngIf="!isLoading">
-          {{ totalResults }} trademark{{ totalResults !== 1 ? 's' : '' }} found
-        </p>
+  <section class="search-controls" aria-label="Trademark search controls">
+    <div class="results-shell">
+      <div class="search-box-wrapper" #searchBoxWrapper>
+        <app-live-search [query]="query" [tmClass]="tmClass" [showSearchType]="true" [searchType]="searchType" (searchTypeChange)="setSearchType($event)"></app-live-search>
+      </div>
+      <div class="applied-filters" *ngIf="query">
+        <span class="filter-label">Applied filters:</span><span class="filter-chip filter-chip--primary">Class {{ tmClass || 1 }}</span><span class="filter-chip">Status: All</span>
       </div>
     </div>
-  </div>
+  </section>
 
-
-  <!-- Main Content Grid -->
-  <div class="container">
-    <div class="results-grid">
-
-      <!-- Left Column: Trademark Results -->
-      <div class="results-column">
+  <main class="results-main">
+    <div class="results-shell">
+      <header class="results-overview">
         <div>
-          <div class="search-box-wrapper" #searchBoxWrapper>
-            <app-live-search [query]="query" [tmClass]="tmClass"></app-live-search>
+          <div class="title-row"><h1>Search Results for: <span *ngIf="query">&quot;{{ query }}&quot;</span></h1><span class="live-badge">Live Database</span></div>
+          <p *ngIf="!isLoading">Found <strong>{{ totalResults }} trademark{{ totalResults !== 1 ? 's' : '' }}</strong><span *ngIf="tmClass"> in Class {{ tmClass }}</span></p>
+        </div>
+        <div class="view-switcher" role="group" aria-label="Results view">
+          <button type="button" [class.is-active]="viewMode === 'grid'" (click)="viewMode = 'grid'" aria-label="Show results as a grid" [attr.aria-pressed]="viewMode === 'grid'"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
+          <button type="button" [class.is-active]="viewMode === 'list'" (click)="viewMode = 'list'" aria-label="Show results as a list" [attr.aria-pressed]="viewMode === 'list'"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="6" x2="19" y2="6"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="18" x2="19" y2="18"/></svg></button>
+        </div>
+      </header>
+
+      <div class="results-grid">
+        <section class="results-column" aria-live="polite">
+          <div class="results-list loading-state" *ngIf="isLoading">
+            <article class="trademark-card skeleton-card" *ngFor="let i of [1,2,3,4]"><div class="skeleton-card-header"><span class="skeleton-artwork"></span><span><i></i><i></i></span></div><span class="skeleton-tags"><i></i><i></i></span><span class="skeleton-copy"></span><span class="skeleton-copy skeleton-copy--short"></span><span class="skeleton-button"></span></article>
           </div>
-        </div>
 
-        <!-- Loading State -->
-        <div class="results-list loading-state" *ngIf="isLoading">
-          <div class="trademark-card skeleton-card" *ngFor="let i of [1,2,3,4]">
-            <div class="skeleton-badge"></div>
-            <div class="card-header">
-              <div class="trademark-image skeleton-block"></div>
-              <div class="trademark-info">
-                <div class="skeleton-line skeleton-line--title"></div>
-                <div class="skeleton-line skeleton-line--short"></div>
+          <div class="results-list" [class.results-list--list]="viewMode === 'list'" *ngIf="!isLoading && results && results.length > 0">
+            <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById; let i = index" [attr.data-status]="trademark.trademarkStatus?.toLowerCase()" [style.animation-delay]="(i % 12 * 60) + 'ms'">
+              <div class="card-header">
+                <div class="trademark-image"><img *ngIf="trademark.imgUrl" src="/assets/images/trademark.png" [src]="baseUrl + 'files/' + trademark.imgUrl" [alt]="trademark.name + ' trademark artwork'"><span class="wordmark-initials" *ngIf="!trademark.imgUrl">{{ wordmarkInitials(trademark.name) }}</span></div>
+                <div class="trademark-info"><h2 class="trademark-name" [innerHTML]="highlight(trademark.name)"></h2><p class="trademark-docket"><span>App</span> <b>#{{ trademark.applicationNo }}</b></p></div>
+                <span class="status-stamp" [ngClass]="getStatusClass(trademark.trademarkStatus)" *ngIf="trademark.trademarkStatus"><i></i>{{ trademark.trademarkStatus }}</span>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="skeleton-tags">
-                <span class="skeleton-tag"></span>
-                <span class="skeleton-tag"></span>
+              <div class="card-body">
+                <div class="trademark-meta"><span class="meta-pill meta-pill--class" *ngIf="trademark.tmClass">Class {{ trademark.tmClass }}</span><span class="meta-pill meta-pill--applicant" *ngIf="trademark.proprietorName"><a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark.proprietorName}" title="See all trademarks by this applicant">{{ trademark.proprietorName }}</a></span></div>
+                <p class="embedded-note" *ngIf="embeddedNote(trademark) as note">{{ note }}</p>
+                <div class="trademark-class"><span class="details-label">Goods &amp; Services</span><span class="trademark-details" [innerHTML]="highlight(trademark.details)"></span></div>
+                <div class="filing-meta"><span>Filed: <b>{{ trademark.applicationDate ? trademark.applicationDate.format('MMM D, YYYY') : '—' }}</b></span><span>Jurisdiction: <b>{{ trademark.headOffice || 'India' }}</b></span></div>
               </div>
-              <div class="skeleton-line skeleton-line--full"></div>
-              <div class="skeleton-line skeleton-line--half"></div>
-            </div>
-            <div class="card-footer">
-              <div class="skeleton-block skeleton-btn"></div>
-            </div>
+              <footer class="card-footer"><a class="btn-details" [routerLink]="trademark.url"><span>View Full Details</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></footer>
+            </article>
           </div>
-        </div>
 
-        <!-- Results List -->
-        <div class="results-list" *ngIf="!isLoading && results && results.length > 0">
-          <ng-container *ngFor="let trademark of results; trackBy: trackById; let i = index; let last = last">
-          <article class="trademark-card"
-            [attr.data-status]="trademark.trademarkStatus?.toLowerCase()"
-            [style.animation-delay]="(i % 12 * 60) + 'ms'">
+          <div class="empty-state-available" *ngIf="!isLoading && results?.length === 0 && query"><h2>No Matching Trademark Found!</h2><p>&quot;{{ query }}&quot; may be available. Start your trademark application with expert guidance.</p><a class="register-button" [routerLink]="['/trademark-registration/your-info']" [queryParams]="{trademark: query}">Register This Trademark</a><button type="button" class="search-again" (click)="focusOnSearchBar()">Search Again</button></div>
 
-            <span class="status-stamp" [ngClass]="getStatusClass(trademark.trademarkStatus)"
-              *ngIf="trademark.trademarkStatus">
-              {{ trademark.trademarkStatus }}
-            </span>
+          <nav class="pagination" *ngIf="!isLoading && results && results.length > 0 && totalPages > 1" aria-label="Pagination">
+            <button class="pagination-btn" type="button" [disabled]="currentPage === 0" (click)="previousPage()" aria-label="Previous page"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Previous</span></button>
+            <div class="pagination-pages"><button *ngFor="let page of pageNumbers()" class="pagination-page" type="button" [class.is-active]="page === currentPage" [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage ? 'page' : null" (click)="goToPage(page)">{{ page + 1 }}</button></div>
+            <span class="pagination-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+            <button class="pagination-btn" type="button" [disabled]="currentPage + 1 >= totalPages" (click)="nextPage()" aria-label="Next page"><span>Next</span><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </nav>
+        </section>
 
-            <!-- Card Header -->
-            <div class="card-header">
-              <div class="trademark-image">
-                <img [src]="trademark.imgUrl ? baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png'"
-                  alt="">
-              </div>
-
-              <div class="trademark-info">
-                <h2 class="trademark-name" [innerHTML]="highlight(trademark.name)"></h2>
-                <div class="trademark-docket">
-                  <span class="docket-label">App</span>
-                  <span class="docket-no">#{{ trademark.applicationNo }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card Body -->
-            <div class="card-body">
-              <div class="trademark-meta">
-                <span class="meta-pill meta-pill--class" *ngIf="trademark.tmClass">
-                  <span class="meta-pill-label">Class</span>
-                  <b>{{ trademark?.tmClass }}</b>
-                </span>
-                <span class="meta-pill meta-pill--applicant" *ngIf="trademark.proprietorName">
-                  <b>
-                    <a [routerLink]="['/trademark-search-by-company']" [queryParams]="{name: trademark.proprietorName}" title="See all trademarks by this applicant" (click)="$event.stopPropagation()">{{ trademark.proprietorName }}</a>
-                  </b>
-                </span>
-              </div>
-              <!-- Said on the card, not left to the ordering: this mark is here because one name
-                   sits inside the other, which is not what a visitor reads "similar" to mean. -->
-              <p class="embedded-note" *ngIf="embeddedNote(trademark) as note">{{ note }}</p>
-              <div class="trademark-class">
-                <span class="trademark-details" [innerHTML]="highlight(trademark.details)"></span>
-              </div>
-            </div>
-
-            <!-- Card Footer -->
-            <div class="card-footer">
-              <a class="btn-details" type="button" [routerLink]="trademark.url">
-                <span>View Full Details</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </a>
-            </div>
-          </article>
-
-          <!-- Inline conflict-assessment lead card after the 3rd result (or the last, if fewer) -->
-          <app-search-expert-opinion *ngIf="i === 2 || (last && results.length < 3)"
-            [query]="query" [resultCount]="totalResults"></app-search-expert-opinion>
-          </ng-container>
-        </div>
-
-        <!-- Empty State - Trademark Available -->
-        <div class="empty-state-available" *ngIf="!isLoading && results?.length === 0 && query">
-          <div class="available-content">
-            <!-- <div class="available-icon">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div> -->
-
-            <div class="available-header">
-              <h3 class="available-title">No Matching Trademark Found!</h3>
-              <div class="available-badge">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <span>"{{ query }}" may be available!</span>
-              </div>
-            </div>
-
-            <div class="available-cta-card">
-              <div class="cta-card-header">
-                <div class="cta-badge">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polygon
-                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                  <span>Limited Time Offer</span>
-                </div>
-                <h4 class="cta-card-title">File Your Trademark at Just ₹2,999 + Govt Fees</h4>
-                <p class="cta-card-subtitle">Expert guidance included</p>
-              </div>
-
-              <div class="cta-card-features">
-                <div class="cta-feature">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span>Complete Application Filing</span>
-                </div>
-                <div class="cta-feature">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span>Expert legal consultation</span>
-                </div>
-                <div class="cta-feature">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span>100% support Till Filing</span>
-                </div>
-              </div>
-
-              <a class="cta-call-button" type="button" [routerLink]="['/trademark-registration/your-info']" [queryParams]="{trademark: query}">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-                <span>Register This Trademark</span>
-              </a>
-
-              <div class="cta-card-footer">
-                <div class="trust-indicator">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  </svg>
-                  <span>10,000+ trademarks successfully registered</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="available-actions">
-              <button class="action-secondary" type="button" (click)="focusOnSearchBar()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <span>Search Again</span>
-              </button>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination" *ngIf="!isLoading && results && results.length > 0 && totalPages > 1">
-          <button 
-            class="pagination-btn" 
-            type="button"
-            [disabled]="currentPage === 0"
-            (click)="previousPage()"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            Previous
-          </button>
-
-          <span class="pagination-info">
-            Page {{ currentPage + 1 }} of {{ totalPages }}
-          </span>
-
-          <button 
-            class="pagination-btn" 
-            type="button"
-            [disabled]="currentPage + 1 >= totalPages"
-            (click)="nextPage()"
-          >
-            Next
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
-        </div>
+        <aside class="cta-column"><section class="filing-card">
+          <div class="filing-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8M8 17h8"/></svg></div>
+          <div class="filing-intro"><span>Limited Time Legal Offer</span><h2>File Trademark at Just <strong>₹2,999</strong> <small>+ Govt Fees</small></h2><p>Protect your brand identity before competitors do. Complete filing acknowledgement issued in 24 hours.</p></div>
+          <a class="file-now" [routerLink]="['/trademark-registration/your-info']" [queryParams]="{trademark: query}">File Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <ul class="filing-benefits"><li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Dedicated Trademark Attorney Consultation</li><li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Quick Processing (Receipt in 24 hours)</li><li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>100% Tracking &amp; Examination Report Support</li></ul>
+          <div class="filing-rating"><span>Trusted by 15,000+ brands</span><b>★★★★★ <em>4.9/5</em></b></div>
+        </section></aside>
       </div>
-
-      <!-- Right Column: Ad Campaigns -->
-      <aside class="cta-column">
-        <app-search-cta-section [query]="query"></app-search-cta-section>
-      </aside>
-
     </div>
-  </div>
-
+  </main>
 </div>
+
 <app-trademark-search-content (searchTrademark)="focusOnSearchBar()"></app-trademark-search-content>
 <app-trademark-plan-cards [showPayLater]="false" (onPlanSelect)="focusOnSearchBar()"></app-trademark-plan-cards>
 <app-mobile-bottom-navbar></app-mobile-bottom-navbar>

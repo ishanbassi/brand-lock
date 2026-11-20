@@ -139,7 +139,11 @@ export class TrademarkService {
       .get<RestTrademark[]>(`${this.resourceUrl}/search`, { observe: 'response',params:{trademark:query} })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
-  quickSearch(query:string, tmClass?: number | null, req?: { page?: number; size?: number }): Observable<EntityArrayResponseType> {
+  quickSearch(
+    query: string,
+    tmClass?: number | null,
+    req?: { page?: number; size?: number; searchType?: 'startswith' | 'contains' | 'phonetic' }
+  ): Observable<EntityArrayResponseType> {
     return this.http
       .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params: createRequestOption({ trademark: query, tmClass, ...req }) })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));

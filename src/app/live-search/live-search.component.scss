@@ -128,7 +128,8 @@ $radius-md:   12px;
 }
 
 // ─── Class filter ─────────────────────────────────────────────────────────────
-.class-select {
+.class-select,
+.search-type-select {
   flex-shrink: 0;
   height: 52px;
   max-width: 200px;
@@ -150,6 +151,10 @@ $radius-md:   12px;
     border-color: $accent;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
+}
+
+.search-type-select {
+  max-width: 176px;
 }
 
 // ─── Search button ────────────────────────────────────────────────────────────
@@ -363,7 +368,8 @@ $radius-md:   12px;
     flex: 1 1 100%;
   }
 
-  .class-select {
+  .class-select,
+  .search-type-select {
     height: 46px;
     max-width: none;
     // basis 0 + min-width 0, not `1 1 auto`: a native select's intrinsic width
@@ -374,6 +380,10 @@ $radius-md:   12px;
     min-width: 0;
     font-size: 13px;
     text-overflow: ellipsis;
+  }
+
+  .search-type-select {
+    flex: 1 1 0;
   }
 
   .search-input {
