@@ -12,7 +12,7 @@
   </header>
 
   <section class="filters" aria-label="Filter renewal docket">
-    <div class="search-filter">
+    <div class="search-filter filter-group" aria-label="Search and renewal stage">
       <div class="search-input"><span class="material-symbols-outlined">search</span><input id="docketSearch" type="search" [value]="search()" (input)="search.set($any($event.target).value); resetPage()" placeholder="Search mark name, application no., client, Class (1-45), or registered proprietor..." /><button type="button" (click)="clearSearch()">ESC</button></div>
       <div class="pills" role="group" aria-label="Milestone">
         <button type="button" [class.active]="milestone() === 'all'" (click)="setMilestone('all')">All Milestones</button>
@@ -21,7 +21,7 @@
         <button type="button" class="upcoming" [class.active]="milestone() === 'upcoming'" (click)="setMilestone('upcoming')"><i aria-hidden="true"></i>Upcoming</button>
       </div>
     </div>
-    <div class="selectors">
+    <div class="selectors filter-group" aria-label="Docket fields">
       <label>NICE Classification<select [value]="classFilter()" (change)="setClass($any($event.target).value)"><option value="all">All Classes (1 to 45)</option>@for (tmClass of classes(); track tmClass) {<option [value]="tmClass">Class {{ tmClass }}</option>}</select></label>
       <div class="window"><label>Renewal Window <button type="button" (click)="useNextNinetyDays()">Next 90 Days</button></label><div><span class="material-symbols-outlined">date_range</span><input type="date" [value]="dateFrom()" (change)="dateFrom.set($any($event.target).value)" aria-label="Renewal window start" /><span class="to">–</span><input type="date" [value]="dateTo()" (change)="dateTo.set($any($event.target).value)" aria-label="Renewal window end" /><button type="button" class="apply" (click)="applyDateFilter()"><span class="material-symbols-outlined">filter_alt</span>Filter</button></div></div>
       <label>Client / Entity<select [value]="clientFilter()" (change)="setClient($any($event.target).value)"><option value="all">All Clients &amp; Proprietors</option>@for (client of clients(); track client) {<option [value]="client">{{ client }}</option>}</select></label>
@@ -44,7 +44,7 @@
             <div class="record-info"><input type="checkbox" [checked]="isSelected(item)" (change)="toggleRow(item)" [attr.aria-label]="'Select ' + (item.trademarkName || 'trademark')" />
               <div class="mark-badge">{{ initials(item) }}</div>
               <div class="mark-content"><div class="mark-title"><h2>{{ item.trademarkName || 'Trademark record' }}</h2><span>Word Mark</span>@if (item.tmClass) {<b>Class {{ item.tmClass }}</b>}<em [class]="stageClass(item)"><span class="material-symbols-outlined">{{ stageIcon(item) }}</span>{{ stageLabel(item) }}</em></div>
-                <p class="metadata">App No: <strong>{{ item.applicationNo || '—' }}</strong><i>•</i> Proprietor: <strong>{{ item.proprietorName || 'Not recorded' }}</strong><i>•</i> Registry: <strong>CGPDTM</strong></p>
+                <p class="metadata">App No: <strong>{{ item.applicationNo || '—' }}</strong><i>•</i> Proprietor: <strong>{{ item.proprietorName || 'Not recorded' }}</strong></p>
                 <div class="statutory"><div><span class="material-symbols-outlined">{{ item.daysUntilDue < 0 ? 'event_busy' : 'event' }}</span>{{ item.daysUntilDue < 0 ? 'Expired' : 'Valid Until' }}: <strong>{{ dateLabel(item.dueDate) }}</strong> ({{ daysLabel(item) }})</div>
                   @if (item.daysUntilDue < -180) {<div><span class="material-symbols-outlined">schedule</span>1-Year Restoration Window Ends: <strong>{{ dateLabel(restorationEnds(item)) }}</strong></div>} @else if (item.daysUntilDue < 0) {<div><span class="material-symbols-outlined">hourglass_bottom</span>Grace Closes: <strong>{{ dateLabel(graceEnds(item)) }}</strong></div>}</div>
               </div>
@@ -54,6 +54,15 @@
         }
       </div>
     }
-    <footer class="pagination"><p>Showing <strong>{{ displayedRange() }}</strong> of <strong>{{ filtered().length }}</strong> statutory trademark renewal dockets</p><div><button type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">Previous</button>@for (number of pageNumbers(); track number) {<button type="button" [class.active]="page() === number" (click)="goToPage(number)">{{ number }}</button>}<button type="button" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">Next</button></div></footer>
+    <footer class="pagination"><p>Showing <strong>{{ displayedRange() }}</strong> of <strong>{{ filtered().length }}</strong> statutory trademark renewal dockets</p><div class="pagination-controls"><label class="page-size-control">Rows per page<select [value]="pageSize()" (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Rows per page"><option [value]="5">5</option><option [value]="10">10</option><option [value]="25">25</option><option [value]="50">50</option></select></label><nav aria-label="Renewal docket pages"><button type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)">Previous</button>@for (number of pageNumbers(); track $index) {@if (number === null) {<span class="page-ellipsis" aria-hidden="true">…</span>} @else {<button type="button" [class.active]="page() === number" [attr.aria-current]="page() === number ? 'page' : null" (click)="goToPage(number)">{{ number }}</button>}}<button type="button" [disabled]="page() === totalPages()" (click)="goToPage(page() + 1)">Next</button></nav></div></footer>
   </section>
+
+  @if (selectedRecords().length > 0) {
+    <section class="bulk-actions" aria-label="Selected renewal actions">
+      <strong>{{ selectedRecords().length }} selected</strong>
+      <span class="bulk-actions__rule" aria-hidden="true"></span>
+      <ap-export-menu [busy]="exporting()" [openUp]="true" (selected)="exportSelected($event)" />
+      <button type="button" class="bulk-actions__dismiss" (click)="clearSelection()" aria-label="Clear selection"><span class="material-symbols-outlined">close</span></button>
+    </section>
+  }
 </main>

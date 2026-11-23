@@ -61,7 +61,20 @@ export interface BillingState {
   nextChargeAt: string | null;
   cancelAtPeriodEnd: boolean;
   lastFailureReason: string | null;
+  pendingChange: SubscriptionChange | null;
+  /** Complete portal portfolio count used to decide the no-cost full-access entitlement. */
+  portfolioMarkCount: number;
+  freeUnlimitedPortfolioThreshold: number;
+  freeUnlimitedAccess: boolean;
   entitlements: Partial<Record<FeatureKey, FeatureEntitlement>>;
+}
+
+/** A replacement plan whose mandate is being authorised or which starts after the current period. */
+export interface SubscriptionChange {
+  planCode: string;
+  planName: string;
+  status: 'PENDING_AUTH' | 'SCHEDULED';
+  effectiveAt: string;
 }
 
 export interface SubscriptionPlan {
@@ -89,6 +102,12 @@ export interface SubscribeResponse {
   amountPaise: number;
   currency: string;
   prefill: { name: string | null; email: string | null; contact: string | null } | null;
+}
+
+/** Checkout response for a plan change; the target is never made effective before this date. */
+export interface SubscriptionChangeCheckout {
+  checkout: SubscribeResponse;
+  effectiveAt: string;
 }
 
 /** Exactly what Razorpay Checkout's handler receives, posted back as-is for verification. */

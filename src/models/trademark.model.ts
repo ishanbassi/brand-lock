@@ -65,6 +65,21 @@ export interface ITrademark {
 
 export type NewTrademark = Omit<ITrademark, 'id'> & { id: null };
 
+/** A polling snapshot of the progressive phonetic search shared by public and agent search. */
+export interface PhoneticSearchRun {
+  runId: string;
+  query: string;
+  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  errorMessage?: string | null;
+  candidatesScored: number;
+  totalResults: number;
+  page: number;
+  size: number;
+  totalPages: number;
+  durationMs: number;
+  results: ITrademark[];
+}
+
 export type ITrademarkWithLogo = {
   trademark: ITrademark  | null
   document: IDocuments | null

@@ -13,7 +13,7 @@
         <app-live-search [query]="query" [tmClass]="tmClass" [showSearchType]="true" [searchType]="searchType" (searchTypeChange)="setSearchType($event)"></app-live-search>
       </div>
       <div class="applied-filters" *ngIf="query">
-        <span class="filter-label">Applied filters:</span><span class="filter-chip filter-chip--primary">Class {{ tmClass || 1 }}</span><span class="filter-chip">Status: All</span>
+        <span class="filter-label">Applied filters:</span><span class="filter-chip filter-chip--primary">{{ tmClass ? 'Class ' + tmClass : 'All classes' }}</span><span class="filter-chip">Status: All</span>
       </div>
     </div>
   </section>
@@ -23,7 +23,8 @@
       <header class="results-overview">
         <div>
           <div class="title-row"><h1>Search Results for: <span *ngIf="query">&quot;{{ query }}&quot;</span></h1><span class="live-badge">Live Database</span></div>
-          <p *ngIf="!isLoading">Found <strong>{{ totalResults }} trademark{{ totalResults !== 1 ? 's' : '' }}</strong><span *ngIf="tmClass"> in Class {{ tmClass }}</span></p>
+          <p *ngIf="!isLoading">Found <strong>{{ totalResults }} trademark{{ totalResults !== 1 ? 's' : '' }}</strong><span *ngIf="phoneticProcessing"> so far</span><span *ngIf="tmClass"> in Class {{ tmClass }}</span></p>
+          <p *ngIf="phoneticProcessing" class="search-progress" role="status">Checking phonetic matches. Results update automatically.</p>
         </div>
         <div class="view-switcher" role="group" aria-label="Results view">
           <button type="button" [class.is-active]="viewMode === 'grid'" (click)="viewMode = 'grid'" aria-label="Show results as a grid" [attr.aria-pressed]="viewMode === 'grid'"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
@@ -33,11 +34,11 @@
 
       <div class="results-grid">
         <section class="results-column" aria-live="polite">
-          <div class="results-list loading-state" *ngIf="isLoading">
+          <div class="results-list loading-state" *ngIf="isLoading && !results?.length">
             <article class="trademark-card skeleton-card" *ngFor="let i of [1,2,3,4]"><div class="skeleton-card-header"><span class="skeleton-artwork"></span><span><i></i><i></i></span></div><span class="skeleton-tags"><i></i><i></i></span><span class="skeleton-copy"></span><span class="skeleton-copy skeleton-copy--short"></span><span class="skeleton-button"></span></article>
           </div>
 
-          <div class="results-list" [class.results-list--list]="viewMode === 'list'" *ngIf="!isLoading && results && results.length > 0">
+          <div class="results-list" [class.results-list--list]="viewMode === 'list'" *ngIf="results && results.length > 0">
             <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById; let i = index" [attr.data-status]="trademark.trademarkStatus?.toLowerCase()" [style.animation-delay]="(i % 12 * 60) + 'ms'">
               <div class="card-header">
                 <div class="trademark-image"><img *ngIf="trademark.imgUrl" src="/assets/images/trademark.png" [src]="baseUrl + 'files/' + trademark.imgUrl" [alt]="trademark.name + ' trademark artwork'"><span class="wordmark-initials" *ngIf="!trademark.imgUrl">{{ wordmarkInitials(trademark.name) }}</span></div>
@@ -54,7 +55,7 @@
             </article>
           </div>
 
-          <div class="empty-state-available" *ngIf="!isLoading && results?.length === 0 && query"><h2>No Matching Trademark Found!</h2><p>&quot;{{ query }}&quot; may be available. Start your trademark application with expert guidance.</p><a class="register-button" [routerLink]="['/trademark-registration/your-info']" [queryParams]="{trademark: query}">Register This Trademark</a><button type="button" class="search-again" (click)="focusOnSearchBar()">Search Again</button></div>
+          <div class="empty-state-available" *ngIf="!isLoading && !phoneticProcessing && results?.length === 0 && query"><h2>No Matching Trademark Found!</h2><p>&quot;{{ query }}&quot; may be available. Start your trademark application with expert guidance.</p><a class="register-button" [routerLink]="['/trademark-registration/your-info']" [queryParams]="{trademark: query}">Register This Trademark</a><button type="button" class="search-again" (click)="focusOnSearchBar()">Search Again</button></div>
 
           <nav class="pagination" *ngIf="!isLoading && results && results.length > 0 && totalPages > 1" aria-label="Pagination">
             <button class="pagination-btn" type="button" [disabled]="currentPage === 0" (click)="previousPage()" aria-label="Previous page"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Previous</span></button>

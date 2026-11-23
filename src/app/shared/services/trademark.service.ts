@@ -7,7 +7,7 @@ import dayjs from 'dayjs/esm';
 import { ApplicationConfigService } from '../../core/config/application-config.service';
 import { createRequestOption } from '../../core/request/request-util';
 import { DATE_FORMAT } from '../../config/input.constants';
-import { ITrademark, ITrademarkWithLogo, NewTrademark } from '../../../models/trademark.model';
+import { ITrademark, ITrademarkWithLogo, NewTrademark, PhoneticSearchRun } from '../../../models/trademark.model';
 import { IFirmFiling } from '../../../models/firm-filing.model';
 import { IDocuments } from '../../../models/documents.model';
 import { DocumentsService, RestDocuments } from './documents.service';
@@ -147,6 +147,20 @@ export class TrademarkService {
     return this.http
       .get<RestTrademark[]>(`${this.resourceUrl}/quick-search`, { observe: 'response',params: createRequestOption({ trademark: query, tmClass, ...req }) })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  startPhoneticSearchRun(query: string, tmClass?: number | null, page = 0, size = 20): Observable<PhoneticSearchRun> {
+    return this.http.post<PhoneticSearchRun>(
+      `${this.resourceUrl}/phonetic-search-runs`,
+      {},
+      { params: createRequestOption({ trademark: query, tmClass, page, size }) },
+    );
+  }
+
+  getPhoneticSearchRun(runId: string, page = 0, size = 20): Observable<PhoneticSearchRun> {
+    return this.http.get<PhoneticSearchRun>(`${this.resourceUrl}/phonetic-search-runs/${runId}`, {
+      params: createRequestOption({ page, size }),
+    });
   }
 
   searchByApplicationNumber(applicationNo:string): Observable<EntityArrayResponseType> {

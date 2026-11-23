@@ -1,0 +1,1195 @@
+> Building...
+√ Building...
+Browser bundles     
+Initial chunk files  | Names                            |  Raw size
+chunk-XQYX6MSZ.js    | -                                | 968.70 kB | 
+styles.css           | styles                           | 324.58 kB | 
+chunk-25DY4RK7.js    | -                                | 262.73 kB | 
+chunk-S6OFVZJD.js    | -                                | 224.44 kB | 
+chunk-5NQX7RN6.js    | -                                | 211.74 kB | 
+chunk-HNOZOPP4.js    | -                                | 103.53 kB | 
+chunk-M25PW24U.js    | -                                |  98.89 kB | 
+polyfills.js         | polyfills                        |  91.76 kB | 
+chunk-ETZLPTEJ.js    | -                                |  60.71 kB | 
+main.js              | main                             |  55.51 kB | 
+chunk-HDKMZXHQ.js    | -                                |  52.90 kB | 
+chunk-MPISPXYV.js    | -                                |  20.18 kB | 
+chunk-KMB5YMZG.js    | -                                |   7.82 kB | 
+chunk-4S7HI2DZ.js    | -                                |   4.76 kB | 
+chunk-2PKX7RNF.js    | -                                |   4.56 kB | 
+chunk-LXJ36IHV.js    | -                                |   3.85 kB | 
+chunk-PEHFQLBM.js    | -                                |   3.65 kB | 
+chunk-NCUMKMXX.js    | -                                |   2.88 kB | 
+chunk-25QMXRNC.js    | -                                |   2.67 kB | 
+chunk-MAP3SX7E.js    | -                                |   2.27 kB | 
+chunk-RBFWWA7A.js    | -                                |   2.27 kB | 
+chunk-WNHWXICW.js    | -                                |   2.13 kB | 
+chunk-PYGYHTFF.js    | -                                |   1.66 kB | 
+chunk-CPPRN7FI.js    | -                                |   1.29 kB | 
+chunk-7V6SR57A.js    | -                                | 516 bytes | 
+
+                     | Initial total                    |   2.52 MB
+
+Lazy chunk files     | Names                            |  Raw size
+chunk-DAVCZ5RY.js    | onboarding-routes                |   1.44 MB | 
+chunk-AKGPEG2B.js    | -                                | 947.68 kB | 
+chunk-ZT62FNG4.js    | -                                | 484.20 kB | 
+chunk-4IRJWXBK.js    | agent-portfolio-component        | 351.88 kB | 
+chunk-2Q5XMYY4.js    | -                                | 254.85 kB | 
+chunk-LJJFBQD7.js    | agent-search-report-component    | 215.32 kB | 
+chunk-GOONDNLT.js    | -                                | 211.49 kB | 
+chunk-D2GBHJRQ.js    | -                                | 196.25 kB | 
+chunk-FVU4X46U.js    | agent-iso-certificates-component | 194.02 kB | 
+chunk-FGRDTIHJ.js    | dashboard-routes                 | 176.34 kB | 
+chunk-VL3PVUSW.js    | -                                | 170.62 kB | 
+chunk-S3UHUEDX.js    | -                                | 164.92 kB | 
+chunk-CVYHN4SS.js    | -                                | 163.65 kB | 
+chunk-XIPZSVZ7.js    | tradmark-detail-component        | 151.72 kB | 
+chunk-JBKZ3765.js    | agent-journal-watch-component    | 149.69 kB | 
+...and 216 more lazy chunks files. Use "--verbose" to show all the files.
+
+
+Server bundles      
+Initial chunk files  | Names                            |  Raw size
+server.mjs           | server                           |   2.44 MB | 
+main.server.mjs      | main.server                      |   1.07 MB | 
+chunk-ZQLRM33V.mjs   | -                                | 951.77 kB | 
+polyfills.server.mjs | polyfills.server                 | 569.56 kB | 
+chunk-FRRKW5V7.mjs   | -                                | 259.63 kB | 
+chunk-IAJ5G6RO.mjs   | -                                | 224.47 kB | 
+chunk-LDK5RZ7K.mjs   | -                                | 211.79 kB | 
+chunk-BDTSBAKI.mjs   | -                                | 103.56 kB | 
+chunk-X4MT2WS6.mjs   | -                                |  98.93 kB | 
+chunk-KS6QSWXI.mjs   | -                                |  60.83 kB | 
+chunk-XHBYCMM2.mjs   | -                                |  52.94 kB | 
+chunk-U6G5POOO.mjs   | -                                |  20.22 kB | 
+chunk-7L3LRHCC.mjs   | -                                |   7.85 kB | 
+chunk-ZCYHVELF.mjs   | -                                |   6.26 kB | 
+chunk-NKM2XN7Q.mjs   | -                                |   4.79 kB | 
+chunk-O7KQ2BC6.mjs   | -                                |   4.60 kB | 
+chunk-GAJNDTZB.mjs   | -                                |   3.89 kB | 
+chunk-QWVD5KWW.mjs   | -                                |   2.91 kB | 
+chunk-3II4UTYF.mjs   | -                                |   2.81 kB | 
+chunk-C2DOASE2.mjs   | -                                |   2.71 kB | 
+chunk-IXFKPCY2.mjs   | -                                |   2.31 kB | 
+chunk-KPOZYPKM.mjs   | -                                |   2.30 kB | 
+chunk-IOMAGZ7P.mjs   | -                                |   2.17 kB | 
+chunk-UXDWUEVO.mjs   | -                                |   1.69 kB | 
+chunk-5JJ3ICLN.mjs   | -                                |   1.32 kB | 
+chunk-S3MGCDBX.mjs   | -                                | 551 bytes | 
+
+Lazy chunk files     | Names                            |  Raw size
+chunk-RYJQCYY2.mjs   | onboarding-routes                |   1.44 MB | 
+chunk-YNSBSMM6.mjs   | -                                | 947.72 kB | 
+chunk-77MI23SG.mjs   | -                                | 484.24 kB | 
+chunk-DDSAZUMF.mjs   | agent-portfolio-component        | 351.93 kB | 
+chunk-JN3NJCDL.mjs   | -                                | 254.89 kB | 
+chunk-NATHXXUF.mjs   | agent-search-report-component    | 215.37 kB | 
+chunk-PT2B3W3Z.mjs   | -                                | 211.54 kB | 
+chunk-KOMTJA6X.mjs   | -                                | 196.31 kB | 
+chunk-O5EYZISC.mjs   | agent-iso-certificates-component | 194.06 kB | 
+chunk-4C4QVLCF.mjs   | dashboard-routes                 | 176.41 kB | 
+chunk-ZHOOFIQ7.mjs   | -                                | 170.66 kB | 
+chunk-NSCRQMEK.mjs   | -                                | 164.97 kB | 
+chunk-FBLKV4MK.mjs   | -                                | 163.68 kB | 
+chunk-37X3V5DO.mjs   | tradmark-detail-component        | 151.79 kB | 
+chunk-TMLAFMCF.mjs   | agent-journal-watch-component    | 149.74 kB | 
+...and 218 more lazy chunks files. Use "--verbose" to show all the files.
+
+Prerendered 0 static routes.
+Application bundle generation complete. [103.222 seconds]
+
+▲ [WARNING] TS-998113: IconComponent is not used within the template of AgentJournalMarkDetailComponent [plugin angular-compiler]
+
+    src/app/agent-portal/agent-journal-mark-detail/agent-journal-mark-detail.component.ts:18:40:
+      18 │ ... [CommonModule, RouterModule, IconComponent, ExportMenuComponent],
+         ╵                                  ~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: RouterLink is not used within the template of AgentJournalWatchFeatureComponent [plugin angular-compiler]
+
+    src/app/agent-portal/agent-journal-watch-feature/agent-journal-watch-feature.component.ts:20:25:
+      20 │   imports: [DecimalPipe, RouterLink, AgentPortalNavbarComponent, A...
+         ╵                          ~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/agent-portal/agent-journal-watch/agent-journal-watch.component.html:99:598:
+      99 │ ...f (result()!.conflicts[0]?.checkDate) { <p>Saved watch results ...
+         ╵                               ~~~~~~~~~
+
+  Error occurs in the template of component AgentJournalWatchComponent.
+
+    src/app/agent-portal/agent-journal-watch/agent-journal-watch.component.ts:31:15:
+      31 │   templateUrl: './agent-journal-watch.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.html:215:77:
+      215 │ ...mImport()" [disabled]="(previewResult()!.importable ?? 0) === 0">
+          ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AgentPortfolioUploadComponent.
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.ts:15:15:
+      15 │   templateUrl: './agent-portfolio-upload.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.html:216:66:
+      216 │ ...} trademark{{ (previewResult()!.importable ?? 1) !== 1 ? 's' :...
+          ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AgentPortfolioUploadComponent.
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.ts:15:15:
+      15 │   templateUrl: './agent-portfolio-upload.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.html:277:70:
+      277 │ ... }} trademark{{ (importResult()!.imported ?? 1) !== 1 ? 's' : ...
+          ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AgentPortfolioUploadComponent.
+
+    src/app/agent-portal/agent-portfolio-upload/agent-portfolio-upload.component.ts:15:15:
+      15 │   templateUrl: './agent-portfolio-upload.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/agent-portal/agent-portfolio/agent-portfolio.component.html:606:18:
+      606 │             @if ((preview.errors ?? 0) > 0) { <p>{{ preview.error...
+          ╵                   ~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component AgentPortfolioComponent.
+
+    src/app/agent-portal/agent-portfolio/agent-portfolio.component.ts:44:15:
+      44 │   templateUrl: './agent-portfolio.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: IconComponent is not used within the template of AgentTrademarkDetailComponent [plugin angular-compiler]
+
+    src/app/agent-portal/agent-trademark-detail/agent-trademark-detail.component.ts:31:4:
+      31 │     IconComponent,
+         ╵     ~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:9:52:
+      9 │ ...lass="blog-hero" [ngStyle]="{'background': blog?.backgroundColor}">
+        ╵                                               ~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:16:48:
+      16 │             <span class="crumb-current">{{blog?.category}}</span>
+         ╵                                                 ~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:19:67:
+      19 │ ...="javascript:void(0)" class="category-pill">{{blog?.category}}</a>
+         ╵                                                        ~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:22:20:
+      22 │             {{blog?.title}}
+         ╵                     ~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:27:46:
+      27 │ ...  <span class="author-name">{{blog?.author || 'Trademarx'}}</span>
+         ╵                                        ~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:31:26:
+      31 │             <span>{{blog?.createdAt?.format('MMM D, YYYY')}}</span>
+         ╵                           ~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:63:87:
+      63 │ ...penLightbox(blogBaseUrl + blog?.featuredImage?.url, blog?.title)">
+         ╵                                    ~~~~~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:63:113:
+      63 │ ...penLightbox(blogBaseUrl + blog?.featuredImage?.url, blog?.title)">
+         ╵                                                              ~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:64:71:
+      64 │ ...src]="blogBaseUrl+ blog?.featuredImage?.url" [title]="blog?.tit...
+         ╵                             ~~~~~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:64:106:
+      64 │ ...og?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
+         ╵                                           ~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:64:126:
+      64 │ ...og?.featuredImage?.url" [title]="blog?.title" [alt]="blog?.title">
+         ╵                                                               ~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:132:68:
+      132 │ ... class="author-card__name">{{blog?.author || 'Trademarx'}}</span>
+          ╵                                       ~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:139:45:
+      139 │ ...        [heading]="blog?.campaignBlock?.title || 'Talk to a Tr...
+          ╵                             ~~~~~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:140:41:
+      140 │ ...            [cta]="blog?.campaignBlock?.ctaText || 'Get a Free...
+          ╵                             ~~~~~~~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-detail/blog-detail.component.html:156:93:
+      156 │ ...seUrl + post.featuredImage?.formats?.small?.url" [alt]="post.t...
+          ╵                                ~~~~~~~
+
+  Error occurs in the template of component BlogDetailComponent.
+
+    src/app/blog-detail/blog-detail.component.ts:22:15:
+      22 │   templateUrl: './blog-detail.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/blog-list/blog-list.component.html:31:82:
+      31 │ ...BaseUrl+ blog.featuredImage?.formats?.small?.url" title="" alt="">
+         ╵                                 ~~~~~~~
+
+  Error occurs in the template of component BlogListComponent.
+
+    src/app/blog-list/blog-list.component.ts:17:15:
+      17 │   templateUrl: './blog-list.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: FirmBannerComponent is not used within the template of BlogListComponent [plugin angular-compiler]
+
+    src/app/blog-list/blog-list.component.ts:16:47:
+      16 │ ...ule,RecentPostsComponent, FirmBannerComponent, SkeletonComponent],
+         ╵                              ~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: FirmBannerComponent is not used within the template of Iso9001Component [plugin angular-compiler]
+
+    src/app/iso-9001/iso-9001.component.ts:33:68:
+      33 │ ...onent, RatingReviewComponent,FirmBannerComponent,SkeletonComponent
+         ╵                                 ~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: PhoneInputComponent is not used within the template of LeadFormComponent [plugin angular-compiler]
+
+    src/app/lead-form/lead-form.component.ts:20:47:
+      20 │   imports: [ReactiveFormsModule, SharedModule, PhoneInputComponent],
+         ╵                                                ~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: PhoneInputComponent is not used within the template of BasicDetailsComponent [plugin angular-compiler]
+
+    src/app/onboarding/basic-details/basic-details.component.ts:21:47:
+      21 │ ...Module, SharedModule, PhoneInputComponent, TrademarkOnboardingB...
+         ╵                          ~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: OnboardingStepperComponent is not used within the template of OnboardingComponent [plugin angular-compiler]
+
+    src/app/onboarding/onboarding.component.ts:12:40:
+      12 │   imports: [RouterModule, CommonModule, OnboardingStepperComponent],
+         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: NgxMaskDirective is not used within the template of TrademarkPageComponent [plugin angular-compiler]
+
+    src/app/pages/trademark-page/trademark-page.component.ts:56:4:
+      56 │     NgxMaskDirective, MatProgressSpinnerModule, CountUpDirective, ...
+         ╵     ~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: FirmBannerComponent is not used within the template of TrademarkPageComponent [plugin angular-compiler]
+
+    src/app/pages/trademark-page/trademark-page.component.ts:56:148:
+      56 │ ...nt, LeadFormComponent,FirmBannerComponent,BlogMarkdownComponent...
+         ╵                          ~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.html:17:43:
+      17 │ ...<span class="stat-value">{{ stats?.totalConversions ?? 0 }}</span>
+         ╵                                       ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component PartnerDashboardComponent.
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.ts:12:15:
+      12 │   templateUrl: './partner-dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.html:21:44:
+      21 │ ...ss="stat-value">₹{{ stats?.totalCommissionPending ?? 0 }}</span>
+         ╵                             ~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component PartnerDashboardComponent.
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.ts:12:15:
+      12 │   templateUrl: './partner-dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.html:25:44:
+      25 │ ...class="stat-value">₹{{ stats?.totalCommissionPaid ?? 0 }}</span>
+         ╵                                ~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component PartnerDashboardComponent.
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.ts:12:15:
+      12 │   templateUrl: './partner-dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. [plugin angular-compiler]
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.html:29:46:
+      29 │ ..."stat-value">{{ (profile?.commissionRateBps ?? 0) / 100 }}%</span>
+         ╵                              ~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component PartnerDashboardComponent.
+
+    src/app/partner-portal/partner-dashboard/partner-dashboard.component.ts:12:15:
+      12 │   templateUrl: './partner-dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: TopHeaderComponent is not used within the template of PublicLayoutComponentComponent [plugin angular-compiler]
+
+    src/app/public-layout-component/public-layout-component.component.ts:10:12:
+      10 │   imports: [TopHeaderComponent,NavbarV2Component,FooterV2Component...
+         ╵             ~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: TeamSectionComponent is not used within the template of RatingReviewComponent [plugin angular-compiler]
+
+    src/app/rating-review/rating-review.component.ts:10:24:
+      10 │   imports:[CommonModule,TeamSectionComponent]
+         ╵                         ~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: DashboardHeaderComponent is not used within the template of ServiceCheckoutPageComponent [plugin angular-compiler]
+
+    src/app/service-checkout/service-checkout-page.component.ts:21:26:
+      21 │   imports: [CommonModule, DashboardHeaderComponent],
+         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: MatIcon is not used within the template of TmGovtFeesPopupComponent [plugin angular-compiler]
+
+    src/app/tm-govt-fees-popup/tm-govt-fees-popup.component.ts:8:12:
+      8 │   imports: [MatIcon, MatDialogClose, MatDialogContent, NgClass],
+        ╵             ~~~~~~~
+
+
+▲ [WARNING] TS-998113: MatDialogClose is not used within the template of TmGovtFeesPopupComponent [plugin angular-compiler]
+
+    src/app/tm-govt-fees-popup/tm-govt-fees-popup.component.ts:8:21:
+      8 │   imports: [MatIcon, MatDialogClose, MatDialogContent, NgClass],
+        ╵                      ~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: MatDialogContent is not used within the template of TmGovtFeesPopupComponent [plugin angular-compiler]
+
+    src/app/tm-govt-fees-popup/tm-govt-fees-popup.component.ts:8:37:
+      8 │   imports: [MatIcon, MatDialogClose, MatDialogContent, NgClass],
+        ╵                                      ~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: MatIcon is not used within the template of TrademarkPlanCardsComponent [plugin angular-compiler]
+
+    src/app/trademark-plan-cards/trademark-plan-cards.component.ts:10:28:
+      10 │   imports: [MatButtonModule,MatIcon,SharedModule],
+         ╵                             ~~~~~~~
+
+
+▲ [WARNING] TS-998113: NavbarV2Component is not used within the template of TrademarkRenewalComponent [plugin angular-compiler]
+
+    src/app/trademark-renewal/trademark-renewal.component.ts:17:82:
+      17 │ ...odule, PhoneInputComponent, NavbarV2Component, FooterV2Component],
+         ╵                                ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: FooterV2Component is not used within the template of TrademarkRenewalComponent [plugin angular-compiler]
+
+    src/app/trademark-renewal/trademark-renewal.component.ts:17:101:
+      17 │ ...odule, PhoneInputComponent, NavbarV2Component, FooterV2Component],
+         ╵                                                   ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: TrademarkStatusActionComponent is not used within the template of TradmarkDetailComponent [plugin angular-compiler]
+
+    src/app/tradmark-detail/tradmark-detail.component.ts:26:82:
+      26 │ ...ectionComponent, TrademarkStatusActionComponent, StatusWatchSig...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] TS-998113: EmbedWidgetComponent is not used within the template of TradmarkDetailComponent [plugin angular-compiler]
+
+    src/app/tradmark-detail/tradmark-detail.component.ts:26:161:
+      26 │ ...t, SkeletonComponent, EmbedWidgetComponent, TrademarkCertificat...
+         ╵                          ~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/admin-portal/dashboard/admin-dashboard.component.scss:136:58:
+      136 │ ...background: rgba($warning, 0.15); color: darken($warning, 20%); }
+          ╵                                             ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/admin-portal/dashboard/admin-dashboard.component.scss:136:58:
+      136 │ ...background: rgba($warning, 0.15); color: darken($warning, 20%); }
+          ╵                                             ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -39.84375%)
+  color.adjust($color, $lightness: -20%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/agent-portal/agent-conflicts/agent-conflicts.component.scss:3:8:
+      3 │ @import '../agent-journal-watch/agent-journal-watch.component.scss';
+        ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/live-search/live-search.component.scss:184:16:
+      184 │     background: darken($accent, 8%);
+          ╵                 ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/live-search/live-search.component.scss:184:16:
+      184 │     background: darken($accent, 8%);
+          ╵                 ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -15%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:130:13:
+      130 │       color: darken($whatsapp, 10%);
+          ╵              ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:130:13:
+      130 │       color: darken($whatsapp, 10%);
+          ╵              ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -20.564516129%)
+  color.adjust($color, $lightness: -10%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:165:50:
+      165 │ ...: linear-gradient(135deg, $accent 0%, darken($accent, 8%) 100%);
+          ╵                                          ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:165:50:
+      165 │ ...: linear-gradient(135deg, $accent 0%, darken($accent, 8%) 100%);
+          ╵                                          ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -15.9375%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:184:40:
+      184 │ ...round: linear-gradient(135deg, darken($accent, 8%) 0%, darken(...
+          ╵                                   ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:184:40:
+      184 │ ...round: linear-gradient(135deg, darken($accent, 8%) 0%, darken(...
+          ╵                                   ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -15.9375%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:184:64:
+      184 │ ...ient(135deg, darken($accent, 8%) 0%, darken($accent, 15%) 100%);
+          ╵                                         ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/mobile-bottom-navbar/mobile-bottom-navbar.component.scss:184:64:
+      184 │ ...ient(135deg, darken($accent, 8%) 0%, darken($accent, 15%) 100%);
+          ╵                                         ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -29.8828125%)
+  color.adjust($color, $lightness: -15%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/search-cta-section/search-cta-section.component.scss:189:16:
+      189 │     background: darken($accent, 8%);
+          ╵                 ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/search-cta-section/search-cta-section.component.scss:189:16:
+      189 │     background: darken($accent, 8%);
+          ╵                 ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -15.9375%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/trademark-filing-trends/trademark-filing-trends.component.scss:108:16:
+      108 │     background: darken($accent, 7%);
+          ╵                 ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/trademark-filing-trends/trademark-filing-trends.component.scss:108:16:
+      108 │     background: darken($accent, 7%);
+          ╵                 ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -14.4534412955%)
+  color.adjust($color, $lightness: -7%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/trademark-plans-page/trademark-plans-page.component.scss:29:2:
+      29 │   width: 96%;
+         ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/trademark-plans-page/trademark-plans-page.component.scss:30:2:
+      30 │   max-width: 1128px;
+         ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/trademark-plans-page/trademark-plans-page.component.scss:31:2:
+      31 │   margin: 0 auto;
+         ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles.scss:2:8:
+      2 │ @import 'ngx-toastr/toastr';
+        ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles.scss:115:8:
+      115 │ @import "../public/assets/scss/common.scss";
+          ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles.scss:160:8:
+      160 │ @import 'bootstrap/scss/functions';
+          ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles.scss:161:8:
+      161 │ @import 'bootstrap/scss/variables';
+          ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles.scss:162:8:
+      162 │ @import 'bootstrap/scss/variables-dark';
+          ╵         ^
+
+
+  Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:162:64:
+      162 │ ...gba($admin-success, 0.12); color: darken($admin-success, 12%); }
+          ╵                                      ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:162:64:
+      162 │ ...gba($admin-success, 0.12); color: darken($admin-success, 12%); }
+          ╵                                      ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -30.447761194%)
+  color.adjust($color, $lightness: -12%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:163:64:
+      163 │ ... rgba($admin-danger, 0.12);  color: darken($admin-danger, 8%); }
+          ╵                                        ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:163:64:
+      163 │ ... rgba($admin-danger, 0.12);  color: darken($admin-danger, 8%); }
+          ╵                                        ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -13.2899022801%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:164:64:
+      164 │ ...gba($admin-warning, 0.15); color: darken($admin-warning, 22%); }
+          ╵                                      ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:164:64:
+      164 │ ...gba($admin-warning, 0.15); color: darken($admin-warning, 22%); }
+          ╵                                      ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -43.828125%)
+  color.adjust($color, $lightness: -22%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:165:64:
+      165 │ ...: rgba($admin-info, 0.12);    color: darken($admin-info, 10%); }
+          ╵                                         ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:165:64:
+      165 │ ...: rgba($admin-info, 0.12);    color: darken($admin-info, 10%); }
+          ╵                                         ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -16.7213114754%)
+  color.adjust($color, $lightness: -10%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:203:11:
+      203 │     color: darken($admin-success, 10%);
+          ╵            ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/styles/_admin.scss:203:11:
+      203 │     color: darken($admin-success, 10%);
+          ╵            ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -25.3731343284%)
+  color.adjust($color, $lightness: -10%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+  The plugin "angular-sass" was triggered by this import
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] 31 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings. [plugin angular-sass]
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+  null
+
+
+▲ [WARNING] The same color styles are generated multiple times. Read more about how style duplication can be avoided in a dedicated guide. https://v18.material.angular.dev/guide/duplicate-theming-styles [plugin angular-sass]
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+  node_modules\@angular\material\core\theming\_theming.scss 182:7  -check-duplicate-theme-styles-v0()
+  node_modules\@angular\material\core\theming\_theming.scss 70:5   private-check-duplicate-theme-styles()
+  node_modules\@angular\material\core\_core-theme.scss 109:3       theme()
+  src\styles.scss 112:1                                            root stylesheet
+  
+
+
+▲ [WARNING] The same density styles are generated multiple times. Read more about how style duplication can be avoided in a dedicated guide. https://v18.material.angular.dev/guide/duplicate-theming-styles [plugin angular-sass]
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+  node_modules\@angular\material\core\theming\_theming.scss 206:9  -check-duplicate-theme-styles-v0()
+  node_modules\@angular\material\core\theming\_theming.scss 70:5   private-check-duplicate-theme-styles()
+  node_modules\@angular\material\core\_core-theme.scss 109:3       theme()
+  src\styles.scss 112:1                                            root stylesheet
+  
+
+
+▲ [WARNING] The same typography styles are generated multiple times. Read more about how style duplication can be avoided in a dedicated guide. https://v18.material.angular.dev/guide/duplicate-theming-styles [plugin angular-sass]
+
+    angular:styles/global:styles:2:8:
+      2 │ @import 'src/styles.scss';
+        ╵         ~~~~~~~~~~~~~~~~~
+
+  node_modules\@angular\material\core\theming\_theming.scss 191:7  -check-duplicate-theme-styles-v0()
+  node_modules\@angular\material\core\theming\_theming.scss 70:5   private-check-duplicate-theme-styles()
+  node_modules\@angular\material\core\_core-theme.scss 109:3       theme()
+  src\styles.scss 112:1                                            root stylesheet
+  
+
+
+Output location: E:\my-code\trademarx\brand-lock\dist\brand-lock
+

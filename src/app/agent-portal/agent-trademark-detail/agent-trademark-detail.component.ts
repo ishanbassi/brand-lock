@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, computed } from '@angular/core';
 import { IconComponent } from '../ui/icon.component';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
@@ -113,7 +113,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly trademarkService: TrademarkService,
-    private readonly host: ElementRef<HTMLElement>,
   ) {}
 
   ngOnInit(): void {
@@ -164,7 +163,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
         this.customValues = { ...(tm.customFields ?? {}) };
         this.loading.set(false);
         this.loadArtwork(tm);
-        this.deferSpecimenInitials(tm.name);
       },
       error: () => {
         this.error.set('Could not load this trademark.');
@@ -180,7 +178,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
 
   private loadArtwork(tm: AgentPortfolioTrademark): void {
     this.releaseArtwork();
-    if (!tm.imgUrl) {
+    if (!this.isImageMark(tm) || !tm.imgUrl) {
       this.artworkState.set('none');
       return;
     }
@@ -192,7 +190,6 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.artworkState.set('failed');
-        this.deferSpecimenInitials(tm.name);
       },
     });
   }
@@ -203,13 +200,10 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
     this.artworkUrl.set(null);
   }
 
-  /** The visual specimen shows artwork when available, otherwise compact initials. */
-  private deferSpecimenInitials(name: string | undefined): void {
-    setTimeout(() => {
-      this.host.nativeElement.querySelectorAll<HTMLElement>('.mark-specimen__name').forEach(element => {
-        element.textContent = this.trademarkInitials(name);
-      });
-    });
+  /** Device and image marks retain their official artwork; wordmarks use a compact monogram. */
+  isImageMark(mark: AgentPortfolioTrademark | null | undefined): boolean {
+    const type = (mark?.type ?? '').toUpperCase();
+    return type.includes('IMAGE') || type.includes('DEVICE');
   }
 
   // ── Export ───────────────────────────────────────────────────────────────

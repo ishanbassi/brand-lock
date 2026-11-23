@@ -1,0 +1,49 @@
+<section class="application-search-page" [class.embedded]="embedded">
+  @if (!embedded) {
+  <header class="page-header">
+    <div>
+      <h1>Search by application number</h1>
+      <p>Look up an exact trademark filing by its application , or check multiple filings at once.</p>
+    </div>
+
+  </header>
+  }
+
+  <div class="mode-switcher" role="tablist" aria-label="Lookup mode">
+    <button type="button" role="tab" [attr.aria-selected]="mode() === 'single'" [class.selected]="mode() === 'single'" (click)="setMode('single')">Single lookup</button>
+    <button type="button" role="tab" [attr.aria-selected]="mode() === 'batch'" [class.selected]="mode() === 'batch'" (click)="setMode('batch')">Batch (up to 10)</button>
+  </div>
+
+  <div class="search-container">
+    <form (ngSubmit)="lookup()">
+      @if (mode() === 'single') {
+        <div class="single-lookup">
+          <div class="application-field">
+            <label for="application-number">Application number</label>
+            <div class="field-value">
+              <span class="material-symbols-outlined" aria-hidden="true">tag</span>
+              <input id="application-number" name="applicationNumber" [(ngModel)]="applicationNumber" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. 3163769" (input)="clearMessages()" />
+              @if (applicationNumber) {
+                <button type="button" class="clear-button" aria-label="Clear application number" (click)="clearApplicationNumber()"><span class="material-symbols-outlined">close</span></button>
+              }
+            </div>
+          </div>
+
+          <div class="submit-wrap"><button type="submit" class="lookup-button" [disabled]="loading()"><span>{{ loading() ? 'Looking up…' : 'Search' }}</span><span class="material-symbols-outlined">arrow_forward</span></button></div>
+        </div>
+      } @else {
+        <div class="batch-lookup">
+          <div class="batch-heading"><label for="batch-numbers">Paste up to 10 application numbers (one per line or comma-separated)</label><span [class.over-limit]="batchCount > 10">{{ batchCount }} / 10 numbers</span></div>
+          <textarea id="batch-numbers" name="batchNumbers" [(ngModel)]="batchNumbers" rows="3" placeholder="97/412,850&#10;018942310&#10;UK00003910442" (input)="clearMessages()"></textarea>
+          <div class="batch-footer"><span>Spaces, slashes, and commas within numbers are normalized automatically.</span><button type="submit" class="lookup-button" [disabled]="loading()"><span>{{ loading() ? 'Looking up…' : 'Look up batch' }}</span><span class="material-symbols-outlined">arrow_forward</span></button></div>
+        </div>
+      }
+    </form>
+  </div>
+
+  @if (error()) { <p class="message error-message" role="alert"><span class="material-symbols-outlined">error</span>{{ error() }}</p> }
+
+  @if (feedback() && !embedded) { <div class="feedback" role="status"><span><span class="material-symbols-outlined">fact_check</span>{{ feedback() }}</span><button type="button" (click)="feedback.set('')">Dismiss</button></div> }
+
+  <p class="helper-note"><span class="material-symbols-outlined" aria-hidden="true">info</span><span>Spaces, slashes, and hyphens are normalized automatically. Results reflect the latest official Register record for each filing.</span></p>
+</section>

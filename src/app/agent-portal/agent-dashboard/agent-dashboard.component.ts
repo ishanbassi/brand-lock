@@ -7,6 +7,7 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentDashboardStats, AgentPortfolioTrademark, AgentStatusCount } from '../../../models/agent.model';
 import { AuthService } from '../../../models/auth.services';
 import { AgentTrialWelcomeComponent } from '../agent-trial-welcome/agent-trial-welcome.component';
+import { AgentAddTrademarkDialogComponent } from '../agent-add-trademark-dialog/agent-add-trademark-dialog.component';
 
 /**
  * Bucket key to the colour it is drawn in, everywhere it appears.
@@ -34,7 +35,7 @@ const BUCKET_ICONS: Record<AgentStatusCount['key'], string> = {
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, BaseChartDirective, AgentTrialWelcomeComponent],
+  imports: [CommonModule, RouterModule, BaseChartDirective, AgentTrialWelcomeComponent, AgentAddTrademarkDialogComponent],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './agent-dashboard.component.html',
   styleUrl: './agent-dashboard.component.scss',
@@ -48,6 +49,7 @@ export class AgentDashboardComponent implements OnInit {
   stats = signal<AgentDashboardStats | null>(null);
   loading = signal(true);
   error = signal('');
+  showAddTrademarkDialog = signal(false);
 
   /** Buckets in the order they are shown, largest first, with colour and icon attached. */
   statusRows = computed(() => {
@@ -107,6 +109,20 @@ export class AgentDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.refreshStats();
+  }
+
+  openAddTrademarkDialog(): void {
+    this.showAddTrademarkDialog.set(true);
+  }
+
+  closeAddTrademarkDialog(): void {
+    this.showAddTrademarkDialog.set(false);
+  }
+
+  refreshStats(): void {
+    this.loading.set(true);
+    this.error.set('');
     this.agentDataService.getDashboardStats().subscribe({
       next: (data) => {
         this.stats.set(data);

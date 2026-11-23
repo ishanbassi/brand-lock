@@ -1,5 +1,42 @@
 @if (visible()) {
   <div class="trial-backdrop" (click)="dismiss()">
+    @if (hasFreePortfolioAccess()) {
+      <section #dialog class="trial-dialog free-access-dialog" role="dialog" aria-modal="true" aria-labelledby="free-access-title" aria-describedby="free-access-intro" (click)="$event.stopPropagation()">
+        <button #closeButton type="button" class="trial-dialog__close" aria-label="Dismiss free access welcome" (click)="dismiss()"><ap-icon name="close" [size]="18" /></button>
+
+        <div class="free-access-dialog__body">
+          <header class="free-access-dialog__header">
+            <span class="free-access-dialog__badge"><ap-icon name="check" [size]="14" /> Portfolio ≤ {{ trial()?.freeUnlimitedPortfolioThreshold }} marks</span>
+            <h2 id="free-access-title">Congrats! You get Free Pro Practice Access</h2>
+            <p id="free-access-intro">Because your portfolio has {{ trial()?.freeUnlimitedPortfolioThreshold }} or fewer trademarks, you unlock unlimited free access to our agent portal—no credit card required.</p>
+          </header>
+
+          <section class="free-access-dialog__plan" aria-label="Free Pro Practice access">
+            <div>
+              <h3>Pro Practice</h3>
+              <p>For teams that need a shared portfolio workspace and a more structured review process.</p>
+            </div>
+            <div class="free-access-dialog__price"><div><s>₹999</s><strong>₹0</strong></div><span>/ month · free for ≤ {{ trial()?.freeUnlimitedPortfolioThreshold }} marks</span></div>
+          </section>
+
+          @if (features().length > 0) {
+            <section class="free-access-dialog__features" aria-labelledby="free-access-features-title">
+              <h3 id="free-access-features-title">Everything included in your free portal</h3>
+              <ul>
+                @for (feature of features(); track feature) {
+                  <li><span><ap-icon name="check" [size]="16" /></span><p>{{ feature }}</p></li>
+                }
+              </ul>
+            </section>
+          }
+
+          <footer class="free-access-dialog__actions">
+            <p>Paid plan applies only if you exceed {{ trial()?.freeUnlimitedPortfolioThreshold }} marks.</p>
+            <div><button type="button" class="free-access-dialog__cta" (click)="dismiss()">Let's go</button></div>
+          </footer>
+        </div>
+      </section>
+    } @else {
     <section #dialog class="trial-dialog" role="dialog" aria-modal="true" aria-labelledby="trial-welcome-title" aria-describedby="trial-welcome-intro" (click)="$event.stopPropagation()">
       <div class="trial-dialog__stripe" aria-hidden="true"></div>
       <button #closeButton type="button" class="trial-dialog__close" aria-label="Dismiss trial welcome" (click)="dismiss()"><ap-icon name="close" [size]="18" /></button>
@@ -61,5 +98,6 @@
         </footer>
       </div>
     </section>
+    }
   </div>
 }

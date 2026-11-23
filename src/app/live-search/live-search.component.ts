@@ -79,9 +79,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchControl.setValue(this.query || null);
-    // A focused starting point is more useful than an unbounded registry search. The results
-    // page keeps this same default when somebody arrives there directly.
-    this.classControl.setValue(this.tmClass ?? 1);
+    this.classControl.setValue(this.tmClass ?? null);
   this.searchControl.valueChanges
     .pipe(
       debounceTime(300),
@@ -239,7 +237,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
     this.query = query;
     this.router.navigate(['/search/results'], {queryParams:{
       trademark: query,
-      tmClass: this.classControl.value ?? 1,
+      tmClass: this.classControl.value,
       ...(this.showSearchType ? { searchType: this.searchType } : {})
     }})
     this.isOpen  = false;
@@ -249,6 +247,11 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   onSearchTypeChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     if (value === 'contains' || value === 'startswith' || value === 'phonetic') {
+      // Phonetic matching is intentionally scoped to one class. Searching the full
+      // registry with it is expensive, whereas regular text searches can span all classes.
+      if (value === 'phonetic' && this.classControl.value == null) {
+        this.classControl.setValue(1);
+      }
       this.searchTypeChange.emit(value);
     }
   }

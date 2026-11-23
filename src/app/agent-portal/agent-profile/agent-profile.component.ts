@@ -21,8 +21,8 @@ export class AgentProfileComponent implements OnInit {
   error = signal('');
 
   // ── Report branding ──────────────────────────────────────────────────────
-  // Applied to every generated document — search reports, the portfolio schedule, watch reports.
-  branding = { firmDisplayName: '', reportAccentColor: '', reportFooterText: '' };
+  // Applied to every generated report — search reports, the portfolio schedule, watch reports.
+  branding = { firmDisplayName: '', reportAccentColor: '' };
   logoPreview = signal<string | null>(null);
   brandingSaving = signal(false);
   brandingSaved = signal(false);
@@ -38,9 +38,8 @@ export class AgentProfileComponent implements OnInit {
         this.profile.set(p);
         this.form = { ...p };
         this.branding = {
-          firmDisplayName: (p as any).firmDisplayName ?? '',
-          reportAccentColor: (p as any).reportAccentColor ?? '',
-          reportFooterText: (p as any).reportFooterText ?? '',
+          firmDisplayName: p.firmDisplayName ?? '',
+          reportAccentColor: p.reportAccentColor ?? '',
         };
         this.loading.set(false);
         this.loadLogo();
@@ -96,7 +95,11 @@ export class AgentProfileComponent implements OnInit {
     this.logoError.set('');
 
     this.agentDataService.updateBranding(this.branding).subscribe({
-      next: () => {
+      next: (branding) => {
+        const profile = this.profile();
+        if (profile) {
+          this.profile.set({ ...profile, ...branding });
+        }
         this.brandingSaving.set(false);
         this.brandingSaved.set(true);
         setTimeout(() => this.brandingSaved.set(false), 3000);

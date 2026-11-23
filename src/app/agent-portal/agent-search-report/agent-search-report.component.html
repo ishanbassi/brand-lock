@@ -1,29 +1,90 @@
 <div class="search-report-page">
   <header class="page-head">
-    <h1>Search report</h1>
-    <p class="subtitle">Check a proposed mark against the Register, then print selected results on your own letterhead.</p>
+    <div>
+      <h1>Search report</h1>
+      <p class="subtitle">Check a proposed mark against the Register, then print selected results on your own letterhead.</p>
+    </div>
+    <div class="page-head-actions">
+      <button type="button" class="branding-button" (click)="openBrandingModal()">
+        Customize
+        <span class="material-symbols-outlined" aria-hidden="true">palette</span>
+
+      </button>
+    </div>
   </header>
-  <form class="search-form" (ngSubmit)="run()">
-    <div class="field grow">
+  <div class="search-mode-toggle" role="tablist" aria-label="Search type">
+    <button type="button" role="tab" [attr.aria-selected]="searchMode() === 'name'" [class.selected]="searchMode() === 'name'" (click)="setSearchMode('name')">Search by name</button>
+    <button type="button" role="tab" [attr.aria-selected]="searchMode() === 'application-number'" [class.selected]="searchMode() === 'application-number'" (click)="setSearchMode('application-number')">Search by application number</button>
+  </div>
+  @if (searchMode() === 'name') {
+  <form class="search-form" (ngSubmit)="run()" (keydown.escape)="closePickers()">
+    <div class="search-action"><button type="submit" class="btn-primary" [disabled]="!query.trim() || loading() || isPhoneticProcessing()"><span>{{ loading() || isPhoneticProcessing() ? 'Searching...' : 'Search' }}</span><span class="material-symbols-outlined">arrow_forward</span></button></div>
+    <div class="search-field mark-field">
       <label for="mark">Proposed mark</label>
-      <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
+      <div class="field-value">
+        <span class="material-symbols-outlined field-icon" aria-hidden="true">search</span>
+        <input id="mark" type="text" [(ngModel)]="query" name="query" placeholder="e.g. ALPHAWAVE" autocomplete="off" />
+        @if (query) { <button type="button" class="icon-button" aria-label="Clear proposed mark" (click)="clearQuery()"><span class="material-symbols-outlined">close</span></button> }
+      </div>
     </div>
-    <div class="field">
-      <label for="searchType">Match rule</label>
-      <select id="searchType" [(ngModel)]="searchType" name="searchType" (change)="onSearchTypeChange()">
-        <option value="startswith">Starts With</option>
-        <option value="contains">Contain search</option>
-        <option value="phonetic">Phonetic</option>
-      </select>
+    <div class="search-field picker match-picker">
+      <button type="button" class="picker-trigger" (click)="toggleMatchRulePicker()" [attr.aria-expanded]="matchRulePickerOpen()">
+        <span class="field-label">Match rule</span>
+        <span class="picker-value">{{ searchTypeLabel() }}<span class="material-symbols-outlined picker-chevron" [class.open]="matchRulePickerOpen()">expand_more</span></span>
+      </button>
+      @if (matchRulePickerOpen()) {
+        <div class="picker-panel match-panel" role="listbox" aria-label="Matching strategy">
+          <span class="panel-caption">Matching strategy</span>
+          @for (type of matchRules; track type) {
+            <button type="button" class="match-option" [class.selected]="searchType === type" (click)="setSearchType(type)">
+              <span class="material-symbols-outlined check">check</span>
+              <span><strong>{{ type === 'startswith' ? 'Starts with' : type === 'contains' ? 'Contains' : 'Phonetic' }}</strong><small>{{ searchTypeDescription(type) }}</small></span>
+            </button>
+          }
+        </div>
+      }
     </div>
-    <div class="field">
-      <label for="statusBucket">Trademark status</label>
-      <select id="statusBucket" [(ngModel)]="statusBucket" name="statusBucket" (change)="onStatusBucketChange()">
-        @for (bucket of statusBuckets; track bucket.value) {
-          <option [value]="bucket.value">{{ bucket.label }}</option>
+    <div class="search-field picker status-picker">
+      <button type="button" class="picker-trigger" (click)="toggleStatusPicker()" [attr.aria-expanded]="statusPickerOpen()">
+        <span class="field-label">Trademark status @if (selectedStatusBuckets().length) { <b>{{ selectedStatusBuckets().length }}</b> }</span>
+        <span class="picker-value" [class.placeholder]="!selectedStatusBuckets().length">{{ statusSummary() }}<span class="material-symbols-outlined picker-chevron" [class.open]="statusPickerOpen()">expand_more</span></span>
+      </button>
+      <!--
+      <label id="statusLabel">Trademark status</label>
+      <button type="button" class="class-trigger" [class.active]="selectedStatusBuckets().length > 0" (click)="toggleStatusPicker()"
+        aria-labelledby="statusLabel" [attr.aria-expanded]="statusPickerOpen()">
+        <span>{{ statusSummary() }}</span><span class="caret" aria-hidden="true">▾</span>
+      </button>
+      @if (statusPickerOpen()) {
+        <div class="class-panel status-panel" role="group" aria-labelledby="statusLabel">
+          <div class="class-panel-head">
+            <span>{{ selectedStatusBuckets().length || 'Any' }} selected</span>
+            <button type="button" class="link-btn" (click)="clearStatusBuckets()" [disabled]="selectedStatusBuckets().length === 0">Clear</button>
+          </div>
+          <div class="status-options">
+            @for (bucket of statusBuckets; track bucket.value) {
+              <label class="class-option status-option" [class.picked]="isStatusBucketSelected(bucket.value)">
+                <input type="checkbox" [checked]="isStatusBucketSelected(bucket.value)" (change)="toggleStatusBucket(bucket.value)" /><span>{{ bucket.label }}</span>
+              </label>
+            }
+          </div>
+          <button type="button" class="btn-secondary" (click)="applyStatusFilter()">Apply filters</button>-->
+        @if (statusPickerOpen()) {
+          <div class="picker-panel status-panel" role="dialog" aria-label="Filter by trademark status">
+            <div class="panel-toolbar"><strong>Trademark status</strong><span><button type="button" (click)="selectAllStatusBuckets()">Select all</button><i>·</i><button type="button" (click)="clearStatusBuckets()">Clear</button></span></div>
+            <div class="status-options">
+              @for (bucket of statusBuckets; track bucket.value) {
+                <label class="status-option" [class.selected]="isStatusBucketSelected(bucket.value)">
+                  <input type="checkbox" [checked]="isStatusBucketSelected(bucket.value)" (change)="toggleStatusBucket(bucket.value)" />
+                  <strong>{{ bucket.label }}</strong>
+                </label>
+              }
+            </div>
+            <div class="panel-footer"><span>{{ selectedStatusBuckets().length ? selectedStatusBuckets().length + ' status' + (selectedStatusBuckets().length === 1 ? '' : 'es') + ' selected' : 'All statuses included' }}</span><button type="button" class="apply-button" (click)="applyStatusFilter()">Apply</button></div>
+          </div>
         }
-      </select>
     </div>
+    <!--
     <div class="field class-picker">
       <label id="classLabel">Classes</label>
       <button type="button" class="class-trigger" [class.active]="selectedClasses().length > 0" (click)="toggleClassPicker()"
@@ -46,54 +107,81 @@
           <button type="button" class="btn-secondary" (click)="toggleClassPicker()">Done</button>
         </div>
       }
+    </div>-->
+    <div class="search-field picker class-picker">
+      <button type="button" class="picker-trigger" (click)="toggleClassPicker()" [attr.aria-expanded]="classPickerOpen()"><span class="field-label">Nice classes @if (selectedClasses().length) { <b>{{ selectedClasses().length }}</b> }</span><span class="picker-value" [class.placeholder]="!selectedClasses().length">{{ classSummary() }}<span class="material-symbols-outlined picker-chevron" [class.open]="classPickerOpen()">expand_more</span></span></button>
+      @if (classPickerOpen()) {
+        <div class="picker-panel classes-panel" role="dialog" aria-label="Filter by Nice classification">
+          <div class="classes-controls"><div class="class-search"><span class="material-symbols-outlined" aria-hidden="true">search</span><input type="search" [(ngModel)]="classQuery" name="classQuery" placeholder="Filter by class # or keyword…" /></div><div class="class-tabs"><span><button type="button" [class.active]="classGroup === 'all'" (click)="classGroup = 'all'">All (1–45)</button><button type="button" [class.active]="classGroup === 'goods'" (click)="classGroup = 'goods'">Goods (1–34)</button><button type="button" [class.active]="classGroup === 'services'" (click)="classGroup = 'services'">Services (35–45)</button></span><button type="button" class="clear-link" (click)="clearClasses()">Clear all</button></div></div>
+          <div class="class-grid">@for (c of filteredClasses(); track c) { <button type="button" class="nice-class" [class.selected]="isClassSelected(c)" (click)="toggleClass(c)"><span>{{ c }}</span><strong>{{ className(c) }}</strong></button> } @empty { <p class="no-classes">No Nice classes match that filter.</p> }</div>
+          <div class="panel-footer"><span>{{ classSelectionHint() }}</span><button type="button" class="apply-button" (click)="toggleClassPicker()">Apply</button></div>
+        </div>
+      }
     </div>
-    <button type="submit" class="btn-primary" [disabled]="!query.trim() || selectedClasses().length === 0 || loading()">{{ loading() ? 'Searching…' : 'Search' }}</button>
   </form>
-  <p class="disclaimer">Lists marks on the Register matching the selected rule. It is not an opinion on registrability and does not constitute legal advice.</p>
+  @if (hasActiveFilters()) {
+    <div class="active-filters"><span>Active filters:</span><div>
+      @if (searchType !== 'startswith') { <button type="button" class="filter-chip" (click)="setSearchType('startswith')">Rule: {{ searchTypeLabel() }}<span class="material-symbols-outlined">close</span></button> }
+      @for (bucket of selectedStatusBuckets(); track bucket) { <button type="button" class="filter-chip" (click)="toggleStatusBucket(bucket)">{{ statusBucketLabel(bucket) }}<span class="material-symbols-outlined">close</span></button> }
+      @for (c of selectedClasses(); track c) { <button type="button" class="filter-chip" (click)="toggleClass(c)">Class {{ c }} · {{ className(c) }}<span class="material-symbols-outlined">close</span></button> }
+    </div><button type="button" class="reset-filters" (click)="resetFilters()">Reset all</button></div>
+  }
   @if (error()) { <div class="error">{{ error() }}</div> }
-
+  } @else {
+    <app-agent-application-number-search [embedded]="true" (resultsFound)="receiveApplicationNumberResults($event)" />
+  }
   @if (report(); as r) {
     <section class="results">
-      <div class="results-head">
-        <div class="bands">
-          <span class="result-total">{{ r.totalResults }} {{ r.totalResults === 1 ? 'result' : 'results' }}</span>
-          @if (reportSearchType === 'phonetic') {
-            <span class="band high">{{ countFor('HIGH') }} close</span>
-            <span class="band medium">{{ countFor('MEDIUM') }} moderate</span>
-            <span class="band low">{{ countFor('LOW') }} distant</span>
-          }
-          @if (r.tmClasses.length) { <span class="band same">{{ classSentence(r.tmClasses) }} only</span> }
+      <div class="results-toolbar">
+        <div class="results-toolbar-main">
+          <div class="results-summary">
+            <span class="result-total">{{ r.totalResults }} {{ r.totalResults === 1 ? 'result' : 'results' }}{{ isPhoneticProcessing() ? ' so far' : '' }}</span>
+            @if (reportSearchType === 'phonetic') {
+              <span class="similarity-pill close">{{ countFor('HIGH') }} close</span>
+              <span class="similarity-pill moderate">{{ countFor('MEDIUM') }} moderate</span>
+              <span class="similarity-pill distant">{{ countFor('LOW') }} distant</span>
+            }
+            @if (r.tmClasses.length) { <span class="class-pill">{{ classSentence(r.tmClasses) }} only</span> }
+          </div>
+          <div class="results-actions">
+            <div class="view-toggle" role="group" aria-label="Results view">
+              <button type="button" [attr.aria-pressed]="resultsView() === 'list'" [class.active]="resultsView() === 'list'" (click)="setResultsView('list')"><span class="material-symbols-outlined" aria-hidden="true">view_list</span><span>List</span></button>
+              <button type="button" [attr.aria-pressed]="resultsView() === 'grid'" [class.active]="resultsView() === 'grid'" (click)="setResultsView('grid')"><span class="material-symbols-outlined" aria-hidden="true">grid_view</span><span>Cards</span></button>
+            </div>
+            @if (!isPhoneticProcessing() && !isApplicationNumberReport()) { <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" /> }
+          </div>
         </div>
-        <ap-export-menu [busy]="exporting() || (printing() ? 'pdf' : null)" (selected)="export($event)" />
-      </div>
-      @if (r.totalResults === 0) {
-        <div class="state empty"><p>No marks were found for “{{ r.query }}”{{ r.tmClasses.length ? ' in ' + classSentence(r.tmClasses) : '' }}.</p></div>
-      } @else {
-        <div class="table-tools">
-          <span>{{ selectedIds.size }} selected</span>
+        <div class="selection-subbar">
+          <label><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all results on this page" /><span>{{ selectedIds.size }} selected</span></label>
           <span>Showing {{ firstResult }}–{{ lastResult }} of {{ r.totalResults }}</span>
         </div>
-        <div class="table-scroll">
+      </div>
+      @if (isPhoneticProcessing()) { <p class="disclaimer" role="status">Checking phonetic matches: {{ r.candidatesScored || 0 }} candidates scored. Results update automatically.</p> }
+      @if (r.status === 'FAILED') { <div class="error">{{ r.errorMessage || 'The phonetic search stopped before it finished.' }}</div> }
+      @if (r.totalResults === 0 && !isPhoneticProcessing() && r.status !== 'FAILED') {
+        <div class="state empty"><p>No marks were found for “{{ r.query }}”{{ r.tmClasses.length ? ' in ' + classSentence(r.tmClasses) : '' }}.</p></div>
+      } @else {
+        <div class="table-scroll results-list-view" [class.results-list-hidden]="resultsView() !== 'list'">
           <table class="results-table">
             <thead><tr>
               <th class="select-cell"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all results on this page" /></th>
               <th>Image</th><th>Name</th><th>Application</th><th>Class</th><th>Proprietor</th>
-              <th>Proprietor address</th><th>Status</th><th>Filed</th><th>Renewal</th><th>Journal no.</th><th>Details</th>
+              <th>Proprietor address</th><th>Status</th><th>Filed</th><th>Renewal</th><th>Journal no.</th><th>Details</th><th>Actions</th>
               @if (reportSearchType === 'phonetic') { <th>Similarity</th> }
             </tr></thead>
             <tbody>
               @for (row of r.rows; track row.trademarkId) {
-                <tr>
+                <tr [class.is-selected]="selectedIds.has(row.trademarkId)">
                   <td class="select-cell"><input type="checkbox" [checked]="selectedIds.has(row.trademarkId)" (change)="toggleRowSelection(row)"
                     [attr.aria-label]="'Select ' + (row.name || 'result')" /></td>
                   <td class="artwork-cell">
                     @if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> }
-                    @else { <span aria-hidden="true">—</span> }
+                    @else { <span class="mark-artwork" aria-hidden="true">{{ markMonogram(row) }}</span> }
                   </td>
                   <td class="cell-name">{{ row.name || '—' }}</td><td>{{ row.applicationNo || '—' }}</td><td>{{ row.tmClass || '—' }}</td>
                   <td class="cell-prop">{{ row.proprietorName || '—' }}</td><td class="cell-address">{{ row.proprietorAddress || '—' }}</td>
                   <td><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span></td><td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
-                  <td>{{ row.journalNo || '—' }}</td><td class="cell-details">{{ row.details || '—' }}</td>
+                  <td>{{ row.journalNo || '—' }}</td><td class="cell-details">{{ row.details || '—' }}</td><td><button type="button" class="details-button" (click)="openDetails(row)" [disabled]="!row.trademarkId" [attr.aria-label]="'View details for ' + (row.name || 'trademark')">View details</button></td>
                   @if (reportSearchType === 'phonetic') {
                     <td><span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">{{ bandLabel(row.riskBand) }}</span></td>
                   }
@@ -102,6 +190,26 @@
             </tbody>
           </table>
         </div>
+        <div class="results-card-grid" [class.results-grid-hidden]="resultsView() !== 'grid'">
+          @for (row of r.rows; track row.trademarkId) {
+            <article class="result-card" [class.is-selected]="selectedIds.has(row.trademarkId)">
+              <div>
+                <div class="result-card-head">
+                  <div class="result-card-title">
+                    <input type="checkbox" [checked]="selectedIds.has(row.trademarkId)" (change)="toggleRowSelection(row)" [attr.aria-label]="'Select ' + (row.name || 'result')" />
+                    <div class="mark-artwork large">@if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> } @else { <span aria-hidden="true">{{ markMonogram(row) }}</span> }</div>
+                    <div><h2>{{ row.name || '—' }}</h2><span>{{ row.type || 'Word mark' }}</span></div>
+                  </div>
+                  @if (reportSearchType === 'phonetic') { <span class="similarity-pill" [class.close]="row.riskBand === 'HIGH'" [class.moderate]="row.riskBand === 'MEDIUM'" [class.distant]="row.riskBand === 'LOW'">{{ bandLabel(row.riskBand) }}</span> }
+                </div>
+                <div class="card-metrics"><div><span>App #</span><strong>{{ row.applicationNo || '—' }}</strong></div><div><span>Class</span><strong>{{ row.tmClass ? 'Class ' + row.tmClass : '—' }}</strong></div><div><span>Filed</span><strong>{{ formatDate(row.applicationDate) }}</strong></div></div>
+                <div class="card-proprietor"><span>Proprietor</span><strong>{{ row.proprietorName || '—' }}</strong><p>{{ row.proprietorAddress || '—' }}</p></div>
+              </div>
+              <footer><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span><button type="button" class="details-button" (click)="openDetails(row)" [disabled]="!row.trademarkId">View mark <span aria-hidden="true">→</span></button></footer>
+            </article>
+          }
+        </div>
+        @if (!isApplicationNumberReport()) {
         <div class="pagination-bar">
           <div class="page-size field">
             <label for="pageSize">Rows per page</label>
@@ -115,8 +223,66 @@
             <button type="button" class="btn-secondary" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages || loading()">Next</button>
           </div>
         </div>
+        }
         @if (r.tmClasses.length) { <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p> }
       }
     </section>
   }
 </div>
+
+@if (brandingModalOpen()) {
+  <div class="branding-backdrop" role="presentation" (click)="closeBrandingModal()">
+    <section class="branding-modal" role="dialog" aria-modal="true" aria-labelledby="report-branding-title" aria-describedby="report-branding-description" (click)="$event.stopPropagation()">
+      <header class="branding-modal-head">
+        <div>
+          <h2 id="report-branding-title">Report branding</h2>
+          <p id="report-branding-description">Applied to every report you generate. Leave blank to use the Trademarx house style.</p>
+        </div>
+        <button type="button" class="branding-close" aria-label="Close report branding" (click)="closeBrandingModal()"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+      </header>
+
+      <form class="branding-form" (ngSubmit)="saveBranding()">
+        <div class="branding-field">
+          <span class="branding-label">Firm logo</span>
+          <div class="branding-logo-row">
+            <div class="branding-logo-preview">
+              @if (brandingLogoPreview(); as logo) { <img [src]="logo" alt="Your firm logo" /> }
+              @else { <span class="house-style-mark"><b>trade</b>marx.in</span> }
+            </div>
+            <div class="branding-logo-actions">
+              <div>
+                <label class="branding-secondary-button"><span class="material-symbols-outlined" aria-hidden="true">upload</span>{{ brandingLogoPreview() ? 'Replace logo' : 'Upload logo' }}<input type="file" accept="image/png,image/jpeg" hidden (change)="onBrandingLogoSelected($event)" /></label>
+                @if (brandingLogoPreview()) { <button type="button" class="branding-remove-button" (click)="requestLogoRemoval()">Remove</button> }
+              </div>
+              <p>PNG or JPEG, up to 2 MB.</p>
+            </div>
+          </div>
+        </div>
+
+        <label class="branding-field" for="report-branding-firm-name">
+          <span class="branding-label">Firm name on reports</span>
+          <input id="report-branding-firm-name" type="text" [(ngModel)]="branding.firmDisplayName" name="firmDisplayName" placeholder="e.g. Bassi IP Associates" />
+        </label>
+
+        <div class="letterhead-preview">
+          <div class="letterhead-preview-label"><span>Letterhead header preview</span><small>A4 / Letter</small></div>
+          <div class="letterhead-preview-paper">
+            <div class="letterhead-logo">
+              @if (brandingLogoPreview(); as logo) { <img [src]="logo" alt="" /> }
+              @else { <span class="house-style-mark"><b>trade</b>marx.in</span> }
+            </div>
+            <div><strong>{{ branding.firmDisplayName.trim() || 'Trademarx house style' }}</strong><span>Trademark Clearance Report</span></div>
+          </div>
+        </div>
+
+        @if (brandingError()) { <p class="branding-modal-error" role="alert">{{ brandingError() }}</p> }
+        @if (brandingSaved()) { <p class="branding-saved" role="status"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>Report branding settings saved.</p> }
+
+        <footer class="branding-modal-footer">
+          <button type="button" class="branding-secondary-button" (click)="closeBrandingModal()" [disabled]="brandingSaving()">Cancel</button>
+          <button type="submit" class="branding-save-button" [disabled]="brandingSaving()">{{ brandingSaving() ? 'Saving…' : 'Save report settings' }}</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}

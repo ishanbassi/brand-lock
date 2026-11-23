@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, of } from 'rxjs';
 import { SearchReport, SearchReportRow } from '../../../models/agent.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
@@ -7,6 +8,7 @@ import { AgentSearchReportComponent } from './agent-search-report.component';
 describe('AgentSearchReportComponent', () => {
   let component: AgentSearchReportComponent;
   let agentData: jasmine.SpyObj<AgentDataService>;
+  let router: jasmine.SpyObj<Router>;
 
   const row: SearchReportRow = {
     trademarkId: 7,
@@ -45,26 +47,31 @@ describe('AgentSearchReportComponent', () => {
     agentData.getProfile.and.returnValue(of({ companyName: 'Test firm' }));
     agentData.getLogo.and.returnValue(EMPTY);
     agentData.previewSearchReport.and.returnValue(of(report));
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [AgentSearchReportComponent],
-      providers: [{ provide: AgentDataService, useValue: agentData }],
+      providers: [
+        { provide: AgentDataService, useValue: agentData },
+        { provide: Router, useValue: router },
+        { provide: ActivatedRoute, useValue: { snapshot: { data: {}, queryParamMap: { get: () => null } } } },
+      ],
     }).compileComponents();
 
     component = TestBed.createComponent(AgentSearchReportComponent).componentInstance;
   });
 
-  it('defaults to Starts with and requires a class', () => {
+  it('defaults to Starts with and searches all classes when none are selected', () => {
     expect(component.searchType).toBe('startswith');
     expect(component.selectedClasses()).toEqual([]);
-    expect(component.classSummary()).toBe('Select classes');
+    expect(component.classSummary()).toBe('All classes (1–45)');
 
     component.query = 'ALPHA';
     component.run();
 
-    expect(agentData.previewSearchReport).not.toHaveBeenCalled();
-    expect(component.error()).toBe('Select at least one class to search.');
-    expect(component.classPickerOpen()).toBeTrue();
+    expect(agentData.previewSearchReport).toHaveBeenCalledWith(
+      'ALPHA', Array.from({ length: 45 }, (_, index) => index + 1), 'startswith', 0, 100, '',
+    );
   });
 
   it('runs a new search when the match rule changes after a search', () => {
@@ -79,13 +86,18 @@ describe('AgentSearchReportComponent', () => {
     expect(agentData.previewSearchReport.calls.mostRecent().args).toEqual(['ALPHA', [9], 'contains', 0, 100, '']);
   });
 
-  it('renders the match-rule filter with every supported search type', () => {
+  it('renders the match-rule picker with every supported search type', () => {
     const fixture = TestBed.createComponent(AgentSearchReportComponent);
     fixture.detectChanges();
 
-    const select = fixture.nativeElement.querySelector('#searchType') as HTMLSelectElement | null;
-    expect(select).withContext('match-rule filter').not.toBeNull();
-    expect(Array.from(select!.options).map(option => option.value)).toEqual(['startswith', 'contains', 'phonetic']);
+    expect(component.matchRules).toEqual(['startswith', 'contains', 'phonetic']);
+    expect(fixture.nativeElement.querySelector('.match-picker')).withContext('match-rule picker').not.toBeNull();
+  });
+
+  it('opens a result in the Agent Portal trademark detail route', () => {
+    component.openDetails(row);
+
+    expect(router.navigate).toHaveBeenCalledWith(['/agent-portal/trademarks', row.trademarkId]);
   });
 
   it('includes every on-screen result field in the printable PDF markup', () => {

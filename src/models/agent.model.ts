@@ -12,6 +12,9 @@ export interface AgentProfile {
   website?: string;
   profileStatus?: 'PENDING_REVIEW' | 'ACTIVE' | 'SUSPENDED';
   userId?: number;
+  firmDisplayName?: string | null;
+  reportAccentColor?: string | null;
+  hasLogo?: boolean;
 }
 
 /** An agent-owned ISO certificate docket entry. Its surveillance and expiry dates are inferred server-side. */
@@ -84,6 +87,8 @@ export interface AgentPortfolioTrademark {
   renewalDate?: string | Date;
   proprietorName?: string;
   proprietorAddress?: string;
+  agentName?: string;
+  agentAddress?: string;
   attorneyName?: string;
   tmClass?: number;
   trademarkStatus?: string;
@@ -483,12 +488,24 @@ export interface SearchReportRow {
   renewalDate?: string;
   details?: string;
   journalNo?: number;
+  /** Canonical public registry detail page, when the row has an application number. */
+  detailUrl?: string;
   /** Live registry status. The raw similarity search does not return this. */
   trademarkStatus?: string;
   type?: string;
   score: number;
   riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
   hasArtwork: boolean;
+}
+
+/** An issue the agent can browse or compare against its portfolio. */
+export interface AgentJournalSummary {
+  journalNo: number;
+  recordCount: number;
+  /** Official publication date from the Trade Marks Journal listing. */
+  publicationDate?: string | null;
+  /** When the local copy finished ingesting and became available to the automated watch. */
+  ingestedAt?: string | null;
 }
 
 export type SearchReportType = 'startswith' | 'contains' | 'phonetic';
@@ -501,13 +518,18 @@ export interface SearchReport {
   totalResults: number;
   countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
   rows: SearchReportRow[];
+  /** Set for a progressive phonetic search; omitted for existing immediate searches. */
+  runId?: string;
+  status?: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  errorMessage?: string | null;
+  candidatesScored?: number;
+  durationMs?: number;
 }
 
 /** Letterhead settings applied to every generated document. */
 export interface AgentBranding {
   firmDisplayName?: string | null;
   reportAccentColor?: string | null;
-  reportFooterText?: string | null;
   hasLogo?: boolean;
 }
 

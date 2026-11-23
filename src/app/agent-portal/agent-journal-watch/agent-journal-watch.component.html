@@ -1,7 +1,9 @@
 <div class="watch-page">
   @if (error()) { <div class="alert-error" role="alert">{{ error() }}</div> }
 
-  @if (selectedJournal() === null) {
+  @if (loadingJournals() && requestedJournal() !== null) {
+    <div class="journal-loading route-loading" role="status">Loading Journal {{ requestedJournal() }}â€¦</div>
+  } @else if (selectedJournal() === null) {
     <header class="watch-header">
       <div>
         <h1>Trademark Journal Watch</h1>
@@ -13,16 +15,20 @@
         <div><h2 id="journal-heading">Choose a journal</h2><p>Open an issue to browse every published mark or check it against your portfolio.</p></div>
         <span class="issue-count">{{ journals().length }} available</span>
       </div>
+      <aside class="watch-schedule" aria-label="Automatic watch schedule">
+        <ap-icon name="watch" [size]="18" />
+        <p><strong>Automatic watch:</strong> every new issue is checked at :40 past the hour (IST), after every mark in that issue has finished ingesting and enrichment.</p>
+      </aside>
       @if (loadingJournals()) {
         <div class="journal-loading" role="status">Loading journal issues…</div>
       } @else if (journals().length === 0) {
         <div class="journal-loading">No journal issues are available yet.</div>
       } @else {
         <div class="journal-grid">
-          @for (journal of journals(); track journal; let first = $first) {
-            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal" [attr.aria-pressed]="selectedJournal() === journal" [disabled]="running()" (click)="selectJournal(journal)">
+          @for (journal of journalSummaries(); track journal.journalNo; let first = $first) {
+            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
               <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
-              <span class="journal-copy"><strong>Journal {{ journal }}</strong><small>{{ first ? 'Latest available issue' : 'Published issue' }}</small></span>
+              <span class="journal-copy"><strong>Journal {{ journal.journalNo }}</strong><small>@if (journal.publicationDate) { Published {{ journal.publicationDate | date: 'dd MMM yyyy' }} · } {{ journal.recordCount | number }} record{{ journal.recordCount === 1 ? '' : 's' }}</small></span>
               @if (first) { <span class="latest-badge">Latest</span> }
               <ap-icon class="journal-arrow" name="chevron" [size]="16" />
             </button>
@@ -55,7 +61,6 @@
         </div>
         <div class="quick-actions">
           <button type="button" class="our-marks-button" [class.active]="portfolioOnly()" [disabled]="browsing()" (click)="findMyPublishedMarks()"><ap-icon name="portfolio" [size]="18" /><span>{{ portfolioOnly() ? 'My published marks' : 'Our Published Marks' }}</span></button>
-          <button type="button" class="high-risk-button" [class.active]="riskFilter() === 'HIGH'" [disabled]="!result()" (click)="toggleHighConflicts()">High conflicts @if (result()) { ({{ counts().high }}) }</button>
           <button type="button" class="reset-button" [disabled]="running()" (click)="run()" aria-label="Run journal watch scan again" title="Run scan again"><ap-icon name="refresh" [size]="18" /></button>
         </div>
       </div>
@@ -101,6 +106,7 @@
       @if (result()!.truncated) { <div class="empty-note warning">Showing the strongest matches only — there are more results than can be displayed at once.</div> }
       @if (counts().total > 0) {
         <div class="risk-tabs"><button [class.active]="riskFilter() === ''" (click)="setRiskFilter('')">All ({{ allConflictCount() }})</button><button class="high" [class.active]="riskFilter() === 'HIGH'" (click)="setRiskFilter('HIGH')">High ({{ counts().high }})</button><button class="medium" [class.active]="riskFilter() === 'MEDIUM'" (click)="setRiskFilter('MEDIUM')">Medium ({{ counts().medium }})</button><button [class.active]="riskFilter() === 'LOW'" (click)="setRiskFilter('LOW')">Low ({{ counts().low }})</button></div>
+        <label class="select-all-conflicts"><input type="checkbox" [checked]="allVisibleConflictsSelected()" (change)="toggleAllVisibleConflicts($any($event.target).checked)" /> Select all shown <span>({{ visibleConflicts().length }})</span></label>
         <div class="conflict-list">
           @for (c of visibleConflicts(); track c.conflictingTrademarkId) {
             <article class="conflict-card" [class]="'risk-' + c.riskLevel.toLowerCase()">

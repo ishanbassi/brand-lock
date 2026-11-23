@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentJournalConflict, AgentJournalWatchResult } from '../../../models/agent.model';
+import { AgentJournalConflict, AgentJournalSummary, AgentJournalWatchResult } from '../../../models/agent.model';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
@@ -33,8 +33,11 @@ const DESCRIPTION_PREVIEW_CHARS = 160;
 })
 export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   journals = signal<number[]>([]);
+  journalSummaries = signal<AgentJournalSummary[]>([]);
   loadingJournals = signal(true);
   selectedJournal = signal<number | null>(null);
+  /** The issue in the URL, retained while the issue list is still loading. */
+  requestedJournal = signal<number | null>(null);
 
   readonly searchFields: { value: JournalSearchField; label: string; placeholder: string }[] = [
     { value: 'name', label: 'Trademark', placeholder: 'Search trademark name' },
@@ -56,7 +59,11 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   readonly browsePageSize = 20;
   private readonly searchChanges = new Subject<void>();
   private searchSubscription?: Subscription;
+  private routeSubscription?: Subscription;
   private watchPollTimer?: ReturnType<typeof setTimeout>;
+  private journalsLoaded = false;
+  private browseRequestId = 0;
+  private historyRequestId = 0;
 
   /** All 45 Nice classes. None selected means every class — the default. */
   readonly allClasses = Array.from({ length: 45 }, (_, i) => i + 1);
@@ -67,6 +74,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   exporting = signal<ExportFormat | null>(null);
   printing = signal(false);
   readonly selectedConflicts = new Map<string, AgentJournalConflict>();
+  private selectedConflictKeys = signal<Set<string>>(new Set());
   private firmName = 'Trademarx';
   private accentColor = '#1f4e79';
   private logoUrl: string | null = null;
@@ -93,9 +101,12 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearWatchPolling();
+    this.browseRequestId++;
+    this.historyRequestId++;
     if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
     this.clearArtwork();
     this.searchSubscription?.unsubscribe();
+    this.routeSubscription?.unsubscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -117,38 +128,65 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
     // The watch alert email links straight to the issue it is about, so arriving with a journalNo
     // means the agent has already chosen — select it and run without a second click.
-    const journalFromPath = this.parseJournalNo(this.route.snapshot.paramMap.get('journalNo'));
-    const legacyJournal = this.parseJournalNo(this.route.snapshot.queryParamMap.get('journalNo'));
+    this.routeSubscription = this.route.paramMap.subscribe(params => {
+      const journalNo = this.parseJournalNo(params.get('journalNo'));
+      this.requestedJournal.set(journalNo);
+      if (this.journalsLoaded) this.syncWorkspaceWithRoute(journalNo);
+    });
 
     this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => this.handleSearchInput());
 
-    this.agentDataService.getWatchJournals().subscribe({
-      next: list => {
-        this.journals.set(list);
-        // Newest issue is the one with an opposition window still open, so it is the default.
-        if (journalFromPath != null && list.includes(journalFromPath)) {
+    this.loadJournalSummaries();
+  }
+
+  private loadJournalSummaries(): void {
+    this.agentDataService.getJournalSummaries().subscribe({
+      next: summaries => this.finishLoadingJournals(summaries),
+      // The list-only endpoint keeps the screen usable while an older API deployment catches up.
+      error: () => this.agentDataService.getWatchJournals().subscribe({
+        next: journalNos => this.finishLoadingJournals(journalNos.map(journalNo => ({ journalNo, recordCount: 0 }))),
+        error: () => {
+          this.error.set('Could not load journal issues.');
           this.loadingJournals.set(false);
-          this.openJournalWorkspace(journalFromPath, this.route.snapshot.queryParamMap.get('run') === '1');
-          return;
-        }
-        if (legacyJournal != null && list.includes(legacyJournal)) {
-          void this.router.navigate(['/agent-portal/watch/journal', legacyJournal], {
-            queryParams: { run: '1' },
-            replaceUrl: true,
-          });
-          return;
-        }
-        this.loadingJournals.set(false);
-      },
-      error: () => {
-        this.error.set('Could not load journal issues.');
-        this.loadingJournals.set(false);
-      },
+        },
+      }),
     });
   }
 
+  private finishLoadingJournals(summaries: AgentJournalSummary[]): void {
+    const list = summaries.map(summary => summary.journalNo);
+    this.journalSummaries.set(summaries);
+    this.journals.set(list);
+    this.journalsLoaded = true;
+    const journalFromPath = this.requestedJournal();
+    const legacyJournal = this.parseJournalNo(this.route.snapshot.queryParamMap.get('journalNo'));
+    // Newest issue is the one with an opposition window still open, so it is the default.
+    if (journalFromPath != null && list.includes(journalFromPath)) {
+      this.loadingJournals.set(false);
+      this.openJournalWorkspace(journalFromPath, this.route.snapshot.queryParamMap.get('run') === '1');
+      return;
+    }
+    if (legacyJournal != null && list.includes(legacyJournal)) {
+      void this.router.navigate(['/agent-portal/watch/journal', legacyJournal], {
+        queryParams: { run: '1' },
+        replaceUrl: true,
+      });
+      return;
+    }
+    this.loadingJournals.set(false);
+  }
+
   visibleConflicts = computed<AgentJournalConflict[]>(() => {
-    return this.result()?.conflicts ?? [];
+    const result = this.result();
+    const conflicts = result?.conflicts ?? [];
+    const riskLevel = this.riskFilter();
+    // Durable run pages are filtered on the server. Saved history has no run id, so filter it here.
+    return !riskLevel || result?.runId ? conflicts : conflicts.filter(conflict => conflict.riskLevel === riskLevel);
+  });
+  allVisibleConflictsSelected = computed(() => {
+    const conflicts = this.visibleConflicts();
+    const selected = this.selectedConflictKeys();
+    return conflicts.length > 0 && conflicts.every(conflict => selected.has(this.cardKey(conflict)));
   });
   watchProcessing = computed(() => ['QUEUED', 'RUNNING'].includes(this.result()?.status ?? ''));
 
@@ -162,16 +200,44 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     void this.router.navigate(['/agent-portal/watch/journal', journalNo]);
   }
 
+  private syncWorkspaceWithRoute(journalNo: number | null): void {
+    if (journalNo != null && this.journals().includes(journalNo)) {
+      if (this.selectedJournal() !== journalNo) {
+        this.openJournalWorkspace(journalNo, this.route.snapshot.queryParamMap.get('run') === '1');
+      }
+      return;
+    }
+    if (journalNo == null) this.resetWorkspace();
+  }
+
   private openJournalWorkspace(journalNo: number, runWatch = false): void {
     this.clearWatchPolling();
+    this.running.set(false);
+    this.historyRequestId++;
     this.selectedJournal.set(journalNo);
     this.result.set(null);
     this.showingConflicts.set(false);
     this.riskFilter.set('');
+    this.clearConflictSelection();
     this.browsePage.set(1);
     this.loadJournalEntries();
     this.loadSavedWatch(journalNo);
     if (runWatch) this.run();
+  }
+
+  private resetWorkspace(): void {
+    this.clearWatchPolling();
+    this.browseRequestId++;
+    this.historyRequestId++;
+    this.running.set(false);
+    this.selectedJournal.set(null);
+    this.result.set(null);
+    this.showingConflicts.set(false);
+    this.riskFilter.set('');
+    this.journalMarks.set([]);
+    this.browseTotal.set(0);
+    this.clearConflictSelection();
+    this.clearArtwork();
   }
 
   backToJournals(): void {
@@ -237,19 +303,24 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   private loadJournalEntries(): void {
     const journalNo = this.selectedJournal();
     if (journalNo == null) return;
+    const requestId = ++this.browseRequestId;
     this.browsing.set(true);
     this.browseError.set('');
+    this.clearArtwork();
+    this.journalMarks.set([]);
+    this.browseTotal.set(0);
     if (this.portfolioOnly()) {
       this.agentDataService.getPortfolioPublications(journalNo, this.browsePage() - 1, this.browsePageSize).subscribe({
         next: response => {
+          if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
           const marks = response.body ?? [];
-          this.clearArtwork();
           this.journalMarks.set(marks);
-          this.loadArtwork(marks);
-          this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
+          this.loadArtwork(marks, requestId);
+          this.resolvePortfolioLinks(marks, () => this.browsing.set(false), requestId);
           this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
         },
         error: () => {
+          if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
           this.journalMarks.set([]);
           this.browseError.set('Could not find portfolio marks in this journal. Please try again.');
           this.browsing.set(false);
@@ -281,14 +352,15 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     }
     this.trademarkService.queryByJournal(journalNo, req).subscribe({
       next: response => {
+        if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
         const marks = response.body ?? [];
-        this.clearArtwork();
         this.journalMarks.set(marks);
-        this.loadArtwork(marks);
-        this.resolvePortfolioLinks(marks, () => this.browsing.set(false));
+        this.loadArtwork(marks, requestId);
+        this.resolvePortfolioLinks(marks, () => this.browsing.set(false), requestId);
         this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
       },
       error: () => {
+        if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
         this.journalMarks.set([]);
         this.browseError.set('Could not load this journal. Please try again.');
         this.browsing.set(false);
@@ -296,12 +368,17 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
   }
 
+  private isCurrentBrowseRequest(journalNo: number, requestId: number): boolean {
+    return this.selectedJournal() === journalNo && this.browseRequestId === requestId;
+  }
+
   /** Restores the scheduler/manual-run read model without starting another expensive comparison. */
   private loadSavedWatch(journalNo: number): void {
+    const requestId = ++this.historyRequestId;
     this.agentDataService.getJournalWatchHistory(journalNo).subscribe({
       next: conflicts => {
         // Navigation or a manual run may have changed the visible issue while this request was in flight.
-        if (this.selectedJournal() !== journalNo || this.running() || conflicts.length === 0) return;
+        if (this.historyRequestId !== requestId || this.selectedJournal() !== journalNo || this.running() || conflicts.length === 0) return;
         this.result.set({
           status: 'COMPLETED',
           journalNo,
@@ -326,7 +403,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  private resolvePortfolioLinks(marks: ITrademark[], settled: () => void): void {
+  private resolvePortfolioLinks(marks: ITrademark[], settled: () => void, requestId: number): void {
     const applicationNos = [...new Set(marks.map(mark => mark.applicationNo).filter((value): value is number => value != null))];
     if (!applicationNos.length) {
       this.portfolioLinks.set({});
@@ -335,10 +412,12 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     }
     this.agentDataService.getPortfolioLinks(applicationNos).subscribe({
       next: links => {
+        if (requestId !== this.browseRequestId) return;
         this.portfolioLinks.set(links);
         settled();
       },
       error: () => {
+        if (requestId !== this.browseRequestId) return;
         this.portfolioLinks.set({});
         settled();
       },
@@ -360,17 +439,19 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  private loadArtwork(marks: ITrademark[]): void {
+  private loadArtwork(marks: ITrademark[], requestId: number): void {
     for (const mark of marks) {
       if (mark.id == null || !mark.imgUrl) continue;
       const markId = mark.id;
       this.agentDataService.getTrademarkArtwork(markId).subscribe({
         next: blob => {
-          if (!this.journalMarks().some(current => current.id === markId && current.imgUrl)) return;
+          if (requestId !== this.browseRequestId || !this.journalMarks().some(current => current.id === markId && current.imgUrl)) return;
           const url = URL.createObjectURL(blob);
           this.artworkUrls.update(urls => ({ ...urls, [markId]: url }));
         },
-        error: () => this.artworkFailures.update(failures => new Set(failures).add(markId)),
+        error: () => {
+          if (requestId === this.browseRequestId) this.artworkFailures.update(failures => new Set(failures).add(markId));
+        },
       });
     }
   }
@@ -435,12 +516,16 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.error.set('');
     this.result.set(null);
     this.riskFilter.set('');
-    this.selectedConflicts.clear();
+    this.historyRequestId++;
+    this.clearConflictSelection();
     const classes = [...this.selectedClasses()];
     this.ranWithClasses = classes;
     this.agentDataService.startJournalWatchRun(journal, classes).subscribe({
-      next: result => this.receiveWatchResult(result),
+      next: result => {
+        if (this.selectedJournal() === journal) this.receiveWatchResult(result);
+      },
       error: () => {
+        if (this.selectedJournal() !== journal) return;
         this.error.set('The check could not be started. Please try again.');
         this.running.set(false);
       },
@@ -468,6 +553,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   private receiveWatchResult(result: AgentJournalWatchResult): void {
+    if (this.selectedJournal() !== result.journalNo) return;
     this.result.set(result);
     this.showingConflicts.set(true);
     this.running.set(false);
@@ -556,12 +642,30 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   isConflictSelected(conflict: AgentJournalConflict): boolean {
-    return this.selectedConflicts.has(this.cardKey(conflict));
+    return this.selectedConflictKeys().has(this.cardKey(conflict));
   }
 
   toggleConflictSelection(conflict: AgentJournalConflict): void {
     const key = this.cardKey(conflict);
     this.selectedConflicts.has(key) ? this.selectedConflicts.delete(key) : this.selectedConflicts.set(key, conflict);
+    this.syncSelectedConflictKeys();
+  }
+
+  toggleAllVisibleConflicts(selected: boolean): void {
+    for (const conflict of this.visibleConflicts()) {
+      const key = this.cardKey(conflict);
+      selected ? this.selectedConflicts.set(key, conflict) : this.selectedConflicts.delete(key);
+    }
+    this.syncSelectedConflictKeys();
+  }
+
+  private clearConflictSelection(): void {
+    this.selectedConflicts.clear();
+    this.syncSelectedConflictKeys();
+  }
+
+  private syncSelectedConflictKeys(): void {
+    this.selectedConflictKeys.set(new Set(this.selectedConflicts.keys()));
   }
 
   private printHtml(journal: number, conflicts: AgentJournalConflict[]): string {
@@ -610,14 +714,10 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   setRiskFilter(level: '' | 'HIGH' | 'MEDIUM' | 'LOW'): void {
     if (level === this.riskFilter()) return;
     this.riskFilter.set(level);
-    if (this.result()) {
+    if (this.result()?.runId != null) {
       this.showingConflicts.set(true);
       this.loadWatchPage(0);
     }
-  }
-
-  toggleHighConflicts(): void {
-    this.setRiskFilter(this.riskFilter() === 'HIGH' ? '' : 'HIGH');
   }
 
   showJournalEntries(): void {

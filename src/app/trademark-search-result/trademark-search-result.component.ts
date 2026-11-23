@@ -33,9 +33,15 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
     this.route.queryParamMap.subscribe(params => {
       const q = params.get('trademark');
       const tmClassParam = params.get('tmClass');
-      this.tmClass = tmClassParam ? Number(tmClassParam) : 1;
       const searchTypeParam = params.get('searchType');
       this.searchType = searchTypeParam === 'startswith' || searchTypeParam === 'phonetic' ? searchTypeParam : 'contains';
+      const parsedClass = this.parseTmClass(tmClassParam);
+      // An omitted class means all classes for normal text searches. Keep phonetic
+      // work bounded even when someone arrives via a hand-crafted results URL.
+      this.tmClass = this.searchType === 'phonetic' && parsedClass == null ? 1 : parsedClass;
+      this.clearPhoneticPolling();
+      this.phoneticRunId = undefined;
+      this.phoneticProcessing = false;
       if (q) {
         this.query = q;
         this.currentPage = 0;
@@ -51,6 +57,10 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
 
   private loadPage(page: number): void {
     if (!this.query || page < 0 || (this.totalPages > 0 && page >= this.totalPages)) return;
+    if (this.searchType === 'phonetic') {
+      this.loadPhoneticPage(page);
+      return;
+    }
     if (this.isBrowser) {
       this.loadingService.show();
     }
@@ -72,6 +82,45 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
           });
   }
 
+  private loadPhoneticPage(page: number): void {
+    // Keep this guard at the request boundary as well as in the UI and route
+    // parsing, so no call path can issue an all-class phonetic search.
+    if (this.tmClass == null) this.tmClass = 1;
+    const request = this.phoneticRunId
+      ? this.trademarkService.getPhoneticSearchRun(this.phoneticRunId, page, this.pageSize)
+      : this.trademarkService.startPhoneticSearchRun(this.query!, this.tmClass, page, this.pageSize);
+    if (!this.results?.length) this.isLoading = true;
+    request.subscribe({
+      next: result => {
+        this.phoneticRunId = result.runId;
+        this.results = result.results;
+        this.totalResults = result.totalResults;
+        this.currentPage = result.page;
+        this.phoneticProcessing = result.status === 'QUEUED' || result.status === 'RUNNING';
+        this.isLoading = false;
+        this.setSeoTags();
+        this.clearPhoneticPolling();
+        if (this.phoneticProcessing) {
+          this.phoneticPollTimer = setTimeout(() => this.loadPhoneticPage(this.currentPage), 1500);
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.phoneticProcessing = false;
+      },
+    });
+  }
+
+  private clearPhoneticPolling(): void {
+    if (this.phoneticPollTimer) clearTimeout(this.phoneticPollTimer);
+    this.phoneticPollTimer = undefined;
+  }
+
+  private parseTmClass(value: string | null): number | null {
+    const tmClass = Number(value);
+    return Number.isInteger(tmClass) && tmClass >= 1 && tmClass <= 45 ? tmClass : null;
+  }
+
   query?: string;
   tmClass: number | null = null;
   results: ITrademark[] | null = [];
@@ -83,6 +132,9 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   currentPage = 0;
   searchType: 'startswith' | 'contains' | 'phonetic' = 'contains';
   viewMode: 'grid' | 'list' = 'grid';
+  phoneticProcessing = false;
+  private phoneticRunId?: string;
+  private phoneticPollTimer?: ReturnType<typeof setTimeout>;
   get totalPages(): number {
     return Math.ceil(this.totalResults / this.pageSize);
   }
@@ -116,7 +168,16 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   }
 
   setSearchType(value: 'startswith' | 'contains' | 'phonetic'): void {
+    if (this.searchType !== value) {
+      this.clearPhoneticPolling();
+      this.phoneticRunId = undefined;
+      this.phoneticProcessing = false;
+      this.currentPage = 0;
+    }
     this.searchType = value;
+    if (value === 'phonetic' && this.tmClass == null) {
+      this.tmClass = 1;
+    }
     this.loadPage(0);
   }
 
@@ -173,6 +234,7 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearPhoneticPolling();
     this.meta.removeTag("name='robots'");
   }
 

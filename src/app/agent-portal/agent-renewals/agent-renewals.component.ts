@@ -5,6 +5,9 @@ import dayjs from 'dayjs';
 import { forkJoin } from 'rxjs';
 import { AgentPortfolioTrademark, Deadline } from '../../../models/agent.model';
 import { AgentDataService, OVERDUE_RENEWAL_LOOKBACK_DAYS } from '../../shared/services/agent-data.service';
+import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
+import { printReport } from '../ui/print-report';
+import { saveBlob } from '../ui/save-blob';
 
 type RenewalScope = 'renewals' | 'renewals-upcoming' | 'renewals-overdue';
 type MilestoneFilter = 'all' | 'overdue' | 'urgent' | 'upcoming';
@@ -21,7 +24,7 @@ interface RenewalRecord extends Deadline {
 @Component({
   selector: 'app-agent-renewals',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ExportMenuComponent],
   templateUrl: './agent-renewals.component.html',
   styleUrl: './agent-renewals.component.scss',
 })
@@ -44,7 +47,8 @@ export class AgentRenewalsComponent implements OnInit {
   readonly sort = signal<SortOrder>('due');
   readonly selected = signal<Set<string>>(new Set());
   readonly page = signal(1);
-  readonly pageSize = 5;
+  readonly pageSize = signal<5 | 10 | 25 | 50>(10);
+  readonly exporting = signal<ExportFormat | null>(null);
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly appliedDateRange = signal<{ from: string; to: string } | null>(null);
@@ -84,18 +88,30 @@ export class AgentRenewalsComponent implements OnInit {
     });
   });
 
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.pageSize)));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.pageSize())));
   readonly paged = computed(() => {
     const current = Math.min(this.page(), this.totalPages());
-    return this.filtered().slice((current - 1) * this.pageSize, current * this.pageSize);
+    return this.filtered().slice((current - 1) * this.pageSize(), current * this.pageSize());
   });
   readonly displayedRange = computed(() => {
     if (this.filtered().length === 0) return '0 to 0';
-    const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize + 1;
-    return `${start} to ${Math.min(start + this.pageSize - 1, this.filtered().length)}`;
+    const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize() + 1;
+    return `${start} to ${Math.min(start + this.pageSize() - 1, this.filtered().length)}`;
   });
-  readonly pageNumbers = computed(() => Array.from({ length: Math.min(this.totalPages(), 3) }, (_, index) => index + 1));
+  readonly pageNumbers = computed(() => {
+    const total = this.totalPages();
+    const current = Math.min(this.page(), total);
+    if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+
+    const pages: Array<number | null> = [1];
+    if (current > 4) pages.push(null);
+    for (let page = Math.max(2, current - 2); page <= Math.min(total - 1, current + 2); page++) pages.push(page);
+    if (current < total - 3) pages.push(null);
+    pages.push(total);
+    return pages;
+  });
   readonly allPageSelected = computed(() => this.paged().length > 0 && this.paged().every(item => this.selected().has(this.keyOf(item))));
+  readonly selectedRecords = computed(() => this.renewals().filter(item => this.selected().has(this.keyOf(item))));
 
   ngOnInit(): void {
     this.load();
@@ -181,23 +197,53 @@ export class AgentRenewalsComponent implements OnInit {
 
   isSelected(item: RenewalRecord): boolean { return this.selected().has(this.keyOf(item)); }
   goToPage(page: number): void { if (page >= 1 && page <= this.totalPages()) this.page.set(page); }
+  onPageSizeChange(size: number): void {
+    if (![5, 10, 25, 50].includes(size)) return;
+    this.pageSize.set(size as 5 | 10 | 25 | 50);
+    this.clearSelection();
+    this.resetPage();
+  }
+
+  clearSelection(): void { this.selected.set(new Set()); }
 
   openMark(item: RenewalRecord): void {
     if (item.trademarkId) void this.router.navigate(['/agent-portal/portfolio', item.trademarkId]);
   }
 
   exportSchedule(): void {
+    this.downloadCsv(this.filtered(), `${this.isOverdueScope ? 'overdue' : 'upcoming'}-renewals.csv`);
+  }
+
+  exportSelected(format: ExportFormat): void {
+    const records = this.selectedRecords();
+    if (!records.length || this.exporting()) return;
+    this.exporting.set(format);
+    if (format === 'excel') {
+      this.downloadCsv(records, 'selected-renewals.csv');
+      this.exporting.set(null);
+      return;
+    }
+    printReport(this.printableSchedule(records))
+      .catch(() => this.error.set('Could not prepare the selected renewal schedule. Please try again.'))
+      .finally(() => this.exporting.set(null));
+  }
+
+  private downloadCsv(records: RenewalRecord[], filename: string): void {
     const escape = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
     const content = [
       ['Trademark', 'Application no.', 'Class', 'Proprietor', 'Renewal due', 'Status', 'Fee'].map(escape).join(','),
-      ...this.filtered().map(item => [item.trademarkName, item.applicationNo, item.tmClass, item.proprietorName, item.dueDate, this.stageLabel(item), this.fee(item)].map(escape).join(',')),
+      ...records.map(item => [item.trademarkName, item.applicationNo, item.tmClass, item.proprietorName, item.dueDate, this.stageLabel(item), this.fee(item)].map(escape).join(',')),
     ].join('\n');
-    const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `${this.isOverdueScope ? 'overdue' : 'upcoming'}-renewals.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    saveBlob(new Blob([content], { type: 'text/csv;charset=utf-8' }), filename);
+  }
+
+  private printableSchedule(records: RenewalRecord[]): string {
+    const rows = records.map(item => `<tr><td>${this.escapeHtml(item.trademarkName || 'Trademark record')}</td><td>${this.escapeHtml(item.applicationNo)}</td><td>${this.escapeHtml(item.tmClass)}</td><td>${this.escapeHtml(item.proprietorName || 'Not recorded')}</td><td>${this.escapeHtml(this.dateLabel(item.dueDate))}</td><td>${this.escapeHtml(this.stageLabel(item))}</td><td>${this.escapeHtml(this.feeLabel(item))}</td></tr>`).join('');
+    return `<!doctype html><html><head><meta charset="utf-8"><title>Trademark renewal schedule</title><style>@page { size: A4 landscape; margin: 14mm; } body { color:#131b2e; font:10pt Arial,sans-serif; } h1 { margin:0 0 4px; font-size:20pt; } p { margin:0 0 16px; color:#464555; } table { width:100%; border-collapse:collapse; } th { color:#fff; background:#3525cd; text-align:left; } th,td { padding:8px; border-bottom:1px solid #dae2fd; vertical-align:top; } tr:nth-child(even) { background:#f2f3ff; }</style></head><body><h1>Trademark renewal schedule</h1><p>${records.length} selected renewal${records.length === 1 ? '' : 's'} &middot; Generated ${this.escapeHtml(dayjs().format('DD MMM YYYY'))}</p><table><thead><tr><th>Trademark</th><th>Application</th><th>Class</th><th>Proprietor</th><th>Renewal due</th><th>Status</th><th>Fee</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  }
+
+  private escapeHtml(value: unknown): string {
+    return String(value ?? '—').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
   }
 
   initials(item: RenewalRecord): string {
@@ -219,8 +265,8 @@ export class AgentRenewalsComponent implements OnInit {
   }
 
   stageLabel(item: RenewalRecord): string {
-    if (item.daysUntilDue < -180) return 'Lapsed — Restoration Window (Sec 25(4))';
-    if (item.daysUntilDue < 0) return 'Grace Period Active (Sec 25(3))';
+    if (item.daysUntilDue < -180) return 'Overdue (Sec 25(4))';
+    if (item.daysUntilDue < 0) return 'Overdue (Sec 25(3))';
     if (item.daysUntilDue <= 30) return `Expiring in ${item.daysUntilDue} Days`;
     return item.daysUntilDue <= 90 ? `Expiring in ${item.daysUntilDue} Days` : 'Upcoming Renewal (Advance Notice Queue)';
   }

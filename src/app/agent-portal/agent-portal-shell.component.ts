@@ -7,6 +7,7 @@ import { NotificationBellComponent } from './notification-bell/notification-bell
 import { NotificationService } from '../shared/services/notification.service';
 import { AgentDataService, DeadlineCounts } from '../shared/services/agent-data.service';
 import { IconComponent, IconName } from './ui/icon.component';
+import { IsoCertificateAccessService } from '../shared/services/iso-certificate-access.service';
 
 /** A count a nav row can carry; names a field of {@link DeadlineCounts}. */
 type BadgeKey = keyof DeadlineCounts;
@@ -36,6 +37,7 @@ interface NavLeaf {
    */
   alsoMatches?: string[];
   badge?: BadgeKey;
+  requiresIsoAccess?: boolean;
 }
 
 /**
@@ -52,6 +54,8 @@ interface NavItem {
   route?: string;
   alsoMatches?: string[];
   badge?: BadgeKey;
+  /** Hides the restricted ISO workspace until its server-side entitlement is confirmed. */
+  requiresIsoAccess?: boolean;
   /** Present on groups only; stable key for the expanded/collapsed state. */
   id?: string;
   children?: NavLeaf[];
@@ -115,7 +119,7 @@ export class AgentPortalShellComponent {
       // are buttons at the top of Add Trademark rather than three nav peers for one job.
       items: [
         { label: 'All trademarks', icon: 'portfolio', route: '/agent-portal/portfolio' },
-        { label: 'ISO certificates', icon: 'certificate', route: '/agent-portal/iso-certificates' },
+        { label: 'ISO certificates', icon: 'certificate', route: '/agent-portal/iso-certificates', requiresIsoAccess: true },
       ],
     },
     {
@@ -127,9 +131,9 @@ export class AgentPortalShellComponent {
         // Was reachable only from the nightly digest email, so an agent who deleted the mail had
         // no way back to it.
         { label: 'New Filings', icon: 'alert', route: '/agent-portal/watch/conflicts' },
-        // Follows rival firms, not marks against the agent's portfolio. The route stays under
-        // watch/ so existing links keep working.
-        { label: 'Competitors', icon: 'building', route: '/agent-portal/watch/competitors' },
+        // Temporarily hidden from the portal navigation. Keep the route in place so direct links
+        // and the underlying feature continue to work while it is unavailable from the sidebar.
+        // { label: 'Trademark Agents', icon: 'building', route: '/agent-portal/watch/competitors' },
       ],
     },
     {
@@ -190,6 +194,7 @@ export class AgentPortalShellComponent {
     private readonly authService: AuthService,
     private readonly notifications: NotificationService,
     private readonly agentData: AgentDataService,
+    private readonly isoCertificateAccess: IsoCertificateAccessService,
   ) {
     // Started here rather than in the bell so the badge is current the moment the portal opens,
     // and so it survives the bell being re-created by a route change.
@@ -199,6 +204,8 @@ export class AgentPortalShellComponent {
     this.agentData.getProfile().subscribe({ error: () => {} });
     // Same reasoning for the deadline badges: a hint, fetched once, never a gate.
     this.agentData.refreshDeadlineCounts();
+    // Start hidden and reveal only after the server confirms this account's allowlist entry.
+    this.isoCertificateAccess.isAllowed().subscribe(allowed => this.isoCertificatesAllowed.set(allowed));
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
       this.activeRoute.set(e.urlAfterRedirects);
       this.revealActiveGroup();
@@ -207,6 +214,8 @@ export class AgentPortalShellComponent {
     this.activeRoute.set(this.router.url);
     this.revealActiveGroup();
   }
+
+  readonly isoCertificatesAllowed = signal(false);
 
   isActive(route: string): boolean {
     return this.bestMatch() === route;

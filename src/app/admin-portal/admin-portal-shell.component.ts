@@ -35,6 +35,7 @@ export class AdminPortalShellComponent {
     { label: 'Certificate Delivery', icon: '📬', route: '/admin-portal/certificate-downloads' },
     { label: 'Billing',      icon: '🧾', route: '/admin-portal/billing' },
     { label: 'Agents',       icon: '🧑‍⚖️', route: '/admin-portal/agents' },
+    { label: 'ISO Access', icon: '', route: '/admin-portal/iso-certificate-access' },
     { label: 'Agent Imports', icon: '📥', route: '/admin-portal/agent-imports' },
     { label: 'Scraped Trademarks', icon: '🔍', route: '/admin-portal/scraped-trademarks' },
     { label: 'Backlinks',    icon: '🔗', route: '/admin-portal/backlinks' },

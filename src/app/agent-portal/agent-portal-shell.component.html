@@ -30,6 +30,7 @@
           }
 
           @for (item of section.items; track item.label) {
+            @if (!item.requiresIsoAccess || isoCertificatesAllowed()) {
             @if (item.children) {
               <!-- Group: a disclosure, never a link. See NavItem in the component for why. It only
                    takes the full active treatment while closed, when its active child is hidden. -->
@@ -94,6 +95,7 @@
                   }
                 }
               </a>
+            }
             }
           }
         </div>

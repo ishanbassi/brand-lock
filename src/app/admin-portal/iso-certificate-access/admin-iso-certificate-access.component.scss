@@ -1,0 +1,29 @@
+.access-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.grant-panel {
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #fff;
+
+  h2 { margin: 0; color: #0f172a; font-size: 1rem; }
+  p { margin: 0.35rem 0 1rem; color: #64748b; font-size: 0.84rem; line-height: 1.45; }
+}
+
+.grant-row { display: flex; gap: 0.65rem; }
+.grant-row input, .grant-row select { min-width: 0; flex: 1; padding: 0.6rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.45rem; color: #0f172a; }
+.grant-row input:focus-visible, .grant-row select:focus-visible, .revoke-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.table-heading { display: flex; align-items: center; min-height: 4rem; padding: 0 1rem; border-bottom: 1px solid #e2e8f0; }
+.table-heading h2 { margin: 0; color: #0f172a; font-size: 1rem; }
+.table-heading p { margin: 0.2rem 0 0; color: #64748b; font-size: 0.8rem; }
+.revoke-btn { color: #b91c1c; }
+
+@media (max-width: 760px) {
+  .access-controls { grid-template-columns: 1fr; }
+  .grant-row { flex-direction: column; }
+}

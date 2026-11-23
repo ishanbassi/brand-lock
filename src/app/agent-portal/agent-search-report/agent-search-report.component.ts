@@ -1,11 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { SearchReport, SearchReportRow, SearchReportType } from '../../../models/agent.model';
+import { ITrademark } from '../../../models/trademark.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
+import { AgentApplicationNumberSearchComponent, ApplicationNumberLookup } from '../agent-application-number-search/agent-application-number-search.component';
+
+type SearchMode = 'name' | 'application-number';
+type ResultsView = 'list' | 'grid';
 
 /**
  * Availability search, previewed on screen and downloadable on the firm's letterhead.
@@ -17,24 +23,31 @@ import { fileSlug, saveBlob } from '../ui/save-blob';
 @Component({
   selector: 'app-agent-search-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, ExportMenuComponent],
+  imports: [CommonModule, FormsModule, ExportMenuComponent, AgentApplicationNumberSearchComponent],
   templateUrl: './agent-search-report.component.html',
   styleUrl: './agent-search-report.component.scss',
 })
-export class AgentSearchReportComponent {
+export class AgentSearchReportComponent implements OnInit {
   private readonly agentData = inject(AgentDataService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private printFrame: HTMLIFrameElement | null = null;
   private readonly selectedRows = new Map<number, SearchReportRow>();
   private firmName = 'Trademarx';
+  private companyName = '';
   private accentColor = '#1f4e79';
   private logoUrl: string | null = null;
+  private brandingSnapshot = { firmDisplayName: '', reportAccentColor: '' };
+  private stagedLogoUrl: string | null = null;
+  private selectedLogoFile: File | null = null;
+  private removeLogoRequested = false;
+  private phoneticPollTimer?: ReturnType<typeof setTimeout>;
 
   query = '';
   searchType: SearchReportType = 'startswith';
-  statusBucket = '';
+  readonly matchRules: SearchReportType[] = ['startswith', 'contains', 'phonetic'];
   readonly statusBuckets = [
-    { value: '', label: 'Any status' },
     { value: 'REGISTERED', label: 'Registered' },
     { value: 'OBJECTED_OR_OPPOSED', label: 'Objected / Opposed' },
     { value: 'UNDER_EXAMINATION_OR_ADVERTISED', label: 'Under Examination / Advertised' },
@@ -46,9 +59,13 @@ export class AgentSearchReportComponent {
   readonly selectedIds = new Set<number>();
   readonly artworkUrls = signal<Record<number, string>>({});
   reportSearchType: SearchReportType = 'phonetic';
+  readonly resultsView = signal<ResultsView>('list');
+  readonly searchMode = signal<SearchMode>('name');
+  /** Exact-number results use the same table, but are not a downloadable name-search report. */
+  readonly isApplicationNumberReport = signal(false);
 
   /**
-   * Classes to confine the search to. At least one class is required.
+   * Optional classes to confine the search to. An empty selection searches all 45 classes.
    *
    * <p>A set rather than one class because a single mark is commonly filed in several — a clothing
    * brand in 25 and 35 — and running that as one report per class leaves the agent reconciling
@@ -56,6 +73,9 @@ export class AgentSearchReportComponent {
    */
   readonly selectedClasses = signal<number[]>([]);
   readonly classPickerOpen = signal(false);
+  readonly selectedStatusBuckets = signal<string[]>([]);
+  readonly statusPickerOpen = signal(false);
+  readonly matchRulePickerOpen = signal(false);
 
   readonly report = signal<SearchReport | null>(null);
   readonly loading = signal(false);
@@ -64,34 +84,225 @@ export class AgentSearchReportComponent {
 
   /** Printable report is rendered in an isolated frame so the portal UI never appears on paper. */
   readonly printing = signal(false);
+  readonly brandingModalOpen = signal(false);
+  readonly brandingSaving = signal(false);
+  readonly brandingSaved = signal(false);
+  readonly brandingError = signal('');
+  readonly brandingLogoPreview = signal<string | null>(null);
+  branding = { firmDisplayName: '', reportAccentColor: '' };
 
   /** All 45 Nice classes. The user must choose at least one before searching. */
   readonly classes = Array.from({ length: 45 }, (_, i) => i + 1);
+  readonly niceClasses = [
+    'Chemicals', 'Paints & Coatings', 'Cosmetics & Cleaning', 'Fuels & Lubricants', 'Pharmaceuticals',
+    'Common Metals', 'Machines & Motors', 'Hand Tools', 'Tech & Software', 'Medical Devices',
+    'Lighting & HVAC', 'Vehicles', 'Firearms', 'Jewellery & Watches', 'Musical Instruments',
+    'Paper & Print', 'Rubber & Plastics', 'Leather & Bags', 'Building Materials', 'Furniture',
+    'Housewares & Glass', 'Ropes & Fibres', 'Yarns & Threads', 'Textiles', 'Clothing & Footwear',
+    'Lace & Embroidery', 'Floor Coverings', 'Games & Toys', 'Meat & Dairy', 'Coffee & Bakery',
+    'Agricultural', 'Beers & Beverages', 'Wines & Spirits', 'Tobacco & Vapes', 'Advertising & Business',
+    'Finance & Real Estate', 'Construction & Repair', 'Telecommunications', 'Transport & Travel',
+    'Material Treatment', 'Education & Media', 'SaaS & Science', 'Food & Hospitality', 'Medical & Beauty',
+    'Legal & Security',
+  ];
+  classQuery = '';
+  classGroup: 'all' | 'goods' | 'services' = 'all';
 
   constructor() {
     this.destroyRef.onDestroy(() => {
+      this.clearPhoneticPolling();
       this.clearArtwork();
       if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
+      if (this.stagedLogoUrl && this.stagedLogoUrl !== this.logoUrl) URL.revokeObjectURL(this.stagedLogoUrl);
       this.printFrame?.remove();
     });
     this.agentData.getProfile().subscribe({
       next: profile => {
-        const branding = profile as typeof profile & { firmDisplayName?: string; reportAccentColor?: string };
-        this.firmName = branding.firmDisplayName || profile.companyName || 'Trademarx';
-        if (branding.reportAccentColor && /^#?[\da-f]{6}$/i.test(branding.reportAccentColor)) {
-          this.accentColor = branding.reportAccentColor.startsWith('#') ? branding.reportAccentColor : `#${branding.reportAccentColor}`;
+        this.brandingSnapshot = {
+          firmDisplayName: profile.firmDisplayName ?? '',
+          reportAccentColor: profile.reportAccentColor ?? '',
+        };
+        this.branding = { ...this.brandingSnapshot };
+        this.companyName = profile.companyName ?? '';
+        this.applyBranding(profile.companyName);
+        if (!this.isBrandingConfigured(profile.hasLogo)) {
+          this.openBrandingModal(true, profile.id);
         }
         this.agentData.getLogo().subscribe({
           next: blob => {
             if (this.logoUrl) URL.revokeObjectURL(this.logoUrl);
             this.logoUrl = URL.createObjectURL(blob);
+            if (this.brandingModalOpen() && !this.stagedLogoUrl && !this.removeLogoRequested) {
+              this.brandingLogoPreview.set(this.logoUrl);
+            }
           },
         });
       },
     });
   }
 
+  openBrandingModal(automatic = false, agentId?: number): void {
+    const promptKey = this.brandingPromptKey(agentId);
+    if (automatic && (typeof localStorage === 'undefined' || localStorage.getItem(promptKey))) {
+      return;
+    }
+    if (automatic) localStorage.setItem(promptKey, '1');
+
+    this.branding = { ...this.brandingSnapshot };
+    this.selectedLogoFile = null;
+    this.removeLogoRequested = false;
+    this.clearStagedLogo();
+    this.brandingLogoPreview.set(this.logoUrl);
+    this.brandingSaved.set(false);
+    this.brandingError.set('');
+    this.brandingModalOpen.set(true);
+  }
+
+  closeBrandingModal(): void {
+    if (this.brandingSaving()) return;
+    this.branding = { ...this.brandingSnapshot };
+    this.selectedLogoFile = null;
+    this.removeLogoRequested = false;
+    this.clearStagedLogo();
+    this.brandingLogoPreview.set(this.logoUrl);
+    this.brandingSaved.set(false);
+    this.brandingError.set('');
+    this.brandingModalOpen.set(false);
+  }
+
+  onBrandingLogoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.clearStagedLogo();
+    this.stagedLogoUrl = URL.createObjectURL(file);
+    this.selectedLogoFile = file;
+    this.removeLogoRequested = false;
+    this.brandingLogoPreview.set(this.stagedLogoUrl);
+    this.brandingError.set('');
+    (event.target as HTMLInputElement).value = '';
+  }
+
+  requestLogoRemoval(): void {
+    this.clearStagedLogo();
+    this.selectedLogoFile = null;
+    this.removeLogoRequested = true;
+    this.brandingLogoPreview.set(null);
+    this.brandingError.set('');
+  }
+
+  saveBranding(): void {
+    if (this.brandingSaving()) return;
+    this.brandingSaving.set(true);
+    this.brandingSaved.set(false);
+    this.brandingError.set('');
+
+    void this.persistBranding();
+  }
+
+  private async persistBranding(): Promise<void> {
+    try {
+      const saved = await firstValueFrom(this.agentData.updateBranding(this.branding));
+      if (this.selectedLogoFile) {
+        await firstValueFrom(this.agentData.uploadLogo(this.selectedLogoFile));
+        if (this.logoUrl && this.logoUrl !== this.stagedLogoUrl) URL.revokeObjectURL(this.logoUrl);
+        this.logoUrl = this.stagedLogoUrl;
+        this.stagedLogoUrl = null;
+      } else if (this.removeLogoRequested && this.logoUrl) {
+        await firstValueFrom(this.agentData.removeLogo());
+        URL.revokeObjectURL(this.logoUrl);
+        this.logoUrl = null;
+      }
+
+      this.brandingSnapshot = {
+        firmDisplayName: saved.firmDisplayName ?? '',
+        reportAccentColor: saved.reportAccentColor ?? '',
+      };
+      this.branding = { ...this.brandingSnapshot };
+      this.applyBranding();
+      this.selectedLogoFile = null;
+      this.removeLogoRequested = false;
+      this.brandingLogoPreview.set(this.logoUrl);
+      this.brandingSaving.set(false);
+      this.brandingSaved.set(true);
+      setTimeout(() => this.brandingSaved.set(false), 3000);
+    } catch (error: any) {
+      this.brandingSaving.set(false);
+      this.brandingError.set(error?.error?.message || 'Could not save report branding. Please try again.');
+    }
+  }
+
+  private applyBranding(companyName?: string): void {
+    this.firmName = this.brandingSnapshot.firmDisplayName || companyName || this.companyName || 'Trademarx';
+    if (/^#?[\da-f]{6}$/i.test(this.brandingSnapshot.reportAccentColor)) {
+      this.accentColor = this.brandingSnapshot.reportAccentColor.startsWith('#')
+        ? this.brandingSnapshot.reportAccentColor
+        : `#${this.brandingSnapshot.reportAccentColor}`;
+    }
+  }
+
+  private isBrandingConfigured(hasLogo?: boolean): boolean {
+    return Boolean(hasLogo || this.brandingSnapshot.firmDisplayName.trim() || this.brandingSnapshot.reportAccentColor.trim());
+  }
+
+  private brandingPromptKey(agentId?: number): string {
+    return `trademarx:report-branding-prompted:${agentId ?? 'current-agent'}`;
+  }
+
+  private clearStagedLogo(): void {
+    if (this.stagedLogoUrl) URL.revokeObjectURL(this.stagedLogoUrl);
+    this.stagedLogoUrl = null;
+  }
+
+  ngOnInit(): void {
+    if (this.route.snapshot.data['searchMode'] === 'application-number') {
+      this.searchMode.set('application-number');
+    }
+
+    const params = this.route.snapshot.queryParamMap;
+    const query = params.get('q')?.trim() ?? '';
+    const selectedClasses = (params.get('classes') ?? '').split(',')
+      .map(value => Number(value))
+      .filter(value => Number.isInteger(value) && value >= 1 && value <= 45);
+    const selectedStatuses = (params.get('statuses') ?? '').split(',')
+      .filter(value => this.statusBuckets.some(bucket => bucket.value === value));
+    const searchType = params.get('searchType');
+    const requestedPageSize = Number(params.get('pageSize'));
+
+    if (searchType === 'startswith' || searchType === 'contains' || searchType === 'phonetic') this.searchType = searchType;
+    if ([10, 100, 1000].includes(requestedPageSize)) this.pageSize = requestedPageSize as 10 | 100 | 1000;
+    this.query = query;
+    this.selectedClasses.set([...new Set(selectedClasses)].sort((a, b) => a - b));
+    this.selectedStatusBuckets.set([...new Set(selectedStatuses)]);
+
+    if (query) this.run();
+  }
+
+  setSearchMode(mode: SearchMode): void {
+    if (this.searchMode() === mode) return;
+    this.searchMode.set(mode);
+    this.closePickers();
+    this.clearPhoneticPolling();
+    this.clearArtwork();
+    this.report.set(null);
+    this.error.set('');
+    this.selectedIds.clear();
+    this.selectedRows.clear();
+    this.isApplicationNumberReport.set(false);
+  }
+
+  /** Keep filter menus transient, including when focus moves to another part of the page. */
+  @HostListener('document:pointerdown', ['$event'])
+  dismissPickersOutside(event: PointerEvent): void {
+    const target = event.target;
+    if (!(target instanceof Element) || !target.closest('.picker')) {
+      this.closePickers();
+    }
+  }
+
   toggleClassPicker(): void {
+    this.statusPickerOpen.set(false);
+    this.matchRulePickerOpen.set(false);
     this.classPickerOpen.update(open => !open);
   }
 
@@ -113,12 +324,115 @@ export class AgentSearchReportComponent {
     this.selectedClasses.set([]);
   }
 
+  toggleStatusPicker(): void {
+    this.classPickerOpen.set(false);
+    this.matchRulePickerOpen.set(false);
+    this.statusPickerOpen.update(open => !open);
+  }
+
+  toggleMatchRulePicker(): void {
+    this.classPickerOpen.set(false);
+    this.statusPickerOpen.set(false);
+    this.matchRulePickerOpen.update(open => !open);
+  }
+
+  closePickers(): void {
+    this.classPickerOpen.set(false);
+    this.statusPickerOpen.set(false);
+    this.matchRulePickerOpen.set(false);
+  }
+
+  setSearchType(searchType: SearchReportType): void {
+    this.searchType = searchType;
+    this.matchRulePickerOpen.set(false);
+    this.onSearchTypeChange();
+  }
+
+  searchTypeLabel(): string {
+    return this.searchType === 'startswith' ? 'Starts with' : this.searchType === 'contains' ? 'Contains' : 'Phonetic';
+  }
+
+  searchTypeDescription(searchType: SearchReportType): string {
+    return searchType === 'startswith' ? 'Matches marks beginning with your term'
+      : searchType === 'contains' ? 'Matches your term anywhere in the mark'
+        : 'Finds sound-alike variations';
+  }
+
+  clearQuery(): void {
+    this.query = '';
+  }
+
+  isStatusBucketSelected(bucket: string): boolean {
+    return this.selectedStatusBuckets().includes(bucket);
+  }
+
+  toggleStatusBucket(bucket: string): void {
+    this.selectedStatusBuckets.update(current =>
+      current.includes(bucket) ? current.filter(value => value !== bucket) : [...current, bucket],
+    );
+  }
+
+  clearStatusBuckets(): void {
+    this.selectedStatusBuckets.set([]);
+  }
+
+  selectAllStatusBuckets(): void {
+    this.selectedStatusBuckets.set(this.statusBuckets.map(bucket => bucket.value));
+  }
+
+  statusSummary(): string {
+    const selected = this.selectedStatusBuckets();
+    if (selected.length === 0) return 'Any status';
+    if (selected.length === 1) return this.statusBuckets.find(bucket => bucket.value === selected[0])?.label ?? '1 status';
+    return `${selected.length} statuses`;
+  }
+
+  statusBucketLabel(value: string): string {
+    return this.statusBuckets.find(bucket => bucket.value === value)?.label ?? value;
+  }
+
+  private statusBucketParam(): string {
+    return this.selectedStatusBuckets().join(',');
+  }
+
   /** What the closed picker reads as. Spelled out up to three, counted beyond that. */
   classSummary(): string {
     const selected = this.selectedClasses();
-    if (selected.length === 0) return 'Select classes';
+    if (selected.length === 0 || selected.length === this.classes.length) return 'All classes (1–45)';
     if (selected.length <= 3) return selected.map(c => `Class ${c}`).join(', ');
-    return `${selected.length} classes`;
+    return `Classes ${selected.slice(0, 2).join(', ')} +${selected.length - 2}`;
+  }
+
+  className(c: number): string {
+    return this.niceClasses[c - 1] ?? '';
+  }
+
+  filteredClasses(): number[] {
+    const query = this.classQuery.trim().toLowerCase();
+    return this.classes.filter(c => {
+      const groupMatches = this.classGroup === 'all' || (this.classGroup === 'goods' ? c <= 34 : c >= 35);
+      return groupMatches && (!query || String(c).includes(query) || this.className(c).toLowerCase().includes(query));
+    });
+  }
+
+  classSelectionHint(): string {
+    const count = this.selectedClasses().length;
+    return count ? `${count} ${count === 1 ? 'class' : 'classes'} selected` : 'No specific classes selected (searches all)';
+  }
+
+  hasActiveFilters(): boolean {
+    return this.searchType !== 'startswith' || this.selectedStatusBuckets().length > 0 || this.selectedClasses().length > 0;
+  }
+
+  resetFilters(): void {
+    this.searchType = 'startswith';
+    this.clearStatusBuckets();
+    this.clearClasses();
+    this.closePickers();
+  }
+
+  private searchClasses(): number[] {
+    return this.selectedClasses().length ? this.selectedClasses() : this.classes;
   }
 
   /** The same phrasing the PDF uses, so screen and document agree. */
@@ -132,26 +446,86 @@ export class AgentSearchReportComponent {
     if (!term || this.loading()) {
       return;
     }
-    if (this.selectedClasses().length === 0) {
-      this.error.set('Select at least one class to search.');
-      this.classPickerOpen.set(true);
-      return;
-    }
     this.loading.set(true);
     this.error.set('');
-    this.classPickerOpen.set(false);
+    this.closePickers();
+    this.currentPage = 0;
+    this.selectedIds.clear();
+    this.selectedRows.clear();
+    this.updateSearchUrl(term);
+
+    this.clearPhoneticPolling();
+    this.isApplicationNumberReport.set(false);
+    this.report.set(null);
+    this.loadPage(term, 0);
+  }
+
+  /**
+   * The exact-number endpoint already returns complete trademark records. Translate them once into
+   * report rows so this mode shares the same table, detail links and printable selection state.
+   */
+  receiveApplicationNumberResults(lookup: ApplicationNumberLookup): void {
+    this.clearPhoneticPolling();
+    this.clearArtwork();
     this.currentPage = 0;
     this.selectedIds.clear();
     this.selectedRows.clear();
 
-    this.loadPage(term, 0);
+    const rows = lookup.results.map(trademark => this.applicationResultRow(trademark));
+    this.report.set({
+      query: lookup.query,
+      tmClasses: [],
+      generatedOn: new Date().toISOString(),
+      totalResults: rows.length,
+      countsByRisk: { HIGH: 0, MEDIUM: 0, LOW: 0 },
+      rows,
+    });
+    this.reportSearchType = 'startswith';
+    this.isApplicationNumberReport.set(true);
+    this.loadArtwork(rows);
+  }
+
+  private applicationResultRow(trademark: ITrademark): SearchReportRow {
+    return {
+      trademarkId: trademark.id,
+      name: trademark.name ?? undefined,
+      applicationNo: trademark.applicationNo ?? undefined,
+      tmClass: trademark.tmClass ?? undefined,
+      proprietorName: trademark.proprietorName ?? undefined,
+      proprietorAddress: trademark.proprietorAddress ?? undefined,
+      applicationDate: trademark.applicationDate?.format('YYYY-MM-DD'),
+      renewalDate: trademark.renewalDate?.format('YYYY-MM-DD'),
+      details: trademark.details ?? undefined,
+      journalNo: trademark.journalNo ?? undefined,
+      detailUrl: trademark.url ?? undefined,
+      trademarkStatus: trademark.trademarkStatus ?? undefined,
+      score: 0,
+      riskBand: 'LOW',
+      hasArtwork: Boolean(trademark.imgUrl),
+    };
   }
 
   private loadPage(term: string, page: number): void {
     this.loading.set(true);
     this.error.set('');
 
-    this.agentData.previewSearchReport(term, this.selectedClasses(), this.searchType, page, this.pageSize, this.statusBucket).subscribe({
+    const activeRunId = this.searchType === 'phonetic' ? this.report()?.runId : undefined;
+    const statusBuckets = this.statusBucketParam();
+    if (this.searchType === 'phonetic') {
+      const request = activeRunId
+        ? this.agentData.getPhoneticSearchRun(activeRunId, page, this.pageSize, statusBuckets)
+        : this.agentData.startPhoneticSearchRun(term, this.searchClasses(), page, this.pageSize, statusBuckets);
+      request.subscribe({
+        next: result => this.receivePhoneticResult(result, page),
+        error: () => {
+          this.error.set('Could not run that phonetic search. Please try again.');
+          this.loading.set(false);
+        },
+      });
+      return;
+    }
+
+    this.agentData.previewSearchReport(term, this.searchClasses(), this.searchType, page, this.pageSize, statusBuckets).subscribe({
       next: result => {
         this.clearArtwork();
         this.report.set(result);
@@ -167,18 +541,54 @@ export class AgentSearchReportComponent {
     });
   }
 
+  private receivePhoneticResult(result: SearchReport, requestedPage: number): void {
+    this.clearArtwork();
+    this.report.set(result);
+    this.reportSearchType = 'phonetic';
+    this.currentPage = requestedPage;
+    this.loadArtwork(result.rows);
+    this.loading.set(false);
+    this.clearPhoneticPolling();
+    if (this.isPhoneticProcessing()) {
+      this.phoneticPollTimer = setTimeout(() => this.loadPage(result.query, this.currentPage), 1500);
+    }
+  }
+
+  isPhoneticProcessing(): boolean {
+    const status = this.report()?.status;
+    return this.reportSearchType === 'phonetic' && (status === 'QUEUED' || status === 'RUNNING');
+  }
+
+  private clearPhoneticPolling(): void {
+    if (this.phoneticPollTimer) clearTimeout(this.phoneticPollTimer);
+    this.phoneticPollTimer = undefined;
+  }
+
   onSearchTypeChange(): void {
     if (this.report() && this.query.trim()) this.run();
   }
 
-  onStatusBucketChange(): void {
-    if (this.report() && this.query.trim()) this.run();
+  applyStatusFilter(): void {
+    this.statusPickerOpen.set(false);
+    if (!this.report() || !this.query.trim()) return;
+    if (this.searchType === 'phonetic' && this.report()?.runId) {
+      this.clearPhoneticPolling();
+      this.loadPage(this.query.trim(), 0);
+      return;
+    }
+    this.run();
   }
 
   onPageSizeChange(): void {
+    if (this.isApplicationNumberReport()) return;
     if (!this.report() || !this.query.trim()) return;
     this.currentPage = 0;
+    this.updateSearchUrl(this.query.trim());
     this.loadPage(this.query.trim(), 0);
+  }
+
+  openDetails(row: SearchReportRow): void {
+    void this.router.navigate(['/agent-portal/trademarks', row.trademarkId]);
   }
 
   previousPage(): void {
@@ -228,6 +638,18 @@ export class AgentSearchReportComponent {
       this.selectedIds.add(row.trademarkId);
       this.selectedRows.set(row.trademarkId, row);
     }
+  }
+
+  setResultsView(view: ResultsView): void {
+    this.resultsView.set(view);
+  }
+
+  markMonogram(row: SearchReportRow): string {
+    const name = (row.name || 'TM').replace(/[^A-Za-z0-9 ]/g, '').trim();
+    const words = name.split(/\s+/).filter(Boolean);
+    return words.length > 1
+      ? words.slice(0, 2).map(word => word[0]).join('').toUpperCase()
+      : (words[0] || 'TM').slice(0, 2).toUpperCase();
   }
 
   artworkUrl(row: SearchReportRow): string | null {
@@ -393,6 +815,20 @@ export class AgentSearchReportComponent {
 
   private escapeHtml(value: unknown): string {
     return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
+  }
+
+  private updateSearchUrl(query: string): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        q: query || null,
+        classes: this.selectedClasses().length ? this.selectedClasses().join(',') : null,
+        searchType: this.searchType,
+        statuses: this.statusBucketParam() || null,
+        pageSize: this.pageSize === 100 ? null : this.pageSize,
+      },
+      replaceUrl: true,
+    });
   }
 
   private escapeAttribute(value: string): string {

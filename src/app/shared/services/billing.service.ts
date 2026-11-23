@@ -9,6 +9,7 @@ import {
   FeatureKey,
   SubscribeResponse,
   SubscriptionPayment,
+  SubscriptionChangeCheckout,
   SubscriptionPlan,
 } from '../../../models/billing.model';
 
@@ -53,6 +54,11 @@ export class BillingService {
   /** Creates the Razorpay subscription Checkout will open. */
   startSubscription(planCode: string): Observable<SubscribeResponse> {
     return this.http.post<SubscribeResponse>(`${this.base}/subscribe`, { planCode });
+  }
+
+  /** Creates a replacement mandate which starts when the current paid period ends. */
+  changeSubscription(planCode: string): Observable<SubscriptionChangeCheckout> {
+    return this.http.post<SubscriptionChangeCheckout>(`${this.base}/change`, { planCode });
   }
 
   /** Posts Checkout's result back. The answer is fresh state, so the portal unlocks without another request. */

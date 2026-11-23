@@ -3,7 +3,7 @@
   <header class="page-head">
     <div class="page-head__text">
       <p class="ap-eyebrow">Trademark watch</p>
-      <h1 class="ap-title">Competitors</h1>
+      <h1 class="ap-title">Trademark Agents</h1>
       <p class="ap-subtitle">
         Follow rival firms by their name on the register. Every application they file from the day you
         add them appears here, and you are notified the morning it is found.
@@ -40,7 +40,7 @@
   }
 
   @if (loading()) {
-    <div class="ap-panel ap-empty">Loading your competitors…</div>
+    <div class="ap-panel ap-empty">Loading trademark agents…</div>
   } @else {
 
     <!-- ── Add a firm ──────────────────────────────────────────────────────
@@ -244,7 +244,7 @@
       </section>
 
       <!-- ── The feed ───────────────────────────────────────────────────── -->
-      <section class="feed" aria-label="Competitor filings">
+      <section class="feed" aria-label="Trademark agent filings">
 
         @if (visibleFilings().length === 0) {
           <div class="ap-panel ap-empty">

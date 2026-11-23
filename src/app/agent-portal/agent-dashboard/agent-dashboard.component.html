@@ -11,7 +11,7 @@
     </div>
     <div class="welcome-actions">
       <a routerLink="/agent-portal/portfolio" class="dashboard-btn dashboard-btn--primary"><span class="material-symbols-outlined">folder_open</span> Open portfolio</a>
-      <a routerLink="/agent-portal/portfolio/upload" class="dashboard-btn dashboard-btn--quiet"><span class="material-symbols-outlined">file_upload</span> Import Excel</a>
+      <button type="button" class="dashboard-btn dashboard-btn--quiet" (click)="openAddTrademarkDialog()"><span class="material-symbols-outlined">add</span> Add Trademark</button>
     </div>
   </header>
 
@@ -59,7 +59,7 @@
         </div>
         @if (s.totalTrademarks === 0) {
           <div class="portfolio-empty">
-            <img src="/assets/images/agent-dashboard-portfolio-records.png" alt="Trademark portfolio records illustration" />
+            <img src="/assets/images/agent-dashboard-portfolio-records.webp" alt="Trademark portfolio records illustration" />
             <div><strong>Your portfolio is ready for its first mark.</strong><p>Add a trademark, claim records from the register, or import a spreadsheet.</p></div>
           </div>
         } @else {
@@ -79,7 +79,7 @@
                 </div>
               }
             </div>
-            <img class="health-art" src="/assets/images/agent-dashboard-portfolio-records.png" alt="" />
+            <img class="health-art" src="/assets/images/agent-dashboard-portfolio-records.webp" alt="" />
           </div>
         }
       </section>
@@ -147,5 +147,12 @@
     </section>
 
   
+  }
+
+  @if (showAddTrademarkDialog()) {
+    <app-agent-add-trademark-dialog
+      (completed)="refreshStats()"
+      (closed)="closeAddTrademarkDialog()"
+    />
   }
 </div>

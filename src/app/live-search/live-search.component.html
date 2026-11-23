@@ -34,6 +34,7 @@
 
     <!-- Class filter (optional) -->
     <select class="class-select" aria-label="Filter by trademark class" [formControl]="classControl">
+      <option [ngValue]="null" [disabled]="searchType === 'phonetic'">All classes</option>
       <option *ngFor="let c of trademarkClasses" [ngValue]="c.num">Class {{ c.num }} &ndash; {{ c.name }}</option>
     </select>
 

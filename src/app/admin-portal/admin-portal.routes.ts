@@ -57,6 +57,11 @@ export const adminPortalRoutes: Routes = [
     title: 'Agents | Admin',
   },
   {
+    path: 'iso-certificate-access',
+    loadComponent: () => import('./iso-certificate-access/admin-iso-certificate-access.component').then(m => m.AdminIsoCertificateAccessComponent),
+    title: 'ISO Certificate Access | Admin',
+  },
+  {
     path: 'agent-imports',
     loadComponent: () => import('./agent-imports/admin-agent-imports.component').then(m => m.AdminAgentImportsComponent),
     title: 'Agent Imports | Admin',

@@ -16,7 +16,7 @@
   @if (!loading()) {
     <section class="overview" aria-label="Hearing overview">
       <article class="metric metric--live">
-        <div><span>Today's Docket</span><strong>{{ liveHearings().length }} <em>Hearing{{ liveHearings().length === 1 ? '' : 's' }}</em></strong></div>
+        <div><span>Today's Hearings</span><strong>{{ liveHearings().length }} <em>Hearing{{ liveHearings().length === 1 ? '' : 's' }}</em></strong></div>
         <span class="material-symbols-outlined">videocam</span>
         <p><i></i>{{ hasUnlockedLiveHearing() ? 'Webex room live on the cause list' : 'Cause list pending publication' }}</p>
       </article>
@@ -38,10 +38,6 @@
     </section>
   }
 
-  <section class="notice" aria-label="Cause list notification">
-    <span class="material-symbols-outlined">chat</span>
-    <div><strong>Automatic Morning Cause List &amp; Webex Ping</strong><p>Daily cause-list serials and live courtroom links become available here as soon as the Registry publishes them.</p></div>
-  </section>
 
   @if (error()) { <div class="error" role="alert"><span class="material-symbols-outlined">error</span>{{ error() }}<button type="button" (click)="load()">Retry</button></div> }
 

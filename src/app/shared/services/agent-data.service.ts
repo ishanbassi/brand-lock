@@ -33,6 +33,7 @@ import {
   IsoCustomField,
   IsoPartySuggestion,
   AgentJournalConflict,
+  AgentJournalSummary,
   AgentJournalWatchResult,
   AgentImportResult,
   AgentPortfolioFilterOptions,
@@ -377,7 +378,7 @@ export class AgentDataService {
     );
   }
 
-  /** The current 180-day filing window, newest filing first. */
+  /** The current 7-day filing window, newest filing first. */
   getLatestNewFilings(): Observable<AgentNewFiling[]> {
     return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`);
   }
@@ -564,6 +565,29 @@ export class AgentDataService {
     );
   }
 
+  startPhoneticSearchRun(
+    query: string,
+    tmClasses: number[] | null,
+    page: number,
+    size: 10 | 100 | 1000,
+    statusBucket?: string,
+  ): Observable<SearchReport> {
+    let params = this.searchReportParams(query, tmClasses, 'phonetic').set('page', page).set('size', size);
+    if (statusBucket) params = params.set('statusBucket', statusBucket);
+    return this.http.post<SearchReport>(`${this.base}/agent-portal/reports/phonetic-runs`, {}, { params });
+  }
+
+  getPhoneticSearchRun(
+    runId: string,
+    page: number,
+    size: 10 | 100 | 1000,
+    statusBucket?: string,
+  ): Observable<SearchReport> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (statusBucket) params = params.set('statusBucket', statusBucket);
+    return this.http.get<SearchReport>(`${this.base}/agent-portal/reports/phonetic-runs/${runId}`, { params });
+  }
+
   downloadSearchReport(
     query: string,
     tmClasses: number[] | null,
@@ -684,23 +708,27 @@ export class AgentDataService {
   // ── Report branding ────────────────────────────────────────────────────
 
   updateBranding(branding: Partial<AgentBranding>): Observable<AgentBranding> {
-    return this.http.put<AgentBranding>(
-      `${this.base}/agent-portal/branding`,
-      branding,
-    );
+    return this.http
+      .put<AgentBranding>(`${this.base}/agent-portal/branding`, branding)
+      .pipe(
+        tap((saved) => this.profileState.update((profile) => (profile ? { ...profile, ...saved } : profile))),
+      );
   }
 
   uploadLogo(file: File): Observable<{ hasLogo: boolean }> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<{ hasLogo: boolean }>(
-      `${this.base}/agent-portal/branding/logo`,
-      form,
-    );
+    return this.http
+      .post<{ hasLogo: boolean }>(`${this.base}/agent-portal/branding/logo`, form)
+      .pipe(
+        tap(({ hasLogo }) => this.profileState.update((profile) => (profile ? { ...profile, hasLogo } : profile))),
+      );
   }
 
   removeLogo(): Observable<void> {
-    return this.http.delete<void>(`${this.base}/agent-portal/branding/logo`);
+    return this.http
+      .delete<void>(`${this.base}/agent-portal/branding/logo`)
+      .pipe(tap(() => this.profileState.update((profile) => (profile ? { ...profile, hasLogo: false } : profile))));
   }
 
   /** The stored logo, for the profile preview. Streamed — there is no static URL for it. */
@@ -873,6 +901,12 @@ export class AgentDataService {
   getWatchJournals(limit = 24): Observable<number[]> {
     return this.http.get<number[]>(
       `${this.base}/agent-portal/watch/journals?limit=${limit}`,
+    );
+  }
+
+  getJournalSummaries(limit = 24): Observable<AgentJournalSummary[]> {
+    return this.http.get<AgentJournalSummary[]>(
+      `${this.base}/agent-portal/watch/journal-summaries?limit=${limit}`,
     );
   }
 

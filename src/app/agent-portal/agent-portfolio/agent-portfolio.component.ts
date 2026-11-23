@@ -5,16 +5,14 @@ import { saveBlob } from '../ui/save-blob';
 import { printReport } from '../ui/print-report';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpEventType } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentPortfolioClaimComponent } from '../agent-portfolio-claim/agent-portfolio-claim.component';
+import { AgentAddTrademarkDialogComponent, AddTrademarkStartView } from '../agent-add-trademark-dialog/agent-add-trademark-dialog.component';
 import {
   AgentCustomField,
   AgentDashboardStats,
   AgentImportSummary,
-  AgentImportResult,
   AgentPortfolioFilterOptions,
   AgentPortfolioQuery,
   AgentPortfolioTrademark,
@@ -40,7 +38,7 @@ interface SortableColumn {
 @Component({
   selector: 'app-agent-portfolio',
   standalone: true,
-  imports: [IconComponent, ExportMenuComponent, AgentPortfolioClaimComponent, CommonModule, FormsModule, RouterModule],
+  imports: [IconComponent, ExportMenuComponent, AgentAddTrademarkDialogComponent, CommonModule, FormsModule, RouterModule],
   templateUrl: './agent-portfolio.component.html',
   styleUrl: './agent-portfolio.component.scss',
 })
@@ -70,6 +68,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   readonly artworkUrls = signal<Record<number, string>>({});
   private readonly artworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
+  /**
+   * Keeps the register frame mounted after its first response. Filter requests then replace only
+   * the result body, preserving the column headings, scroll position and table controls.
+   */
+  readonly hasLoadedPortfolio = signal(false);
   error = signal('');
   dashboardStats = signal<AgentDashboardStats | null>(null);
 
@@ -158,21 +161,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   newFieldLabel = '';
   newFieldType: 'TEXT' | 'NUMBER' | 'DATE' = 'TEXT';
   creatingField = signal(false);
-  draft = signal<Partial<AgentPortfolioTrademark> | null>(null);
-  draftCustomValues: Record<string, string> = {};
-  savingDraft = signal(false);
-  draftError = signal('');
-
-  /** One focused entry point for every way an agent can build a portfolio. */
-  addFlow = signal<'closed' | 'choose' | 'import' | 'claim'>('closed');
-  uploadDragOver = signal(false);
-  uploadFile = signal<File | null>(null);
-  uploadPreview = signal<AgentImportResult | null>(null);
-  uploadResult = signal<AgentImportResult | null>(null);
-  uploadBusy = signal(false);
-  uploadProgress = signal(0);
-  uploadStage = signal<'idle' | 'uploading' | 'processing'>('idle');
-  uploadError = signal('');
+  /** The shared dialog keeps every portfolio intake path consistent across the portal. */
+  showAddTrademarkDialog = signal(false);
+  addTrademarkStartView = signal<AddTrademarkStartView>('choose');
   private importPollTimer: ReturnType<typeof setInterval> | null = null;
   readonly classOptions = Array.from({ length: 45 }, (_, i) => i + 1);
   readonly statusOptions = ['Not yet filed', 'Registered', 'Objected', 'Opposed', 'Abandoned', 'Refused', 'Advertised', 'Filed', 'Pending'];
@@ -250,9 +241,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.loadPendingImports();
     this.loadFilterOptions();
     this.loadCustomFields();
-    // Dashboard's empty-state action opens the same complete manual-entry dialog as the portfolio.
+    // A direct URL still opens the same shared manual-entry dialog.
     if (this.route.snapshot.queryParamMap.get('new') === '1') {
-      this.openDraft();
+      this.openAddTrademarkDialog('manual');
     }
     this.searchSubject.pipe(debounceTime(350)).subscribe((q) => {
       if (q.trim() === this.lastSearched) return;
@@ -281,172 +272,20 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDraft(): void {
-    if (this.draft()) return;
-    this.draft.set({ name: '', trademarkStatus: 'Not yet filed' });
-    this.draftCustomValues = {};
-    this.draftError.set('');
-    // The dialog's first field is added to the DOM by Angular after this event.
-    setTimeout(() => document.getElementById('new-trademark-name')?.focus());
+  openAddTrademarkDialog(initialView: AddTrademarkStartView = 'choose'): void {
+    this.addTrademarkStartView.set(initialView);
+    this.showAddTrademarkDialog.set(true);
   }
 
-  openAddFlow(): void {
-    if (this.savingDraft()) return;
-    this.addFlow.set('choose');
+  closeAddTrademarkDialog(): void {
+    this.showAddTrademarkDialog.set(false);
   }
 
-  closeAddFlow(): void {
-    if (this.uploadBusy()) return;
-    this.addFlow.set('closed');
-    this.uploadDragOver.set(false);
-    this.uploadError.set('');
-  }
-
-  chooseManualEntry(): void {
-    this.closeAddFlow();
-    this.openDraft();
-  }
-
-  chooseImport(): void {
-    this.uploadError.set('');
-    this.uploadFile.set(null);
-    this.uploadPreview.set(null);
-    this.uploadResult.set(null);
-    this.uploadProgress.set(0);
-    this.uploadStage.set('idle');
-    this.addFlow.set('import');
-  }
-
-  chooseAgentClaim(): void {
-    this.addFlow.set('claim');
-  }
-
-  onUploadDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.uploadDragOver.set(true);
-  }
-
-  onUploadDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.uploadDragOver.set(false);
-    const file = event.dataTransfer?.files[0];
-    if (file) this.previewUpload(file);
-  }
-
-  onUploadFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) this.previewUpload(file);
-  }
-
-  previewUpload(file: File): void {
-    const isExcel = /\.(xlsx|xls)$/i.test(file.name);
-    if (!isExcel) {
-      this.uploadError.set('Choose an Excel file in .xlsx or .xls format.');
-      return;
-    }
-    this.uploadError.set('');
-    this.uploadFile.set(file);
-    this.uploadPreview.set(null);
-    this.uploadResult.set(null);
-    this.uploadBusy.set(true);
-    this.uploadProgress.set(0);
-    this.uploadStage.set('uploading');
-    this.agentDataService.previewImportWithProgress(file).subscribe({
-      next: event => {
-        if (event.type === HttpEventType.UploadProgress) {
-          const finishedUploading = event.total != null && event.loaded >= event.total;
-          this.uploadProgress.set(event.total ? Math.min(90, Math.round((event.loaded / event.total) * 90)) : 0);
-          if (finishedUploading) this.uploadStage.set('processing');
-        } else if (event.type === HttpEventType.Response) {
-          this.uploadProgress.set(100);
-          this.uploadStage.set('idle');
-          this.uploadPreview.set(event.body ?? null);
-          this.uploadBusy.set(false);
-        }
-      },
-      error: err => {
-        this.uploadError.set(err?.error?.message || 'We could not read that spreadsheet. Try another Excel file.');
-        this.uploadBusy.set(false);
-        this.uploadStage.set('idle');
-      },
-    });
-  }
-
-  confirmModalImport(): void {
-    const batchId = this.uploadPreview()?.batchId;
-    if (batchId == null || this.uploadBusy()) return;
-    this.uploadBusy.set(true);
-    this.uploadError.set('');
-    this.agentDataService.confirmImport(batchId).subscribe({
-      next: result => {
-        this.uploadResult.set(result);
-        this.uploadBusy.set(false);
-        this.loadPendingImports();
-        this.startImportPolling();
-      },
-      error: err => {
-        this.uploadError.set(err?.error?.message || 'Import failed. Please try again.');
-        this.uploadBusy.set(false);
-      },
-    });
-  }
-
-  onClaimComplete(): void {
-    this.closeAddFlow();
+  onTrademarkAdded(): void {
     this.load();
     this.loadDashboardStats();
     this.loadFilterOptions();
-  }
-
-  cancelDraft(): void {
-    if (this.savingDraft()) return;
-    this.draft.set(null);
-    this.draftError.set('');
-  }
-
-  /** New records are drafts until the operator explicitly saves them. Existing rows still autosave. */
-  saveDraft(): void {
-    const draft = this.draft();
-    if (!draft || this.savingDraft()) return;
-    if (!draft.name?.trim() && !draft.applicationNo) {
-      this.draftError.set('Enter a trademark name or application number before saving.');
-      return;
-    }
-    this.draftError.set('');
-    this.savingDraft.set(true);
-    const customFields = Object.fromEntries(Object.entries(this.draftCustomValues)
-      .filter(([, value]) => String(value ?? '').trim())
-      .map(([key, value]) => [key, String(value)]));
-    this.agentDataService.addPortfolioItem({ ...draft, name: draft.name?.trim(), customFields }).subscribe({
-      next: (saved) => {
-        this.savingDraft.set(false);
-        this.draft.set(null);
-        this.draftCustomValues = {};
-        // Do not reload a large table after a new entry. A new record belongs at the top
-        // only in the default listing; a filtered or sorted view remains undisturbed.
-        if (this.isDefaultListing()) {
-          this.trademarks.update(rows => [saved, ...rows].slice(0, this.pageSize));
-          this.totalCount += 1;
-          this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
-        }
-        this.loadDashboardStats();
-        this.loadFilterOptions();
-      },
-      error: err => {
-        this.savingDraft.set(false);
-        this.draftError.set(err?.error?.message || err?.error?.detail || 'Could not save this trademark. Try again.');
-      },
-    });
-  }
-
-  private isDefaultListing(): boolean {
-    return this.page === 0
-      && !this.searchQuery.trim()
-      && !this.filterStatus
-      && !this.filterClass
-      && !this.filterFilingYear
-      && !this.filterRenewalDue
-      && this.sortField == null;
+    this.loadPendingImports();
   }
 
   createField(): void {
@@ -857,6 +696,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
           // pages that render empty.
           this.totalCount = total ? parseInt(total, 10) : (res.body?.length || 0);
           this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          this.hasLoadedPortfolio.set(true);
           if (!silent) this.loading.set(false);
         },
         error: () => {
@@ -1018,6 +858,11 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     return Math.min((this.page + 1) * this.pageSize, this.totalCount);
   }
 
+  /** Number of cells in a full result row, used by the in-table loading and empty states. */
+  get visibleColumnCount(): number {
+    return 10 + this.shownCustomFields().length;
+  }
+
   goToPage(p: number): void {
     if (p < 0 || p >= this.totalPages) return;
     this.page = p;
@@ -1030,11 +875,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.pageSize = size;
     this.page = 0;
     this.load();
-  }
-
-  get canSaveDraft(): boolean {
-    const draft = this.draft();
-    return Boolean(draft?.name?.trim() || draft?.applicationNo);
   }
 
   startDelete(id: number): void {
@@ -1052,7 +892,8 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
       next: () => {
         this.deletingId.set(null);
         this.trademarks.update(list => list.filter(t => t.id !== id));
-        this.totalCount--;
+        this.reconcilePageAfterRemoval(1);
+        this.loadFilterOptions();
         this.loadDashboardStats();
       },
       error: () => this.deletingId.set(null),
@@ -1095,7 +936,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         const removedIds = new Set(removed);
         const failed = selected.length - removed.length;
         this.trademarks.update(rows => rows.filter(mark => !removedIds.has(mark.id ?? -1)));
-        this.totalCount = Math.max(0, this.totalCount - removed.length);
+        this.reconcilePageAfterRemoval(removed.length);
         for (const id of removedIds) {
           this.selectedIds.delete(id);
           this.selectedMarks.delete(id);
@@ -1111,6 +952,20 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
         this.error.set('Could not remove the selected trademarks. Please try again.');
       },
     });
+  }
+
+  /**
+   * Deleting every displayed row must reveal the next available rows immediately.
+   * The list request remains the source of truth for the replacement page and total.
+   */
+  private reconcilePageAfterRemoval(removedCount: number): void {
+    this.totalCount = Math.max(0, this.totalCount - removedCount);
+    this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+    if (this.totalCount === 0) return;
+
+    const lastPage = Math.max(0, this.totalPages - 1);
+    if (this.page > lastPage) this.page = lastPage;
+    if (this.trademarks().length === 0) this.load();
   }
 
   getStatusClass(status: string | undefined): string {

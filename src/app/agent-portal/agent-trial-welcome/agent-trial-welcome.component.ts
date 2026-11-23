@@ -3,17 +3,18 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, PLATFORM_ID, Vi
 import dayjs from 'dayjs';
 import { BillingState, FEATURE_ORDER, describeFeature } from '../../../models/billing.model';
 import { BillingService } from '../../shared/services/billing.service';
+import { AuthService } from '../../../models/auth.services';
 import { IconComponent } from '../ui/icon.component';
 
 /** A short pause lets the dashboard arrive before the first-run welcome takes focus. */
 const TRIAL_WELCOME_DELAY_MS = 1400;
 
 /**
- * First-run acknowledgement of the Pro trial.
+ * First-run acknowledgement of either the portfolio-based free access or a Pro trial.
  *
  * The server, not registration state in the browser, decides whether this can appear. The dismissal
- * is scoped to the trial's end time: it is remembered for this trial but naturally clears when a
- * future trial or an administrator-granted extension has a different window.
+ * is scoped to the signed-in account for free access and to the trial's end time for trials. A
+ * future trial or an administrator-granted extension naturally receives its own acknowledgement.
  */
 @Component({
   selector: 'ap-agent-trial-welcome',
@@ -24,6 +25,7 @@ const TRIAL_WELCOME_DELAY_MS = 1400;
 })
 export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
   private readonly billing = inject(BillingService);
+  private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
@@ -32,6 +34,8 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
 
   readonly visible = signal(false);
   readonly trial = signal<BillingState | null>(null);
+  /** The no-cost plan is already active on the server; this dialog only explains it. */
+  readonly hasFreePortfolioAccess = computed(() => !!this.trial()?.freeUnlimitedAccess);
   readonly features = computed(() => {
     const entitlements = this.trial()?.entitlements;
     if (!entitlements) return [];
@@ -57,10 +61,10 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
     if (!this.isBrowser) return;
     const knownState = this.billing.state();
     if (knownState) {
-      this.armForTrial(knownState);
+      this.armWelcome(knownState);
       return;
     }
-    this.billing.loadState().subscribe({ next: state => this.armForTrial(state), error: () => undefined });
+    this.billing.loadState().subscribe({ next: state => this.armWelcome(state), error: () => undefined });
   }
 
   ngOnDestroy(): void {
@@ -69,9 +73,9 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
 
   dismiss(): void {
     const state = this.trial();
-    if (state?.trialEndsAt) {
+    if (state) {
       try {
-        localStorage.setItem(this.dismissalKey(state.trialEndsAt), 'dismissed');
+        localStorage.setItem(this.dismissalKey(state), 'dismissed');
       } catch {
         // Private browsing or disabled storage should never prevent dismissing a welcome dialog.
       }
@@ -102,8 +106,20 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private armForTrial(state: BillingState): void {
-    if ((state.status !== 'TRIALING' && state.status !== 'SCHEDULED') || !state.entitled || !state.trialEndsAt || this.wasDismissed(state.trialEndsAt)) return;
+  private armWelcome(state: BillingState): void {
+    // Small practices receive this instead of the paid-trial welcome. The entitlement is resolved
+    // on the server, so a stale or manipulated browser value can never grant access.
+    if (state.freeUnlimitedAccess) {
+      if (this.wasDismissed(state)) return;
+      this.show(state);
+      return;
+    }
+
+    if ((state.status !== 'TRIALING' && state.status !== 'SCHEDULED') || !state.entitled || !state.trialEndsAt || this.wasDismissed(state)) return;
+    this.show(state);
+  }
+
+  private show(state: BillingState): void {
     this.trial.set(state);
     this.showTimer = window.setTimeout(() => {
       this.focusedBeforeOpen = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -112,13 +128,21 @@ export class AgentTrialWelcomeComponent implements OnInit, OnDestroy {
     }, TRIAL_WELCOME_DELAY_MS);
   }
 
-  private dismissalKey(trialEndsAt: string): string {
-    return `agent-trial-welcome:${trialEndsAt}`;
+  private dismissalKey(state: BillingState): string {
+    if (state.freeUnlimitedAccess) {
+      // User id scopes the acknowledgement when several agents use the same browser. A login is
+      // retained as a safe fallback for the short post-registration window before the full user
+      // object has populated.
+      const user = this.auth.getUser();
+      const account = user?.id ?? user?.login ?? 'current-agent';
+      return `agent-free-portfolio-welcome:${account}`;
+    }
+    return `agent-trial-welcome:${state.trialEndsAt}`;
   }
 
-  private wasDismissed(trialEndsAt: string): boolean {
+  private wasDismissed(state: BillingState): boolean {
     try {
-      return localStorage.getItem(this.dismissalKey(trialEndsAt)) === 'dismissed';
+      return localStorage.getItem(this.dismissalKey(state)) === 'dismissed';
     } catch {
       return false;
     }

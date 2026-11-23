@@ -1,0 +1,65 @@
+<div class="admin-page iso-access-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">ISO certificate access</h1>
+      <p class="page-sub">Only listed agents can open or work with ISO certificates in the agent portal.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="access-controls" aria-label="Grant ISO certificate access">
+    <div class="grant-panel">
+      <h2>Add by email</h2>
+      <p>Use this for an agent who has not yet appeared in the agent list.</p>
+      <div class="grant-row">
+        <input type="email" [(ngModel)]="email" (keyup.enter)="grantEmail()" placeholder="agent@example.com" aria-label="Agent email address" />
+        <button class="btn-primary" type="button" [disabled]="saving() || !email.trim()" (click)="grantEmail()">Add email</button>
+      </div>
+    </div>
+
+    <div class="grant-panel">
+      <h2>Add an existing agent</h2>
+      <p>The agent’s current account email is stored with the access grant.</p>
+      <div class="grant-row">
+        <select [(ngModel)]="selectedAgentId" aria-label="Select an agent">
+          <option [ngValue]="null">Select an agent</option>
+          @for (agent of agents(); track agent.id) {
+            <option [ngValue]="agent.id" [disabled]="!agent.email">{{ agentLabel(agent) }}</option>
+          }
+        </select>
+        <button class="btn-primary" type="button" [disabled]="saving() || !selectedAgentId" (click)="grantAgent()">Add agent</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="table-card" aria-labelledby="granted-agents-heading">
+    <div class="table-heading">
+      <div>
+        <h2 id="granted-agents-heading">Allowed accounts</h2>
+        <p>{{ grants().length }} account{{ grants().length === 1 ? '' : 's' }} currently enabled</p>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Agent</th><th>Email</th><th>Granted</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+      <tbody>
+        @if (loading()) {
+          @for (row of [1, 2, 3]; track row) { <tr class="skeleton-row"><td colspan="4"><div class="skeleton-line"></div></td></tr> }
+        } @else if (grants().length === 0) {
+          <tr><td colspan="4" class="empty-cell">No agents have ISO certificate access yet.</td></tr>
+        } @else {
+          @for (grant of grants(); track grant.id) {
+            <tr>
+              <td class="cell-strong">{{ grant.agentName || 'Email-only access' }}</td>
+              <td>{{ grant.email }}</td>
+              <td class="muted">{{ grant.createdAt | date: 'MMM d, y' }}</td>
+              <td><button class="btn-ghost revoke-btn" type="button" [disabled]="revokingId() === grant.id" (click)="revoke(grant)">{{ revokingId() === grant.id ? 'Removing…' : 'Remove' }}</button></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </section>
+</div>

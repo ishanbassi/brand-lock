@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { isoCertificateAccessGuard } from '../guards/iso-certificate-access.guard';
 
 export const agentPortalRoutes: Routes = [
   {
@@ -15,6 +16,7 @@ export const agentPortalRoutes: Routes = [
 path: 'iso-certificates',
 loadComponent: () => import('./agent-iso-certificates/agent-iso-certificates.component').then(m => m.AgentIsoCertificatesComponent),
 title: 'ISO Certificates | Agent Portal',
+canActivate: [isoCertificateAccessGuard],
 },
   {
     // Target of the nightly watch digest email — the whole portfolio's conflicts on one screen.
@@ -43,7 +45,7 @@ title: 'ISO Certificates | Agent Portal',
     // is the register doing that affects me".
     path: 'watch/competitors',
     loadComponent: () => import('./agent-competitors/agent-competitors.component').then(m => m.AgentCompetitorsComponent),
-    title: 'Competitors | Agent Portal',
+    title: 'Trademark Agents | Agent Portal',
   },
   {
     path: 'portfolio/claim',
@@ -72,6 +74,20 @@ title: 'ISO Certificates | Agent Portal',
     path: 'reports/search',
     loadComponent: () => import('./agent-search-report/agent-search-report.component').then(m => m.AgentSearchReportComponent),
     title: 'Search Report | Agent Portal',
+  },
+  {
+    path: 'reports/application-number',
+    loadComponent: () => import('./agent-search-report/agent-search-report.component').then(m => m.AgentSearchReportComponent),
+    data: { searchMode: 'application-number' },
+    title: 'Search Report | Agent Portal',
+  },
+  {
+    // Search-report results are registry records, not necessarily portfolio marks. This route uses
+    // the portal's read-only record view rather than sending an agent to the public website.
+    path: 'trademarks/:id',
+    loadComponent: () =>
+      import('./agent-journal-mark-detail/agent-journal-mark-detail.component').then(m => m.AgentJournalMarkDetailComponent),
+    title: 'Trademark Detail | Agent Portal',
   },
   // Renewals are a statutory filing docket. They deliberately have a dedicated component rather
   // than sharing the hearing calendar: filters, fees and statutory windows are renewal-only facts.

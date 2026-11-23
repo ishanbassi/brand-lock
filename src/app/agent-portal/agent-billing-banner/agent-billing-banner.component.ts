@@ -42,6 +42,14 @@ export class AgentBillingBannerComponent {
       return null;
     }
 
+    if (s.freeUnlimitedAccess) {
+      return {
+        tone: 'info',
+        message: `Full access is free while your portfolio has ${s.freeUnlimitedPortfolioThreshold} or fewer marks (${s.portfolioMarkCount} currently).`,
+        action: 'View access',
+      };
+    }
+
     if ((s.status === 'TRIALING' || s.status === 'SCHEDULED') && s.entitled && s.trialEndsAt) {
       const days = Math.max(0, Math.ceil(dayjs(s.trialEndsAt).diff(dayjs(), 'hour') / 24));
       const trialCountdown = days === 0 ? 'Your free trial ends today.' : `Free trial: ${days} day${days === 1 ? '' : 's'} left.`;
