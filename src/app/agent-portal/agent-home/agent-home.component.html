@@ -45,7 +45,7 @@
       />
       <div class="agent-suggestion-list" *ngIf="suggestions().length" role="listbox" aria-label="Matching agents">
         <button type="button" class="agent-suggestion" *ngFor="let agent of suggestions()" [class.selected]="isAgentVariationSelected(agent)" [attr.aria-selected]="isAgentVariationSelected(agent)" (click)="toggleAgentVariation(agent)">
-          <span><strong>{{ agent.displayName }}</strong><small>{{ agent.markCount | number }} registry marks</small></span>
+          <span><strong>{{ agent.displayName }}</strong><small>{{ agent.markCount | number }} registry marks</small><small *ngIf="agent.primaryAddress" class="agent-suggestion-address" [title]="agent.primaryAddress">{{ agent.primaryAddress }}</small></span>
           <span class="material-symbols-outlined">{{ isAgentVariationSelected(agent) ? 'check_box' : 'check_box_outline_blank' }}</span>
         </button>
         <div class="agent-suggestion-action" *ngIf="selectedAgentVariations().length">

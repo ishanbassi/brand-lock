@@ -338,6 +338,8 @@ export interface AgentHomeDirectoryEntry {
   displayName: string;
   markCount: number;
   latestFilingDate?: string;
+  /** Primary public-registry address, shown in a truncated type-ahead result. */
+  primaryAddress?: string;
 }
 
 export interface AgentHomeMarkPreview {
@@ -631,6 +633,15 @@ export interface AgentJournalWatchResult {
   countsByRisk: Record<'HIGH' | 'MEDIUM' | 'LOW', number>;
   /** True when the result cap was hit, so the list is not exhaustive. */
   truncated: boolean;
+  durationMs: number;
+}
+
+/** Progress for an agent-triggered refresh of the current new-filings window. */
+export interface NewFilingWatchRun {
+  runId: string;
+  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  errorMessage?: string;
+  matchesFound: number;
   durationMs: number;
 }
 

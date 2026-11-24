@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
-import { AgentNewFiling, WatchConflictHistory } from '../../../models/agent.model';
+import { AgentNewFiling, NewFilingWatchRun, WatchConflictHistory } from '../../../models/agent.model';
 import { IconComponent } from '../ui/icon.component';
 
 type RiskFilter = '' | 'HIGH' | 'MEDIUM' | 'LOW';
@@ -46,6 +46,7 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   riskFilter = signal<RiskFilter>('');
   portfolioOnly = signal(false);
   page = signal(1);
+  private pollTimer?: ReturnType<typeof setTimeout>;
 
   readonly statusOf = (conflict: WatchConflictHistory): StatusFilter => {
     const status = (conflict.status ?? 'OPEN').toUpperCase();
@@ -92,7 +93,10 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void { this.load(); }
 
-  ngOnDestroy(): void { Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url)); }
+  ngOnDestroy(): void {
+    if (this.pollTimer) clearTimeout(this.pollTimer);
+    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+  }
 
   load(showLoading = true): void {
     if (showLoading) this.loading.set(true);
@@ -137,17 +141,38 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     this.actionMsg.set('');
     this.actionError.set('');
     this.agentDataService.runNewFilingConflictWatch().subscribe({
-      next: () => {
-        this.actionMsg.set('Conflict watch completed. Your new filing matches are up to date.');
-        this.view.set('CONFLICTS');
-        this.running.set(false);
-        this.load(false);
-      },
+      next: run => this.pollRun(run),
       error: error => {
         this.running.set(false);
         this.actionError.set(error?.error?.detail || 'The conflict watch could not be run. Please try again.');
       },
     });
+  }
+
+  private pollRun(run: NewFilingWatchRun): void {
+    if (run.status === 'COMPLETED') {
+      this.actionMsg.set(`Conflict watch completed. ${run.matchesFound} new filing match${run.matchesFound === 1 ? '' : 'es'} found.`);
+      this.view.set('CONFLICTS');
+      this.running.set(false);
+      this.load(false);
+      return;
+    }
+    if (run.status === 'FAILED') {
+      this.running.set(false);
+      this.actionError.set(run.errorMessage || 'The conflict watch could not be run. Please try again.');
+      return;
+    }
+
+    this.actionMsg.set('Checking your portfolio against current new filings…');
+    this.pollTimer = setTimeout(() => {
+      this.agentDataService.getNewFilingConflictWatchRun(run.runId).subscribe({
+        next: nextRun => this.pollRun(nextRun),
+        error: error => {
+          this.running.set(false);
+          this.actionError.set(error?.error?.detail || 'Could not check the watch status. Please try again.');
+        },
+      });
+    }, 1000);
   }
 
   dismiss(conflict: WatchConflictHistory): void {

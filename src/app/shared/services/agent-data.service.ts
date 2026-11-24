@@ -44,6 +44,7 @@ import {
   AgentPublicProfile,
   AgentRegistration,
   AgentNewFiling,
+  NewFilingWatchRun,
   ProprietorDirectoryEntry,
   WatchConflictHistory,
 } from '../../../models/agent.model';
@@ -383,12 +384,16 @@ export class AgentDataService {
     return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`);
   }
 
-  /** Runs an on-demand new-filing comparison for the caller's portfolio only. */
-  runNewFilingConflictWatch(): Observable<void> {
-    return this.http.post<void>(
+  /** Queues an on-demand comparison; poll the returned run instead of holding the request open. */
+  runNewFilingConflictWatch(): Observable<NewFilingWatchRun> {
+    return this.http.post<NewFilingWatchRun>(
       `${this.base}/agent-portal/watch/conflicts/run`,
       {},
     );
+  }
+
+  getNewFilingConflictWatchRun(runId: string): Observable<NewFilingWatchRun> {
+    return this.http.get<NewFilingWatchRun>(`${this.base}/agent-portal/watch/conflicts/runs/${runId}`);
   }
 
   /** Saved conflicts for one portfolio mark, including the journal issue that produced each hit. */

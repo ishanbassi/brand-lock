@@ -13,25 +13,46 @@
     <section class="journal-shelf" aria-labelledby="journal-heading">
       <div class="section-heading">
         <div><h2 id="journal-heading">Choose a journal</h2><p>Open an issue to browse every published mark or check it against your portfolio.</p></div>
-        <span class="issue-count">{{ journals().length }} available</span>
+        <span class="issue-count">{{ filteredJournalSummaries().length }} of {{ journals().length }} available</span>
       </div>
       <aside class="watch-schedule" aria-label="Automatic watch schedule">
         <ap-icon name="watch" [size]="18" />
-        <p><strong>Automatic watch:</strong> every new issue is checked at :40 past the hour (IST), after every mark in that issue has finished ingesting and enrichment.</p>
+        <p><strong>Automatic watch:</strong> we check each new journal issue automatically.</p>
       </aside>
       @if (journals().length === 0) {
         <div class="journal-loading">No journal issues are available yet.</div>
       } @else {
-        <div class="journal-grid">
-          @for (journal of journalSummaries(); track journal.journalNo; let first = $first) {
-            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [class.locked]="isJournalLocked(journal.journalNo)" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [attr.aria-label]="isJournalLocked(journal.journalNo) ? 'Journal ' + journal.journalNo + ', locked. Upgrade to Pro to access.' : 'Open Journal ' + journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
-              <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
-              <span class="journal-copy"><strong>Journal {{ journal.journalNo }}</strong><small>@if (journal.publicationDate) { Published {{ journal.publicationDate | date: 'dd MMM yyyy' }} · } {{ journal.recordCount | number }} record{{ journal.recordCount === 1 ? '' : 's' }}</small></span>
-              @if (first) { <span class="latest-badge">Latest</span> }
-              @if (isJournalLocked(journal.journalNo)) { <span class="journal-lock"><ap-icon name="lock" [size]="15" /> <span>Pro</span></span> } @else { <ap-icon class="journal-arrow" name="chevron" [size]="16" /> }
-            </button>
-          }
+        <div class="journal-directory-toolbar">
+          <label class="journal-search" for="journal-search">
+            <ap-icon name="search" [size]="18" />
+            <input id="journal-search" type="search" inputmode="numeric" placeholder="Search by journal number" [ngModel]="journalSearchTerm()" (ngModelChange)="setJournalSearchTerm($event)" />
+            @if (journalSearchTerm()) { <button type="button" (click)="clearJournalSearch()" aria-label="Clear journal search"><ap-icon name="close" [size]="15" /></button> }
+          </label>
+          <span class="journal-page-summary">Showing {{ journalPageStart() }}–{{ journalPageEnd() }} of {{ filteredJournalSummaries().length }}</span>
         </div>
+        @if (filteredJournalSummaries().length === 0) {
+          <div class="journal-loading">No journal matches “{{ journalSearchTerm() }}”.</div>
+        } @else {
+          <div class="journal-grid">
+            @for (journal of visibleJournalSummaries(); track journal.journalNo) {
+              <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [class.locked]="isJournalLocked(journal.journalNo)" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [attr.aria-label]="isJournalLocked(journal.journalNo) ? 'Journal ' + journal.journalNo + ', locked. Upgrade to Pro to access.' : 'Open Journal ' + journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
+                <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
+                <span class="journal-copy">
+                  <strong>Journal {{ journal.journalNo }}</strong>
+                  @if (journal.publicationDate) { <span class="journal-publication">Published {{ journal.publicationDate | date: 'dd MMM yyyy' }}</span> }
+                  <span class="journal-record-count">{{ journal.recordCount | number }} record{{ journal.recordCount === 1 ? '' : 's' }}</span>
+                  @if (journal.journalNo === journals()[0]) { <span class="latest-badge">Latest</span> }
+                </span>
+                @if (isJournalLocked(journal.journalNo)) { <span class="journal-lock"><ap-icon name="lock" [size]="15" /> <span>Pro</span></span> } @else { <ap-icon class="journal-arrow" name="chevron" [size]="16" /> }
+              </button>
+            }
+          </div>
+          <nav class="journal-pagination" aria-label="Journal pages">
+            <button type="button" [disabled]="journalPage() === 1" (click)="goToJournalPage(journalPage() - 1)">Previous</button>
+            <span>Page {{ journalPage() }} of {{ journalPages() }}</span>
+            <button type="button" [disabled]="journalPage() === journalPages()" (click)="goToJournalPage(journalPage() + 1)">Next</button>
+          </nav>
+        }
       }
     </section>
   } @else {

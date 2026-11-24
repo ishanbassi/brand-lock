@@ -8,7 +8,7 @@
         <header class="trial-offer-dialog__header">
           <span class="trial-offer-dialog__badge"><ap-icon name="watch" [size]="14" /> Special invitation · 14 days free all-access</span>
           <h2 id="pro-trial-title">Unlock the full power of Pro — free for 14 days</h2>
-          <p id="pro-trial-description">Experience automated journal tracking, unlimited trademark alerts, and smart docketing with zero upfront payment. Cancel anytime in one click.</p>
+          <p id="pro-trial-description">Experience automated journal tracking, unlimited trademark alerts, and smart docketing free for 14 days. Razorpay will ask you to authorise a ₹5 autopay mandate to set up your subscription; your Pro plan price starts only after the trial.</p>
         </header>
 
         <div class="trial-offer-dialog__cadence" role="group" aria-label="Billing interval">
@@ -20,10 +20,10 @@
           <section class="trial-offer-dialog__price" aria-label="Trial price and billing">
             <div class="trial-offer-dialog__price-copy">
               <strong>₹0</strong>
-              <div><b>due today for 14 days</b><s>{{ regularPrice(plan) }}</s></div>
+              <div><b>for your first 14 days</b><s>{{ regularPrice(plan) }}</s></div>
             </div>
             <p>{{ billingNotice(plan) }}</p>
-            <div class="trial-offer-dialog__price-trust"><span><ap-icon name="check" [size]="13" /> No charge today</span><small>Instant setup · Full export access</small></div>
+            <div class="trial-offer-dialog__price-trust"><span><ap-icon name="card" [size]="13" /> ₹5 autopay authorisation</span><small>₹0 plan price today · Full access now</small></div>
           </section>
         } @else {
           <section class="trial-offer-dialog__price trial-offer-dialog__price--loading" aria-live="polite">Loading the current Pro plan…</section>
@@ -40,7 +40,7 @@
 
         <footer class="trial-offer-dialog__actions">
           <button type="button" class="trial-offer-dialog__start" #primaryAction [disabled]="busy() || !selectedPlan()" (click)="startTrial()">
-            {{ busy() ? 'Opening secure checkout…' : 'Start 14-day free Pro trial — pay ₹0 today' }} <ap-icon name="chevron" [size]="17" />
+            {{ busy() ? 'Opening secure checkout…' : 'Start 14-day free trial · authorise ₹5 autopay' }} <ap-icon name="chevron" [size]="17" />
           </button>
           <button type="button" class="trial-offer-dialog__dismiss" (click)="dismiss()">Maybe later, continue with the limited Free tier</button>
         </footer>

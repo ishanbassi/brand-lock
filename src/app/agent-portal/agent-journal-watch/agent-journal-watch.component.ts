@@ -36,6 +36,9 @@ const DESCRIPTION_PREVIEW_CHARS = 160;
 export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   journals = signal<number[]>([]);
   journalSummaries = signal<AgentJournalSummary[]>([]);
+  journalSearchTerm = signal('');
+  journalPage = signal(1);
+  readonly journalPageSize = 20;
   loadingJournals = signal(true);
   selectedJournal = signal<number | null>(null);
   /** The issue in the URL, retained while the issue list is still loading. */
@@ -202,6 +205,17 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
   );
   browsePages = computed(() => Math.max(1, Math.ceil(this.browseTotal() / this.browsePageSize)));
+  readonly filteredJournalSummaries = computed(() => {
+    const query = this.journalSearchTerm().trim();
+    return query ? this.journalSummaries().filter(journal => String(journal.journalNo).includes(query)) : this.journalSummaries();
+  });
+  readonly journalPages = computed(() => Math.max(1, Math.ceil(this.filteredJournalSummaries().length / this.journalPageSize)));
+  readonly visibleJournalSummaries = computed(() => {
+    const start = (this.journalPage() - 1) * this.journalPageSize;
+    return this.filteredJournalSummaries().slice(start, start + this.journalPageSize);
+  });
+  readonly journalPageStart = computed(() => this.filteredJournalSummaries().length ? (this.journalPage() - 1) * this.journalPageSize + 1 : 0);
+  readonly journalPageEnd = computed(() => Math.min(this.journalPage() * this.journalPageSize, this.filteredJournalSummaries().length));
 
   selectJournal(journalNo: number): void {
     if (this.running()) return;
@@ -264,6 +278,21 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   backToJournals(): void {
     void this.router.navigate(['/agent-portal/watch/journal']);
+  }
+
+  setJournalSearchTerm(value: string): void {
+    this.journalSearchTerm.set(value);
+    this.journalPage.set(1);
+  }
+
+  clearJournalSearch(): void {
+    this.journalSearchTerm.set('');
+    this.journalPage.set(1);
+  }
+
+  goToJournalPage(page: number): void {
+    if (page < 1 || page > this.journalPages() || page === this.journalPage()) return;
+    this.journalPage.set(page);
   }
 
   private parseJournalNo(value: string | null): number | null {

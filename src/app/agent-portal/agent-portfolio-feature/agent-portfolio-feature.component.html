@@ -110,7 +110,13 @@
         <div class="absolute z-10 top-[calc(100%+0.5rem)] left-0 right-0 bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden" role="listbox" aria-label="Matching agents and firms">
           @for (agent of suggestions(); track agent.agentName) {
             <button class="w-full px-space-md py-space-sm text-left hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-sm" [class.bg-primary-fixed]="isAgentVariationSelected(agent)" type="button" role="option" [attr.aria-selected]="isAgentVariationSelected(agent)" (click)="toggleAgentVariation(agent)">
-              <span class="min-w-0"><span class="block font-label-md text-on-surface truncate">{{ agent.displayName }}</span><span class="block font-body-sm text-on-surface-variant">{{ agent.markCount | number }} registry marks</span></span>
+              <span class="min-w-0">
+                <span class="block font-label-md text-on-surface truncate">{{ agent.displayName }}</span>
+                <span class="block font-body-sm text-on-surface-variant">{{ agent.markCount | number }} registry marks</span>
+                @if (agent.primaryAddress) {
+                  <span class="block font-body-sm text-on-surface-variant truncate" [title]="agent.primaryAddress">{{ agent.primaryAddress }}</span>
+                }
+              </span>
               <span class="material-symbols-outlined text-primary" aria-hidden="true">{{ isAgentVariationSelected(agent) ? 'check_box' : 'check_box_outline_blank' }}</span>
             </button>
           }

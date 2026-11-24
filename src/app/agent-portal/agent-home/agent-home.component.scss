@@ -77,8 +77,10 @@
 .agent-suggestion:hover,
 .agent-suggestion:focus-visible { background: #f2f3ff; }
 .agent-suggestion.selected { background: #e2dfff; }
+.agent-suggestion > span:first-child { flex: 1; min-width: 0; }
 .agent-suggestion strong { display: block; font-size: 13px; }
 .agent-suggestion small { color: #57566a; display: block; font-size: 11px; margin-top: 2px; }
+.agent-suggestion .agent-suggestion-address { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .agent-suggestion .material-symbols-outlined { color: #3525cd; font-size: 18px; }
 .agent-suggestion-action { align-items: center; background: #f2f3ff; border-top: 1px solid #d9d8e7; display: flex; font-size: 11px; gap: 8px; justify-content: space-between; margin: 4px -4px -4px; padding: 9px 10px; position: sticky; bottom: -4px; }
 .agent-suggestion-action button { background: #3525cd; border: 0; border-radius: 7px; color: #fff; cursor: pointer; font: 700 11px/1 'Plus Jakarta Sans', sans-serif; padding: 8px 10px; white-space: nowrap; }
