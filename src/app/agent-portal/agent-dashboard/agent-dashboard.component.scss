@@ -24,3 +24,8 @@ $primary: #3525cd;
 .dashboard-welcome { align-items: center; justify-content: space-between; min-height: 0; padding: 4px 0 24px; overflow: visible; border-radius: 0; background: transparent; box-shadow: none; gap: 20px; }
 .welcome-copy { max-width: none; }.welcome-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }.welcome-copy h1 { max-width: none; margin: 0; font-size: clamp(1.55rem, 2.5vw, 2rem); }.welcome-copy p { margin-top: 7px; }.registry-sync { padding: 5px 9px; border-radius: 999px; background: #dff7e9; font-size: .66rem; letter-spacing: .02em; text-transform: none; }.welcome-actions { flex: 0 0 auto; margin: 0; }
 @media (max-width: 760px) { .dashboard-welcome { display: block; padding: 2px 0 20px; }.welcome-copy { max-width: 100%; }.welcome-actions { margin-top: 16px; } }
+
+.activity-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; margin-bottom: 22px; }
+.recent-filings, .journal-conflicts { margin-bottom: 0; }
+@media (min-width: 1024px) { .activity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 761px) and (max-width: 1100px) { .filing-row { grid-template-columns: auto minmax(0, 1fr) auto; }.filing-row time { display: none; } }

@@ -15,7 +15,7 @@ import { ScriptLoaderService } from '../../shared/services/script-loader.service
 import { WindowRefService } from '../../shared/services/window-ref.service';
 import { IconComponent } from '../ui/icon.component';
 
-type UpgradeReason = 'trial-expired' | 'portfolio-threshold' | 'free-plan';
+type UpgradeReason = 'trial-expired' | 'portfolio-threshold';
 
 /** Focused plan picker for firms that no longer qualify for full free access. */
 @Component({
@@ -70,7 +70,9 @@ export class AgentEntitlementUpgradeComponent implements OnInit {
       return 'trial-expired';
     }
     if (state.portfolioMarkCount > state.freeUnlimitedPortfolioThreshold) return 'portfolio-threshold';
-    return 'free-plan';
+    // A normal free plan can still view and manage its included portfolio. Upgrade only when a
+    // paid-only action is blocked (upgradePrompt) or the portfolio is outside the free allowance.
+    return null;
   });
   /** A just-blocked action always wins over a prior session-level dismissal. */
   readonly visible = computed(() => !!this.upgradePrompt() || (!!this.reason() && !this.dismissed()));
@@ -124,6 +126,10 @@ export class AgentEntitlementUpgradeComponent implements OnInit {
     this.dismissed.set(true);
   }
 
+  onBackdropClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.continueWithFree();
+  }
+
   startCheckout(): void {
     const plan = this.selectedPlan();
     if (!plan || this.busy()) return;
@@ -174,7 +180,7 @@ export class AgentEntitlementUpgradeComponent implements OnInit {
       this.dismissed.set(true);
       return;
     }
-    if (state.effectivePlanCode === 'FREE' && typeof window !== 'undefined') {
+    if (this.visible() && typeof window !== 'undefined') {
       window.setTimeout(() => this.primaryAction?.nativeElement.focus());
     }
   }

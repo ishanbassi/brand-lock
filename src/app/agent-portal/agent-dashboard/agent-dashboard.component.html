@@ -37,7 +37,7 @@
         <strong>{{ s.activeTrademarks }}</strong>
         <small>Registered and active marks</small>
       </article>
-      <a routerLink="/agent-portal/deadlines" class="metric-card">
+      <a routerLink="/agent-portal/deadlines/renewals" class="metric-card">
         <span class="metric-icon metric-icon--amber"><span class="material-symbols-outlined">schedule</span></span>
         <span class="metric-label">Renewals due</span>
         <strong>{{ s.expiringIn90Days }}</strong>
@@ -105,6 +105,7 @@
       </aside>
     </div>
 
+    <div class="activity-grid">
     <section class="panel recent-filings">
       <div class="panel-head">
         <div><h2>Recent filings</h2><p>The newest trademark applications in your portfolio.</p></div>
@@ -116,7 +117,7 @@
         <div class="filings-list">
           @for (tm of s.recentFilings; track tm.id) {
             <a [routerLink]="['/agent-portal/portfolio', tm.id]" class="filing-row">
-              <span class="filing-mark"><span class="material-symbols-outlined">description</span></span>
+              <span class="filing-mark" aria-hidden="true">{{ trademarkInitials(tm.name) }}</span>
               <span class="filing-name"><strong>{{ tm.name || 'Untitled trademark' }}</strong><small>Class {{ tm.tmClass || '—' }} @if (tm.applicationNo) { · Application {{ tm.applicationNo }} }</small></span>
               <time>@if (tm.applicationDate) { Filed {{ tm.applicationDate | date:'dd MMM yyyy' }} }</time>
               <span class="status-badge" [class]="'status--' + getStatusBadge(tm.trademarkStatus)">{{ tm.trademarkStatus || 'Unknown' }}</span>
@@ -145,8 +146,8 @@
         </div>
       }
     </section>
+    </div>
 
-  
   }
 
   @if (showAddTrademarkDialog()) {

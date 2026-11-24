@@ -1,5 +1,5 @@
 @if (visible()) {
-  <div class="upgrade-backdrop" role="presentation">
+  <div class="upgrade-backdrop" role="presentation" (click)="onBackdropClick($event)">
     <section #dialog class="upgrade-dialog" role="dialog" aria-modal="true" aria-labelledby="upgrade-title" aria-describedby="upgrade-description">
       <header class="upgrade-header">
         <div class="upgrade-header__mark" aria-hidden="true"><ap-icon name="lock" [size]="18" /></div>

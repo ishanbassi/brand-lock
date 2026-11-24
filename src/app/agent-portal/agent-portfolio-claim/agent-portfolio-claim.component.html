@@ -34,15 +34,13 @@
 
     <ul class="agent-list" *ngIf="agents().length > 0">
       <li *ngFor="let agent of agents()" class="agent-row" [class.selected]="isAgentSelected(agent)">
-        <label class="agent-check" (click)="$event.stopPropagation()">
+        <label class="agent-main">
           <input
             type="checkbox"
             [checked]="isAgentSelected(agent)"
             (change)="toggleAgentSelection(agent)"
             [attr.aria-label]="'Select ' + agent.displayName"
           />
-        </label>
-        <button type="button" class="agent-main" (click)="openAgent(agent)">
           <span class="agent-text">
             <span class="agent-name">{{ agent.displayName }}</span>
             <span class="agent-addr" *ngIf="agent.primaryAddress">
@@ -54,9 +52,8 @@
           </span>
           <span class="agent-meta">
             <span class="mark-count">{{ agent.markCount | number }} marks</span>
-            <span class="chev" aria-hidden="true">&rsaquo;</span>
           </span>
-        </button>
+        </label>
       </li>
     </ul>
 
@@ -88,80 +85,6 @@
   </section>
 
   <!-- ── Browse and select ──────────────────────────────────────────────── -->
-  <section class="card" *ngIf="phase() === 'browse' || phase() === 'claiming'">
-    <div class="browse-header">
-      <button type="button" class="btn-back" (click)="backToSearch()">&lsaquo; Back to search</button>
-      <div class="browse-title">
-        <h2>{{ selectedAgent()?.displayName }}</h2>
-        <p class="hint">{{ totalMarks() | number }} marks filed under this name</p>
-      </div>
-    </div>
-
-    <div class="top-action">
-      <button type="button" class="btn-secondary" [disabled]="phase() === 'claiming'" (click)="claimAll()">
-        Add all {{ totalMarks() | number }} under this name
-      </button>
-    </div>
-
-    <div class="toolbar">
-      <label class="select-all">
-        <input type="checkbox" [checked]="allOnPageSelected()" (change)="toggleAllOnPage()" />
-        <span>Select all on this page</span>
-      </label>
-      <span class="selected-count" *ngIf="selectedCount() > 0">{{ selectedCount() | number }} selected</span>
-    </div>
-
-    <div class="loading" *ngIf="loadingMarks()">Loading trademarks…</div>
-
-    <div class="table-scroll" *ngIf="!loadingMarks()">
-      <table class="marks-table">
-        <thead>
-          <tr>
-            <th class="col-check"><span class="sr-only">Select</span></th>
-            <th>Mark</th>
-            <th>Application no.</th>
-            <th>Class</th>
-            <th>Status</th>
-            <th>Proprietor</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let mark of marks()"
-            [class.selected]="isSelected(mark.id)"
-            (click)="toggle(mark.id)"
-          >
-            <td class="col-check">
-              <input type="checkbox" [checked]="isSelected(mark.id)" (click)="$event.stopPropagation()" (change)="toggle(mark.id)" />
-            </td>
-            <td class="mark-name">{{ mark.name || '—' }}</td>
-            <td>{{ mark.applicationNo || '—' }}</td>
-            <td>{{ mark.tmClass || '—' }}</td>
-            <td>{{ mark.trademarkStatus || 'Unknown' }}</td>
-            <td class="proprietor">{{ mark.proprietorName || '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="pager" *ngIf="totalPages() > 1">
-      <button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 0">Previous</button>
-      <span>Page {{ page() + 1 }} of {{ totalPages() | number }}</span>
-      <button type="button" (click)="goToPage(page() + 1)" [disabled]="page() + 1 >= totalPages()">Next</button>
-    </div>
-
-    <footer class="actions">
-      <button
-        type="button"
-        class="btn-primary"
-        [disabled]="selectedCount() === 0 || phase() === 'claiming'"
-        (click)="claimSelected()"
-      >
-        {{ phase() === 'claiming' ? 'Adding…' : 'Add ' + (selectedCount() | number) + ' to my portfolio' }}
-      </button>
-    </footer>
-  </section>
-
   <!-- ── Done ───────────────────────────────────────────────────────────── -->
   <section class="card done" *ngIf="phase() === 'done'">
     <div class="done-icon" aria-hidden="true">&#10003;</div>

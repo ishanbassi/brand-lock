@@ -44,6 +44,9 @@ interface SortableColumn {
   styleUrl: './agent-portfolio.component.scss',
 })
 export class AgentPortfolioComponent implements OnInit, OnDestroy {
+  private static readonly PENDING_IMPORT_NOTICE_DURATION_MS = 8_000;
+  private static readonly PENDING_IMPORT_NOTICE_STORAGE_KEY = 'agent-portfolio-notified-imports';
+
   private portfolioTableElement?: HTMLElement;
   private portfolioHorizontalScrollElement?: HTMLElement;
   private portfolioHorizontalContentElement?: HTMLElement;
@@ -199,6 +202,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   // rather than left on the upload screen, so this is the only place they learn their marks are
   // on the way — without it the portfolio just looks empty and broken.
   pendingImports = signal<AgentImportSummary[]>([]);
+  /** Acknowledge a pending upload once, rather than keeping a stale status banner on screen. */
+  pendingImportsNoticeVisible = signal(false);
+  private pendingImportsNoticeTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Export
   exporting = signal<ExportFormat | null>(null);
@@ -223,6 +229,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     for (const timer of this.customValueTimers.values()) clearTimeout(timer);
     for (const timer of this.trademarkUpdateTimers.values()) clearTimeout(timer);
     if (this.importPollTimer) clearInterval(this.importPollTimer);
+    if (this.pendingImportsNoticeTimer) clearTimeout(this.pendingImportsNoticeTimer);
   }
 
   ngOnInit(): void {
@@ -634,12 +641,55 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.agentDataService.getOwnImports().subscribe({
       // A failure here must not disturb the portfolio itself; the banner is supplementary.
       next: (imports) => {
-        this.pendingImports.set(imports.filter((i) => i.pending));
+        const pending = imports.filter((i) => i.pending);
+        this.pendingImports.set(pending);
+        this.showPendingImportsNoticeOnce(pending);
         if (imports.some((i) => i.status === 'QUEUED' || i.status === 'PROCESSING')) this.startImportPolling();
         else this.stopImportPolling();
       },
       error: () => this.pendingImports.set([]),
     });
+  }
+
+  dismissPendingImportsNotice(): void {
+    if (this.pendingImportsNoticeTimer) {
+      clearTimeout(this.pendingImportsNoticeTimer);
+      this.pendingImportsNoticeTimer = null;
+    }
+    this.pendingImportsNoticeVisible.set(false);
+  }
+
+  private showPendingImportsNoticeOnce(imports: AgentImportSummary[]): void {
+    if (!imports.length || this.pendingImportsNoticeVisible()) return;
+
+    const notified = this.notifiedPendingImportIds();
+    const newImportIds = imports.map((item) => String(item.id)).filter((id) => !notified.has(id));
+    if (!newImportIds.length) return;
+
+    newImportIds.forEach((id) => notified.add(id));
+    try {
+      localStorage.setItem(
+        AgentPortfolioComponent.PENDING_IMPORT_NOTICE_STORAGE_KEY,
+        JSON.stringify([...notified]),
+      );
+    } catch {
+      // Storage is optional. The notification still dismisses for this page visit.
+    }
+
+    this.pendingImportsNoticeVisible.set(true);
+    this.pendingImportsNoticeTimer = setTimeout(
+      () => this.dismissPendingImportsNotice(),
+      AgentPortfolioComponent.PENDING_IMPORT_NOTICE_DURATION_MS,
+    );
+  }
+
+  private notifiedPendingImportIds(): Set<string> {
+    try {
+      const stored = JSON.parse(localStorage.getItem(AgentPortfolioComponent.PENDING_IMPORT_NOTICE_STORAGE_KEY) || '[]');
+      return new Set(Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : []);
+    } catch {
+      return new Set();
+    }
   }
 
   importProgress(importBatch: AgentImportSummary): number | null {

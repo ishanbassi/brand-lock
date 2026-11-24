@@ -86,10 +86,10 @@
     Without this an agent whose spreadsheet failed to parse sees an empty portfolio and assumes the
     upload silently failed. The file is retained and queued for an admin; this says so.
   -->
-  @if (pendingImports().length > 0) {
-    <div class="alert-pending">
+  @if (pendingImportsNoticeVisible() && pendingImports().length > 0) {
+    <div class="alert-pending" role="status">
       <span class="pending-icon" aria-hidden="true"><ap-icon name="clock" [size]="18" /></span>
-      <div>
+      <div class="alert-pending__content">
         <strong>We're checking your uploaded file</strong>
         @for (imp of pendingImports(); track imp.id) {
           <p class="pending-file">
@@ -114,6 +114,7 @@
           Your trademarks will appear here once it's processed. There's no need to upload it again.
         </p>
       </div>
+      <button type="button" class="alert-dismiss" (click)="dismissPendingImportsNotice()" aria-label="Dismiss upload status"><ap-icon name="close" [size]="16" /></button>
     </div>
   }
 

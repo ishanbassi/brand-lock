@@ -146,13 +146,6 @@ $white: #ffffff;
   &.selected { background: var(--ap-accent-soft); }
 }
 
-.agent-check {
-  display: flex;
-  align-items: center;
-  padding: 0 0 0 var(--ap-space-2);
-  cursor: pointer;
-}
-
 .agent-main {
   flex: 1;
   min-width: 0;
@@ -160,7 +153,7 @@ $white: #ffffff;
   justify-content: space-between;
   align-items: center;
   gap: var(--ap-space-4);
-  padding: var(--ap-space-3) var(--ap-space-2);
+  padding: var(--ap-space-3);
   background: none;
   border: none;
   cursor: pointer;
@@ -169,6 +162,8 @@ $white: #ffffff;
   transition: background 0.12s ease;
 
   &:hover { background: $gray-50; }
+
+  input { flex: 0 0 auto; margin: 0; cursor: pointer; }
 }
 
 .agent-text {
@@ -208,8 +203,6 @@ $white: #ffffff;
   padding: var(--ap-space-1) var(--ap-space-2);
   border-radius: 999px;
 }
-
-.chev { color: $gray-400; font-size: 1.25rem; line-height: 1; }
 
 .empty {
   padding: var(--ap-space-5) 0 var(--ap-space-2);

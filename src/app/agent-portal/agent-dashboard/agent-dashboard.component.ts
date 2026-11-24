@@ -158,6 +158,18 @@ export class AgentDashboardComponent implements OnInit {
     return 'pending';
   }
 
+  trademarkInitials(name: string | null | undefined): string {
+    const initials = (name ?? '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => Array.from(part)[0])
+      .join('');
+
+    return initials.toLocaleUpperCase() || 'TM';
+  }
+
   scorePercent(score: number | undefined): number {
     return Math.round((score ?? 0) * 100);
   }
