@@ -1,8 +1,8 @@
 <div class="watch-page">
   @if (error()) { <div class="alert-error" role="alert">{{ error() }}</div> }
 
-  @if (loadingJournals() && requestedJournal() !== null) {
-    <div class="journal-loading route-loading" role="status">Loading Journal {{ requestedJournal() }}â€¦</div>
+  @if (loadingJournals()) {
+    <app-agent-page-skeleton variant="journal-watch" label="Loading Journal Watch" />
   } @else if (selectedJournal() === null) {
     <header class="watch-header">
       <div>
@@ -19,18 +19,16 @@
         <ap-icon name="watch" [size]="18" />
         <p><strong>Automatic watch:</strong> every new issue is checked at :40 past the hour (IST), after every mark in that issue has finished ingesting and enrichment.</p>
       </aside>
-      @if (loadingJournals()) {
-        <div class="journal-loading" role="status">Loading journal issues…</div>
-      } @else if (journals().length === 0) {
+      @if (journals().length === 0) {
         <div class="journal-loading">No journal issues are available yet.</div>
       } @else {
         <div class="journal-grid">
           @for (journal of journalSummaries(); track journal.journalNo; let first = $first) {
-            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
+            <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [class.locked]="isJournalLocked(journal.journalNo)" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [attr.aria-label]="isJournalLocked(journal.journalNo) ? 'Journal ' + journal.journalNo + ', locked. Upgrade to Pro to access.' : 'Open Journal ' + journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
               <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
               <span class="journal-copy"><strong>Journal {{ journal.journalNo }}</strong><small>@if (journal.publicationDate) { Published {{ journal.publicationDate | date: 'dd MMM yyyy' }} · } {{ journal.recordCount | number }} record{{ journal.recordCount === 1 ? '' : 's' }}</small></span>
               @if (first) { <span class="latest-badge">Latest</span> }
-              <ap-icon class="journal-arrow" name="chevron" [size]="16" />
+              @if (isJournalLocked(journal.journalNo)) { <span class="journal-lock"><ap-icon name="lock" [size]="15" /> <span>Pro</span></span> } @else { <ap-icon class="journal-arrow" name="chevron" [size]="16" /> }
             </button>
           }
         </div>
@@ -78,7 +76,7 @@
     </section>
 
     @if (!showingConflicts()) {
-    @if (browsing()) { <div class="status-panel" role="status"><span class="spinner"></span>Loading Journal {{ selectedJournal() }}…</div> }
+    @if (browsing()) { <app-agent-page-skeleton variant="journal-watch" [compact]="true" label="Loading Journal {{ selectedJournal() }}" /> }
     @else if (browseError()) { <div class="alert-error" role="alert">{{ browseError() }}</div> }
     @else if (journalMarks().length === 0) { <div class="status-panel">{{ portfolioOnly() ? 'No marks from your portfolio were published in this journal.' : 'No published marks match this search.' }}</div> }
     @else {

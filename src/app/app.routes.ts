@@ -13,6 +13,12 @@ export const routes: Routes = [
     },
     {
         // Feature deep dives explain a portal capability before an agent signs in.
+        path: 'agent-home/free-portfolio-management',
+        loadComponent: () => import('./agent-portal/agent-free-portfolio/agent-free-portfolio.component').then(m => m.AgentFreePortfolioComponent),
+        title: 'Free Trademark Portfolio Management Software | Trademarx',
+        canActivate: [agentHostGuard],
+    },
+    {
         path: 'agent-home/hearings',
         loadComponent: () => import('./agent-portal/agent-hearings-feature/agent-hearings-feature.component').then(m => m.AgentHearingsFeatureComponent),
         title: 'Trademark Hearing Alerts | Trademarx Agent Portal',

@@ -898,13 +898,13 @@ export class AgentDataService {
   // ── Journal watch ────────────────────────────────────────────────────────
 
   /** Journal issues available to check, newest first. */
-  getWatchJournals(limit = 24): Observable<number[]> {
+  getWatchJournals(limit = 2000): Observable<number[]> {
     return this.http.get<number[]>(
       `${this.base}/agent-portal/watch/journals?limit=${limit}`,
     );
   }
 
-  getJournalSummaries(limit = 24): Observable<AgentJournalSummary[]> {
+  getJournalSummaries(limit = 2000): Observable<AgentJournalSummary[]> {
     return this.http.get<AgentJournalSummary[]>(
       `${this.base}/agent-portal/watch/journal-summaries?limit=${limit}`,
     );

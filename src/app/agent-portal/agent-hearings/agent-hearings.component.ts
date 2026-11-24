@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { Deadline } from '../../../models/agent.model';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
 
 type HearingState = 'all' | 'live' | 'upcoming';
 type HearingSort = 'date' | 'application' | 'category';
@@ -17,7 +18,7 @@ type HearingSort = 'date' | 'application' | 'category';
 @Component({
   selector: 'app-agent-hearings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AgentPageSkeletonComponent],
   templateUrl: './agent-hearings.component.html',
   styleUrl: './agent-hearings.component.scss',
 })

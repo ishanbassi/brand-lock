@@ -18,7 +18,7 @@
   </div>
   @if (searchMode() === 'name') {
   <form class="search-form" (ngSubmit)="run()" (keydown.escape)="closePickers()">
-    <div class="search-action"><button type="submit" class="btn-primary" [disabled]="!query.trim() || loading() || isPhoneticProcessing()"><span>{{ loading() || isPhoneticProcessing() ? 'Searching...' : 'Search' }}</span><span class="material-symbols-outlined">arrow_forward</span></button></div>
+    <div class="search-action"><button type="submit" class="btn-primary" [disabled]="!query.trim() || !selectedClasses().length || loading() || isPhoneticProcessing()"><span>{{ loading() || isPhoneticProcessing() ? 'Searching...' : 'Search' }}</span><span class="material-symbols-outlined">arrow_forward</span></button></div>
     <div class="search-field mark-field">
       <label for="mark">Proposed mark</label>
       <div class="field-value">
@@ -127,6 +127,7 @@
     </div><button type="button" class="reset-filters" (click)="resetFilters()">Reset all</button></div>
   }
   @if (error()) { <div class="error">{{ error() }}</div> }
+  @if (loading()) { <app-agent-page-skeleton variant="search-report" [compact]="true" label="Loading search report results" /> }
   } @else {
     <app-agent-application-number-search [embedded]="true" (resultsFound)="receiveApplicationNumberResults($event)" />
   }
@@ -141,7 +142,6 @@
               <span class="similarity-pill moderate">{{ countFor('MEDIUM') }} moderate</span>
               <span class="similarity-pill distant">{{ countFor('LOW') }} distant</span>
             }
-            @if (r.tmClasses.length) { <span class="class-pill">{{ classSentence(r.tmClasses) }} only</span> }
           </div>
           <div class="results-actions">
             <div class="view-toggle" role="group" aria-label="Results view">
@@ -166,8 +166,7 @@
             <thead><tr>
               <th class="select-cell"><input type="checkbox" [checked]="isPageSelected()" (change)="togglePageSelection()" aria-label="Select all results on this page" /></th>
               <th>Image</th><th>Name</th><th>Application</th><th>Class</th><th>Proprietor</th>
-              <th>Proprietor address</th><th>Status</th><th>Filed</th><th>Renewal</th><th>Journal no.</th><th>Details</th><th>Actions</th>
-              @if (reportSearchType === 'phonetic') { <th>Similarity</th> }
+              <th>Proprietor address</th><th>Status</th>@if (reportSearchType === 'phonetic') { <th>Similarity</th> }<th>Filed</th><th>Renewal</th><th>Journal no.</th><th>Details</th><th>Actions</th>
             </tr></thead>
             <tbody>
               @for (row of r.rows; track row.trademarkId) {
@@ -180,11 +179,8 @@
                   </td>
                   <td class="cell-name">{{ row.name || '—' }}</td><td>{{ row.applicationNo || '—' }}</td><td>{{ row.tmClass || '—' }}</td>
                   <td class="cell-prop">{{ row.proprietorName || '—' }}</td><td class="cell-address">{{ row.proprietorAddress || '—' }}</td>
-                  <td><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span></td><td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
+                  <td><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span></td>@if (reportSearchType === 'phonetic') { <td><span class="similarity-pill" [class.close]="row.riskBand === 'HIGH'" [class.moderate]="row.riskBand === 'MEDIUM'" [class.distant]="row.riskBand === 'LOW'">{{ similarityLabel(row.riskBand) }}</span></td> }<td>{{ formatDate(row.applicationDate) }}</td><td>{{ formatDate(row.renewalDate) }}</td>
                   <td>{{ row.journalNo || '—' }}</td><td class="cell-details">{{ row.details || '—' }}</td><td><button type="button" class="details-button" (click)="openDetails(row)" [disabled]="!row.trademarkId" [attr.aria-label]="'View details for ' + (row.name || 'trademark')">View details</button></td>
-                  @if (reportSearchType === 'phonetic') {
-                    <td><span class="chip" [class.high]="row.riskBand === 'HIGH'" [class.medium]="row.riskBand === 'MEDIUM'">{{ bandLabel(row.riskBand) }}</span></td>
-                  }
                 </tr>
               }
             </tbody>
@@ -200,10 +196,10 @@
                     <div class="mark-artwork large">@if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> } @else { <span aria-hidden="true">{{ markMonogram(row) }}</span> }</div>
                     <div><h2>{{ row.name || '—' }}</h2><span>{{ row.type || 'Word mark' }}</span></div>
                   </div>
-                  @if (reportSearchType === 'phonetic') { <span class="similarity-pill" [class.close]="row.riskBand === 'HIGH'" [class.moderate]="row.riskBand === 'MEDIUM'" [class.distant]="row.riskBand === 'LOW'">{{ bandLabel(row.riskBand) }}</span> }
+                  @if (reportSearchType === 'phonetic') { <div class="card-similarity"><span>Similarity</span><strong class="similarity-pill" [class.close]="row.riskBand === 'HIGH'" [class.moderate]="row.riskBand === 'MEDIUM'" [class.distant]="row.riskBand === 'LOW'">{{ similarityLabel(row.riskBand) }}</strong></div> }
                 </div>
                 <div class="card-metrics"><div><span>App #</span><strong>{{ row.applicationNo || '—' }}</strong></div><div><span>Class</span><strong>{{ row.tmClass ? 'Class ' + row.tmClass : '—' }}</strong></div><div><span>Filed</span><strong>{{ formatDate(row.applicationDate) }}</strong></div></div>
-                <div class="card-proprietor"><span>Proprietor</span><strong>{{ row.proprietorName || '—' }}</strong><p>{{ row.proprietorAddress || '—' }}</p></div>
+                <div class="card-goods"><span>Goods / services</span><p>{{ row.details || '—' }}</p></div>
               </div>
               <footer><span class="status-badge" [ngClass]="statusClass(row)">{{ statusLabel(row) }}</span><button type="button" class="details-button" (click)="openDetails(row)" [disabled]="!row.trademarkId">View mark <span aria-hidden="true">→</span></button></footer>
             </article>
@@ -224,7 +220,6 @@
           </div>
         </div>
         }
-        @if (r.tmClasses.length) { <p class="footnote">Every mark listed is in {{ classSentence(r.tmClasses) }}. No other class was searched.</p> }
       }
     </section>
   }

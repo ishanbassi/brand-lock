@@ -9,6 +9,7 @@ import { AgentDataService } from '../../shared/services/agent-data.service';
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
 import { AgentApplicationNumberSearchComponent, ApplicationNumberLookup } from '../agent-application-number-search/agent-application-number-search.component';
+import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
 
 type SearchMode = 'name' | 'application-number';
 type ResultsView = 'list' | 'grid';
@@ -23,7 +24,7 @@ type ResultsView = 'list' | 'grid';
 @Component({
   selector: 'app-agent-search-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, ExportMenuComponent, AgentApplicationNumberSearchComponent],
+  imports: [CommonModule, FormsModule, ExportMenuComponent, AgentApplicationNumberSearchComponent, AgentPageSkeletonComponent],
   templateUrl: './agent-search-report.component.html',
   styleUrl: './agent-search-report.component.scss',
 })
@@ -398,7 +399,8 @@ export class AgentSearchReportComponent implements OnInit {
   /** What the closed picker reads as. Spelled out up to three, counted beyond that. */
   classSummary(): string {
     const selected = this.selectedClasses();
-    if (selected.length === 0 || selected.length === this.classes.length) return 'All classes (1–45)';
+    if (selected.length === 0) return 'Select classes';
+    if (selected.length === this.classes.length) return 'All classes (1–45)';
     if (selected.length <= 3) return selected.map(c => `Class ${c}`).join(', ');
     return `Classes ${selected.slice(0, 2).join(', ')} +${selected.length - 2}`;
   }
@@ -417,7 +419,7 @@ export class AgentSearchReportComponent implements OnInit {
 
   classSelectionHint(): string {
     const count = this.selectedClasses().length;
-    return count ? `${count} ${count === 1 ? 'class' : 'classes'} selected` : 'No specific classes selected (searches all)';
+    return count ? `${count} ${count === 1 ? 'class' : 'classes'} selected` : 'Select at least one class to search';
   }
 
   hasActiveFilters(): boolean {
@@ -432,7 +434,7 @@ export class AgentSearchReportComponent implements OnInit {
   }
 
   private searchClasses(): number[] {
-    return this.selectedClasses().length ? this.selectedClasses() : this.classes;
+    return this.selectedClasses();
   }
 
   /** The same phrasing the PDF uses, so screen and document agree. */
@@ -444,6 +446,14 @@ export class AgentSearchReportComponent implements OnInit {
   run(): void {
     const term = this.query.trim();
     if (!term || this.loading()) {
+      return;
+    }
+    if (this.selectedClasses().length === 0) {
+      this.error.set('Select at least one class to search.');
+      return;
+    }
+    if (this.searchType === 'phonetic' && this.selectedClasses().length === this.classes.length) {
+      this.error.set('Phonetic search requires specific classes. Select one or more classes instead of all 45.');
       return;
     }
     this.loading.set(true);
@@ -847,6 +857,10 @@ export class AgentSearchReportComponent implements OnInit {
   bandLabel(band: string): string {
     // Spelled out rather than left to colour alone — these reports get printed and photocopied.
     return band === 'HIGH' ? 'Close' : band === 'MEDIUM' ? 'Moderate' : 'Distant';
+  }
+
+  similarityLabel(band: string): string {
+    return band === 'HIGH' ? 'High' : band === 'MEDIUM' ? 'Medium' : 'Distant';
   }
 
   statusLabel(row: SearchReportRow): string {

@@ -1,0 +1,43 @@
+<section
+  class="agent-page-skeleton"
+  [class.agent-page-skeleton--compact]="compact"
+  [class]="'agent-page-skeleton agent-page-skeleton--' + variant"
+  role="status"
+  aria-live="polite"
+  [attr.aria-label]="label">
+  <span class="agent-page-skeleton__sr-only">{{ label }}</span>
+
+  @switch (variant) {
+    @case ('search-report') {
+      <div class="skeleton-toolbar">
+        <i></i><i></i><i></i>
+      </div>
+      <div class="skeleton-table">
+        <div class="skeleton-table__head"><i></i><i></i><i></i><i></i><i></i></div>
+        @for (row of rows; track row) { <div class="skeleton-table__row"><i></i><i></i><i></i><i></i><i></i></div> }
+      </div>
+    }
+    @case ('journal-watch') {
+      <div class="skeleton-heading"><i></i><i></i></div>
+      <div class="skeleton-filter-bar"><i></i><i></i><i></i></div>
+      <div class="skeleton-feed">
+        @for (card of cards; track card) { <article><i></i><div><b></b><i></i><i></i></div><em></em></article> }
+      </div>
+    }
+    @case ('renewals') {
+      <div class="skeleton-list-head"><i></i><i></i></div>
+      <div class="skeleton-records">
+        @for (row of rows; track row) { <article><i></i><div><b></b><i></i><i></i></div><div><b></b><i></i></div></article> }
+      </div>
+    }
+    @case ('hearings') {
+      <div class="skeleton-metrics">
+        @for (card of cards; track card) { <article><i></i><b></b><i></i></article> }
+      </div>
+      <div class="skeleton-heading"><i></i><i></i></div>
+      <div class="skeleton-hearing-list">
+        @for (row of rows; track row) { <article><i></i><div><b></b><i></i><i></i></div></article> }
+      </div>
+    }
+  }
+</section>

@@ -3,6 +3,7 @@ import { HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { BillingService } from '../../shared/services/billing.service';
 import { AgentCustomField, AgentImportResult, AgentPortfolioTrademark } from '../../../models/agent.model';
 import { AgentPortfolioClaimComponent } from '../agent-portfolio-claim/agent-portfolio-claim.component';
 import { IconComponent } from '../ui/icon.component';
@@ -52,7 +53,10 @@ export class AgentAddTrademarkDialogComponent implements OnInit {
     { value: 'SLOGAN', label: 'Slogan' },
   ];
 
-  constructor(private readonly agentDataService: AgentDataService) {}
+  constructor(
+    private readonly agentDataService: AgentDataService,
+    private readonly billing: BillingService,
+  ) {}
 
   ngOnInit(): void {
     this.loadCustomFields();
@@ -123,6 +127,9 @@ export class AgentAddTrademarkDialogComponent implements OnInit {
   }
 
   onClaimComplete(): void {
+    // Claims can take a firm across the 100-mark free-access threshold. Re-read the server-owned
+    // entitlement before returning to the portfolio so the shell can present the upgrade choice.
+    this.billing.refreshState();
     this.completed.emit();
     this.close();
   }
@@ -149,6 +156,7 @@ export class AgentAddTrademarkDialogComponent implements OnInit {
     this.agentDataService.addPortfolioItem({ ...draft, name: draft.name?.trim(), customFields }).subscribe({
       next: () => {
         this.savingDraft.set(false);
+        this.billing.refreshState();
         this.completed.emit();
         this.closed.emit();
       },

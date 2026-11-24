@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
+import { BillingService } from '../../shared/services/billing.service';
 import { AgentAddTrademarkDialogComponent, AddTrademarkStartView } from '../agent-add-trademark-dialog/agent-add-trademark-dialog.component';
 import {
   AgentCustomField,
@@ -210,6 +211,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly agentDataService: AgentDataService,
+    private readonly billing: BillingService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {}
@@ -661,6 +663,9 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     this.load(true);
     this.loadDashboardStats();
     this.loadFilterOptions();
+    // A completed import can be the first event that takes a firm beyond the 100-mark allowance.
+    // Refresh the shell-owned state here, once the background batch has actually finished.
+    this.billing.refreshState();
   }
 
   /** The filter and sort the table reflects — sent with the listing and with both exports. */

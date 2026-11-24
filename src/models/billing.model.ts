@@ -66,6 +66,14 @@ export interface BillingState {
   portfolioMarkCount: number;
   freeUnlimitedPortfolioThreshold: number;
   freeUnlimitedAccess: boolean;
+  /**
+   * Authoritative one-time trial eligibility, calculated by the billing service.
+   *
+   * This must never be derived from browser history: the service knows whether an agent has
+   * previously started a Pro trial and only returns true for a Free account whose portfolio is
+   * above the free-access threshold and which has never used that trial.
+   */
+  proTrialEligible: boolean;
   entitlements: Partial<Record<FeatureKey, FeatureEntitlement>>;
 }
 

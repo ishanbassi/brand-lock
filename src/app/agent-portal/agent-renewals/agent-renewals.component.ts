@@ -8,6 +8,7 @@ import { AgentDataService, OVERDUE_RENEWAL_LOOKBACK_DAYS } from '../../shared/se
 import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { printReport } from '../ui/print-report';
 import { saveBlob } from '../ui/save-blob';
+import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
 
 type RenewalScope = 'renewals' | 'renewals-upcoming' | 'renewals-overdue';
 type MilestoneFilter = 'all' | 'overdue' | 'urgent' | 'upcoming';
@@ -24,7 +25,7 @@ interface RenewalRecord extends Deadline {
 @Component({
   selector: 'app-agent-renewals',
   standalone: true,
-  imports: [CommonModule, ExportMenuComponent],
+  imports: [CommonModule, ExportMenuComponent, AgentPageSkeletonComponent],
   templateUrl: './agent-renewals.component.html',
   styleUrl: './agent-renewals.component.scss',
 })

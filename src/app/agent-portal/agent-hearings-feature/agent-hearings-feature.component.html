@@ -99,6 +99,7 @@
     </div>
   </section>
 
+  <app-agent-pricing-plans [useOnboardingModal]="true" (onboardingRequested)="onboardingModalOpen.set(true)" />
   <app-agent-portal-footer />
   <app-agent-onboarding-modal [open]="onboardingModalOpen()" [preview]="null" (closed)="onboardingModalOpen.set(false)" />
 </main>

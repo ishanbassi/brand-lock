@@ -11,6 +11,8 @@ import { IconComponent } from '../ui/icon.component';
 import { TrademarkService } from '../../shared/services/trademark.service';
 import { ITrademark } from '../../../models/trademark.model';
 import { Subject, Subscription, debounceTime } from 'rxjs';
+import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
+import { BillingService } from '../../shared/services/billing.service';
 
 type JournalSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
 
@@ -27,7 +29,7 @@ const DESCRIPTION_PREVIEW_CHARS = 160;
 @Component({
   selector: 'app-agent-journal-watch',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ExportMenuComponent, IconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ExportMenuComponent, IconComponent, AgentPageSkeletonComponent],
   templateUrl: './agent-journal-watch.component.html',
   styleUrl: './agent-journal-watch.component.scss',
 })
@@ -97,6 +99,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly trademarkService: TrademarkService,
+    private readonly billing: BillingService,
   ) {}
 
   ngOnDestroy(): void {
@@ -136,14 +139,19 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
     this.searchSubscription = this.searchChanges.pipe(debounceTime(300)).subscribe(() => this.handleSearchInput());
 
-    this.loadJournalSummaries();
+    // Wait for the plan snapshot before resolving a deep link. That keeps a Free user from
+    // briefly opening a historical issue while the lock state is still loading.
+    this.billing.loadState().subscribe({
+      next: () => this.loadJournalSummaries(),
+      error: () => this.loadJournalSummaries(),
+    });
   }
 
   private loadJournalSummaries(): void {
-    this.agentDataService.getJournalSummaries().subscribe({
+    this.agentDataService.getJournalSummaries(2000).subscribe({
       next: summaries => this.finishLoadingJournals(summaries),
       // The list-only endpoint keeps the screen usable while an older API deployment catches up.
-      error: () => this.agentDataService.getWatchJournals().subscribe({
+      error: () => this.agentDataService.getWatchJournals(2000).subscribe({
         next: journalNos => this.finishLoadingJournals(journalNos.map(journalNo => ({ journalNo, recordCount: 0 }))),
         error: () => {
           this.error.set('Could not load journal issues.');
@@ -197,11 +205,25 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
 
   selectJournal(journalNo: number): void {
     if (this.running()) return;
+    if (this.isJournalLocked(journalNo)) {
+      this.showJournalUpgrade();
+      return;
+    }
     void this.router.navigate(['/agent-portal/watch/journal', journalNo]);
+  }
+
+  isJournalLocked(journalNo: number): boolean {
+    const latest = this.journals()[0];
+    return latest != null && journalNo !== latest && this.billing.state()?.effectivePlanCode === 'FREE';
   }
 
   private syncWorkspaceWithRoute(journalNo: number | null): void {
     if (journalNo != null && this.journals().includes(journalNo)) {
+      if (this.isJournalLocked(journalNo)) {
+        this.showJournalUpgrade();
+        void this.router.navigate(['/agent-portal/watch/journal'], { replaceUrl: true });
+        return;
+      }
       if (this.selectedJournal() !== journalNo) {
         this.openJournalWorkspace(journalNo, this.route.snapshot.queryParamMap.get('run') === '1');
       }
@@ -247,6 +269,16 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   private parseJournalNo(value: string | null): number | null {
     const journalNo = Number(value);
     return Number.isInteger(journalNo) && journalNo > 0 ? journalNo : null;
+  }
+
+  private showJournalUpgrade(): void {
+    this.billing.openUpgrade({
+      feature: 'JOURNAL_HISTORY',
+      planCode: this.billing.state()?.effectivePlanCode ?? 'FREE',
+      limit: 1,
+      used: null,
+      detail: 'Free includes the latest Trade Marks Journal issue. Upgrade to Pro to browse and watch every earlier issue.',
+    });
   }
 
   setSearchField(field: JournalSearchField): void {

@@ -14,6 +14,7 @@
 .similarity-pill.close { background: #ffdad6; color: #93000a; }
 .similarity-pill.moderate { background: #ffdcc3; color: #6e3900; }
 .similarity-pill.distant { background: #85f8c4; color: #005137; }
+.similarity-pill.unscored { background: #eaedff; color: #464555; }
 .class-pill { background: #eaedff; color: #464555; font-weight: 600; letter-spacing: .02em; text-transform: none; }
 
 .view-toggle { gap: 2px; padding: 2px; border: 1px solid #c7c4d8; border-radius: 5px; background: #f2f3ff; }
@@ -42,7 +43,6 @@
 .results-table .cell-name { font-size: 14px; font-weight: 600; }
 .results-table .cell-prop { max-width: 200px; font-size: 12px; font-weight: 600; }
 .results-table .cell-address { max-width: 260px; color: #464555; font-size: 12px; line-height: 18px; }
-.results-table .cell-details, .results-table th:nth-child(10), .results-table td:nth-child(10), .results-table th:nth-child(11), .results-table td:nth-child(11) { display: none; }
 
 .status-badge { display: inline-flex; align-items: center; gap: 4px; max-width: 180px; border-radius: 999px; padding: 3px 8px; font-size: 12px; font-weight: 600; line-height: 16px; white-space: nowrap; }
 .status-badge::before { width: 6px; height: 6px; flex: none; border-radius: 50%; background: currentColor; content: ''; }
@@ -56,11 +56,13 @@
 .details-button:disabled { color: #777587; opacity: .7; }
 
 .results-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.results-card-grid.results-grid-hidden, .table-scroll.results-list-hidden { display: none; }
 .result-card { display: flex; min-width: 0; min-height: 300px; flex-direction: column; justify-content: space-between; gap: 16px; border: 1px solid #c7c4d8; border-radius: 6px; padding: 16px; background: #fff; box-shadow: 0 1px 3px rgb(19 27 46 / 12%); transition: background .15s ease, border-color .15s ease; }
 .result-card:hover { background: #f2f3ff; }
 .result-card.is-selected { border-color: #3525cd; background: #e2dfff; }
 .result-card-head { align-items: flex-start; justify-content: space-between; gap: 8px; }
 .result-card-title { min-width: 0; gap: 8px; }
+.card-similarity { display: grid; flex: none; justify-items: end; gap: 3px; }.card-similarity > span { color: #464555; font-size: 10px; font-weight: 700; letter-spacing: .04em; line-height: 14px; text-transform: uppercase; }.card-similarity .similarity-pill { font-style: normal; }
 .result-card-title input { align-self: center; flex: none; }
 .result-card-title > div:last-child { display: grid; min-width: 0; gap: 2px; }
 .result-card h2 { overflow: hidden; margin: 0; color: #131b2e; font-size: 16px; font-weight: 600; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; }
@@ -71,7 +73,7 @@
 .card-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; border: 1px solid #c7c4d8; border-radius: 4px; padding: 8px; background: #faf8ff; }
 .card-metrics span, .card-proprietor > span { display: block; color: #464555; font-size: 11px; font-weight: 700; letter-spacing: .04em; line-height: 14px; text-transform: uppercase; }
 .card-metrics strong { display: block; margin-top: 2px; overflow: hidden; color: #131b2e; font-size: 12px; font-weight: 600; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
-.card-proprietor { margin-top: 16px; }.card-proprietor > strong { display: block; margin-top: 2px; color: #131b2e; font-size: 12px; line-height: 16px; }.card-proprietor p { display: -webkit-box; margin: 2px 0 0; overflow: hidden; color: #464555; font-size: 13px; line-height: 18px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.card-goods { margin-top: 16px; }.card-goods > span { display: block; color: #464555; font-size: 11px; font-weight: 700; letter-spacing: .04em; line-height: 14px; text-transform: uppercase; }.card-goods p { display: -webkit-box; margin: 2px 0 0; overflow: hidden; color: #464555; font-size: 13px; line-height: 18px; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .result-card footer { justify-content: space-between; gap: 8px; border-top: 1px solid #c7c4d8; padding-top: 8px; }
 
 @media (max-width: 1100px) { .results-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { isoCertificateAccessGuard } from '../guards/iso-certificate-access.guard';
+import { agentEntitlementGuard } from '../guards/agent-entitlement.guard';
 
 export const agentPortalRoutes: Routes = [
   {
@@ -23,6 +24,8 @@ canActivate: [isoCertificateAccessGuard],
     path: 'watch/conflicts',
     loadComponent: () => import('./agent-conflicts/agent-conflicts.component').then(m => m.AgentConflictsComponent),
     title: 'New Filings | Agent Portal',
+    canActivate: [agentEntitlementGuard],
+    data: { entitlementFeature: 'NEW_FILING_WATCH' },
   },
   {
     path: 'watch/journal',
@@ -94,25 +97,30 @@ canActivate: [isoCertificateAccessGuard],
   {
     path: 'deadlines/renewals',
     loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
-    data: { scope: 'renewals' },
     title: 'Trademark Renewals | Agent Portal',
+    canActivate: [agentEntitlementGuard],
+    data: { scope: 'renewals', entitlementFeature: 'DEADLINES' },
   },
   {
     path: 'deadlines/renewals/upcoming',
     loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
-    data: { scope: 'renewals-upcoming' },
+    data: { scope: 'renewals-upcoming', entitlementFeature: 'DEADLINES' },
     title: 'Upcoming Renewals | Agent Portal',
+    canActivate: [agentEntitlementGuard],
   },
   {
     path: 'deadlines/renewals/overdue',
     loadComponent: () => import('./agent-renewals/agent-renewals.component').then(m => m.AgentRenewalsComponent),
-    data: { scope: 'renewals-overdue' },
+    data: { scope: 'renewals-overdue', entitlementFeature: 'DEADLINES' },
     title: 'Overdue Renewals | Agent Portal',
+    canActivate: [agentEntitlementGuard],
   },
   {
     path: 'deadlines/hearings',
     loadComponent: () => import('./agent-hearings/agent-hearings.component').then(m => m.AgentHearingsComponent),
     title: 'Hearings | Agent Portal',
+    canActivate: [agentEntitlementGuard],
+    data: { entitlementFeature: 'DEADLINES' },
   },
   {
     path: 'documents',

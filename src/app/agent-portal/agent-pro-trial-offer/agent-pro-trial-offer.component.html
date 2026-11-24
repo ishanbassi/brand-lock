@@ -1,0 +1,56 @@
+@if (visible()) {
+  <div class="trial-offer-backdrop" (click)="dismiss()">
+    <section #dialog class="trial-offer-dialog" role="dialog" aria-modal="true" aria-labelledby="pro-trial-title" aria-describedby="pro-trial-description" (click)="$event.stopPropagation()">
+      <div class="trial-offer-dialog__stripe" aria-hidden="true"></div>
+      <button type="button" class="trial-offer-dialog__close" aria-label="Dismiss Pro trial offer" (click)="dismiss()"><ap-icon name="close" [size]="18" /></button>
+
+      <div class="trial-offer-dialog__body">
+        <header class="trial-offer-dialog__header">
+          <span class="trial-offer-dialog__badge"><ap-icon name="watch" [size]="14" /> Special invitation · 14 days free all-access</span>
+          <h2 id="pro-trial-title">Unlock the full power of Pro — free for 14 days</h2>
+          <p id="pro-trial-description">Experience automated journal tracking, unlimited trademark alerts, and smart docketing with zero upfront payment. Cancel anytime in one click.</p>
+        </header>
+
+        <div class="trial-offer-dialog__cadence" role="group" aria-label="Billing interval">
+          <button type="button" [class.active]="interval() === 'MONTHLY'" (click)="chooseInterval('MONTHLY')">Monthly billing</button>
+          <button type="button" [class.active]="interval() === 'ANNUAL'" (click)="chooseInterval('ANNUAL')">Yearly billing @if (annualSavingPct()) { <span>Save {{ annualSavingPct() }}%</span> }</button>
+        </div>
+
+        @if (selectedPlan(); as plan) {
+          <section class="trial-offer-dialog__price" aria-label="Trial price and billing">
+            <div class="trial-offer-dialog__price-copy">
+              <strong>₹0</strong>
+              <div><b>due today for 14 days</b><s>{{ regularPrice(plan) }}</s></div>
+            </div>
+            <p>{{ billingNotice(plan) }}</p>
+            <div class="trial-offer-dialog__price-trust"><span><ap-icon name="check" [size]="13" /> No charge today</span><small>Instant setup · Full export access</small></div>
+          </section>
+        } @else {
+          <section class="trial-offer-dialog__price trial-offer-dialog__price--loading" aria-live="polite">Loading the current Pro plan…</section>
+        }
+
+        <section class="trial-offer-dialog__features" aria-labelledby="pro-trial-features">
+          <div><h3 id="pro-trial-features">Included in your 14-day Pro pass</h3><span>{{ features().length }} Pro features</span></div>
+          <ul>
+            @for (feature of features(); track feature) { <li><span><ap-icon name="check" [size]="13" /></span>{{ feature }}</li> }
+          </ul>
+        </section>
+
+        @if (error()) { <p class="trial-offer-dialog__error" role="alert">{{ error() }}</p> }
+
+        <footer class="trial-offer-dialog__actions">
+          <button type="button" class="trial-offer-dialog__start" #primaryAction [disabled]="busy() || !selectedPlan()" (click)="startTrial()">
+            {{ busy() ? 'Opening secure checkout…' : 'Start 14-day free Pro trial — pay ₹0 today' }} <ap-icon name="chevron" [size]="17" />
+          </button>
+          <button type="button" class="trial-offer-dialog__dismiss" (click)="dismiss()">Maybe later, continue with the limited Free tier</button>
+        </footer>
+
+        <div class="trial-offer-dialog__assurances" aria-label="Trial assurances">
+          <span><ap-icon name="watch" [size]="15" /> 100% risk-free 14-day trial</span>
+          <span><ap-icon name="check" [size]="15" /> Instant full activation</span>
+          <span><ap-icon name="close" [size]="15" /> Cancel anytime in one click</span>
+        </div>
+      </div>
+    </section>
+  </div>
+}

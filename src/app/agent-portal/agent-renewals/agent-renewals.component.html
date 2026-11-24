@@ -34,7 +34,7 @@
   <section class="docket-list" aria-label="Trademark renewal records">
     <header class="list-head"><div><input id="selectAllCheckbox" type="checkbox" [checked]="allPageSelected()" (change)="toggleAll()" /><label for="selectAllCheckbox">{{ filtered().length }} Trademark{{ filtered().length === 1 ? '' : 's' }} Displayed</label></div><div>CGPDTM Live Feed Active <i></i></div></header>
     @if (loading()) {
-      <div class="loading" role="status"><span></span><span></span><span></span>Loading renewal docket…</div>
+      <app-agent-page-skeleton variant="renewals" label="Loading trademark renewal docket" />
     } @else if (paged().length === 0) {
       <div class="empty"><span class="material-symbols-outlined">event_busy</span><h2>No renewals match these filters</h2><p>Adjust the search, milestone, or date window to see renewal records.</p></div>
     } @else {

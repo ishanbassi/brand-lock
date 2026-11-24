@@ -33,10 +33,17 @@ export class BillingService {
   readonly state = this.stateSignal.asReadonly();
 
   /**
-   * The last 402 any request received. Set by the entitlement interceptor, shown by the shell's
-   * billing banner, and cleared on navigation - a prompt belongs to the screen that raised it.
+   * The last 402 any request received. Retained as billing context while `upgradePrompt` controls
+   * the shell-level modal shown for the action that raised it.
    */
   readonly lastEntitlementError = signal<EntitlementError | null>(null);
+
+  /**
+   * An in-context upgrade request. Unlike `lastEntitlementError`, this is deliberately retained
+   * until the agent closes the prompt: a restricted action should explain its own paywall rather
+   * than redirecting the agent away from the work they were trying to do.
+   */
+  readonly upgradePrompt = signal<EntitlementError | null>(null);
 
   loadState(): Observable<BillingState> {
     return this.http.get<BillingState>(`${this.base}/state`).pipe(tap(s => this.stateSignal.set(s)));
@@ -45,6 +52,16 @@ export class BillingService {
   /** Fire-and-forget refresh. Failure keeps whatever was already known. */
   refreshState(): void {
     this.loadState().subscribe({ error: () => undefined });
+  }
+
+  openUpgrade(problem: EntitlementError): void {
+    this.lastEntitlementError.set(problem);
+    this.upgradePrompt.set(problem);
+    this.refreshState();
+  }
+
+  dismissUpgrade(): void {
+    this.upgradePrompt.set(null);
   }
 
   getPlans(): Observable<SubscriptionPlan[]> {

@@ -8,6 +8,7 @@ import { NotificationService } from '../shared/services/notification.service';
 import { AgentDataService, DeadlineCounts } from '../shared/services/agent-data.service';
 import { IconComponent, IconName } from './ui/icon.component';
 import { IsoCertificateAccessService } from '../shared/services/iso-certificate-access.service';
+import { AgentEntitlementUpgradeComponent } from './agent-entitlement-upgrade/agent-entitlement-upgrade.component';
 
 /** A count a nav row can carry; names a field of {@link DeadlineCounts}. */
 type BadgeKey = keyof DeadlineCounts;
@@ -70,7 +71,7 @@ interface NavSection {
 @Component({
   selector: 'app-agent-portal-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, NotificationBellComponent, IconComponent],
+  imports: [CommonModule, RouterModule, NotificationBellComponent, IconComponent, AgentEntitlementUpgradeComponent],
   templateUrl: './agent-portal-shell.component.html',
   styleUrl: './agent-portal-shell.component.scss',
 })
@@ -88,6 +89,7 @@ export class AgentPortalShellComponent {
     scales: 'gavel',
     search: 'manage_search',
     documents: 'lock',
+    card: 'credit_card',
     signout: 'logout',
   };
 

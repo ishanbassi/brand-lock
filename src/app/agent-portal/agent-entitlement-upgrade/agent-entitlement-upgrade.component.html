@@ -1,0 +1,59 @@
+@if (visible()) {
+  <div class="upgrade-backdrop" role="presentation">
+    <section #dialog class="upgrade-dialog" role="dialog" aria-modal="true" aria-labelledby="upgrade-title" aria-describedby="upgrade-description">
+      <header class="upgrade-header">
+        <div class="upgrade-header__mark" aria-hidden="true"><ap-icon name="lock" [size]="18" /></div>
+        <h2 id="upgrade-title">{{ heading() }}</h2>
+        <p id="upgrade-description">{{ description() }}</p>
+        <div class="cadence" role="group" aria-label="Billing interval">
+          <button type="button" [class.active]="interval() === 'MONTHLY'" (click)="chooseInterval('MONTHLY')">Monthly</button>
+          <button type="button" [class.active]="interval() === 'ANNUAL'" (click)="chooseInterval('ANNUAL')">
+            Yearly
+            @if (annualSavingPct()) { <span>Save {{ annualSavingPct() }}%</span> }
+          </button>
+        </div>
+      </header>
+
+      <div class="plan-grid">
+        <section class="free-plan" aria-labelledby="free-plan-title">
+          <div>
+            <div class="plan-heading"><h3 id="free-plan-title">Free access</h3><span>Current</span></div>
+            <p class="free-plan__price">₹0</p>
+            <p class="free-plan__summary">{{ freeSummary() }}</p>
+            <ul>
+              <li><ap-icon name="portfolio" [size]="15" /> Your saved portfolio stays available</li>
+              <li><ap-icon name="journal" [size]="15" /> Latest journal issue only</li>
+              <li><ap-icon name="search" [size]="15" /> Limited reports and exports each day</li>
+              <li><ap-icon name="lock" [size]="15" /> Monitoring, deadlines, and branding are unavailable</li>
+            </ul>
+          </div>
+          <button type="button" class="free-plan__continue" (click)="continueWithFree()">Continue with Free</button>
+        </section>
+
+        <section class="pro-plan" aria-labelledby="pro-plan-title">
+          @if (selectedPlan(); as plan) {
+            <div class="pro-plan__topline"></div>
+            <div class="pro-plan__header">
+              <div>
+                <div class="plan-heading"><h3 id="pro-plan-title">{{ plan.name }}</h3><span>Recommended</span></div>
+                <p>Everything your firm needs to monitor, protect, and manage its trademark portfolio.</p>
+              </div>
+              <div class="pro-plan__price">
+                <strong>{{ rupees(plan.amountPaise) }}</strong><span>/ {{ plan.billingInterval === 'ANNUAL' ? 'year' : 'month' }}</span>
+                <small>{{ plan.billingInterval === 'ANNUAL' ? 'Effective ' + rupees(plan.monthlyEquivalentPaise) + ' / month · billed annually' : 'Flexible monthly billing' }}</small>
+              </div>
+            </div>
+            <ul class="pro-plan__features">
+              @for (feature of features(); track feature) { <li><span><ap-icon name="check" [size]="13" /></span>{{ feature }}</li> }
+            </ul>
+            <footer class="pro-plan__footer">
+              <div><span>Selected plan</span><strong>{{ plan.billingInterval === 'ANNUAL' ? 'Yearly billing' : 'Monthly billing' }}@if (plan.billingInterval === 'ANNUAL' && annualSavingPct()) { · save {{ annualSavingPct() }}% }</strong></div>
+              <button #primaryAction type="button" class="subscribe" [disabled]="busy()" (click)="startCheckout()"><ap-icon name="lock" [size]="16" />{{ busy() ? 'Opening secure checkout…' : 'Subscribe now · ' + rupees(plan.amountPaise) + (plan.billingInterval === 'ANNUAL' ? ' / year' : ' / month') }}</button>
+            </footer>
+          } @else { <div class="pro-plan__loading">Loading available plans…</div> }
+        </section>
+      </div>
+      @if (error()) { <p class="upgrade-error" role="alert">{{ error() }}</p> }
+    </section>
+  </div>
+}
