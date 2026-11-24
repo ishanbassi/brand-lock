@@ -116,7 +116,7 @@ export function subscriptionStatusBadgeClass(status: string | null | undefined):
   }
 }
 
-/** Paise → "₹1,500" / "₹12,000.50". Handles null. */
+/** Paise → "₹1,500" / "₹11,988.50". Handles null. */
 export function rupees(paise: number | null | undefined): string {
   if (paise === null || paise === undefined) return '—';
   const value = paise / 100;

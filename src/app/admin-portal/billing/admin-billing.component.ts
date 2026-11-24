@@ -57,6 +57,10 @@ export class AdminBillingComponent implements OnInit {
   compNote = '';
   comping = signal(false);
 
+  // ── Annual price ───────────────────────────────────────────────────────────
+  annualPriceRupees = 11988;
+  savingAnnualPrice = signal(false);
+
   readonly statusCounts = computed(() => {
     const c = this.overview()?.countsByStatus ?? {};
     return SUBSCRIPTION_STATUS_OPTIONS.filter(o => o.value && (c as any)[o.value]).map(o => ({
@@ -83,7 +87,12 @@ export class AdminBillingComponent implements OnInit {
 
   private loadPlans(): void {
     this.billing.plans().subscribe({
-      next: res => this.plans.set(res.body ?? []),
+      next: res => {
+        const plans = res.body ?? [];
+        this.plans.set(plans);
+        const annual = plans.find(plan => plan.code === 'PRO_ANNUAL');
+        if (annual?.amountPaise) this.annualPriceRupees = annual.amountPaise / 100;
+      },
       error: () => {},
     });
   }
@@ -138,6 +147,30 @@ export class AdminBillingComponent implements OnInit {
       error: err => {
         this.provisioningCode.set(null);
         this.toast.error(err?.error?.detail || err?.error?.title || `Could not provision ${plan.name}`);
+      },
+    });
+  }
+
+  saveAnnualPrice(): void {
+    const price = Number(this.annualPriceRupees);
+    if (!Number.isInteger(price) || price < 1) {
+      this.toast.error('Enter a whole annual price in rupees.');
+      return;
+    }
+
+    this.savingAnnualPrice.set(true);
+    this.billing.updateAnnualPrice(price * 100).subscribe({
+      next: res => {
+        this.savingAnnualPrice.set(false);
+        const updated = res.body as IAdminPlan;
+        this.plans.update(list => list.map(plan => (plan.code === updated.code ? updated : plan)));
+        this.annualPriceRupees = (updated.amountPaise ?? 0) / 100;
+        this.toast.success('Annual price saved. Provision the new Razorpay plan before checkout uses it.');
+        this.loadOverview();
+      },
+      error: err => {
+        this.savingAnnualPrice.set(false);
+        this.toast.error(err?.error?.detail || err?.error?.title || 'Could not update the annual price.');
       },
     });
   }

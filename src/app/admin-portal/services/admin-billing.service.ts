@@ -42,6 +42,11 @@ export class AdminBillingService {
     return this.http.post<IAdminPlan>(`${this.resourceUrl}/plans/${code}/provision`, null, { observe: 'response' });
   }
 
+  /** Updates the annual catalogue price. A new Razorpay plan must then be provisioned. */
+  updateAnnualPrice(amountPaise: number): Observable<HttpResponse<IAdminPlan>> {
+    return this.http.put<IAdminPlan>(`${this.resourceUrl}/plans/annual/price`, { amountPaise }, { observe: 'response' });
+  }
+
   /** Re-read one subscription from Razorpay and apply it now. */
   sync(id: number): Observable<HttpResponse<IAdminSubscriptionRow>> {
     return this.http.post<IAdminSubscriptionRow>(`${this.resourceUrl}/subscriptions/${id}/sync`, null, { observe: 'response' });

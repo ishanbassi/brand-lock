@@ -50,6 +50,22 @@
 
   <!-- ── Plans strip ───────────────────────────────────────────────────── -->
   @if (plans().length) {
+    <section class="annual-price-control" aria-labelledby="annual-price-heading">
+      <div>
+        <h2 id="annual-price-heading">Annual plan price</h2>
+        <p>Set the amount charged once a year. ₹11,988 equals ₹999 per month.</p>
+      </div>
+      <div class="annual-price-control__actions">
+        <label class="form-group">
+          <span class="form-label">Annual price (₹)</span>
+          <input class="form-control" type="number" min="1" step="1" [(ngModel)]="annualPriceRupees" [disabled]="savingAnnualPrice()" />
+        </label>
+        <button class="btn-primary" type="button" [disabled]="savingAnnualPrice()" (click)="saveAnnualPrice()">
+          {{ savingAnnualPrice() ? 'Saving…' : 'Save price' }}
+        </button>
+      </div>
+    </section>
+
     <div class="plans-strip">
       @for (p of plans(); track p.code) {
         <div class="plan-chip" [class.plan-chip--unprovisioned]="!p.provisioned">

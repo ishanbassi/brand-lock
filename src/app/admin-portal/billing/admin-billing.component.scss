@@ -43,6 +43,24 @@
   .stat-hint { font-size: 0.76rem; color: #94a3b8; }
 
   // ── Plans strip ──────────────────────────────
+  .annual-price-control {
+    align-items: end;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+
+    h2 { color: #1e293b; font-size: 1rem; font-weight: 700; margin: 0 0 0.2rem; }
+    p { color: #64748b; font-size: 0.82rem; margin: 0; }
+  }
+  .annual-price-control__actions { align-items: end; display: flex; gap: 0.65rem; }
+  .annual-price-control .form-group { margin: 0; }
+  .annual-price-control .form-control { min-width: 140px; }
+
   .plans-strip {
     display: flex;
     gap: 0.9rem;
@@ -119,5 +137,10 @@
     background: rgba(#8b5cf6, 0.14);
     color: #6d28d9;
     cursor: help;
+  }
+
+  @media (max-width: 600px) {
+    .annual-price-control, .annual-price-control__actions { align-items: stretch; flex-direction: column; }
+    .annual-price-control .form-control { min-width: 0; width: 100%; }
   }
 }
