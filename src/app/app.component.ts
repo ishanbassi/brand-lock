@@ -7,6 +7,7 @@ import { ReferralAttributionService } from './shared/services/referral-attributi
 import { LeadAcquisitionService } from './shared/services/lead-acquisition.service';
 import { LoadingService } from './common/loading.service';
 import { SeoService } from './shared/services/seo.service';
+import { AgentSeoService } from './shared/services/agent-seo.service';
 import { HostContextService } from './shared/services/host-context.service';
 
 @Component({
@@ -24,6 +25,7 @@ export class AppComponent {
     private readonly leadAcquisitionService: LeadAcquisitionService,
     private readonly loadingService: LoadingService,
     private readonly seo: SeoService,
+    private readonly agentSeo: AgentSeoService,
     private readonly hostContext: HostContextService
   ){
     this.applicationConfigService.setEndpointPrefix(environment.BaseApiUrl)
@@ -94,6 +96,15 @@ export class AppComponent {
       // The 404/403 routes are the ones carrying a `code` in their route data. A canonical on a
       // dead URL tells a crawler the URL is real, which is the opposite of what a 404 is for.
       const isErrorPage = route.data['code'] !== undefined;
+      const agentSeoPage = route.data['agentSeo'];
+      if (agentSeoPage) {
+        this.agentSeo.apply(agentSeoPage, this.router.url);
+      } else {
+        const path = this.router.url.split(/[?#]/, 1)[0];
+        const privateAgentRoute = ['/agent-portal', '/agent-login', '/create-agent-account', '/forgot-password']
+          .some(prefix => path === prefix || path.startsWith(prefix + '/'));
+        this.agentSeo.clear(privateAgentRoute);
+      }
       this.seo.applyRouteCanonical(this.router.url, isErrorPage);
     });
 

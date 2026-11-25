@@ -1,7 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, forkJoin, of, switchMap } from 'rxjs';
 import {
@@ -25,8 +24,6 @@ imports: [CommonModule, FormsModule, AgentPortalNavbarComponent, AgentPortalFoot
 })
 export class AgentHomeComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
   private readonly router = inject(Router);
   private readonly agentData = inject(AgentDataService);
   private readonly onboardingIntent = inject(AgentOnboardingIntentService);
@@ -74,12 +71,6 @@ export class AgentHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.title.setTitle('Trademarx Agent Portal | Trademark practice intelligence');
-    this.meta.updateTag({
-      name: 'description',
-      content: 'A dedicated workspace for trademark practitioners to organise portfolios, monitor the journal, and manage deadlines.',
-    });
-
     if (isPlatformBrowser(this.platformId)) {
       this.refreshLiveSnapshots();
       this.liveRefreshTimer = window.setInterval(() => this.refreshLiveSnapshots(), 60_000);

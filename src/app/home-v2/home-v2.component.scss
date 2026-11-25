@@ -309,6 +309,106 @@
     }
 }
 
+/* ---------- Free trademark management for agents ---------- */
+.agent-software-section {
+    padding: 1rem 0 2.5rem;
+}
+
+.agent-software-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 5rem);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    border-radius: 16px;
+    background: #173b77;
+    color: #fff;
+}
+
+.agent-software-content {
+    max-width: 660px;
+
+    h2 {
+        max-width: 18ch;
+        margin-bottom: 0.85rem;
+        color: #fff;
+        font-size: clamp(1.65rem, 3vw, 2.35rem);
+        font-weight: 750;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+    }
+
+    p {
+        max-width: 62ch;
+        margin-bottom: 1.4rem;
+        color: rgba(255, 255, 255, 0.88);
+        line-height: 1.65;
+    }
+}
+
+.agent-software-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 48px;
+    padding: 0.75rem 1.15rem;
+    border-radius: 8px;
+    background: #fff;
+    color: #173b77;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    i {
+        font-size: 0.8rem;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover i {
+        transform: translateX(3px);
+    }
+
+    &:focus-visible {
+        outline: 3px solid #ffc629;
+        outline-offset: 4px;
+    }
+}
+
+.agent-software-features {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+        color: #fff;
+        font-weight: 600;
+        line-height: 1.45;
+
+        &:first-child {
+            border-top: 1px solid rgba(255, 255, 255, 0.22);
+        }
+    }
+
+    i {
+        width: 1.25rem;
+        color: #ffc629;
+        font-size: 1.05rem;
+        text-align: center;
+    }
+}
+
 /* ---------- Service cards: CTA + popular badge ---------- */
 .services-grid {
     .service-card {
@@ -588,6 +688,11 @@
 }
 
 @media (max-width: 768px) {
+    .agent-software-inner {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+
     .certificate-download-inner {
         padding: 2rem;
         gap: 1.5rem;
@@ -641,6 +746,19 @@
 }
 
 @media (max-width: 576px) {
+    .agent-software-section {
+        padding-bottom: 1.5rem;
+    }
+
+    .agent-software-inner {
+        padding: 1.75rem;
+    }
+
+    .agent-software-cta {
+        width: 100%;
+        justify-content: center;
+    }
+
     .certificate-download-section {
         padding-bottom: 1.5rem;
     }

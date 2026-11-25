@@ -40,6 +40,8 @@ const TRACKING_PARAMS = new Set([
 const UNCANONICAL_PREFIXES = [
   '/portal',
   '/agent-portal',
+  '/agent-login',
+  '/create-agent-account',
   '/admin-portal',
   '/partner-portal',
   '/login',

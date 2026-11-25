@@ -9,6 +9,11 @@ export const routes: Routes = [
         path: 'agent-home',
         loadComponent: () => import('./agent-portal/agent-home/agent-home.component').then(m => m.AgentHomeComponent),
         title: 'Trademarx Agent Portal | Trademark practice intelligence',
+        data: { agentSeo: {
+            title: 'Trademarx Agent Portal | Trademark practice intelligence',
+            description: 'Manage trademark portfolios, monitor journal publications and hearings, track renewals, and prepare client reports in one workspace for Indian trademark professionals.',
+            schemaType: 'SoftwareApplication',
+        } },
         canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
@@ -16,48 +21,80 @@ export const routes: Routes = [
         path: 'agent-home/free-portfolio-management',
         loadComponent: () => import('./agent-portal/agent-free-portfolio/agent-free-portfolio.component').then(m => m.AgentFreePortfolioComponent),
         title: 'Free Trademark Portfolio Management Software | Trademarx',
+        data: { agentSeo: {
+            title: 'Free Trademark Portfolio Management Software | Trademarx',
+            description: 'Organise up to 100 trademarks in a free portfolio workspace for Indian attorneys and IP practices, with journal conflict alerts, deadline tracking, and client reports.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/hearings',
         loadComponent: () => import('./agent-portal/agent-hearings-feature/agent-hearings-feature.component').then(m => m.AgentHearingsFeatureComponent),
         title: 'Trademark Hearing Alerts | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Hearing Alerts | Trademarx Agent Portal',
+            description: 'Track trademark hearing dates and case updates in one place. Help your practice stay prepared for upcoming hearings across client matters.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/journal-watch',
         loadComponent: () => import('./agent-portal/agent-journal-watch-feature/agent-journal-watch-feature.component').then(m => m.AgentJournalWatchFeatureComponent),
         title: 'Journal Watch | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Journal Watch | Trademarx Agent Portal',
+            description: 'Monitor Indian trademark journal publications for conflicts with client marks. Review matching applications and keep watch activity organised.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/portfolio',
         loadComponent: () => import('./agent-portal/agent-portfolio-feature/agent-portfolio-feature.component').then(m => m.AgentPortfolioFeatureComponent),
         title: 'Trademark Portfolio Management | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Portfolio Management | Trademarx Agent Portal',
+            description: 'Manage client trademarks, application details, key dates, and portfolio records from a dedicated workspace built for trademark professionals.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/trademark-search-report',
         loadComponent: () => import('./agent-portal/agent-search-report-feature/agent-search-report-feature.component').then(m => m.AgentSearchReportFeatureComponent),
         title: 'Trademark Search Report | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Search Reports | Trademarx Agent Portal',
+            description: 'Research Indian trademark applications and prepare clear search reports for clients, with relevant marks and application details in one workflow.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/renewal-docket',
         loadComponent: () => import('./agent-portal/agent-renewal-docket-feature/agent-renewal-docket-feature.component').then(m => m.AgentRenewalDocketFeatureComponent),
         title: 'Renewal Docket | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Renewal Docket | Trademarx Agent Portal',
+            description: 'Keep trademark renewal dates visible with a central docket for client marks, upcoming deadlines, and renewal follow-up.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/new-filing-watch',
         loadComponent: () => import('./agent-portal/agent-new-filing-watch-feature/agent-new-filing-watch-feature.component').then(m => m.AgentNewFilingWatchFeatureComponent),
         title: 'New Filing Watch | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'New Trademark Filing Watch | Trademarx Agent Portal',
+            description: 'Watch new trademark filings relevant to your clients and review potential conflicts as applications appear in the Indian register.',
+        } },
         canActivate: [agentHostGuard],
     },
     {
         path: 'agent-home/competitor-watch',
         loadComponent: () => import('./agent-portal/agent-competitor-watch-feature/agent-competitor-watch-feature.component').then(m => m.AgentCompetitorWatchFeatureComponent),
         title: 'Competitor Watch | Trademarx Agent Portal',
+        data: { agentSeo: {
+            title: 'Trademark Competitor Watch | Trademarx Agent Portal',
+            description: 'Follow competitor trademark activity and review new applications that may affect the brands and clients you represent.',
+        } },
         canActivate: [agentHostGuard],
     },
     {

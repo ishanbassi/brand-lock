@@ -38,6 +38,18 @@ const angularApp = new AngularNodeAppEngine({
   trustProxyHeaders: true,
 });
 const SITE_URL = 'https://trademarx.in';
+const AGENT_SITE_URL = 'https://agent.trademarx.in';
+const AGENT_PUBLIC_PATHS = [
+  '/agent-home',
+  '/agent-home/free-portfolio-management',
+  '/agent-home/hearings',
+  '/agent-home/journal-watch',
+  '/agent-home/portfolio',
+  '/agent-home/trademark-search-report',
+  '/agent-home/renewal-docket',
+  '/agent-home/new-filing-watch',
+  '/agent-home/competitor-watch',
+];
 
 // Security headers
 const devOrigins = environment.production ? '' : ' http://localhost:8080 http://localhost:8082 http://localhost:4200';
@@ -153,7 +165,15 @@ interface TrademarkSitemapEntry {
   lastmod: string;
 }
 
-app.get('/sitemap.xml', async (_req, res) => {
+app.get('/sitemap.xml', async (req, res) => {
+  if (req.hostname.toLowerCase() === 'agent.trademarx.in') {
+    const entries = AGENT_PUBLIC_PATHS.map(path => `\n  <url><loc>${AGENT_SITE_URL}${path}</loc></url>`);
+    res.type('application/xml').send(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries.join('')}\n</urlset>`,
+    );
+    return;
+  }
+
   try {
     const [blogResponse, tmResponse, trendsResponse] = await Promise.all([
       fetch(`https://cms.trademarx.in/api/blogs?fields[0]=slug&fields[1]=updatedAt`),
@@ -355,6 +375,19 @@ app.get('/openapi.json', async (_req, res) => {
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
+  if (req.hostname.toLowerCase() === 'agent.trademarx.in') {
+    res.send(`User-agent: *
+Allow: /agent-home
+Disallow: /agent-portal/
+Disallow: /agent-login
+Disallow: /create-agent-account
+Disallow: /forgot-password
+
+Sitemap: ${AGENT_SITE_URL}/sitemap.xml
+`);
+    return;
+  }
+
   res.send(`
 User-agent: *
 Allow: /
