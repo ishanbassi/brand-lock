@@ -132,16 +132,13 @@
     <app-agent-application-number-search [embedded]="true" (resultsFound)="receiveApplicationNumberResults($event)" />
   }
   @if (report(); as r) {
+    @if (!awaitingInitialResult()) {
     <section class="results">
       <div class="results-toolbar">
         <div class="results-toolbar-main">
           <div class="results-summary">
             <span class="result-total">{{ r.totalResults }} {{ r.totalResults === 1 ? 'result' : 'results' }}{{ isPhoneticProcessing() ? ' so far' : '' }}</span>
-            @if (reportSearchType === 'phonetic') {
-              <span class="similarity-pill close">{{ countFor('HIGH') }} close</span>
-              <span class="similarity-pill moderate">{{ countFor('MEDIUM') }} moderate</span>
-              <span class="similarity-pill distant">{{ countFor('LOW') }} distant</span>
-            }
+
           </div>
           <div class="results-actions">
             <div class="view-toggle" role="group" aria-label="Results view">
@@ -222,6 +219,7 @@
         }
       }
     </section>
+    }
   }
 </div>
 

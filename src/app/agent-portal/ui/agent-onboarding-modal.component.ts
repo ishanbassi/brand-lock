@@ -207,7 +207,8 @@ export class AgentOnboardingModalComponent implements OnChanges, OnDestroy {
   selectPortfolioMethod(method: 'registry' | 'upload'): void { this.portfolioMethod.set(method); }
   toggleRegistryAgent(entry: AgentHomeDirectoryEntry): void { const selections = this.registrySelections(); this.registrySelections.set(this.isRegistryAgentSelected(entry) ? selections.filter(selected => selected.agentName !== entry.agentName) : [...selections, entry]); this.portfolioMethod.set('registry'); }
   confirmRegistrySelection(): void { this.registrySuggestions.set([]); this.registrySearchError.set(''); }
-  skipPortfolioSetup(): void { this.showTrial(); }
+  /** A portfolio that has not been connected yet contains zero marks, so it retains free full access. */
+  skipPortfolioSetup(): void { this.go(['/agent-portal/dashboard']); }
   startProTrial(): void {
     const plan = this.trialPlan();
     if (!plan) return this.trialCheckoutError.set('The selected plan is not available yet. Please wait a moment and try again.');

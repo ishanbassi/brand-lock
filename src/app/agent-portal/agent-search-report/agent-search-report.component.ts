@@ -864,10 +864,6 @@ export class AgentSearchReportComponent implements OnInit {
     return `<div class="field${className ? ` ${className}` : ''}"><span class="label">${this.escapeHtml(label)}</span><span class="value">${trustedValue ? rendered : this.escapeHtml(rendered)}</span></div>`;
   }
 
-  countFor(band: 'HIGH' | 'MEDIUM' | 'LOW'): number {
-    return this.report()?.countsByRisk?.[band] ?? 0;
-  }
-
   bandLabel(band: string): string {
     // Spelled out rather than left to colour alone — these reports get printed and photocopied.
     return band === 'HIGH' ? 'Close' : band === 'MEDIUM' ? 'Moderate' : 'Distant';

@@ -2,8 +2,8 @@
   <header class="docket-header">
     <div>
       <nav aria-label="Breadcrumb"><span>Deadlines &amp; Hearings</span><span class="material-symbols-outlined">chevron_right</span><strong>Trademark Renewals</strong></nav>
-      <div class="title-line"><h1>Trademark Renewals Docket</h1><span>SEC 25 • CGPDTM</span></div>
-      <p>Monitor 10-year statutory validity cycles, grace periods under Section 25(3), surcharge windows, and execute Form TM-R filings directly with CGPDTM.</p>
+      <div class="title-line"><h1>Trademark Renewals</h1></div>
+      <p>Monitor 10-year statutory validity cycles, grace periods under Section 25(3) and surcharge windows</p>
     </div>
     <div class="header-actions">
       <button type="button" class="sync" (click)="load()" [disabled]="loading()"><span class="material-symbols-outlined">sync</span>{{ loading() ? 'Syncing' : 'Sync CGPDTM' }}</button>
@@ -36,7 +36,7 @@
     @if (loading()) {
       <app-agent-page-skeleton variant="renewals" label="Loading trademark renewal docket" />
     } @else if (paged().length === 0) {
-      <div class="empty"><span class="material-symbols-outlined">event_busy</span><h2>No renewals match these filters</h2><p>Adjust the search, milestone, or date window to see renewal records.</p></div>
+      <div class="empty"><span class="material-symbols-outlined">event_busy</span><h2>No renewals</h2><p>Adjust the search, milestone, or date window to see renewal records.</p></div>
     } @else {
       <div class="records">
         @for (item of paged(); track keyOf(item)) {

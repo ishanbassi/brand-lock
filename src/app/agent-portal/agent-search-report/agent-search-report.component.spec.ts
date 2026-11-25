@@ -106,6 +106,29 @@ describe('AgentSearchReportComponent', () => {
     expect(component.awaitingInitialResult()).toBeTrue();
   });
 
+  it('does not render an empty results table while the phonetic skeleton is visible', () => {
+    const fixture = TestBed.createComponent(AgentSearchReportComponent);
+    const viewComponent = fixture.componentInstance;
+    viewComponent.query = 'ALPHA';
+    viewComponent.selectedClasses.set([9]);
+    viewComponent.searchType = 'phonetic';
+    agentData.startPhoneticSearchRun.and.returnValue(of({
+      ...report,
+      rows: [],
+      totalResults: 0,
+      status: 'RUNNING',
+      candidatesScored: 12,
+      runId: 'run-1',
+    }));
+
+    viewComponent.run();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-agent-page-skeleton')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.results')).toBeNull();
+    fixture.destroy();
+  });
+
   it('replaces the skeleton when the first phonetic match arrives', () => {
     component.query = 'ALPHA';
     component.selectedClasses.set([9]);
