@@ -909,9 +909,16 @@ export class AgentDataService {
     );
   }
 
-  getJournalSummaries(limit = 2000): Observable<AgentJournalSummary[]> {
+  getJournalSummaries(
+    page = 0,
+    size = 20,
+    journalNo?: number,
+  ): Observable<HttpResponse<AgentJournalSummary[]>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (journalNo != null) params = params.set('journalNo', journalNo);
     return this.http.get<AgentJournalSummary[]>(
-      `${this.base}/agent-portal/watch/journal-summaries?limit=${limit}`,
+      `${this.base}/agent-portal/watch/journal-summaries`,
+      { params, observe: 'response' },
     );
   }
 

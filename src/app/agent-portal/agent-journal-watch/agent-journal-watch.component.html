@@ -13,13 +13,13 @@
     <section class="journal-shelf" aria-labelledby="journal-heading">
       <div class="section-heading">
         <div><h2 id="journal-heading">Choose a journal</h2><p>Open an issue to browse every published mark or check it against your portfolio.</p></div>
-        <span class="issue-count">{{ filteredJournalSummaries().length }} of {{ journals().length }} available</span>
+        <span class="issue-count">{{ journalTotal() }} available</span>
       </div>
       <aside class="watch-schedule" aria-label="Automatic watch schedule">
         <ap-icon name="watch" [size]="18" />
         <p><strong>Automatic watch:</strong> we check each new journal issue automatically.</p>
       </aside>
-      @if (journals().length === 0) {
+      @if (journalTotal() === 0 && !journalSearchTerm()) {
         <div class="journal-loading">No journal issues are available yet.</div>
       } @else {
         <div class="journal-directory-toolbar">
@@ -28,20 +28,20 @@
             <input id="journal-search" type="search" inputmode="numeric" placeholder="Search by journal number" [ngModel]="journalSearchTerm()" (ngModelChange)="setJournalSearchTerm($event)" />
             @if (journalSearchTerm()) { <button type="button" (click)="clearJournalSearch()" aria-label="Clear journal search"><ap-icon name="close" [size]="15" /></button> }
           </label>
-          <span class="journal-page-summary">Showing {{ journalPageStart() }}–{{ journalPageEnd() }} of {{ filteredJournalSummaries().length }}</span>
+          <span class="journal-page-summary">Showing {{ journalPageStart() }}–{{ journalPageEnd() }} of {{ journalTotal() }}</span>
         </div>
-        @if (filteredJournalSummaries().length === 0) {
+        @if (journalSummaries().length === 0) {
           <div class="journal-loading">No journal matches “{{ journalSearchTerm() }}”.</div>
         } @else {
           <div class="journal-grid">
-            @for (journal of visibleJournalSummaries(); track journal.journalNo) {
+            @for (journal of journalSummaries(); track journal.journalNo) {
               <button type="button" class="journal-tile" [class.selected]="selectedJournal() === journal.journalNo" [class.locked]="isJournalLocked(journal.journalNo)" [attr.aria-pressed]="selectedJournal() === journal.journalNo" [attr.aria-label]="isJournalLocked(journal.journalNo) ? 'Journal ' + journal.journalNo + ', locked. Upgrade to Pro to access.' : 'Open Journal ' + journal.journalNo" [disabled]="running()" (click)="selectJournal(journal.journalNo)">
                 <span class="journal-icon"><ap-icon name="journal" [size]="24" /></span>
                 <span class="journal-copy">
                   <strong>Journal {{ journal.journalNo }}</strong>
                   @if (journal.publicationDate) { <span class="journal-publication">Published {{ journal.publicationDate | date: 'dd MMM yyyy' }}</span> }
                   <span class="journal-record-count">{{ journal.recordCount | number }} record{{ journal.recordCount === 1 ? '' : 's' }}</span>
-                  @if (journal.journalNo === journals()[0]) { <span class="latest-badge">Latest</span> }
+                  @if (journal.journalNo === latestJournalNo()) { <span class="latest-badge">Latest</span> }
                 </span>
                 @if (isJournalLocked(journal.journalNo)) { <span class="journal-lock"><ap-icon name="lock" [size]="15" /> <span>Pro</span></span> } @else { <ap-icon class="journal-arrow" name="chevron" [size]="16" /> }
               </button>
@@ -85,7 +85,7 @@
       </div>
 
       <div class="filter-grid">
-        <label class="filter-control"><span>TMJ Issue</span><select [ngModel]="selectedJournal()" (ngModelChange)="selectJournal($event)" [disabled]="running()">@for (journal of journals(); track journal) { <option [ngValue]="journal">TMJ No. {{ journal }}</option> }</select></label>
+        <label class="filter-control"><span>TMJ Issue</span><select [ngModel]="selectedJournal()" (ngModelChange)="selectJournal($event)" [disabled]="running()">@for (journal of journalOptions(); track journal) { <option [ngValue]="journal">TMJ No. {{ journal }}</option> }</select></label>
         <div class="filter-control class-control">
           <span>Nice Class</span><button type="button" class="class-toggle" [disabled]="running()" (click)="classPickerOpen.set(!classPickerOpen())">{{ classSummary() }} <span aria-hidden="true">⌄</span></button>
           @if (classPickerOpen()) { <div class="class-popover"><div class="class-popover-head"><span>Check only these classes</span><button type="button" (click)="clearClasses()">All classes</button></div><div class="class-grid">@for (c of allClasses; track c) { <label class="class-chip" [class.checked]="selectedClasses().includes(c)"><input type="checkbox" [checked]="selectedClasses().includes(c)" (change)="toggleClass(c)" />{{ c }}</label> }</div></div> }

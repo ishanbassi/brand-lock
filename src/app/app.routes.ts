@@ -25,7 +25,7 @@ export const routes: Routes = [
             title: 'Free Trademark Portfolio Management Software | Trademarx',
             description: 'Organise up to 100 trademarks in a free portfolio workspace for Indian attorneys and IP practices, with journal conflict alerts, deadline tracking, and client reports.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/hearings',
@@ -35,7 +35,7 @@ export const routes: Routes = [
             title: 'Trademark Hearing Alerts | Trademarx Agent Portal',
             description: 'Track trademark hearing dates and case updates in one place. Help your practice stay prepared for upcoming hearings across client matters.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/journal-watch',
@@ -45,7 +45,7 @@ export const routes: Routes = [
             title: 'Trademark Journal Watch | Trademarx Agent Portal',
             description: 'Monitor Indian trademark journal publications for conflicts with client marks. Review matching applications and keep watch activity organised.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/portfolio',
@@ -55,7 +55,7 @@ export const routes: Routes = [
             title: 'Trademark Portfolio Management | Trademarx Agent Portal',
             description: 'Manage client trademarks, application details, key dates, and portfolio records from a dedicated workspace built for trademark professionals.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/trademark-search-report',
@@ -65,7 +65,7 @@ export const routes: Routes = [
             title: 'Trademark Search Reports | Trademarx Agent Portal',
             description: 'Research Indian trademark applications and prepare clear search reports for clients, with relevant marks and application details in one workflow.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/renewal-docket',
@@ -75,7 +75,7 @@ export const routes: Routes = [
             title: 'Trademark Renewal Docket | Trademarx Agent Portal',
             description: 'Keep trademark renewal dates visible with a central docket for client marks, upcoming deadlines, and renewal follow-up.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/new-filing-watch',
@@ -85,7 +85,7 @@ export const routes: Routes = [
             title: 'New Trademark Filing Watch | Trademarx Agent Portal',
             description: 'Watch new trademark filings relevant to your clients and review potential conflicts as applications appear in the Indian register.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         path: 'agent-home/competitor-watch',
@@ -95,7 +95,7 @@ export const routes: Routes = [
             title: 'Trademark Competitor Watch | Trademarx Agent Portal',
             description: 'Follow competitor trademark activity and review new applications that may affect the brands and clients you represent.',
         } },
-        canActivate: [agentHostGuard],
+        canActivate: [agentHostGuard, agentHomeGuard],
     },
     {
         // ROLE_USER customer portal — standalone shell, no public navbar/footer.

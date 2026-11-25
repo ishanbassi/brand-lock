@@ -151,6 +151,11 @@ canActivate: [isoCertificateAccessGuard],
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+  {
+    path: '**',
+    loadComponent: () => import('./agent-not-found/agent-not-found.component').then(m => m.AgentNotFoundComponent),
+    title: 'Page Not Found | Agent Portal',
+  },
 ];
 
 export const agentPublicRoutes: Routes = [

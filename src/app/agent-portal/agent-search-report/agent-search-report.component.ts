@@ -80,6 +80,12 @@ export class AgentSearchReportComponent implements OnInit {
 
   readonly report = signal<SearchReport | null>(null);
   readonly loading = signal(false);
+  /**
+   * A phonetic run acknowledges its queue before it has scored a match. Keep the
+   * result surface in its loading state through that empty acknowledgement, then
+   * preserve the partial table between subsequent polling requests.
+   */
+  readonly awaitingInitialResult = signal(false);
   readonly exporting = signal<ExportFormat | null>(null);
   readonly error = signal('');
 
@@ -286,6 +292,7 @@ export class AgentSearchReportComponent implements OnInit {
     this.clearPhoneticPolling();
     this.clearArtwork();
     this.report.set(null);
+    this.awaitingInitialResult.set(false);
     this.error.set('');
     this.selectedIds.clear();
     this.selectedRows.clear();
@@ -467,6 +474,7 @@ export class AgentSearchReportComponent implements OnInit {
     this.clearPhoneticPolling();
     this.isApplicationNumberReport.set(false);
     this.report.set(null);
+    this.awaitingInitialResult.set(true);
     this.loadPage(term, 0);
   }
 
@@ -480,6 +488,7 @@ export class AgentSearchReportComponent implements OnInit {
     this.currentPage = 0;
     this.selectedIds.clear();
     this.selectedRows.clear();
+    this.awaitingInitialResult.set(false);
 
     const rows = lookup.results.map(trademark => this.applicationResultRow(trademark));
     this.report.set({
@@ -542,10 +551,12 @@ export class AgentSearchReportComponent implements OnInit {
         this.reportSearchType = this.searchType;
         this.currentPage = page;
         this.loadArtwork(result.rows);
+        this.awaitingInitialResult.set(false);
         this.loading.set(false);
       },
       error: () => {
         this.error.set('Could not run that search. Please try again.');
+        this.awaitingInitialResult.set(false);
         this.loading.set(false);
       },
     });
@@ -557,6 +568,9 @@ export class AgentSearchReportComponent implements OnInit {
     this.reportSearchType = 'phonetic';
     this.currentPage = requestedPage;
     this.loadArtwork(result.rows);
+    if (result.rows.length > 0 || result.status === 'COMPLETED' || result.status === 'FAILED') {
+      this.awaitingInitialResult.set(false);
+    }
     this.loading.set(false);
     this.clearPhoneticPolling();
     if (this.isPhoneticProcessing()) {

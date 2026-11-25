@@ -38,6 +38,8 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   journalSummaries = signal<AgentJournalSummary[]>([]);
   journalSearchTerm = signal('');
   journalPage = signal(1);
+  journalTotal = signal(0);
+  latestJournalNo = signal<number | null>(null);
   readonly journalPageSize = 20;
   loadingJournals = signal(true);
   selectedJournal = signal<number | null>(null);
@@ -67,6 +69,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   private watchPollTimer?: ReturnType<typeof setTimeout>;
   private journalsLoaded = false;
+  private journalRequestId = 0;
   private browseRequestId = 0;
   private historyRequestId = 0;
 
@@ -151,12 +154,32 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   private loadJournalSummaries(): void {
-    this.agentDataService.getJournalSummaries(2000).subscribe({
-      next: summaries => this.finishLoadingJournals(summaries),
+    const requestId = ++this.journalRequestId;
+    const search = this.journalSearchTerm().trim();
+    const journalNo = /^\d+$/.test(search) ? Number(search) : undefined;
+    this.loadingJournals.set(true);
+    this.agentDataService.getJournalSummaries(this.journalPage() - 1, this.journalPageSize, journalNo).subscribe({
+      next: response => {
+        if (requestId !== this.journalRequestId) return;
+        const summaries = response.body ?? [];
+        const totalHeader = response.headers.get('X-Total-Count');
+        if (totalHeader != null) {
+          this.finishLoadingJournals(summaries, Number(totalHeader) || 0);
+          return;
+        }
+        // During a rolling deployment the legacy endpoint still returns every issue without a
+        // count header. Keep its response paged locally until the new API is available.
+        const start = (this.journalPage() - 1) * this.journalPageSize;
+        this.finishLoadingJournals(summaries.slice(start, start + this.journalPageSize), summaries.length);
+      },
       // The list-only endpoint keeps the screen usable while an older API deployment catches up.
-      error: () => this.agentDataService.getWatchJournals(2000).subscribe({
-        next: journalNos => this.finishLoadingJournals(journalNos.map(journalNo => ({ journalNo, recordCount: 0 }))),
+      error: () => this.agentDataService.getWatchJournals(this.journalPageSize).subscribe({
+        next: journalNos => {
+          if (requestId !== this.journalRequestId) return;
+          this.finishLoadingJournals(journalNos.map(journalNo => ({ journalNo, recordCount: 0 })), journalNos.length);
+        },
         error: () => {
+          if (requestId !== this.journalRequestId) return;
           this.error.set('Could not load journal issues.');
           this.loadingJournals.set(false);
         },
@@ -164,20 +187,22 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  private finishLoadingJournals(summaries: AgentJournalSummary[]): void {
+  private finishLoadingJournals(summaries: AgentJournalSummary[], total: number): void {
     const list = summaries.map(summary => summary.journalNo);
     this.journalSummaries.set(summaries);
     this.journals.set(list);
+    this.journalTotal.set(total);
+    if (this.journalPage() === 1 && !this.journalSearchTerm()) this.latestJournalNo.set(list[0] ?? null);
     this.journalsLoaded = true;
     const journalFromPath = this.requestedJournal();
     const legacyJournal = this.parseJournalNo(this.route.snapshot.queryParamMap.get('journalNo'));
     // Newest issue is the one with an opposition window still open, so it is the default.
-    if (journalFromPath != null && list.includes(journalFromPath)) {
+    if (journalFromPath != null) {
       this.loadingJournals.set(false);
       this.openJournalWorkspace(journalFromPath, this.route.snapshot.queryParamMap.get('run') === '1');
       return;
     }
-    if (legacyJournal != null && list.includes(legacyJournal)) {
+    if (legacyJournal != null) {
       void this.router.navigate(['/agent-portal/watch/journal', legacyJournal], {
         queryParams: { run: '1' },
         replaceUrl: true,
@@ -205,17 +230,14 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     this.searchFields.find(field => field.value === this.searchField())?.placeholder ?? 'Search this journal',
   );
   browsePages = computed(() => Math.max(1, Math.ceil(this.browseTotal() / this.browsePageSize)));
-  readonly filteredJournalSummaries = computed(() => {
-    const query = this.journalSearchTerm().trim();
-    return query ? this.journalSummaries().filter(journal => String(journal.journalNo).includes(query)) : this.journalSummaries();
+  readonly journalPages = computed(() => Math.max(1, Math.ceil(this.journalTotal() / this.journalPageSize)));
+  readonly journalPageStart = computed(() => this.journalSummaries().length ? (this.journalPage() - 1) * this.journalPageSize + 1 : 0);
+  readonly journalPageEnd = computed(() => this.journalPageStart() + this.journalSummaries().length - 1);
+  readonly journalOptions = computed(() => {
+    const current = this.selectedJournal();
+    const options = this.journals();
+    return current != null && !options.includes(current) ? [current, ...options] : options;
   });
-  readonly journalPages = computed(() => Math.max(1, Math.ceil(this.filteredJournalSummaries().length / this.journalPageSize)));
-  readonly visibleJournalSummaries = computed(() => {
-    const start = (this.journalPage() - 1) * this.journalPageSize;
-    return this.filteredJournalSummaries().slice(start, start + this.journalPageSize);
-  });
-  readonly journalPageStart = computed(() => this.filteredJournalSummaries().length ? (this.journalPage() - 1) * this.journalPageSize + 1 : 0);
-  readonly journalPageEnd = computed(() => Math.min(this.journalPage() * this.journalPageSize, this.filteredJournalSummaries().length));
 
   selectJournal(journalNo: number): void {
     if (this.running()) return;
@@ -227,12 +249,12 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   }
 
   isJournalLocked(journalNo: number): boolean {
-    const latest = this.journals()[0];
+    const latest = this.latestJournalNo();
     return latest != null && journalNo !== latest && this.billing.state()?.effectivePlanCode === 'FREE';
   }
 
   private syncWorkspaceWithRoute(journalNo: number | null): void {
-    if (journalNo != null && this.journals().includes(journalNo)) {
+    if (journalNo != null) {
       if (this.isJournalLocked(journalNo)) {
         this.showJournalUpgrade();
         void this.router.navigate(['/agent-portal/watch/journal'], { replaceUrl: true });
@@ -283,16 +305,19 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   setJournalSearchTerm(value: string): void {
     this.journalSearchTerm.set(value);
     this.journalPage.set(1);
+    this.loadJournalSummaries();
   }
 
   clearJournalSearch(): void {
     this.journalSearchTerm.set('');
     this.journalPage.set(1);
+    this.loadJournalSummaries();
   }
 
   goToJournalPage(page: number): void {
     if (page < 1 || page > this.journalPages() || page === this.journalPage()) return;
     this.journalPage.set(page);
+    this.loadJournalSummaries();
   }
 
   private parseJournalNo(value: string | null): number | null {

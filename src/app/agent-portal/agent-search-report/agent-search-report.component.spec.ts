@@ -41,6 +41,8 @@ describe('AgentSearchReportComponent', () => {
       'getProfile',
       'getLogo',
       'previewSearchReport',
+      'startPhoneticSearchRun',
+      'getPhoneticSearchRun',
       'getSearchResultArtwork',
       'downloadSearchReportExcel',
     ]);
@@ -84,6 +86,40 @@ describe('AgentSearchReportComponent', () => {
 
     expect(agentData.previewSearchReport).toHaveBeenCalledTimes(2);
     expect(agentData.previewSearchReport.calls.mostRecent().args).toEqual(['ALPHA', [9], 'contains', 0, 100, '']);
+  });
+
+  it('keeps the skeleton visible through an empty in-progress phonetic response', () => {
+    component.query = 'ALPHA';
+    component.selectedClasses.set([9]);
+    component.searchType = 'phonetic';
+    agentData.startPhoneticSearchRun.and.returnValue(of({
+      ...report,
+      rows: [],
+      totalResults: 0,
+      status: 'RUNNING',
+      candidatesScored: 12,
+      runId: 'run-1',
+    }));
+
+    component.run();
+
+    expect(component.awaitingInitialResult()).toBeTrue();
+  });
+
+  it('replaces the skeleton when the first phonetic match arrives', () => {
+    component.query = 'ALPHA';
+    component.selectedClasses.set([9]);
+    component.searchType = 'phonetic';
+    agentData.startPhoneticSearchRun.and.returnValue(of({
+      ...report,
+      status: 'RUNNING',
+      candidatesScored: 12,
+      runId: 'run-1',
+    }));
+
+    component.run();
+
+    expect(component.awaitingInitialResult()).toBeFalse();
   });
 
   it('renders the match-rule picker with every supported search type', () => {
