@@ -93,6 +93,12 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   uploadFailures = signal<{ fileName: string; reason: string }[]>([]);
   uploading = signal(false);
   deletingDocId = signal<number | null>(null);
+  /**
+   * The detail page begins loading its documents alongside the rest of the mark. If an upload
+   * finishes before that first request returns, the older response must not replace the newly
+   * attached document with its stale list.
+   */
+  private documentLoadRequest = 0;
 
   /** Registry-backed marks are read-only; only agent-entered ones can still be edited. */
   editable = computed(() => this.mark()?.editable === true);
@@ -405,13 +411,19 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   // ── Documents ────────────────────────────────────────────────────────────
 
   loadDocuments(): void {
+    const request = ++this.documentLoadRequest;
     this.documentsLoading.set(true);
     this.agentDataService.listDocuments(this.trademarkId).subscribe({
       next: (docs) => {
+        if (request !== this.documentLoadRequest) return;
         this.documents.set(docs);
         this.documentsLoading.set(false);
       },
-      error: () => this.documentsLoading.set(false),
+      error: () => {
+        if (request === this.documentLoadRequest) {
+          this.documentsLoading.set(false);
+        }
+      },
     });
   }
 
@@ -460,6 +472,9 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
             notes: '',
             documentDate: '',
           };
+          // Re-read the mark's own collection after the write. Apart from picking up the server's
+          // final ordering, this prevents a request started before upload from hiding the document.
+          this.loadDocuments();
         },
         error: (err) => {
           this.uploading.set(false);

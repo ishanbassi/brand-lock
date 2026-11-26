@@ -595,6 +595,16 @@
                 >PDF, Word, Excel, scanned certificates, email receipts up to 25
                 MB.</span
               >
+              @if (uploadFailures().length) {
+                <div
+                  class="mt-3 rounded-lg bg-error-container px-3 py-2 font-body-sm text-body-sm text-on-error-container"
+                  role="alert"
+                >
+                  @for (failure of uploadFailures(); track failure.fileName) {
+                    <div><strong>{{ failure.fileName }}</strong>: {{ failure.reason }}</div>
+                  }
+                </div>
+              }
             </div>
           </section>
         </div>
@@ -702,7 +712,7 @@
             </div>
           </section>
           <section
-            class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
+            class="flex h-[28rem] flex-col overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm sm:p-space-lg"
           >
             <div
               class="mb-space-xs flex items-center justify-between gap-space-sm pb-space-sm"
@@ -741,7 +751,7 @@
                 No custom columns have been created.
               </p>
             } @else {
-              <div class="space-y-space-sm">
+              <div class="min-h-0 flex-1 space-y-space-sm overflow-y-auto pr-1">
                 @for (field of customFields(); track field.id) {
                   <div>
                     <label
