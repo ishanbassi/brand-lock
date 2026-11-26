@@ -10,6 +10,8 @@ import { IconComponent } from '../ui/icon.component';
 type RiskFilter = '' | 'HIGH' | 'MEDIUM' | 'LOW';
 type StatusFilter = 'OPEN' | 'OPPOSING' | 'DISMISSED';
 type ConflictSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
+type FilingWindowDays = 7 | 15 | 30;
+type FilingPageSize = 20 | 50 | 100;
 
 /** The portfolio-wide worklist, deliberately sharing the Journal Watch interaction model. */
 @Component({
@@ -27,7 +29,12 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     { value: 'proprietorName', label: 'Party', placeholder: 'Search party name' },
     { value: 'applicationNo', label: 'Application No.', placeholder: 'Enter application number' },
   ];
-  readonly pageSize = 20;
+  readonly filingWindows: { value: FilingWindowDays; label: string }[] = [
+    { value: 7, label: 'Last 7 days' },
+    { value: 15, label: 'Last 15 days' },
+    { value: 30, label: 'Last 30 days' },
+  ];
+  readonly pageSizes: FilingPageSize[] = [20, 50, 100];
 
   conflicts = signal<WatchConflictHistory[]>([]);
   filings = signal<AgentNewFiling[]>([]);
@@ -41,11 +48,13 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   actionError = signal('');
   busyId = signal<number | null>(null);
   searchField = signal<ConflictSearchField>('name');
-  searchTerm = '';
+  searchTerm = signal('');
   classFilter = signal<number | null>(null);
   riskFilter = signal<RiskFilter>('');
   portfolioOnly = signal(false);
+  filingWindowDays = signal<FilingWindowDays>(7);
   page = signal(1);
+  pageSize = signal<FilingPageSize>(20);
   private pollTimer?: ReturnType<typeof setTimeout>;
 
   readonly statusOf = (conflict: WatchConflictHistory): StatusFilter => {
@@ -72,10 +81,10 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     return risk === '' ? conflicts : conflicts.filter(conflict => conflict.riskLevel === risk);
   });
   readonly filteredCount = computed(() => this.filtered().length);
-  readonly pagedConflicts = computed(() => this.filtered().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize));
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredCount() / this.pageSize)));
-  readonly pageStart = computed(() => this.filteredCount() ? (this.page() - 1) * this.pageSize + 1 : 0);
-  readonly pageEnd = computed(() => Math.min(this.page() * this.pageSize, this.filteredCount()));
+  readonly pagedConflicts = computed(() => this.filtered().slice((this.page() - 1) * this.pageSize(), this.page() * this.pageSize()));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredCount() / this.pageSize())));
+  readonly pageStart = computed(() => this.filteredCount() ? (this.page() - 1) * this.pageSize() + 1 : 0);
+  readonly pageEnd = computed(() => Math.min(this.page() * this.pageSize(), this.filteredCount()));
   readonly scopedCount = computed(() => this.scopedConflicts().length);
   readonly highRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'HIGH').length);
   readonly mediumRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'MEDIUM').length);
@@ -83,11 +92,11 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   readonly filteredFilings = computed(() => this.filings().filter(filing =>
     (this.classFilter() === null || filing.tmClass === this.classFilter()) && this.matchesFiling(filing),
   ));
-  readonly pagedFilings = computed(() => this.filteredFilings().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize));
+  readonly pagedFilings = computed(() => this.filteredFilings().slice((this.page() - 1) * this.pageSize(), this.page() * this.pageSize()));
   readonly activeCount = computed(() => this.view() === 'FILINGS' ? this.filteredFilings().length : this.filteredCount());
-  readonly activeTotalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / this.pageSize)));
-  readonly activePageStart = computed(() => this.activeCount() ? (this.page() - 1) * this.pageSize + 1 : 0);
-  readonly activePageEnd = computed(() => Math.min(this.page() * this.pageSize, this.activeCount()));
+  readonly activeTotalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / this.pageSize())));
+  readonly activePageStart = computed(() => this.activeCount() ? (this.page() - 1) * this.pageSize() + 1 : 0);
+  readonly activePageEnd = computed(() => Math.min(this.page() * this.pageSize(), this.activeCount()));
 
   constructor(private readonly agentDataService: AgentDataService) {}
 
@@ -103,13 +112,13 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     this.error.set('');
     forkJoin({
       conflicts: this.agentDataService.getAllConflicts(),
-      filings: this.agentDataService.getLatestNewFilings(),
+      filings: this.agentDataService.getLatestNewFilings(this.filingWindowDays()),
     }).subscribe({
       next: ({ conflicts, filings }) => {
         this.conflicts.set(conflicts);
         this.filings.set(filings);
         conflicts.forEach(conflict => this.loadArtwork(conflict.conflictingTrademarkId, conflict.conflictingImgUrl));
-        filings.forEach(filing => this.loadArtwork(filing.id, filing.imgUrl));
+        filings.filter(filing => this.isImageMark(filing)).forEach(filing => this.loadArtwork(filing.id, filing.imgUrl));
         this.ensurePageInRange();
         this.loading.set(false);
       },
@@ -121,11 +130,22 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   setSearchField(field: ConflictSearchField): void { this.searchField.set(field); this.resetPage(); }
-  onSearchChange(): void { this.resetPage(); }
-  clearSearch(): void { this.searchTerm = ''; this.resetPage(); }
+  setSearchTerm(term: string): void { this.searchTerm.set(term); this.resetPage(); }
+  clearSearch(): void { this.searchTerm.set(''); this.resetPage(); }
   setClassFilter(classNo: number | null): void { this.classFilter.set(classNo); this.resetPage(); }
   setRiskFilter(risk: RiskFilter): void { this.riskFilter.set(risk); this.resetPage(); }
   togglePortfolioOnly(): void { this.portfolioOnly.update(value => !value); this.resetPage(); }
+  setFilingWindow(days: FilingWindowDays): void {
+    if (days === this.filingWindowDays()) return;
+    this.filingWindowDays.set(days);
+    this.resetPage();
+    this.load();
+  }
+  onPageSizeChange(size: number): void {
+    if (![20, 50, 100].includes(size)) return;
+    this.pageSize.set(size as FilingPageSize);
+    this.resetPage();
+  }
 
   goToPage(page: number): void {
     if (page < 1 || page > this.activeTotalPages() || page === this.page()) return;
@@ -209,7 +229,7 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   private matchesSearch(conflict: WatchConflictHistory): boolean {
-    const term = this.searchTerm.trim().toLocaleLowerCase();
+    const term = this.searchTerm().trim().toLocaleLowerCase();
     if (!term) return true;
     switch (this.searchField()) {
       case 'agentName': return (conflict.conflictingAgentName ?? '').toLocaleLowerCase().includes(term);
@@ -220,7 +240,7 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   private matchesFiling(filing: AgentNewFiling): boolean {
-    const term = this.searchTerm.trim().toLocaleLowerCase();
+    const term = this.searchTerm().trim().toLocaleLowerCase();
     if (!term) return true;
     switch (this.searchField()) {
       case 'applicationNo': return String(filing.applicationNo ?? '').includes(term);
@@ -237,6 +257,8 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   artworkUrl(id?: number): string | null { return id == null ? null : this.artworkUrls()[id] ?? null; }
+  isImageMark(filing: AgentNewFiling): boolean { return filing.type === 'IMAGEMARK' || filing.type === 'TRADEMARK_WITH_IMAGE'; }
+  filingArtworkUrl(filing: AgentNewFiling): string | null { return this.isImageMark(filing) ? this.artworkUrl(filing.id) : null; }
 
   private loadArtwork(id?: number, imgUrl?: string | null): void {
     if (id == null || !imgUrl || this.artworkUrls()[id] || this.artworkFailures().has(id)) return;

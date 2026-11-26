@@ -379,9 +379,11 @@ export class AgentDataService {
     );
   }
 
-  /** The current 7-day filing window, newest filing first. */
-  getLatestNewFilings(): Observable<AgentNewFiling[]> {
-    return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`);
+  /** Recent registry filings, newest filing first. The API supports the review windows shown in the workspace. */
+  getLatestNewFilings(days = 7): Observable<AgentNewFiling[]> {
+    return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`, {
+      params: new HttpParams().set('days', days),
+    });
   }
 
   /** Queues an on-demand comparison; poll the returned run instead of holding the request open. */

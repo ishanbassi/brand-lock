@@ -302,6 +302,8 @@ export interface AgentNewFiling {
   trademarkStatus?: string;
   /** Stored artwork filename; use the authenticated artwork endpoint to render it. */
   imgUrl?: string | null;
+  /** Registry mark type. Only image-bearing mark types render the stored artwork in the list. */
+  type?: 'IMAGEMARK' | 'TRADEMARK' | 'SOUNDMARK' | 'TRADEMARK_WITH_IMAGE' | 'SLOGAN' | null;
 }
 
 export interface AgentPublicProfile {
