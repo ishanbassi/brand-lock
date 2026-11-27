@@ -10,6 +10,7 @@ import { ExportFormat, ExportMenuComponent } from '../ui/export-menu.component';
 import { fileSlug, saveBlob } from '../ui/save-blob';
 import { AgentApplicationNumberSearchComponent, ApplicationNumberLookup } from '../agent-application-number-search/agent-application-number-search.component';
 import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
+import { environment } from '../../../environments/environment';
 
 type SearchMode = 'name' | 'application-number';
 type ResultsView = 'list' | 'grid';
@@ -29,6 +30,7 @@ type ResultsView = 'list' | 'grid';
   styleUrl: './agent-search-report.component.scss',
 })
 export class AgentSearchReportComponent implements OnInit {
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   private readonly agentData = inject(AgentDataService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
@@ -521,6 +523,7 @@ export class AgentSearchReportComponent implements OnInit {
       score: 0,
       riskBand: 'LOW',
       hasArtwork: Boolean(trademark.imgUrl),
+      imgUrl: trademark.imgUrl ?? undefined,
     };
   }
 
@@ -682,14 +685,23 @@ export class AgentSearchReportComponent implements OnInit {
 
   private loadArtwork(rows: SearchReportRow[]): void {
     for (const row of rows.filter(item => item.hasArtwork)) {
-      this.agentData.getSearchResultArtwork(row.trademarkId).subscribe({
-        next: blob => this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: URL.createObjectURL(blob) })),
-      });
+      if (this.isBrowserImage(row.imgUrl)) {
+        this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: `${this.imageBaseUrl}${row.imgUrl}` }));
+      } else {
+        this.loadArtworkFromApi(row);
+      }
     }
   }
 
+  loadArtworkFromApi(row: SearchReportRow): void {
+    if (!row.hasArtwork || this.artworkUrls()[row.trademarkId]?.startsWith('blob:')) return;
+    this.agentData.getSearchResultArtwork(row.trademarkId).subscribe({
+      next: blob => this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: URL.createObjectURL(blob) })),
+    });
+  }
+
   private clearArtwork(): void {
-    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+    Object.values(this.artworkUrls()).filter(url => url.startsWith('blob:')).forEach(url => URL.revokeObjectURL(url));
     this.artworkUrls.set({});
   }
 
@@ -835,6 +847,10 @@ export class AgentSearchReportComponent implements OnInit {
         // The report remains printable if registry artwork is unavailable.
       }
     }));
+  }
+
+  private isBrowserImage(fileName?: string): boolean {
+    return !!fileName && /\.(avif|gif|jpe?g|png|webp)$/i.test(fileName);
   }
 
   private escapeHtml(value: unknown): string {

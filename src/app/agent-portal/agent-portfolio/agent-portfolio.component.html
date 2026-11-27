@@ -288,7 +288,7 @@
                     @if (tm.imgUrl) {
                       <span class="mark-avatar mark-avatar--artwork" [class.mark-avatar--loading]="!artworkUrl(tm)">
                         @if (artworkUrl(tm); as artwork) {
-                          <img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" />
+                          <img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" (error)="loadArtworkFromApi(tm)" />
                         } @else {
                           <span class="mark-artwork-loading" aria-label="Loading trademark artwork"></span>
                         }

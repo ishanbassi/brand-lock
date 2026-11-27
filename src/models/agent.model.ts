@@ -500,6 +500,8 @@ export interface SearchReportRow {
   score: number;
   riskBand: 'HIGH' | 'MEDIUM' | 'LOW';
   hasArtwork: boolean;
+  /** Stored artwork filename. Browser-safe formats load directly from the public artwork origin. */
+  imgUrl?: string;
 }
 
 /** An issue the agent can browse or compare against its portfolio. */

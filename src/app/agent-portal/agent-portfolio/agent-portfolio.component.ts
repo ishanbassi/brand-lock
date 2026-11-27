@@ -9,6 +9,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, Subject } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { BillingService } from '../../shared/services/billing.service';
+import { environment } from '../../../environments/environment';
 import { AgentAddTrademarkDialogComponent, AddTrademarkStartView } from '../agent-add-trademark-dialog/agent-add-trademark-dialog.component';
 import {
   AgentCustomField,
@@ -44,6 +45,7 @@ interface SortableColumn {
   styleUrl: './agent-portfolio.component.scss',
 })
 export class AgentPortfolioComponent implements OnInit, OnDestroy {
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   private static readonly PENDING_IMPORT_NOTICE_DURATION_MS = 8_000;
   private static readonly PENDING_IMPORT_NOTICE_STORAGE_KEY = 'agent-portfolio-notified-imports';
 
@@ -832,7 +834,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  /** The authenticated artwork endpoint supplies browser-ready images, including converted JPEG 2000 files. */
+  /** Browser-safe artwork goes directly to B2; JPEG 2000 remains on the converting API path. */
   artworkUrl(mark: AgentPortfolioTrademark): string | null {
     return mark.id == null ? null : this.artworkUrls()[mark.id] ?? null;
   }
@@ -845,6 +847,17 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     for (const mark of marks) {
       if (mark.id == null || !mark.imgUrl) continue;
       const markId = mark.id;
+      if (this.isBrowserImage(mark.imgUrl)) {
+        this.artworkUrls.update(urls => ({ ...urls, [markId]: `${this.imageBaseUrl}${mark.imgUrl}` }));
+        continue;
+      }
+      this.loadArtworkFromApi(mark);
+    }
+  }
+
+  loadArtworkFromApi(mark: AgentPortfolioTrademark): void {
+    if (mark.id == null || !mark.imgUrl || this.artworkUrls()[mark.id]?.startsWith('blob:')) return;
+    const markId = mark.id;
       this.agentDataService.getTrademarkArtwork(markId).subscribe({
         next: blob => {
           // Ignore artwork returned after the table has moved to another page or filter result.
@@ -857,13 +870,16 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
           this.artworkFailures.update(failures => new Set(failures).add(markId));
         },
       });
-    }
   }
 
   private clearArtwork(): void {
-    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
+    Object.values(this.artworkUrls()).filter(url => url.startsWith('blob:')).forEach(url => URL.revokeObjectURL(url));
     this.artworkUrls.set({});
     this.artworkFailures.set(new Set());
+  }
+
+  private isBrowserImage(fileName: string): boolean {
+    return /\.(avif|gif|jpe?g|png|webp)$/i.test(fileName);
   }
 
   /** First click sorts by the column, the next reverses it. Restarts at page one either way. */
