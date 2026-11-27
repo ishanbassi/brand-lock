@@ -37,6 +37,7 @@ export class TrademarkApplicationSearchComponent implements OnInit, OnDestroy {
   isLoading = false;
   hasSearched = false;
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
   openFaqIndex: number | null = 0;
 
   readonly statusMeanings: StatusMeaning[] = [
@@ -164,7 +165,7 @@ export class TrademarkApplicationSearchComponent implements OnInit, OnDestroy {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+    return trademark.imgUrl ? this.imageBaseUrl + trademark.imgUrl : '/assets/images/trademark.png';
   }
 
   getStatusClass(status?: string): string {

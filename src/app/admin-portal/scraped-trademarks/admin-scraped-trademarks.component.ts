@@ -38,6 +38,7 @@ export class AdminScrapedTrademarksComponent implements OnInit {
   totalItems = signal(0);
 
   private readonly baseUrl = environment.BaseApiUrl;
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   private readonly searchDebounce = new Subject<void>();
 
   ngOnInit(): void {
@@ -122,6 +123,6 @@ export class AdminScrapedTrademarksComponent implements OnInit {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+    return trademark.imgUrl ? this.imageBaseUrl + trademark.imgUrl : '/assets/images/trademark.png';
   }
 }

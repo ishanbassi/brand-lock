@@ -42,6 +42,7 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
   }
 
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
   whatsappQuery:string = '';
 
   /** Registry refresh is visitor-initiated: nothing is fetched until the button is pressed. */
@@ -201,7 +202,7 @@ export class TradmarkDetailComponent implements OnInit, OnDestroy {
 
       this.meta.updateTag({
         property: 'og:image',
-        content: tm.imgUrl ? this.baseUrl + 'files/files/' + tm?.imgUrl : '/assets/images/trademark.png'
+        content: tm.imgUrl ? this.imageBaseUrl + tm?.imgUrl : '/assets/images/trademark.png'
       });
 
       if (isPlatformBrowser(this.platformId)){

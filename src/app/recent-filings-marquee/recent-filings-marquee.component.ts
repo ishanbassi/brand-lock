@@ -20,6 +20,7 @@ export class RecentFilingsMarqueeComponent implements OnInit {
   filings: IFirmFiling[] = [];
   loading = true;
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   /** Two passes over the same filings, so the loop restarts on an identical frame. */
   marqueeRuns = [0, 1];
@@ -75,7 +76,7 @@ export class RecentFilingsMarqueeComponent implements OnInit {
   }
 
   logoUrl(filing: IFirmFiling): string {
-    return filing.imgUrl ? `${this.baseUrl}files/${filing.imgUrl}` : '/assets/images/trademark.png';
+    return filing.imgUrl ? `${this.imageBaseUrl}${filing.imgUrl}` : '/assets/images/trademark.png';
   }
 
   logoAlt(filing: IFirmFiling): string {

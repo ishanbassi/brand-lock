@@ -64,6 +64,7 @@ export class LiveSearchComponent implements OnInit, OnDestroy {
   isLoading = false;
   filters: IFilterOptions = new FilterOptions();
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   private readonly classNameByNum = new Map(TRADEMARK_CLASSES.map(c => [c.num, c.name]));
   private readonly typeLabelByValue = new Map<string, string>(TrademarkTypeValues.map(t => [t.value as string, t.label]));

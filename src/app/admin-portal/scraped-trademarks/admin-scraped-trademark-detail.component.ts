@@ -20,6 +20,7 @@ export class AdminScrapedTrademarkDetailComponent implements OnInit {
   private readonly toast = inject(ToastrService);
 
   private readonly baseUrl = environment.BaseApiUrl;
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   trademark = signal<ITrademark | null>(null);
   loading = signal(true);
@@ -110,6 +111,6 @@ export class AdminScrapedTrademarkDetailComponent implements OnInit {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+    return trademark.imgUrl ? this.imageBaseUrl + trademark.imgUrl : '/assets/images/trademark.png';
   }
 }

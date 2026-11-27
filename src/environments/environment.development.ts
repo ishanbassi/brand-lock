@@ -3,6 +3,7 @@ import { HttpHeaders } from '@angular/common/http';
 export const environment = {
   production: false,
   BaseApiUrl: 'http://localhost:8082/',
+  TrademarkImageBaseUrl: 'http://localhost:8082/files/',
 BaseBlogUrl: 'https://cms.trademarx.in',
 BaseUrl:"http://localhost:4200",
   AppHeaders: new HttpHeaders({

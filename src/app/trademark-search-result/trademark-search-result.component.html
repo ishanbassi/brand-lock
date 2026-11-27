@@ -41,7 +41,7 @@
           <div class="results-list" [class.results-list--list]="viewMode === 'list'" *ngIf="results && results.length > 0">
             <article class="trademark-card" *ngFor="let trademark of results; trackBy: trackById; let i = index" [attr.data-status]="trademark.trademarkStatus?.toLowerCase()" [style.animation-delay]="(i % 12 * 60) + 'ms'">
               <div class="card-header">
-                <div class="trademark-image"><img *ngIf="trademark.imgUrl" src="/assets/images/trademark.png" [src]="baseUrl + 'files/' + trademark.imgUrl" [alt]="trademark.name + ' trademark artwork'"><span class="wordmark-initials" *ngIf="!trademark.imgUrl">{{ wordmarkInitials(trademark.name) }}</span></div>
+                <div class="trademark-image"><img *ngIf="trademark.imgUrl" src="/assets/images/trademark.png" [src]="imageBaseUrl + trademark.imgUrl" [alt]="trademark.name + ' trademark artwork'"><span class="wordmark-initials" *ngIf="!trademark.imgUrl">{{ wordmarkInitials(trademark.name) }}</span></div>
                 <div class="trademark-info"><h2 class="trademark-name" [innerHTML]="highlight(trademark.name)"></h2><p class="trademark-docket"><span>App</span> <b>#{{ trademark.applicationNo }}</b></p></div>
                 <span class="status-stamp" [ngClass]="getStatusClass(trademark.trademarkStatus)" *ngIf="trademark.trademarkStatus"><i></i>{{ trademark.trademarkStatus }}</span>
               </div>

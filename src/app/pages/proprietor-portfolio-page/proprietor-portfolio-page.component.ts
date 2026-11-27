@@ -41,6 +41,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   private readonly proprietorService = inject(TrademarkProprietorService);
 
   readonly baseUrl = environment.BaseApiUrl;
+  readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   readonly pageSize = 20;
   readonly sourceNote = SOURCE_NOTE;
 
@@ -242,7 +243,7 @@ export class ProprietorPortfolioPageComponent implements OnInit, OnDestroy {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? `${this.baseUrl}files/${trademark.imgUrl}` : '/assets/images/trademark.png';
+    return trademark.imgUrl ? `${this.imageBaseUrl}${trademark.imgUrl}` : '/assets/images/trademark.png';
   }
 
   getStatusClass(status?: string | null): string {

@@ -44,7 +44,7 @@
       <div class="tm-card-header">
         <div class="tm-thumb">
           <img loading="lazy" width="36" height="36"
-            [src]="tm.imgUrl ? baseUrl + 'files/' + tm.imgUrl : '/assets/images/trademark.png'"
+            [src]="tm.imgUrl ? imageBaseUrl + tm.imgUrl : '/assets/images/trademark.png'"
             [alt]="tm.imgUrl ? tm.name + ' trademark logo' : ''">
         </div>
         <div class="tm-card-main">

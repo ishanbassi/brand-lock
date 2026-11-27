@@ -50,6 +50,7 @@ export class TrademarkPulseComponent implements OnInit {
   // ── Replace these with API calls ──────────────────────────────────────
   stats?: TrademarkStats | null;
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   /** CSS class for status badge */
   statusClass(status?: string|null): string {

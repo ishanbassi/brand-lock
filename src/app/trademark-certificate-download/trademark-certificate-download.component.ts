@@ -292,7 +292,7 @@ export class TrademarkCertificateDownloadComponent
   }
 
   trademarkImageUrl(trademark: ITrademark): string {
-    return `${environment.BaseApiUrl}files/${trademark.imgUrl}`;
+    return `${environment.TrademarkImageBaseUrl}${trademark.imgUrl}`;
   }
 
   markImageUnavailable(trademark: ITrademark): void {

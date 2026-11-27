@@ -28,6 +28,7 @@ export class LatestTrademarkApplicationsComponent implements OnInit, OnDestroy {
   loading = true;
   error = false;
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   searchTerm = '';
   currentPage = 1;
@@ -129,7 +130,7 @@ export class LatestTrademarkApplicationsComponent implements OnInit, OnDestroy {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+    return trademark.imgUrl ? this.imageBaseUrl + trademark.imgUrl : '/assets/images/trademark.png';
   }
 
   /** That applicant's own portfolio page; falls back to the search hub for unusable names. */

@@ -125,6 +125,7 @@ export class TrademarkSearchResultComponent implements OnInit, OnDestroy {
   tmClass: number | null = null;
   results: ITrademark[] | null = [];
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
   private isBrowser = false;
   isLoading = false;
   totalResults = 0;

@@ -26,6 +26,7 @@ export class TrademarkJournalDetailComponent implements OnInit {
   loading = true;
   error = false;
   baseUrl = environment.BaseApiUrl;
+  imageBaseUrl = environment.TrademarkImageBaseUrl;
 
   searchTerm = '';
   currentPage = 1;
@@ -127,7 +128,7 @@ export class TrademarkJournalDetailComponent implements OnInit {
   }
 
   imgSrc(trademark: ITrademark): string {
-    return trademark.imgUrl ? this.baseUrl + 'files/' + trademark.imgUrl : '/assets/images/trademark.png';
+    return trademark.imgUrl ? this.imageBaseUrl + trademark.imgUrl : '/assets/images/trademark.png';
   }
 
   private setSeoTags(): void {

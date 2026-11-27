@@ -31,6 +31,7 @@ export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
   refreshMessage = signal('');
   exporting = signal<ExportFormat | null>(null);
   readonly baseUrl = environment.BaseApiUrl;
+  readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   private refreshPoll?: Subscription;
   private readonly pollIntervalMs = 5000;
   private readonly maxPolls = 60;
@@ -67,7 +68,7 @@ export class AgentJournalMarkDetailComponent implements OnInit, OnDestroy {
 
   imageUrl(): string {
     return this.trademark()?.imgUrl
-      ? `${this.baseUrl}files/${this.trademark()!.imgUrl}`
+      ? `${this.imageBaseUrl}${this.trademark()!.imgUrl}`
       : '/assets/images/trademark.png';
   }
 
