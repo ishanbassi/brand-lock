@@ -298,6 +298,7 @@ export interface AgentNewFiling {
   applicationNo?: number;
   applicationDate?: string;
   tmClass?: number;
+  agentName?: string;
   proprietorName?: string;
   trademarkStatus?: string;
   /** Stored artwork filename; use the authenticated artwork endpoint to render it. */

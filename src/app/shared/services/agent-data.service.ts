@@ -379,10 +379,19 @@ export class AgentDataService {
     );
   }
 
-  /** Recent registry filings, newest filing first. The API supports the review windows shown in the workspace. */
-  getLatestNewFilings(days = 7): Observable<AgentNewFiling[]> {
+  /** Recent registry filings, newest first. Filters are applied by the API before its result limit. */
+  getLatestNewFilings(filters: {
+    days?: number;
+    searchField?: 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
+    searchTerm?: string;
+    tmClass?: number | null;
+  } = {}): Observable<AgentNewFiling[]> {
+    let params = new HttpParams().set('days', filters.days ?? 7);
+    if (filters.searchField) params = params.set('searchField', filters.searchField);
+    if (filters.searchTerm?.trim()) params = params.set('searchTerm', filters.searchTerm.trim());
+    if (filters.tmClass != null) params = params.set('tmClass', filters.tmClass);
     return this.http.get<AgentNewFiling[]>(`${this.base}/agent-portal/watch/new-filings`, {
-      params: new HttpParams().set('days', days),
+      params,
     });
   }
 
@@ -708,6 +717,13 @@ export class AgentDataService {
    */
   getTrademarkArtwork(id: number): Observable<Blob> {
     return this.http.get(`${this.base}/agent-portal/portfolio/${id}/artwork`, {
+      responseType: 'blob',
+    });
+  }
+
+  /** Artwork for a registry record in the agent's current New Filings review window. */
+  getNewFilingArtwork(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/agent-portal/watch/new-filings/${id}/artwork`, {
       responseType: 'blob',
     });
   }

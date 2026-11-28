@@ -41,6 +41,7 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   view = signal<'FILINGS' | 'CONFLICTS'>('FILINGS');
   readonly artworkUrls = signal<Record<number, string>>({});
   readonly artworkFailures = signal<Set<number>>(new Set());
+  readonly filingArtworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
   running = signal(false);
   error = signal('');
@@ -56,6 +57,8 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   page = signal(1);
   pageSize = signal<FilingPageSize>(20);
   private pollTimer?: ReturnType<typeof setTimeout>;
+  private filingSearchTimer?: ReturnType<typeof setTimeout>;
+  private filingRequestId = 0;
 
   readonly statusOf = (conflict: WatchConflictHistory): StatusFilter => {
     const status = (conflict.status ?? 'OPEN').toUpperCase();
@@ -89,9 +92,8 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   readonly highRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'HIGH').length);
   readonly mediumRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'MEDIUM').length);
   readonly lowRiskCount = computed(() => this.scopedConflicts().filter(conflict => conflict.riskLevel === 'LOW').length);
-  readonly filteredFilings = computed(() => this.filings().filter(filing =>
-    (this.classFilter() === null || filing.tmClass === this.classFilter()) && this.matchesFiling(filing),
-  ));
+  // The API has already applied the filing search and class filter before limiting the result set.
+  readonly filteredFilings = computed(() => this.filings());
   readonly pagedFilings = computed(() => this.filteredFilings().slice((this.page() - 1) * this.pageSize(), this.page() * this.pageSize()));
   readonly activeCount = computed(() => this.view() === 'FILINGS' ? this.filteredFilings().length : this.filteredCount());
   readonly activeTotalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / this.pageSize())));
@@ -104,21 +106,22 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.pollTimer) clearTimeout(this.pollTimer);
+    if (this.filingSearchTimer) clearTimeout(this.filingSearchTimer);
     Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
   }
 
   load(showLoading = true): void {
     if (showLoading) this.loading.set(true);
     this.error.set('');
+    const filingRequestId = ++this.filingRequestId;
     forkJoin({
       conflicts: this.agentDataService.getAllConflicts(),
-      filings: this.agentDataService.getLatestNewFilings(this.filingWindowDays()),
+      filings: this.getLatestNewFilings(),
     }).subscribe({
       next: ({ conflicts, filings }) => {
         this.conflicts.set(conflicts);
-        this.filings.set(filings);
         conflicts.forEach(conflict => this.loadArtwork(conflict.conflictingTrademarkId, conflict.conflictingImgUrl));
-        filings.filter(filing => this.isImageMark(filing)).forEach(filing => this.loadArtwork(filing.id, filing.imgUrl));
+        if (filingRequestId === this.filingRequestId) this.applyFilings(filings);
         this.ensurePageInRange();
         this.loading.set(false);
       },
@@ -129,17 +132,33 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     });
   }
 
-  setSearchField(field: ConflictSearchField): void { this.searchField.set(field); this.resetPage(); }
-  setSearchTerm(term: string): void { this.searchTerm.set(term); this.resetPage(); }
-  clearSearch(): void { this.searchTerm.set(''); this.resetPage(); }
-  setClassFilter(classNo: number | null): void { this.classFilter.set(classNo); this.resetPage(); }
+  setSearchField(field: ConflictSearchField): void {
+    this.searchField.set(field);
+    this.resetPage();
+    this.queueFilingReload();
+  }
+  setSearchTerm(term: string): void {
+    this.searchTerm.set(term);
+    this.resetPage();
+    this.queueFilingReload();
+  }
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.resetPage();
+    this.queueFilingReload();
+  }
+  setClassFilter(classNo: number | null): void {
+    this.classFilter.set(classNo);
+    this.resetPage();
+    this.queueFilingReload();
+  }
   setRiskFilter(risk: RiskFilter): void { this.riskFilter.set(risk); this.resetPage(); }
   togglePortfolioOnly(): void { this.portfolioOnly.update(value => !value); this.resetPage(); }
   setFilingWindow(days: FilingWindowDays): void {
     if (days === this.filingWindowDays()) return;
     this.filingWindowDays.set(days);
     this.resetPage();
-    this.load();
+    this.reloadFilings();
   }
   onPageSizeChange(size: number): void {
     if (![20, 50, 100].includes(size)) return;
@@ -239,17 +258,6 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private matchesFiling(filing: AgentNewFiling): boolean {
-    const term = this.searchTerm().trim().toLocaleLowerCase();
-    if (!term) return true;
-    switch (this.searchField()) {
-      case 'applicationNo': return String(filing.applicationNo ?? '').includes(term);
-      case 'proprietorName': return (filing.proprietorName ?? '').toLocaleLowerCase().includes(term);
-      case 'agentName': return false;
-      default: return (filing.name ?? '').toLocaleLowerCase().includes(term);
-    }
-  }
-
   markMonogram(value?: string | null): string {
     const parts = (value ?? '').trim().split(/\s+/).filter(Boolean);
     if (!parts.length) return 'TM';
@@ -257,8 +265,9 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   artworkUrl(id?: number): string | null { return id == null ? null : this.artworkUrls()[id] ?? null; }
-  isImageMark(filing: AgentNewFiling): boolean { return filing.type === 'IMAGEMARK' || filing.type === 'TRADEMARK_WITH_IMAGE'; }
-  filingArtworkUrl(filing: AgentNewFiling): string | null { return this.isImageMark(filing) ? this.artworkUrl(filing.id) : null; }
+  filingArtworkUrl(filing: AgentNewFiling): string | null {
+    return this.hasFilingArtwork(filing) ? this.artworkUrl(filing.id) : null;
+  }
 
   private loadArtwork(id?: number, imgUrl?: string | null): void {
     if (id == null || !imgUrl || this.artworkUrls()[id] || this.artworkFailures().has(id)) return;
@@ -268,6 +277,23 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
         this.artworkUrls.update(urls => ({ ...urls, [id]: url }));
       },
       error: () => this.artworkFailures.update(failures => new Set(failures).add(id)),
+    });
+  }
+
+  private hasFilingArtwork(filing: AgentNewFiling): boolean {
+    return filing.id != null && !!filing.imgUrl?.trim();
+  }
+
+  private loadFilingArtwork(filing: AgentNewFiling): void {
+    if (!this.hasFilingArtwork(filing) || this.artworkUrls()[filing.id] || this.filingArtworkFailures().has(filing.id)) return;
+    const filingId = filing.id;
+    this.agentDataService.getNewFilingArtwork(filingId).subscribe({
+      next: blob => {
+        if (!this.filings().some(current => current.id === filingId && this.hasFilingArtwork(current))) return;
+        const url = URL.createObjectURL(blob);
+        this.artworkUrls.update(urls => ({ ...urls, [filingId]: url }));
+      },
+      error: () => this.filingArtworkFailures.update(failures => new Set(failures).add(filingId)),
     });
   }
 
@@ -282,6 +308,45 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   private dateValue(date?: string): number { return date ? Date.parse(date) || 0 : 0; }
+
+  private getLatestNewFilings(): Observable<AgentNewFiling[]> {
+    return this.agentDataService.getLatestNewFilings({
+      days: this.filingWindowDays(),
+      searchField: this.searchField(),
+      searchTerm: this.searchTerm(),
+      tmClass: this.classFilter(),
+    });
+  }
+
+  private queueFilingReload(): void {
+    if (this.view() !== 'FILINGS') return;
+    if (this.filingSearchTimer) clearTimeout(this.filingSearchTimer);
+    this.filingSearchTimer = setTimeout(() => this.reloadFilings(), 250);
+  }
+
+  private reloadFilings(): void {
+    if (this.filingSearchTimer) {
+      clearTimeout(this.filingSearchTimer);
+      this.filingSearchTimer = undefined;
+    }
+    const requestId = ++this.filingRequestId;
+    this.error.set('');
+    this.getLatestNewFilings().subscribe({
+      next: filings => {
+        if (requestId !== this.filingRequestId) return;
+        this.applyFilings(filings);
+        this.ensurePageInRange();
+      },
+      error: () => {
+        if (requestId === this.filingRequestId) this.error.set('Failed to load filings. Please try again.');
+      },
+    });
+  }
+
+  private applyFilings(filings: AgentNewFiling[]): void {
+    this.filings.set(filings);
+    filings.forEach(filing => this.loadFilingArtwork(filing));
+  }
 
   private resetPage(): void { this.page.set(1); }
   private ensurePageInRange(): void { if (this.page() > this.activeTotalPages()) this.page.set(this.activeTotalPages()); }
