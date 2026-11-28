@@ -104,7 +104,7 @@
       <section class="journal-feed" aria-label="Published trademarks">
         @for (tm of journalMarks(); track tm.id) {
           <article class="mark-card">
-            @if (tm.imgUrl && !artworkFailed(tm) && artworkUrl(tm); as artwork) { <div class="mark-tile mark-artwork"><img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" /></div> } @else { <div class="mark-tile mark-initials" aria-label="Trademark initials">{{ markMonogram(tm.name) }}</div> }
+            @if (tm.imgUrl && artworkUrl(tm); as artwork) { <div class="mark-tile mark-artwork"><img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" /></div> } @else { <div class="mark-tile mark-initials" aria-label="Trademark initials">{{ markMonogram(tm.name) }}</div> }
             <div class="mark-content"><div class="mark-badges"><span>Class {{ tm.tmClass || '—' }}</span><span>Published mark</span></div><h2>{{ tm.name || 'Untitled mark' }} <small>Application No. {{ tm.applicationNo || '—' }}</small></h2><p><strong>Applicant:</strong> {{ tm.proprietorName || 'Not recorded' }} <i>•</i> <strong>Agent:</strong> {{ tm.agentName || 'Not recorded' }}</p></div>
             <a class="view-mark-button" [routerLink]="markRoute(tm)">{{ tm.applicationNo && portfolioLinks()[tm.applicationNo.toString()] ? 'Open portfolio mark' : 'View trademark details' }} <ap-icon name="chevron" [size]="14" /></a>
           </article>

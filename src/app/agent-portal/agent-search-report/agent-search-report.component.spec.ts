@@ -88,6 +88,18 @@ describe('AgentSearchReportComponent', () => {
     expect(agentData.previewSearchReport.calls.mostRecent().args).toEqual(['ALPHA', [9], 'contains', 0, 100, '']);
   });
 
+  it('offers independent status filters for objected, opposed, examination, and advertised marks', () => {
+    expect(component.statusBuckets.map(bucket => bucket.value)).toEqual([
+      'REGISTERED',
+      'OBJECTED',
+      'OPPOSED',
+      'UNDER_EXAMINATION',
+      'ADVERTISED',
+      'ABANDONED_WITHDRAWN_REJECTED',
+      'OTHER_UNKNOWN',
+    ]);
+  });
+
   it('keeps the skeleton visible through an empty in-progress phonetic response', () => {
     component.query = 'ALPHA';
     component.selectedClasses.set([9]);

@@ -126,10 +126,7 @@ export interface AgentPortfolioTrademark {
    */
   customFields?: Record<string, string>;
 
-  /**
-   * Stored artwork filename; present only when the mark has an image. Treat it as a flag — many
-   * are JPEG 2000, which browsers cannot draw, so fetch the image via getTrademarkArtwork.
-   */
+  /** Stored artwork filename; append it to the public trademark-image origin to render it. */
   imgUrl?: string | null;
 }
 
@@ -205,6 +202,13 @@ export interface AgentStatusCount {
   count: number;
 }
 
+/** One selectable status filter in the portfolio; unlike dashboard buckets, these can be precise. */
+export interface AgentPortfolioStatusCount {
+  key: string;
+  label: string;
+  count: number;
+}
+
 /**
  * The portfolio filter dropdowns, as the server sees them.
  *
@@ -214,7 +218,7 @@ export interface AgentStatusCount {
  */
 export interface AgentPortfolioFilterOptions {
   total: number;
-  statuses: AgentStatusCount[];
+  statuses: AgentPortfolioStatusCount[];
   classes: { tmClass: number; count: number }[];
   filingYears?: { year: number; count: number }[];
 }
@@ -301,7 +305,7 @@ export interface AgentNewFiling {
   agentName?: string;
   proprietorName?: string;
   trademarkStatus?: string;
-  /** Stored artwork filename; use the authenticated artwork endpoint to render it. */
+  /** Stored artwork filename; append it to the public trademark-image origin to render it. */
   imgUrl?: string | null;
   /** Registry mark type. Only image-bearing mark types render the stored artwork in the list. */
   type?: 'IMAGEMARK' | 'TRADEMARK' | 'SOUNDMARK' | 'TRADEMARK_WITH_IMAGE' | 'SLOGAN' | null;

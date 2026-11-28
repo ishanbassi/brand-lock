@@ -13,6 +13,7 @@ import { ITrademark } from '../../../models/trademark.model';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 import { AgentPageSkeletonComponent } from '../ui/agent-page-skeleton.component';
 import { BillingService } from '../../shared/services/billing.service';
+import { environment } from '../../../environments/environment';
 
 type JournalSearchField = 'name' | 'agentName' | 'proprietorName' | 'applicationNo';
 
@@ -34,6 +35,7 @@ const DESCRIPTION_PREVIEW_CHARS = 160;
   styleUrl: './agent-journal-watch.component.scss',
 })
 export class AgentJournalWatchComponent implements OnInit, OnDestroy {
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   journals = signal<number[]>([]);
   journalSummaries = signal<AgentJournalSummary[]>([]);
   journalSearchTerm = signal('');
@@ -58,7 +60,6 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
   portfolioLinks = signal<Record<string, number>>({});
   journalMarks = signal<ITrademark[]>([]);
   artworkUrls = signal<Record<number, string>>({});
-  artworkFailures = signal<Set<number>>(new Set());
   browsing = signal(false);
   browseError = signal('');
   browsePage = signal(1);
@@ -401,7 +402,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
           if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
           const marks = response.body ?? [];
           this.journalMarks.set(marks);
-          this.loadArtwork(marks, requestId);
+          this.loadArtwork(marks);
           this.resolvePortfolioLinks(marks, () => this.browsing.set(false), requestId);
           this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
         },
@@ -441,7 +442,7 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
         if (!this.isCurrentBrowseRequest(journalNo, requestId)) return;
         const marks = response.body ?? [];
         this.journalMarks.set(marks);
-        this.loadArtwork(marks, requestId);
+        this.loadArtwork(marks);
         this.resolvePortfolioLinks(marks, () => this.browsing.set(false), requestId);
         this.browseTotal.set(Number(response.headers.get('X-Total-Count')) || 0);
       },
@@ -510,13 +511,9 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Uses the authenticated artwork endpoint; absent or failed images fall back to initials. */
+  /** Returns the public B2/CDN URL for a journal mark's artwork. */
   artworkUrl(mark: ITrademark): string | null {
     return mark.id == null ? null : this.artworkUrls()[mark.id] ?? null;
-  }
-
-  artworkFailed(mark: ITrademark): boolean {
-    return mark.id != null && this.artworkFailures().has(mark.id);
   }
 
   markMonogram(value?: string | null): string {
@@ -525,27 +522,16 @@ export class AgentJournalWatchComponent implements OnInit, OnDestroy {
     return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  private loadArtwork(marks: ITrademark[], requestId: number): void {
+  private loadArtwork(marks: ITrademark[]): void {
     for (const mark of marks) {
       if (mark.id == null || !mark.imgUrl) continue;
       const markId = mark.id;
-      this.agentDataService.getTrademarkArtwork(markId).subscribe({
-        next: blob => {
-          if (requestId !== this.browseRequestId || !this.journalMarks().some(current => current.id === markId && current.imgUrl)) return;
-          const url = URL.createObjectURL(blob);
-          this.artworkUrls.update(urls => ({ ...urls, [markId]: url }));
-        },
-        error: () => {
-          if (requestId === this.browseRequestId) this.artworkFailures.update(failures => new Set(failures).add(markId));
-        },
-      });
+      this.artworkUrls.update(urls => ({ ...urls, [markId]: `${this.imageBaseUrl}${mark.imgUrl}` }));
     }
   }
 
   private clearArtwork(): void {
-    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
     this.artworkUrls.set({});
-    this.artworkFailures.set(new Set());
   }
 
   private handleSearchInput(): void {

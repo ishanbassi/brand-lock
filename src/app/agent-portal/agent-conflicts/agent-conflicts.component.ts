@@ -41,7 +41,6 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   filings = signal<AgentNewFiling[]>([]);
   view = signal<'FILINGS' | 'CONFLICTS'>('FILINGS');
   readonly artworkUrls = signal<Record<number, string>>({});
-  readonly artworkFailures = signal<Set<number>>(new Set());
   readonly filingArtworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
   running = signal(false);
@@ -109,7 +108,6 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.pollTimer) clearTimeout(this.pollTimer);
     if (this.filingSearchTimer) clearTimeout(this.filingSearchTimer);
-    Object.values(this.artworkUrls()).forEach(url => URL.revokeObjectURL(url));
   }
 
   load(showLoading = true): void {
@@ -274,14 +272,8 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   }
 
   private loadArtwork(id?: number, imgUrl?: string | null): void {
-    if (id == null || !imgUrl || this.artworkUrls()[id] || this.artworkFailures().has(id)) return;
-    this.agentDataService.getTrademarkArtwork(id).subscribe({
-      next: blob => {
-        const url = URL.createObjectURL(blob);
-        this.artworkUrls.update(urls => ({ ...urls, [id]: url }));
-      },
-      error: () => this.artworkFailures.update(failures => new Set(failures).add(id)),
-    });
+    if (id == null || !imgUrl || this.artworkUrls()[id]) return;
+    this.artworkUrls.update(urls => ({ ...urls, [id]: `${this.imageBaseUrl}${imgUrl}` }));
   }
 
   private hasFilingArtwork(filing: AgentNewFiling): boolean {

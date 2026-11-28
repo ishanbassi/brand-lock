@@ -70,7 +70,10 @@
       <div class="quick-filters" aria-label="Quick filters">
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'all'" (click)="setQuickFilter('all')">All ({{ filterOptions()?.total ?? totalCount }})</button>
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'registered'" (click)="setQuickFilter('registered')">Registered ({{ statusCount('REGISTERED') }})</button>
-        <button type="button" class="filter-pill" [class.active]="quickFilter === 'attention'" (click)="setQuickFilter('attention')">Hearings &amp; Objections ({{ statusCount('OBJECTED_OR_OPPOSED') }})</button>
+        <button type="button" class="filter-pill" [class.active]="quickFilter === 'objected'" (click)="setQuickFilter('objected')">Objected ({{ statusCount('OBJECTED') }})</button>
+        <button type="button" class="filter-pill" [class.active]="quickFilter === 'opposed'" (click)="setQuickFilter('opposed')">Opposed ({{ statusCount('OPPOSED') }})</button>
+        <button type="button" class="filter-pill" [class.active]="quickFilter === 'underExamination'" (click)="setQuickFilter('underExamination')">Under examination ({{ statusCount('UNDER_EXAMINATION') }})</button>
+        <button type="button" class="filter-pill" [class.active]="quickFilter === 'advertised'" (click)="setQuickFilter('advertised')">Advertised ({{ statusCount('ADVERTISED') }})</button>
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'renewals'" (click)="setQuickFilter('renewals')">Renewals Due ({{ dashboardStats()?.expiringIn90Days ?? 0 }})</button>
         <button type="button" class="filter-pill" [class.active]="quickFilter === 'closed'" (click)="setQuickFilter('closed')">Abandoned / Refused ({{ statusCount('ABANDONED_WITHDRAWN_REJECTED') }})</button>
       </div>
@@ -288,7 +291,7 @@
                     @if (tm.imgUrl) {
                       <span class="mark-avatar mark-avatar--artwork" [class.mark-avatar--loading]="!artworkUrl(tm)">
                         @if (artworkUrl(tm); as artwork) {
-                          <img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" (error)="loadArtworkFromApi(tm)" />
+                          <img [src]="artwork" [alt]="'Artwork for ' + (tm.name || 'this trademark')" />
                         } @else {
                           <span class="mark-artwork-loading" aria-label="Loading trademark artwork"></span>
                         }

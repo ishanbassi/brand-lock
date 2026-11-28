@@ -171,7 +171,7 @@
                   <td class="select-cell"><input type="checkbox" [checked]="selectedIds.has(row.trademarkId)" (change)="toggleRowSelection(row)"
                     [attr.aria-label]="'Select ' + (row.name || 'result')" /></td>
                   <td class="artwork-cell">
-                    @if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" (error)="loadArtworkFromApi(row)" /> }
+                    @if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> }
                     @else { <span class="mark-artwork" aria-hidden="true">{{ markMonogram(row) }}</span> }
                   </td>
                   <td class="cell-name">{{ row.name || '—' }}</td><td>{{ row.applicationNo || '—' }}</td><td>{{ row.tmClass || '—' }}</td>
@@ -190,7 +190,7 @@
                 <div class="result-card-head">
                   <div class="result-card-title">
                     <input type="checkbox" [checked]="selectedIds.has(row.trademarkId)" (change)="toggleRowSelection(row)" [attr.aria-label]="'Select ' + (row.name || 'result')" />
-                    <div class="mark-artwork large">@if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" (error)="loadArtworkFromApi(row)" /> } @else { <span aria-hidden="true">{{ markMonogram(row) }}</span> }</div>
+                    <div class="mark-artwork large">@if (artworkUrl(row); as url) { <img [src]="url" [alt]="'Artwork for ' + (row.name || 'trademark')" loading="lazy" /> } @else { <span aria-hidden="true">{{ markMonogram(row) }}</span> }</div>
                     <div><h2>{{ row.name || '—' }}</h2><span>{{ row.type || 'Word mark' }}</span></div>
                   </div>
                   @if (reportSearchType === 'phonetic') { <div class="card-similarity"><span>Similarity</span><strong class="similarity-pill" [class.close]="row.riskBand === 'HIGH'" [class.moderate]="row.riskBand === 'MEDIUM'" [class.distant]="row.riskBand === 'LOW'">{{ similarityLabel(row.riskBand) }}</strong></div> }

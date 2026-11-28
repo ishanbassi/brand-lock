@@ -52,8 +52,10 @@ export class AgentSearchReportComponent implements OnInit {
   readonly matchRules: SearchReportType[] = ['startswith', 'contains', 'phonetic'];
   readonly statusBuckets = [
     { value: 'REGISTERED', label: 'Registered' },
-    { value: 'OBJECTED_OR_OPPOSED', label: 'Objected / Opposed' },
-    { value: 'UNDER_EXAMINATION_OR_ADVERTISED', label: 'Under Examination / Advertised' },
+    { value: 'OBJECTED', label: 'Objected' },
+    { value: 'OPPOSED', label: 'Opposed' },
+    { value: 'UNDER_EXAMINATION', label: 'Under examination' },
+    { value: 'ADVERTISED', label: 'Advertised' },
     { value: 'ABANDONED_WITHDRAWN_REJECTED', label: 'Abandoned / Withdrawn / Rejected' },
     { value: 'OTHER_UNKNOWN', label: 'Other / Unknown' },
   ];
@@ -274,6 +276,10 @@ export class AgentSearchReportComponent implements OnInit {
       .map(value => Number(value))
       .filter(value => Number.isInteger(value) && value >= 1 && value <= 45);
     const selectedStatuses = (params.get('statuses') ?? '').split(',')
+      // Expand older combined links into the precise controls now shown in the picker.
+      .flatMap(value => value === 'OBJECTED_OR_OPPOSED' ? ['OBJECTED', 'OPPOSED']
+        : value === 'UNDER_EXAMINATION_OR_ADVERTISED' ? ['UNDER_EXAMINATION', 'ADVERTISED']
+          : [value])
       .filter(value => this.statusBuckets.some(bucket => bucket.value === value));
     const searchType = params.get('searchType');
     const requestedPageSize = Number(params.get('pageSize'));
@@ -684,24 +690,12 @@ export class AgentSearchReportComponent implements OnInit {
   }
 
   private loadArtwork(rows: SearchReportRow[]): void {
-    for (const row of rows.filter(item => item.hasArtwork)) {
-      if (this.isBrowserImage(row.imgUrl)) {
-        this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: `${this.imageBaseUrl}${row.imgUrl}` }));
-      } else {
-        this.loadArtworkFromApi(row);
-      }
+    for (const row of rows.filter(item => item.hasArtwork && item.imgUrl)) {
+      this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: `${this.imageBaseUrl}${row.imgUrl}` }));
     }
   }
 
-  loadArtworkFromApi(row: SearchReportRow): void {
-    if (!row.hasArtwork || this.artworkUrls()[row.trademarkId]?.startsWith('blob:')) return;
-    this.agentData.getSearchResultArtwork(row.trademarkId).subscribe({
-      next: blob => this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: URL.createObjectURL(blob) })),
-    });
-  }
-
   private clearArtwork(): void {
-    Object.values(this.artworkUrls()).filter(url => url.startsWith('blob:')).forEach(url => URL.revokeObjectURL(url));
     this.artworkUrls.set({});
   }
 
@@ -838,19 +832,7 @@ export class AgentSearchReportComponent implements OnInit {
   }
 
   private async loadSelectedArtwork(rows: SearchReportRow[]): Promise<void> {
-    const missing = rows.filter(row => row.hasArtwork && !this.artworkUrl(row));
-    await Promise.all(missing.map(async row => {
-      try {
-        const blob = await firstValueFrom(this.agentData.getSearchResultArtwork(row.trademarkId));
-        this.artworkUrls.update(urls => ({ ...urls, [row.trademarkId]: URL.createObjectURL(blob) }));
-      } catch {
-        // The report remains printable if registry artwork is unavailable.
-      }
-    }));
-  }
-
-  private isBrowserImage(fileName?: string): boolean {
-    return !!fileName && /\.(avif|gif|jpe?g|png|webp)$/i.test(fileName);
+    this.loadArtwork(rows);
   }
 
   private escapeHtml(value: unknown): string {

@@ -15,6 +15,7 @@ import {
   AgentPortfolioTrademark,
   WatchConflictHistory,
 } from '../../../models/agent.model';
+import { environment } from '../../../environments/environment';
 
 /**
  * Everything about one mark in the agent's portfolio, and the only place its actions live.
@@ -38,6 +39,7 @@ import {
   styleUrl: './agent-trademark-detail.component.scss',
 })
 export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
+  private readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   readonly documentTypes = AGENT_DOCUMENT_TYPES;
 
   trademarkId!: number;
@@ -106,11 +108,7 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
   // Export
   exporting = signal<ExportFormat | null>(null);
 
-  /**
-   * The mark's artwork as an object URL. Fetched through the API rather than linked from /files/:
-   * about a third of stored images are JPEG 2000, which no browser draws, and the server transcodes
-   * those. 'failed' keeps the frame with a note rather than silently dropping the image.
-   */
+  /** The mark's public B2/CDN artwork URL. */
   artworkUrl = signal<string | null>(null);
   artworkState = signal<'none' | 'loading' | 'ready' | 'failed'>('none');
 
@@ -188,21 +186,11 @@ export class AgentTrademarkDetailComponent implements OnInit, OnDestroy {
       this.artworkState.set('none');
       return;
     }
-    this.artworkState.set('loading');
-    this.agentDataService.getTrademarkArtwork(this.trademarkId).subscribe({
-      next: (blob) => {
-        this.artworkUrl.set(URL.createObjectURL(blob));
-        this.artworkState.set('ready');
-      },
-      error: () => {
-        this.artworkState.set('failed');
-      },
-    });
+    this.artworkUrl.set(`${this.imageBaseUrl}${tm.imgUrl}`);
+    this.artworkState.set('ready');
   }
 
   private releaseArtwork(): void {
-    const url = this.artworkUrl();
-    if (url) URL.revokeObjectURL(url);
     this.artworkUrl.set(null);
   }
 

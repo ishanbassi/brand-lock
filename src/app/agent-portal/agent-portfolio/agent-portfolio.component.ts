@@ -72,7 +72,6 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   trademarks = signal<AgentPortfolioTrademark[]>([]);
   /** Browser-displayable artwork for the marks on the visible page. */
   readonly artworkUrls = signal<Record<number, string>>({});
-  private readonly artworkFailures = signal<Set<number>>(new Set());
   loading = signal(true);
   /**
    * Keeps the register frame mounted after its first response. Filter requests then replace only
@@ -97,7 +96,7 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   filterClass = '';
   filterFilingYear = '';
   filterRenewalDue = false;
-  quickFilter: 'all' | 'registered' | 'attention' | 'renewals' | 'closed' = 'all';
+  quickFilter: 'all' | 'registered' | 'objected' | 'opposed' | 'underExamination' | 'advertised' | 'renewals' | 'closed' = 'all';
   private searchSubject = new Subject<string>();
 
   /**
@@ -810,13 +809,16 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
   }
 
   /** Design-strip presets reuse server filters, so every page and export matches the chosen view. */
-  setQuickFilter(filter: 'all' | 'registered' | 'attention' | 'renewals' | 'closed'): void {
+  setQuickFilter(filter: 'all' | 'registered' | 'objected' | 'opposed' | 'underExamination' | 'advertised' | 'renewals' | 'closed'): void {
     this.quickFilter = filter;
     this.filterRenewalDue = filter === 'renewals';
     this.filterStatus = ({
       all: '',
       registered: 'REGISTERED',
-      attention: 'OBJECTED_OR_OPPOSED',
+      objected: 'OBJECTED',
+      opposed: 'OPPOSED',
+      underExamination: 'UNDER_EXAMINATION',
+      advertised: 'ADVERTISED',
       renewals: '',
       closed: 'ABANDONED_WITHDRAWN_REJECTED',
     } as const)[filter];
@@ -834,52 +836,21 @@ export class AgentPortfolioComponent implements OnInit, OnDestroy {
     return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  /** Browser-safe artwork goes directly to B2; JPEG 2000 remains on the converting API path. */
+  /** Trademark artwork is served directly from the public B2/CDN origin. */
   artworkUrl(mark: AgentPortfolioTrademark): string | null {
     return mark.id == null ? null : this.artworkUrls()[mark.id] ?? null;
-  }
-
-  artworkFailed(mark: AgentPortfolioTrademark): boolean {
-    return mark.id != null && this.artworkFailures().has(mark.id);
   }
 
   private loadArtwork(marks: AgentPortfolioTrademark[]): void {
     for (const mark of marks) {
       if (mark.id == null || !mark.imgUrl) continue;
       const markId = mark.id;
-      if (this.isBrowserImage(mark.imgUrl)) {
-        this.artworkUrls.update(urls => ({ ...urls, [markId]: `${this.imageBaseUrl}${mark.imgUrl}` }));
-        continue;
-      }
-      this.loadArtworkFromApi(mark);
+      this.artworkUrls.update(urls => ({ ...urls, [markId]: `${this.imageBaseUrl}${mark.imgUrl}` }));
     }
   }
 
-  loadArtworkFromApi(mark: AgentPortfolioTrademark): void {
-    if (mark.id == null || !mark.imgUrl || this.artworkUrls()[mark.id]?.startsWith('blob:')) return;
-    const markId = mark.id;
-      this.agentDataService.getTrademarkArtwork(markId).subscribe({
-        next: blob => {
-          // Ignore artwork returned after the table has moved to another page or filter result.
-          if (!this.trademarks().some(current => current.id === markId && current.imgUrl)) return;
-          const url = URL.createObjectURL(blob);
-          this.artworkUrls.update(urls => ({ ...urls, [markId]: url }));
-        },
-        error: () => {
-          if (!this.trademarks().some(current => current.id === markId && current.imgUrl)) return;
-          this.artworkFailures.update(failures => new Set(failures).add(markId));
-        },
-      });
-  }
-
   private clearArtwork(): void {
-    Object.values(this.artworkUrls()).filter(url => url.startsWith('blob:')).forEach(url => URL.revokeObjectURL(url));
     this.artworkUrls.set({});
-    this.artworkFailures.set(new Set());
-  }
-
-  private isBrowserImage(fileName: string): boolean {
-    return /\.(avif|gif|jpe?g|png|webp)$/i.test(fileName);
   }
 
   /** First click sorts by the column, the next reverses it. Restarts at page one either way. */
