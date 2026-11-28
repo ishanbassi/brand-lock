@@ -6,6 +6,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { AgentDataService } from '../../shared/services/agent-data.service';
 import { AgentNewFiling, NewFilingWatchRun, WatchConflictHistory } from '../../../models/agent.model';
 import { IconComponent } from '../ui/icon.component';
+import { environment } from '../../../environments/environment';
 
 type RiskFilter = '' | 'HIGH' | 'MEDIUM' | 'LOW';
 type StatusFilter = 'OPEN' | 'OPPOSING' | 'DISMISSED';
@@ -56,6 +57,7 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
   filingWindowDays = signal<FilingWindowDays>(7);
   page = signal(1);
   pageSize = signal<FilingPageSize>(20);
+  readonly imageBaseUrl = environment.TrademarkImageBaseUrl;
   private pollTimer?: ReturnType<typeof setTimeout>;
   private filingSearchTimer?: ReturnType<typeof setTimeout>;
   private filingRequestId = 0;
@@ -266,7 +268,9 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
 
   artworkUrl(id?: number): string | null { return id == null ? null : this.artworkUrls()[id] ?? null; }
   filingArtworkUrl(filing: AgentNewFiling): string | null {
-    return this.hasFilingArtwork(filing) ? this.artworkUrl(filing.id) : null;
+    return this.hasFilingArtwork(filing) && !this.filingArtworkFailures().has(filing.id)
+      ? `${this.imageBaseUrl}${filing.imgUrl}`
+      : null;
   }
 
   private loadArtwork(id?: number, imgUrl?: string | null): void {
@@ -284,17 +288,8 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
     return filing.id != null && !!filing.imgUrl?.trim();
   }
 
-  private loadFilingArtwork(filing: AgentNewFiling): void {
-    if (!this.hasFilingArtwork(filing) || this.artworkUrls()[filing.id] || this.filingArtworkFailures().has(filing.id)) return;
-    const filingId = filing.id;
-    this.agentDataService.getNewFilingArtwork(filingId).subscribe({
-      next: blob => {
-        if (!this.filings().some(current => current.id === filingId && this.hasFilingArtwork(current))) return;
-        const url = URL.createObjectURL(blob);
-        this.artworkUrls.update(urls => ({ ...urls, [filingId]: url }));
-      },
-      error: () => this.filingArtworkFailures.update(failures => new Set(failures).add(filingId)),
-    });
+  filingArtworkFailed(filing: AgentNewFiling): void {
+    this.filingArtworkFailures.update(failures => new Set(failures).add(filing.id));
   }
 
   private compareByFilingOrder(left: WatchConflictHistory, right: WatchConflictHistory): number {
@@ -345,7 +340,6 @@ export class AgentConflictsComponent implements OnInit, OnDestroy {
 
   private applyFilings(filings: AgentNewFiling[]): void {
     this.filings.set(filings);
-    filings.forEach(filing => this.loadFilingArtwork(filing));
   }
 
   private resetPage(): void { this.page.set(1); }

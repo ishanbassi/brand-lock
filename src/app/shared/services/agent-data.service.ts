@@ -721,13 +721,6 @@ export class AgentDataService {
     });
   }
 
-  /** Artwork for a registry record in the agent's current New Filings review window. */
-  getNewFilingArtwork(id: number): Observable<Blob> {
-    return this.http.get(`${this.base}/agent-portal/watch/new-filings/${id}/artwork`, {
-      responseType: 'blob',
-    });
-  }
-
   // ── Report branding ────────────────────────────────────────────────────
 
   updateBranding(branding: Partial<AgentBranding>): Observable<AgentBranding> {
